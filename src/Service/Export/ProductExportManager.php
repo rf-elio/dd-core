@@ -116,42 +116,41 @@ class ProductExportManager
     private function createEntity(string $filename, string $accessKey, string $salesChannelId): void
     {
 
-        /*
+
         $dir = dirname(__FILE__)."/"."ExportTemplate"."/";
         if(!$templateHeader = file_get_contents($dir.self::TEMPLATE.self::TEMPLATE_HEADER_FILE_ENDING))
             throw new \Exception("Couldn't read header template file: ".self::TEMPLATE.self::TEMPLATE_HEADER_FILE_ENDING);
 
         if(!$templateBody = file_get_contents($dir.self::TEMPLATE.self::TEMPLATE_BODY_FILE_ENDING))
             throw new \Exception("Couldn't read body template file: ".self::TEMPLATE.self::TEMPLATE_BODY_FILE_ENDING);
-        */
 
-        /*
-        $searchCriteria = new Criteria();
-        $searchCriteria->addFilter(new EqualsFilter('file_name', $filename));
-        $existingProductExport = $this->productExportRepository->search($searchCriteria, $this->context)->first();
-        */
+        $filenames = [];
+        /** @var ProductExportEntity[] $productExports */
+        $productExports = $this->productExportRepository->search(new Criteria(), $this->context)->getElements();
+        foreach ($productExports as $productExport){
+            $filenames[] = $productExport->getFileName();
+        }
 
-
-        $this->productExportRepository->upsert([
-            [
-                'fileName' => $filename,
-                'accessKey' => $accessKey,
-                'encoding' => ProductExportEntity::ENCODING_UTF8,
-                'fileFormat' => ProductExportEntity::FILE_FORMAT_CSV,
-                'interval' => 0,
-                'headerTemplate' => 'name,url',
-                'bodyTemplate' => '{{ product.name }},{{ productUrl(product) }}',
-                'productStreamId' => $this->getProductStream()->getId(),
-                'storefrontSalesChannelId' => $this->getSalesChannelDomain()->getSalesChannelId(),
-                'salesChannelId' => $salesChannelId,
-                'salesChannelDomainId' => $this->getSalesChannelDomain()->getId(),
-                'generateByCronjob' => false,
-                'currencyId' => Defaults::CURRENCY,
-            ],
-        ], $this->context);
-
-
-
+        if(!in_array($filename, $filenames)){
+            $this->productExportRepository->upsert([
+                [
+                    'fileName' => $filename,
+                    'accessKey' => $accessKey,
+                    'encoding' => ProductExportEntity::ENCODING_UTF8,
+                    'fileFormat' => ProductExportEntity::FILE_FORMAT_CSV,
+                    'interval' => 0,
+                    'headerTemplate' => $templateHeader,
+                    'bodyTemplate' => $templateBody,
+                    //'productStreamId' => $this->getProductStream()->getId(),
+                    'productStreamId' => '41cde2c140e4472daec6a89229165c2a',
+                    'storefrontSalesChannelId' => $this->getSalesChannelDomain()->getSalesChannelId(),
+                    'salesChannelId' => $salesChannelId,
+                    'salesChannelDomainId' => $this->getSalesChannelDomain()->getId(),
+                    'generateByCronjob' => false,
+                    'currencyId' => Defaults::CURRENCY,
+                ],
+            ], $this->context);
+        }
     }
 
     private function getSalesChannelDomain(): SalesChannelDomainEntity
