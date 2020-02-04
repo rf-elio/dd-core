@@ -1,5 +1,5 @@
 {
-    "name": "elio/elio-fact-finder",
+    "name": "elio/fact-finder",
     "description": "",
     "version": "v1.0.0",
     "type": "shopware-platform-plugin",
@@ -12,7 +12,7 @@
         "shopware/core": "*"
     },
     "extra": {
-        "shopware-plugin-class": "Elio\\ElioFactFinder\\ElioFactFinder",
+        "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",
         "label": {
             "de-DE": "ElioFactFinder",
             "en-GB": "ElioFactFinder"
@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Elio\\ElioFactFinder\\": "src/"
+            "Elio\\FactFinder\\": "src/"
         }
     }
 }

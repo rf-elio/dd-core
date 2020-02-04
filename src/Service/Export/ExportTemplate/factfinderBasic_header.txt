@@ -1,4 +1,0 @@
-{% apply spaceless %}
-name;
-url
-{% endapply %}<br/>

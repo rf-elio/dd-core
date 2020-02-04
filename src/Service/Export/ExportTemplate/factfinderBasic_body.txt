@@ -1,4 +1,0 @@
-{% apply spaceless %}
-{{ product.name }};
-{{ productUrl(product) }}
-{% endapply %}<br/>
