@@ -75,7 +75,7 @@ class ExportController extends AbstractController
         /** @var ExportManagerInterface */
         $productExportManager = $this->container->get('Elio\FactFinder\Service\Export\ExportManager');
 
-        return new JsonResponse(['csv_product_export_generated' =>$productExportManager->generate()]);
+        return new JsonResponse($productExportManager->generate());
     }
 
 

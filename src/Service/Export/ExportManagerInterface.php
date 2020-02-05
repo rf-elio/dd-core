@@ -22,7 +22,7 @@ interface ExportManagerInterface
     /**
      * generate product export file
      *
-     * @return bool
+     * @return array content the generated filenames and the amount of generated products
      */
-    public function generate():bool;
+    public function generate():array;
 }

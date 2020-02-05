@@ -36,12 +36,13 @@ namespace Elio\FactFinder\Service\Export\CSV;
 
 use Elio\FactFinder\Service\Export\Exporter;
 use League\Flysystem\FilesystemInterface;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\ProductExport\Service\ProductExportFileHandlerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Create an CSV exporter and generate CSV product export file
@@ -62,7 +63,8 @@ class CSVExporter extends Exporter
         int $readBufferSize,
         ProductExportFileHandlerInterface $productExportFileHandler,
         FilesystemInterface $filesystem,
-        SeoUrlPlaceholderHandlerInterface $seoUrlReplacer
+        UrlGeneratorInterface $generator,
+        EntityRepositoryInterface $currencyRepository
     )
     {
         parent::__construct(
@@ -73,7 +75,8 @@ class CSVExporter extends Exporter
             $readBufferSize,
             $productExportFileHandler,
             $filesystem,
-            $seoUrlReplacer
+            $generator,
+            $currencyRepository
         );
     }
 

@@ -13,7 +13,8 @@
             <argument type="string">%product_export.read_buffer_size%</argument>
             <argument type="service" id="Shopware\Core\Content\ProductExport\Service\ProductExportFileHandler"/>
             <argument type="service" id="shopware.filesystem.private"/>
-            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+            <argument type="service" id="router" />
+            <argument type="service" id="currency.repository"/>
         </service>
         <service id="Elio\FactFinder\Service\Export\ExportManager" public="true">
             <argument type="service" id="product_export.repository"/>

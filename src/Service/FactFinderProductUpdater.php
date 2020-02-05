@@ -34,7 +34,9 @@
 namespace Elio\FactFinder\Service;
 
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Shopware\Core\Framework\Context;
 
 /**
  * Updates products according to Fact-finder requirements
@@ -48,6 +50,9 @@ use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 class FactFinderProductUpdater
 {
     const SEO_URL_ROUTE_NAME_DETAIL_PAGE = 'frontend.detail.page';
+    const THUMBNAIL_SMALL_SIZE = 400;
+    const THUMBNAIL_MEDIUM_SIZE = 800;
+    const THUMBNAIL_LARGE_SIZE = 1920;
 
     /**
      * @var ProductEntity
@@ -55,25 +60,42 @@ class FactFinderProductUpdater
     private $product;
 
     /**
-     * @var SeoUrlPlaceholderHandlerInterface
+     * @var UrlGeneratorInterface
      */
-    private $seoUrlReplacer;
+    private $generator;
 
-    public function __construct(ProductEntity $product, SeoUrlPlaceholderHandlerInterface $seoUrlReplacer)
+    /**
+     * @var Context
+     */
+    private $context;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $currencyRepository;
+
+
+    public function __construct(
+        ProductEntity $product,
+        UrlGeneratorInterface $generator,
+        EntityRepositoryInterface $currencyRepository
+    )
     {
         $this->product = $product;
-        $this->seoUrlReplacer = $seoUrlReplacer;
+        $this->generator = $generator;
+        $this->currencyRepository = $currencyRepository;
+        $this->context = Context::createDefaultContext();
     }
 
     /**
      * update product properties
+     *
      * @return ProductEntity
      */
     public function update():ProductEntity
     {
         $this->setName();
         $this->setDescription();
-        $this->setPrice();
         $this->setManufacturer();
         $this->setEan();
         $this->setKeywords();
@@ -81,12 +103,42 @@ class FactFinderProductUpdater
         return $this->product;
     }
 
-    public function getSeoUrlDetailPage():string
+    public function getProductURL($schemeRelative = false):string
     {
-        return $this->seoUrlReplacer->generate(
+        return $this->generator->generate(
             self::SEO_URL_ROUTE_NAME_DETAIL_PAGE,
-            ['productId' => $this->product->getId()]
+            ['productId' => $this->product->getId()],
+            $schemeRelative ? UrlGeneratorInterface::NETWORK_PATH : UrlGeneratorInterface::ABSOLUTE_URL
         );
+    }
+
+    public function getImageURL():string
+    {
+        $thumbnails = $this->product->getCover()->getMedia()->getThumbnails()->getElements();
+        foreach ($thumbnails as $thumbnail){
+          if (
+              $thumbnail->getHeight() === self::THUMBNAIL_LARGE_SIZE &&
+              $thumbnail->getWidth() === self::THUMBNAIL_LARGE_SIZE
+          )
+              return $thumbnail->getUrl();
+        }
+        return "";
+    }
+
+    public function getPrice():string
+    {
+        $resultPrice = "|";
+        foreach ($this->product->getPrice()->getElements() as $price)
+        {
+            $resultPrice .= "gross=".$price->getGross()."|net=".number_format($price->getNet(), 2, '.', '')."|";
+        }
+
+        return $resultPrice;
+    }
+
+    public function getPrices():string
+    {
+        return "";
     }
 
     private function setName():void
@@ -97,10 +149,6 @@ class FactFinderProductUpdater
 
     }
 
-    private function setPrice():void
-    {
-
-    }
     private function setManufacturer():void
     {
 

@@ -204,10 +204,10 @@ class ExportManager implements ExportManagerInterface
         }
     }
 
-    public function generate():bool
+    public function generate():array
     {
         $csvExporter = $this->exporter->create($this->exporter::TYPE_CSV);
-
+        $exportResults = [];
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannelDomain.language');
         $criteria->addAssociation('salesChannel');
@@ -216,9 +216,13 @@ class ExportManager implements ExportManagerInterface
 
         /** @var ProductExportEntity $productExport */
         foreach ($productExports as $productExport){
-            $csvExporter->generate($productExport, new ExportBehavior());
+           $exportResult = $csvExporter->generate($productExport, new ExportBehavior());
+           $exportResults[] = [
+               "filename" => $exportResult->getContent(),
+               "total" =>$exportResult->getTotal()
+           ];
         }
-        return true;
+        return $exportResults;
     }
 
     private function getSalesChannelDomain(): SalesChannelDomainEntity

@@ -39,7 +39,7 @@ use Monolog\Logger;
 use Shopware\Core\Content\ProductExport\ProductExportEntity;
 use Shopware\Core\Content\ProductExport\Struct\ExportBehavior;
 use Shopware\Core\Content\ProductExport\Struct\ProductExportResult;
-use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
@@ -52,6 +52,7 @@ use Shopware\Core\Content\ProductExport\Exception\EmptyExportException;
 use Shopware\Core\Content\ProductExport\Event\ProductExportLoggingEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\ProductExport\Service\ProductExportFileHandlerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Create an exporter type and generate product export file for that type
@@ -96,6 +97,7 @@ class Exporter implements ExporterInterface
         'Name',
         'Description',
         'ProductURL',
+        'ImageURL',
         'Price',
         'Manufacturer',
         'Category',
@@ -104,9 +106,14 @@ class Exporter implements ExporterInterface
     ];
 
     /**
-     * @var SeoUrlPlaceholderHandlerInterface
+     * @var UrlGeneratorInterface
      */
-    private $seoUrlReplacer;
+    private $generator;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $currencyRepository;
 
 
     public function __construct(
@@ -117,7 +124,8 @@ class Exporter implements ExporterInterface
         int $readBufferSize,
         ProductExportFileHandlerInterface $productExportFileHandler,
         FilesystemInterface $filesystem,
-        SeoUrlPlaceholderHandlerInterface $seoUrlReplacer
+        UrlGeneratorInterface $generator,
+        EntityRepositoryInterface $currencyRepository
     )
     {
         $this->productStreamBuilder = $productStreamBuilder;
@@ -127,7 +135,8 @@ class Exporter implements ExporterInterface
         $this->readBufferSize = $readBufferSize;
         $this->productExportFileHandler = $productExportFileHandler;
         $this->filesystem = $filesystem;
-        $this->seoUrlReplacer = $seoUrlReplacer;
+        $this->generator = $generator;
+        $this->currencyRepository = $currencyRepository;
     }
 
     public function create(int $type): Exporter
@@ -142,7 +151,8 @@ class Exporter implements ExporterInterface
                     $this->readBufferSize,
                     $this->productExportFileHandler,
                     $this->filesystem,
-                    $this->seoUrlReplacer
+                    $this->generator,
+                    $this->currencyRepository
                 );
                 break;
             default:
@@ -207,7 +217,11 @@ class Exporter implements ExporterInterface
         foreach ($products as $product){
 
             /** @var FactFinderProductUpdater $factFinderProductUpdater */
-            $factFinderProductUpdater = new FactFinderProductUpdater($product, $this->seoUrlReplacer);
+            $factFinderProductUpdater = new FactFinderProductUpdater(
+                $product,
+                $this->generator,
+                $this->currencyRepository
+            );
 
             $updatedProduct = $factFinderProductUpdater->update();
 
@@ -217,35 +231,25 @@ class Exporter implements ExporterInterface
             if (!$productExport->isIncludeVariants() && $product->getParentId()) {
                 continue; // Skip variants unless they are included
             }
+            array_push($data, array(
+                $updatedProduct->getId(),
+                $updatedProduct->getProductNumber(),
+                $updatedProduct->getName(),
+                $updatedProduct->getDescription(),
+                $factFinderProductUpdater->getProductURL(),
+                $factFinderProductUpdater->getImageURL(),
+                $factFinderProductUpdater->getPrice(),
+                $updatedProduct->getManufacturer()->getName(),
+                null,
+                $updatedProduct->getEan(),
+                $updatedProduct->getKeywords(),
+            ));
 
             /*
-            array_push($data, array(
-                $updatedProduct->getId(),
-                $updatedProduct->getProductNumber(),
-                $updatedProduct->getName(),
-                $updatedProduct->getDescription(),
-                $updatedProduct->getSeoUrls(),
-                $updatedProduct->getPrice(),
-                $updatedProduct->getManufacturer()->getName(),
-                $updatedProduct->getCategoryTree(),
-                $updatedProduct->getEan(),
-                $updatedProduct->getKeywords(),
-            ));
+            if ($updatedProduct->getName() === "Gorgeous Rubber Avenetro"){
+                $factFinderProductUpdater->getPrices();
+            }
             */
-
-            array_push($data, array(
-                $updatedProduct->getId(),
-                $updatedProduct->getProductNumber(),
-                $updatedProduct->getName(),
-                $updatedProduct->getDescription(),
-                $factFinderProductUpdater->getSeoUrlDetailPage(),
-                null,
-                $updatedProduct->getManufacturer()->getName(),
-                null,
-                $updatedProduct->getEan(),
-                $updatedProduct->getKeywords(),
-            ));
-
         }
 
         //dd($data);
@@ -256,20 +260,22 @@ class Exporter implements ExporterInterface
 
         $filePath = $this->productExportFileHandler->getFilePath($productExport);
 
-        $this->writeItemsToFile($filePath, $data, $this->headers, ";");
+        $this->write($filePath, $data, $this->headers, ";");
 
-        return new ProductExportResult("", [], $total);
+        return new ProductExportResult($productExport->getFileName(), [], $total);
     }
 
     /**
      * Write data to file format
      *
-     * @param string $filename
+     * @param string $filePath
      * @param array $items
      * @param array $headers
      * @param string $delimiter
+     * @throws \League\Flysystem\FileExistsException
+     * @throws \League\Flysystem\FileNotFoundException
      */
-    protected function writeItemsToFile(
+    protected function write(
         string $filePath,
         array $items,
         array $headers = [],
