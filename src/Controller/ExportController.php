@@ -63,7 +63,7 @@ class ExportController extends AbstractController
         /** @var ExportManagerInterface */
         $productExportManager = $this->container->get('Elio\FactFinder\Service\Export\ExportManager');
 
-        return new JsonResponse(['product_export_installed'=>$productExportManager->install()]);
+        return new JsonResponse($productExportManager->install());
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace Elio\FactFinder\Service\Export;
 
+
 /**
  * interface ExportManagerInterface
  * @category  Service
@@ -14,15 +15,15 @@ interface ExportManagerInterface
     /**
      * Create product export for all sales channels
      *
-     * @return bool
-     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     * @return array contents Ids from created or updated product export and when occurred the errors
      */
-    public function install():bool;
+    public function install():array ;
 
     /**
      * generate product export file
      *
-     * @return array content the generated filenames and the amount of generated products
+     * @return array contents the generated filenames, the exported contents, the amount of generated products
+     * and when occurred the errors
      */
     public function generate():array;
 }

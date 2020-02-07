@@ -76,7 +76,7 @@ class FactFinderProductUpdater
 
 
     public function __construct(
-        ProductEntity $product,
+        ?ProductEntity $product,
         UrlGeneratorInterface $generator,
         EntityRepositoryInterface $currencyRepository
     )
@@ -97,6 +97,7 @@ class FactFinderProductUpdater
         $this->setName();
         $this->setDescription();
         $this->setManufacturer();
+        $this->setManufacturerNumber();
         $this->setEan();
         $this->setKeywords();
 
@@ -133,34 +134,82 @@ class FactFinderProductUpdater
             $resultPrice .= "gross=".$price->getGross()."|net=".number_format($price->getNet(), 2, '.', '')."|";
         }
 
-        return $resultPrice;
+        return $this->cleanValue($resultPrice);
     }
 
-    public function getPrices():string
+    public function getCategoryPath():string
     {
-        return "";
+        $path = "";
+        $categories = $this->product->getCategories()->getElements();
+
+        $index = 0;
+        $numCategories = count($categories);
+        foreach($categories as $category){
+            $path .= join("/",array_slice($category->getBreadcrumb(),1));
+            if(++$index < $numCategories){
+                $path = $path."|" ;
+            }
+
+
+        }
+        return $this->cleanValue($path);
     }
 
     private function setName():void
     {
+        $this->product->setName(
+            $this->cleanValue($this->product->getName())
+        );
     }
     private function setDescription():void
     {
-
+        $this->product->setDescription(
+            $this->truncate($this->cleanValue($this->product->getDescription()))
+        );
     }
 
     private function setManufacturer():void
     {
-
+        $this->product->getManufacturer()->setName(
+            $this->cleanValue($this->product->getManufacturer()->getName())
+        );
     }
     private function setEan():void
     {
-
+        $this->product->setEan(
+            $this->cleanValue($this->product->getEan())
+        );
     }
     private function setKeywords():void
     {
-
+        $this->product->setKeywords(
+            $this->cleanValue($this->product->getKeywords())
+        );
+    }
+    private function setManufacturerNumber()
+    {
+        $this->product->setManufacturerNumber(
+            $this->cleanValue($this->product->getManufacturerNumber())
+        );
     }
 
+    public function cleanValue(?string $value):string
+    {
+        $value = empty($value)? "":$value;
+        return trim(strip_tags($value));
+    }
+
+    public function truncate(string $text, int $chars = 900) :string
+    {
+        if (strlen($text) <= $chars) {
+            return $text;
+        }
+        $text = $text." ";
+        $text = substr($text,0,$chars);
+        $text = substr($text,0,strrpos($text,' '));
+        $text = $text."...";
+
+        return $text;
+    }
 
 }

@@ -94,15 +94,18 @@ class Exporter implements ExporterInterface
     protected $headers = [
         'ProductID',
         'MasterProductNumber',
+        'ManufacturerNumber',
         'Name',
         'Description',
         'ProductURL',
         'ImageURL',
         'Price',
         'Manufacturer',
-        'Category',
+        'CategoryPath',
         'EAN',
-        'Keywords'
+        'Keywords',
+        'Stock',
+        'RatingAverage'
     ];
 
     /**
@@ -234,57 +237,56 @@ class Exporter implements ExporterInterface
             array_push($data, array(
                 $updatedProduct->getId(),
                 $updatedProduct->getProductNumber(),
+                $updatedProduct->getManufacturerNumber(),
                 $updatedProduct->getName(),
                 $updatedProduct->getDescription(),
                 $factFinderProductUpdater->getProductURL(),
                 $factFinderProductUpdater->getImageURL(),
                 $factFinderProductUpdater->getPrice(),
                 $updatedProduct->getManufacturer()->getName(),
-                null,
+                $factFinderProductUpdater->getCategoryPath(),
                 $updatedProduct->getEan(),
                 $updatedProduct->getKeywords(),
+                $updatedProduct->getStock(),
+                $updatedProduct->getRatingAverage()
             ));
-
-            /*
-            if ($updatedProduct->getName() === "Gorgeous Rubber Avenetro"){
-                $factFinderProductUpdater->getPrices();
-            }
-            */
         }
-
-        //dd($data);
 
         if (empty($data)) {
             return null;
         }
 
-        $filePath = $this->productExportFileHandler->getFilePath($productExport);
-
-        $this->write($filePath, $data, $this->headers, ";");
-
-        return new ProductExportResult($productExport->getFileName(), [], $total);
+        return new ProductExportResult(
+            $this->write(
+                $productExport,
+                $data,
+                ";"),
+            [],
+            $total)
+            ;
     }
 
     /**
      * Write data to file format
      *
-     * @param string $filePath
+     * @param ProductExportEntity $productExport
      * @param array $items
-     * @param array $headers
      * @param string $delimiter
+     * @return string the exported content
      * @throws \League\Flysystem\FileExistsException
      * @throws \League\Flysystem\FileNotFoundException
      */
     protected function write(
-        string $filePath,
+        ProductExportEntity $productExport,
         array $items,
-        array $headers = [],
         string $delimiter = ""
-    ): void
+    ): string
     {
+        $filePath = $this->productExportFileHandler->getFilePath($productExport);
+
         // Create a stream opening it with read / write mode
         $stream = fopen('data://text/plain,' . "", 'w+');
-        fputcsv($stream, $headers, $delimiter);
+        fputcsv($stream, $this->headers, $delimiter);
 
         foreach ($items as $item) {
             fputcsv($stream, $item, $delimiter);
@@ -292,13 +294,16 @@ class Exporter implements ExporterInterface
 
         // Rewind the stream
         rewind($stream);
+        $content = mb_convert_encoding(stream_get_contents($stream), $productExport->getEncoding());
 
         if(!$this->filesystem->has($filePath)){
-            $this->filesystem->write($filePath, stream_get_contents($stream));
+            $this->filesystem->write($filePath, $content);
         }else{
-            $this->filesystem->update($filePath, stream_get_contents($stream));
+            $this->filesystem->update($filePath, $content);
         }
 
         fclose($stream);
+
+        return $content;
     }
 }

@@ -1,1 +1,14 @@
-name;url
+"ProductID";{#- -#}
+"MasterProductNumber";{#- -#}
+"ManufacturerNumber";{#- -#}
+"Name";{#- -#}
+"Description";{#- -#}
+"ProductURL";{#- -#}
+"ImageURL";{#- -#}
+"Price";{#- -#}
+"Manufacturer";{#- -#}
+"CategoryPath";{#- -#}
+"EAN";{#- -#}
+"Keywords";{#- -#}
+"Stock";{#- -#}
+"RatingAverage"{#- -#}

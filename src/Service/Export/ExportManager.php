@@ -34,10 +34,13 @@
 namespace Elio\FactFinder\Service\Export;
 
 use Shopware\Core\Content\ProductExport\ProductExportEntity;
+use Shopware\Core\Content\ProductExport\Service\ProductExportValidatorInterface;
 use Shopware\Core\Content\ProductExport\Struct\ExportBehavior;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -94,13 +97,22 @@ class ExportManager implements ExportManagerInterface
      */
     private $exporter;
 
+    /** @var ProductExportValidatorInterface */
+    private $productExportValidator;
+
+    /** @var string */
+    private $templateHeader;
+
+    /** @var string */
+    private $templateBody;
+
     /**
      * @param EntityRepositoryInterface $productExportRepository
      * @param EntityRepositoryInterface $saleschannelDomainRepository
      * @param EntityRepositoryInterface $productStreamRepository
      * @param EntityRepositoryInterface $salesChannelRepository
      * @param ExporterInterface $exporter
-     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     * @throws InconsistentCriteriaIdsException
      */
     public function __construct
     (
@@ -108,7 +120,8 @@ class ExportManager implements ExportManagerInterface
         EntityRepositoryInterface $saleschannelDomainRepository,
         EntityRepositoryInterface $productStreamRepository,
         EntityRepositoryInterface $salesChannelRepository,
-        ExporterInterface $exporter
+        ExporterInterface $exporter,
+        ProductExportValidatorInterface $productExportValidator
     )
     {
         $this->productExportRepository = $productExportRepository;
@@ -116,92 +129,92 @@ class ExportManager implements ExportManagerInterface
         $this->productStreamRepository = $productStreamRepository;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->exporter = $exporter;
+        $this->productExportValidator = $productExportValidator;
 
         $this->context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addAssociation('language');
         $this->salesChannels =  $this->salesChannelRepository->search($criteria, $this->context)->getElements();
+
+        $dir = dirname(__FILE__)."/"."ExportTemplate"."/";
+        if(!$this->templateHeader = file_get_contents($dir.self::TEMPLATE_HEADER))
+            throw new \Exception("Couldn't read header template file: ".self::TEMPLATE_HEADER);
+
+        if(!$this->templateBody = file_get_contents($dir.self::TEMPLATE_BODY))
+            throw new \Exception("Couldn't read body template file: ".self::TEMPLATE_BODY);
     }
 
 
-    public function install():bool
+    public function install():array
     {
+        $ids = [];
         foreach ($this->salesChannels as $salesChannel) {
-            $language = $salesChannel->getLanguage()->getName();
-            $filename = "factfinder_".strtolower($salesChannel->getName())."_".strtolower($language).".csv";
-            $this->createEntity($filename, $salesChannel);
+            $upsertResult = $this->upsertEntity($salesChannel);
+            $elements = $upsertResult->getEvents()->getElements();
+            if(!empty($elements)){
+                foreach ($elements as $element){
+                    $ids[] = $element->getIds();
+                }
+            }
         }
-        return true;
+        $installResult[] = [
+            "ids" => $ids,
+            "errors" => $upsertResult->getErrors(),
+        ];
+        return $installResult;
     }
 
     /**
-     * @param string $filename
      * @param SalesChannelEntity $salesChannel
-     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     * @return array
+     * @throws InconsistentCriteriaIdsException
      */
-    private function createEntity(string $filename, SalesChannelEntity $salesChannel): void
+    private function upsertEntity(SalesChannelEntity $salesChannel): EntityWrittenContainerEvent
     {
-        $dir = dirname(__FILE__)."/"."ExportTemplate"."/";
-        if(!$templateHeader = file_get_contents($dir.self::TEMPLATE_HEADER))
-            throw new \Exception("Couldn't read header template file: ".self::TEMPLATE_HEADER);
+        $language = $salesChannel->getLanguage()->getName();
+        $filename = "factfinder_".strtolower($salesChannel->getName())."_".strtolower($language).".csv";
 
-        if(!$templateBody = file_get_contents($dir.self::TEMPLATE_BODY))
-            throw new \Exception("Couldn't read body template file: ".self::TEMPLATE_BODY);
+        $this->createProductStream();
 
-        $this->productStreamRepository->upsert([
-            [
-                'id' => self::PRODUCT_STREAM_ID,
-                'name' => 'Fact-finder product stream',
-                'description' =>'Automatic created product stream to get all active products during product export.',
-                'filters' => [["type"=> "multi", "queries"=> [["type"=> "multi",
-                "queries" => [["type"=> "equals", "field"=> "product.active",
-                "value" => "1"]], "operator"=> "AND"]], "operator"=> "OR"]]
-            ],
-        ], $this->context);
+        $data = [
+            'accessKey' => $salesChannel->getAccessKey(),
+            'encoding' => ProductExportEntity::ENCODING_UTF8,
+            'fileFormat' => ProductExportEntity::FILE_FORMAT_CSV,
+            'interval' => 0,
+            'headerTemplate' => $this->templateHeader,
+            'bodyTemplate' => $this->templateBody,
+            'productStreamId' => self::PRODUCT_STREAM_ID,
+            'storefrontSalesChannelId' => $this->getSalesChannelDomain()->getSalesChannelId(),
+            'salesChannelId' => $salesChannel->getId(),
+            'salesChannelDomainId' => $this->getSalesChannelDomain()->getId(),
+            'generateByCronjob' => false,
+            'currencyId' => Defaults::CURRENCY,
+        ];
 
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('fileName', $filename)
         );
 
-        /** @var ProductExportEntity[] $productExports */
+        /** @var ProductExportEntity $productExport */
         $productExport = $this->productExportRepository->search($criteria, $this->context)->first();
+        empty($productExport) ? $data['fileName'] = $filename : $data['id'] =  $productExport->getId();
 
-        if(empty($productExport)){
-            $this->productExportRepository->upsert([
-                [
-                    'fileName' => $filename,
-                    'accessKey' => $salesChannel->getAccessKey(),
-                    'encoding' => ProductExportEntity::ENCODING_UTF8,
-                    'fileFormat' => ProductExportEntity::FILE_FORMAT_CSV,
-                    'interval' => 0,
-                    'headerTemplate' => $templateHeader,
-                    'bodyTemplate' => $templateBody,
-                    'productStreamId' => self::PRODUCT_STREAM_ID,
-                    'storefrontSalesChannelId' => $this->getSalesChannelDomain()->getSalesChannelId(),
-                    'salesChannelId' => $salesChannel->getId(),
-                    'salesChannelDomainId' => $this->getSalesChannelDomain()->getId(),
-                    'generateByCronjob' => false,
-                    'currencyId' => Defaults::CURRENCY,
-                ],
-            ], $this->context);
-        }else{
-            $this->productExportRepository->update([
-                [
-                    'id'=> $productExport->getId(),
-                    'accessKey' => $salesChannel->getAccessKey(),
-                    'interval' => 0,
-                    'headerTemplate' => $templateHeader,
-                    'bodyTemplate' => $templateBody,
-                    'productStreamId' => self::PRODUCT_STREAM_ID,
-                    'storefrontSalesChannelId' => $this->getSalesChannelDomain()->getSalesChannelId(),
-                    'salesChannelId' => $salesChannel->getId(),
-                    'salesChannelDomainId' => $this->getSalesChannelDomain()->getId(),
-                    'generateByCronjob' => false,
-                    'currencyId' => Defaults::CURRENCY,
-                ],
-            ], $this->context);
-        }
+        return $this->productExportRepository->upsert([$data], $this->context);
+    }
+
+    private function createProductStream():EntityWrittenContainerEvent
+    {
+        return $this->productStreamRepository->upsert([
+            [
+                'id' => self::PRODUCT_STREAM_ID,
+                'name' => 'Fact-finder product stream',
+                'description' =>'Automatic created product stream to get all active products during product export.',
+                'filters' => [["type"=> "multi", "queries"=> [["type"=> "multi",
+                    "queries" => [["type"=> "equals", "field"=> "product.active",
+                        "value" => "1"]], "operator"=> "AND"]], "operator"=> "OR"]]
+            ],
+        ], $this->context);
     }
 
     public function generate():array
@@ -218,7 +231,9 @@ class ExportManager implements ExportManagerInterface
         foreach ($productExports as $productExport){
            $exportResult = $csvExporter->generate($productExport, new ExportBehavior());
            $exportResults[] = [
-               "filename" => $exportResult->getContent(),
+               "filename" => $productExport->getFileName(),
+               "content" => $exportResult->getContent(),
+               "errors" => $this->productExportValidator->validate($productExport, $exportResult->getContent()),
                "total" =>$exportResult->getTotal()
            ];
         }

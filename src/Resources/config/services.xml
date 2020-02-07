@@ -22,9 +22,14 @@
             <argument type="service" id="product_stream.repository"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Elio\FactFinder\Service\Export\Exporter"/>
+            <argument type="service" id="Shopware\Core\Content\ProductExport\Service\ProductExportValidator"/>
         </service>
-        <service id="Elio\FactFinder\Twig\TwigFFExtension" public="true">
+        <service id="Elio\FactFinder\Twig\TwigProductUpdaterFunctionExtension" public="true">
+            <argument type="service" id="router" />
+            <argument type="service" id="currency.repository"/>
             <tag name="twig.extension"/>
+        </service>
+        <service id="Elio\FactFinder\Service\FactFinderProductUpdater" public="true">
         </service>
     </services>
 </container>
