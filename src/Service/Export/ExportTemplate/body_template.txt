@@ -1,0 +1,14 @@
+"{{ product.id }}";{#- -#}
+"{{ product.productNumber }}";{#- -#}
+"{{ product.manufacturerNumber }}";{#- -#}
+"{{ product.name|clean_value}}";{#- -#}
+"{{ product.description|truncate_value }}";{#- -#}
+"{{ productUrl(product)|clean_value }}";{#- -#}
+"{{ productImageUrl(product) }}";{#- -#}
+"{{ productPrice(product) }}";{#- -#}
+"{{ product.manufacturer.name|clean_value }}";{#- -#}
+"{{ productCategoryPath(product) }}";{#- -#}
+"{{ product.ean|clean_value }}";{#- -#}
+"{{ product.keywords|clean_value }}";{#- -#}
+"{{ product.stock }}";{#- -#}
+"{{ product.ratingAverage }}"{#- -#}
