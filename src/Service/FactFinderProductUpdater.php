@@ -85,6 +85,10 @@ class FactFinderProductUpdater
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
         $this->context = Context::createDefaultContext();
+
+        //if($product->getName() === 'Intelligent Plastic Zentrapore')
+        //dd($this->getProductCustomField('custom_home_aut_odit_eos'));
+        //dd($product->getCustomFields());
     }
 
     /**
@@ -153,6 +157,23 @@ class FactFinderProductUpdater
 
         }
         return $this->cleanValue($path);
+    }
+
+    public function getProductAttribute():string
+    {
+        $resultAttribute = "|";
+        $attributes = $this->product->getProperties()->getElements();
+        foreach ($attributes as $attribute){
+            $resultAttribute.= $attribute->getGroup()->getName()."=".$attribute->getName()."|";
+        }
+
+        return $this->cleanValue($resultAttribute);
+    }
+
+    public function getProductCustomField(string $field)
+    {
+        $customFields = $this->product->getCustomFields();
+        return (empty($customFields))? "":$customFields[$field];
     }
 
     private function setName():void
