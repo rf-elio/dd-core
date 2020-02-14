@@ -11,4 +11,8 @@
 "EAN";{#- -#}
 "Keywords";{#- -#}
 "Stock";{#- -#}
-"RatingAverage"{#- -#}
+"RatingAverage";{#- -#}
+"Attribute";{#- -#}
+"CustomHomeAutOditEos";{#- -#}
+"OfficiisSitIllo"{#- -#}
+

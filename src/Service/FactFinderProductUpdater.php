@@ -155,6 +155,23 @@ class FactFinderProductUpdater
         return $this->cleanValue($path);
     }
 
+    public function getProductAttribute():string
+    {
+        $resultAttribute = "|";
+        $attributes = $this->product->getProperties()->getElements();
+        foreach ($attributes as $attribute){
+            $resultAttribute.= $attribute->getGroup()->getName()."=".$attribute->getName()."|";
+        }
+
+        return $this->cleanValue($resultAttribute);
+    }
+
+    public function getProductCustomField(string $field)
+    {
+        $customFields = $this->product->getCustomFields();
+        return (empty($customFields))? "":$customFields[$field];
+    }
+
     private function setName():void
     {
         $this->product->setName(

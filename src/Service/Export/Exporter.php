@@ -105,7 +105,8 @@ class Exporter implements ExporterInterface
         'EAN',
         'Keywords',
         'Stock',
-        'RatingAverage'
+        'RatingAverage',
+        'Attribute'
     ];
 
     /**
@@ -248,7 +249,8 @@ class Exporter implements ExporterInterface
                 $updatedProduct->getEan(),
                 $updatedProduct->getKeywords(),
                 $updatedProduct->getStock(),
-                $updatedProduct->getRatingAverage()
+                $updatedProduct->getRatingAverage(),
+                $factFinderProductUpdater->getProductAttribute()
             ));
         }
 
