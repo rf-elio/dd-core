@@ -85,10 +85,6 @@ class FactFinderProductUpdater
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
         $this->context = Context::createDefaultContext();
-
-        //if($product->getName() === 'Intelligent Plastic Zentrapore')
-        //dd($this->getProductCustomField('custom_home_aut_odit_eos'));
-        //dd($product->getCustomFields());
     }
 
     /**
