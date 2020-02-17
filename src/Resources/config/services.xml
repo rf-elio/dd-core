@@ -31,5 +31,8 @@
         </service>
         <service id="Elio\FactFinder\Service\FactFinderProductUpdater" public="true">
         </service>
+        <service id="Elio\FactFinder\Service\FactFinderConfiguration" public="true">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+        </service>
     </services>
 </container>
