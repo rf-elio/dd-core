@@ -31,61 +31,103 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Controller;
+namespace Elio\FactFinder\Components;
 
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use GuzzleHttp\Client;
 
 /**
  *
- * Class ApiController
- * @category  Controller
- * @package   Shopware\Plugins\FactFinder\Controller
+ * Class ElioFactFinderService
+ *
+ * @category  Service Component
+ * @package   Shopware\Plugins\FactFinder\Components
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
- *
- * @RouteScope(scopes={"storefront"})
  */
-class ApiController extends AbstractController
+class ElioFactFinderService
 {
+    /**
+     * @var FactFinderConfigurationInterface
+     */
+    private $ffConfig;
 
     /**
-     * @Route("/ff/suggest", name="ff_suggest", methods={"GET"})
+     * @var array
      */
-    public function ffSuggest(Request $request, Context $context): JsonResponse
-    {
-        /** @var FactFinderConfigurationInterface */
-        $ffConfig = $this->container->get('Elio\FactFinder\Service\FactFinderConfiguration');
+    private $params;
 
-        $client = new Client();
-        $uri = $ffConfig->getRequestProtocol().'://'.$ffConfig->getServerAddress().'/'.$ffConfig->getContext();
+    /**
+     * @var Client
+     */
+    private $client;
+
+
+    public function __construct(FactFinderConfigurationInterface $ffConfig)
+    {
+        $this->ffConfig = $ffConfig;
+        $this->client = new Client();
+        $this->params = $this->getRequestDefaulParams();
+    }
+
+    public function getRequestDefaulParams():array
+    {
         $timestamp = time() . '000'; //milliseconds needed;
-        $hashedPW = md5($ffConfig->getAuthenticationPrefix()
+        $hashedPW = md5($this->ffConfig->getAuthenticationPrefix()
             .$timestamp
-            .md5($ffConfig->getPassword())
-            .$ffConfig->getAuthenticationPostfix()
+            .md5($this->ffConfig->getPassword())
+            .$this->ffConfig->getAuthenticationPostfix()
         );
-        $params = [
+
+        return $params = [
             'query' => [
                 'format' => 'json',
                 'timestamp' => $timestamp,
-                'username' => $ffConfig->getUserName(),
+                'username' => $this->ffConfig->getUserName(),
                 'password' => $hashedPW,
-                'channel' => $ffConfig->getChannel(),
-                'query'=> 'Gorgeous'
+                'channel' => $this->ffConfig->getChannel()
             ]
         ];
-        $request = $client->request('GET',$uri.'/Suggest.ff', $params);
-        $data = $request->getBody()->getContents();
-        $dataJson = json_decode($data,true);
-        dd($dataJson);
-
-        return new JsonResponse($request);
     }
+
+    public function getUri():string
+    {
+        return $uri = $this->ffConfig->getRequestProtocol()
+            .'://'.$this->ffConfig->getServerAddress()
+            .'/'.$this->ffConfig->getContext();
+    }
+
+    public function getConfig():FactFinderConfigurationInterface
+    {
+        return $this->ffConfig;
+    }
+
+    /**
+     * Update request parameter when exist or insert it when it does not exist.
+     *
+     * @param string $key
+     * @param string $value
+     */
+    public function upsertRequestParam(string $key, string $value):void
+    {
+        foreach ($this->params as $param)
+        {
+            $param[$key] = $value;
+        }
+        $this->params['query'] = $param;
+    }
+
+    public function getRequestParams():array
+    {
+        return $this->params;
+    }
+
+    public function getSuggestions(string $query):array
+    {
+        $this->upsertRequestParam('query', $query);
+        $request = $this->client->request('GET',$this->getUri().'/Suggest.ff', $this->getRequestParams());
+        return json_decode($request->getBody()->getContents(),true);
+    }
+
+
 }
