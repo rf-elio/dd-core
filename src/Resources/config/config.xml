@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Basic configuration</title>
+        <title lang="de-DE">Grundeinstellungen</title>
+        <input-field>
+            <name>protocol</name>
+            <label>Server Protocol</label>
+            <defaultValue>http</defaultValue>
+            <helpText>Das verwendete Protokoll zur Kommunikation mit dem Server</helpText>
+        </input-field>
+        <input-field>
+            <name>ffServer</name>
+            <label>Server Url</label>
+            <placeholder>example.fact-finder.de</placeholder>
+            <helpText>Die URL des Fact-Finders Servers</helpText>
+        </input-field>
+        <input-field>
+            <name>port</name>
+            <label>Server Port</label>
+            <defaultValue>80</defaultValue>
+            <helpText>Der Port für die Kommunikation zum Server</helpText>
+        </input-field>
+        <input-field>
+            <name>context</name>
+            <label>Context-Name</label>
+            <placeholder>FACT-Finder</placeholder>
+            <helpText>Name der FACT-Finder Anwendung. Zu finden in Partner-Url z.B. example.fact-finder.de/CONTEXTNAME/Management.ff</helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>ffVersion</name>
+            <label>Eingesetzte FACT-Finder Version</label>
+            <options>
+                <option>
+                    <id>seventwo</id>
+                    <name>7.2</name>
+                </option>
+                <option>
+                    <id>seventhree</id>
+                    <name>7.3</name>
+                </option>
+            </options>
+            <defaultValue>sevenTwo</defaultValue>
+        </input-field>
+        <input-field type="single-select">
+            <name>authtype</name>
+            <label>Authentifizierungs-Methode</label>
+            <options>
+                <option>
+                    <id>advanced</id>
+                    <name>advanced</name>
+                </option>
+                <option>
+                    <id>simple</id>
+                    <name>simple</name>
+                </option>
+            </options>
+            <defaultValue>advanced</defaultValue>
+            <helpText>Gibt die Methode an die zur Anmeldung bei FACT-Finder bentzt werden soll.</helpText>
+        </input-field>
+        <input-field>
+            <name>authusername</name>
+            <label>API Benutzername</label>
+            <placeholder>User</placeholder>
+            <helpText>FACT-Finder-Benutzer mit der nötigen Berechtigung</helpText>
+        </input-field>
+        <input-field type="password">
+            <name>authpassword</name>
+            <label>API Passwort</label>
+            <placeholder>Password</placeholder>
+            <helpText>Passwort des FACT-Finder-Benutzers</helpText>
+        </input-field>
+        <input-field>
+            <name>authprefix</name>
+            <label>Advanced Authentication Prefix</label>
+            <placeholder>FACT-FINDER</placeholder>
+            <helpText>Der Advanced-Authentication-Prefix wird nur benutzt, wenn die Authentifizierungs-Methode advanced ausgewählt wird.</helpText>
+        </input-field>
+        <input-field>
+            <name>authpostfix</name>
+            <label>Advanced Authentication Postfix</label>
+            <placeholder>FACT-FINDER</placeholder>
+            <helpText>Der Advanced-Authentication-Postfix wird nur benutzt, wenn die Authentifizierungs-Methode advanced ausgewählt wird.</helpText>
+        </input-field>
+        <input-field>
+            <name>channel</name>
+            <label>Channel</label>
+            <helpText>Name des Channels in FACT-Finder. Für mehrere Sprachen werden mehrere Channels benutzt.</helpText>
+        </input-field>
+    </card>
+</config>

@@ -31,5 +31,21 @@
         </service>
         <service id="Elio\FactFinder\Service\FactFinderProductUpdater" public="true">
         </service>
+        <service id="Elio\FactFinder\Service\FactFinderConfiguration" public="true">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+        </service>
+        <service id="Elio\FactFinder\Components\ElioFactFinderService" public="true">
+            <argument type="service" id="Elio\FactFinder\Service\FactFinderConfiguration" />
+        </service>
+        <service id="Elio\FactFinder\Components\Search\FactFinderSuggestGateway"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestGateway">
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSuggestGateway.inner"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="product_manufacturer.repository"/>
+        </service>
     </services>
 </container>

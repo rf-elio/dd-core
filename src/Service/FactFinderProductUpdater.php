@@ -128,26 +128,36 @@ class FactFinderProductUpdater
 
     public function getPrice():string
     {
-        $resultPrice = "|";
+        $resultPrice = '|';
         foreach ($this->product->getPrice()->getElements() as $price)
         {
-            $resultPrice .= "gross=".$price->getGross()."|net=".number_format($price->getNet(), 2, '.', '')."|";
+            $resultPrice .= 'gross='.$price->getGross().'|net='.number_format($price->getNet(), 2, '.', '').'|';
         }
 
         return $this->cleanValue($resultPrice);
     }
 
+    public function getManufacturer():string
+    {
+        return $this->cleanValue(
+            '|name='
+            .$this->product->getManufacturer()->getTranslation('name')
+            .'|id='.$this->product->getManufacturer()->getId()
+            .'|'
+        );
+    }
+
     public function getCategoryPath():string
     {
-        $path = "";
+        $path = '';
         $categories = $this->product->getCategories()->getElements();
 
         $index = 0;
         $numCategories = count($categories);
         foreach($categories as $category){
-            $path .= join("/",array_slice($category->getBreadcrumb(),1));
+            $path .= join('/',array_slice($category->getBreadcrumb(),1));
             if(++$index < $numCategories){
-                $path = $path."|" ;
+                $path = $path.'|' ;
             }
 
 
@@ -157,10 +167,10 @@ class FactFinderProductUpdater
 
     public function getProductAttribute():string
     {
-        $resultAttribute = "|";
+        $resultAttribute = '|';
         $attributes = $this->product->getProperties()->getElements();
         foreach ($attributes as $attribute){
-            $resultAttribute.= $attribute->getGroup()->getName()."=".$attribute->getName()."|";
+            $resultAttribute.= $attribute->getGroup()->getName().'='.$attribute->getName().'|';
         }
 
         return $this->cleanValue($resultAttribute);
