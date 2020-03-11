@@ -45,6 +45,7 @@
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSuggestGateway.inner"/>
             <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="product_manufacturer.repository"/>
         </service>
     </services>
 </container>

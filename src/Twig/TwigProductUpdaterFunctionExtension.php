@@ -86,6 +86,7 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
             new TwigFunction('productCategoryPath', [$this, 'productCategoryPath']),
             new TwigFunction('productAttribute', [$this, 'productAttribute']),
             new TwigFunction('productCustomField', [$this, 'productCustomField']),
+            new TwigFunction('productManufacturer', [$this, 'productManufacturer']),
         ];
     }
 
@@ -128,6 +129,12 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getProductCustomField($field);
+    }
+
+    public function productManufacturer(ProductEntity $product)
+    {
+        $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
+        return $factFinderProductUpdater->getManufacturer();
     }
 
 

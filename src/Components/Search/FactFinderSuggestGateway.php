@@ -40,9 +40,11 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestGatewayInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,13 +100,19 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
      */
     private $categoryRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $productManufacturerRepository;
+
     public function __construct(
         ProductSearchBuilderInterface $searchBuilder,
         EventDispatcherInterface $eventDispatcher,
         ElioFactFinderService $ffService,
         SalesChannelRepositoryInterface $productRepository,
         ProductSuggestGatewayInterface $decorated,
-        SalesChannelRepositoryInterface $categoryRepository
+        SalesChannelRepositoryInterface $categoryRepository,
+        EntityRepositoryInterface $productManufacturerRepository
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->searchBuilder = $searchBuilder;
@@ -113,104 +121,112 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $this->productRepository = $productRepository;
         $this->decorated = $decorated;
         $this->categoryRepository = $categoryRepository;
+        $this->productManufacturerRepository = $productManufacturerRepository;
     }
 
     public function suggest(Request $request, SalesChannelContext $context): EntitySearchResult
     {
-        $ids = [];
-        $ffEntities = [];
         $criteria = new Criteria();
-        $criteria->setLimit(10);
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_EXACT);
         $criteria->addFilter(
-            new ProductAvailableFilter($context->getSalesChannel()->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH)
+            new ProductAvailableFilter(
+                $context->getSalesChannel()->getId(),
+                ProductVisibilityDefinition::VISIBILITY_SEARCH
+            )
         );
 
-        $categoryCriteria = new Criteria();
+        $this->searchBuilder->build($request, $criteria, $context);
+
+        $this->eventDispatcher->dispatch(
+            new ProductSuggestCriteriaEvent($request, $criteria, $context),
+            ProductEvents::PRODUCT_SUGGEST_CRITERIA
+        );
 
         $ffSuggestions = $this->ffService->getSuggestions($request->query->get('search'));
+        $result = $this->search($criteria, $context, $ffSuggestions);
+
+        $result = ProductListingResult::createFrom($result);
+
+        $this->eventDispatcher->dispatch(
+            new ProductSuggestResultEvent($request, $result, $context),
+            ProductEvents::PRODUCT_SUGGEST_RESULT
+        );
+
+        return $result;
+    }
+
+    private function search(
+        Criteria $productSearchCriteria,
+        SalesChannelContext $context,
+        $ffSuggestions = []
+    ):FactFinderSearchResult
+    {
+        $ids = [];
+        $ffSuggestEntities = [];
+        $manufacturerNameFilter = [];
+        $categoryNameFilter = [];
+
+        $categorySearchCriteria = new Criteria();
+        $manufacturerSearchCriteria = new Criteria();
+
+        $ffHasProductNameType = false;
+        $ffHasCategoryType = false;
+        $ffHasBrandType = false;
 
         foreach ($ffSuggestions as $ffSuggestion){
 
             if($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE){
+                $ffHasProductNameType = true;
                 $ids[] = $ffSuggestion['attributes']['id'];
             }
 
             if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE){
-                $categoryCriteria->addFilter(
-                    new EqualsFilter('category.name', $ffSuggestion['name'])
-                );
+                $ffHasCategoryType = true;
+                $categoryNameFilter[] = new EqualsFilter('category.name', htmlspecialchars_decode($ffSuggestion['name']));
+            }
+
+            if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_SUPPLIER_TYPE){
+                $ffHasBrandType = true;
+                $manufacturerNameFilter[] = new EqualsFilter('name', htmlspecialchars_decode($ffSuggestion['name']));
             }
         }
 
-        $criteria->setIds($ids);
+        $productSearchCriteria->setIds($ids);
+        $productSuggestResult = $this->productRepository->search($productSearchCriteria, $context);
 
-        $this->searchBuilder->build($request, $criteria, $context);
-
-        $this->eventDispatcher->dispatch(
-            new ProductSuggestCriteriaEvent($request, $criteria, $context),
-            ProductEvents::PRODUCT_SUGGEST_CRITERIA
-        );
-
-        $productResult = $this->productRepository->search($criteria, $context);
-
+        if($ffHasProductNameType){
+            $ffSuggestEntities[] = $productSuggestResult->getEntities();
+        }
+        if ($ffHasCategoryType){
+            $categorySearchCriteria->addFilter(new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                $categoryNameFilter
+            ));
+            $ffSuggestEntities[] = $this->categoryRepository->search($categorySearchCriteria, $context)->getEntities();
+        }
+        if ($ffHasBrandType){
+            $manufacturerSearchCriteria->addFilter(new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                $manufacturerNameFilter
+            ));
+            $ffSuggestEntities[] = $this->productManufacturerRepository->search(
+                $manufacturerSearchCriteria,
+                $context->getContext()
+            )->getEntities();
+        }
 
         $result = new FactFinderSearchResult(
             count($ffSuggestions),
-            $productResult->getEntities(),
-            $productResult->getAggregations(),
-            $criteria,
+            $productSuggestResult->getEntities(),
+            $productSuggestResult->getAggregations(),
+            $productSearchCriteria,
             $context->getContext()
         );
-        $productResult->getEntities()->type = FactFinderConfigurationInterface::COLLECTION_PRODUCT_TYPE;
-        $ffEntities [] = $productResult->getEntities();
-        $categoryEntities = $this->categoryRepository->search($categoryCriteria, $context)->getEntities();
-        $categoryEntities->type = FactFinderConfigurationInterface::COLLECTION_CATEGORY_TYPE;
-        $ffEntities []  = $categoryEntities;
+
         $result->setFfRawSearchResult($ffSuggestions);
-        $result->setFfEntities($ffEntities);
-
-
-        //dd($result);
-        $result = ProductListingResult::createFrom($result);
-
-        $this->eventDispatcher->dispatch(
-            new ProductSuggestResultEvent($request, $result, $context),
-            ProductEvents::PRODUCT_SUGGEST_RESULT
-        );
+        $result->setFfEntities($ffSuggestEntities);
 
         return $result;
     }
-
-    /*
-    public function suggestM(Request $request, SalesChannelContext $context): EntitySearchResult
-    {
-        $criteria = new Criteria();
-
-        $criteria->setLimit(10);
-        $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_EXACT);
-        $criteria->addFilter(
-            new ProductAvailableFilter($context->getSalesChannel()->getId(), ProductVisibilityDefinition::VISIBILITY_SEARCH)
-        );
-
-        $this->searchBuilder->build($request, $criteria, $context);
-
-        $this->eventDispatcher->dispatch(
-            new ProductSuggestCriteriaEvent($request, $criteria, $context),
-            ProductEvents::PRODUCT_SUGGEST_CRITERIA
-        );
-
-        $result = $this->productRepository->search($criteria, $context);
-
-        $result = ProductListingResult::createFrom($result);
-
-        $this->eventDispatcher->dispatch(
-            new ProductSuggestResultEvent($request, $result, $context),
-            ProductEvents::PRODUCT_SUGGEST_RESULT
-        );
-
-        return $result;
-    }
-    */
 
 }
