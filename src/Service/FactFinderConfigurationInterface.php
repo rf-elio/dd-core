@@ -43,6 +43,16 @@ namespace Elio\FactFinder\Service;
  */
 interface FactFinderConfigurationInterface
 {
+    const ITEM_PRODUCT_TYPE = 'productName';
+    const ITEM_CATEGORY_TYPE = 'category';
+    const ITEM_SEARCHTERM_TYPE = 'searchTerm';
+    const ITEM_SUPPLIER_TYPE = 'brand';
+
+    const COLLECTION_PRODUCT_TYPE = 'products';
+    const COLLECTION_CATEGORY_TYPE = 'categories';
+    const COLLECTION_SEARCHTERM_TYPE = 'searchTerms';
+    const COLLECTION_SUPPLIER_TYPE = 'brands';
+
     Const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
 
     public function getRequestProtocol();

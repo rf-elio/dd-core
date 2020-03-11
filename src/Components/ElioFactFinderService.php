@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Components;
 
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  *
@@ -57,16 +58,10 @@ class ElioFactFinderService
      */
     private $params;
 
-    /**
-     * @var Client
-     */
-    private $client;
-
 
     public function __construct(FactFinderConfigurationInterface $ffConfig)
     {
         $this->ffConfig = $ffConfig;
-        $this->client = new Client();
         $this->params = $this->getRequestDefaulParams();
     }
 
@@ -92,7 +87,7 @@ class ElioFactFinderService
 
     public function getUri():string
     {
-        return $uri = $this->ffConfig->getRequestProtocol()
+        return $this->ffConfig->getRequestProtocol()
             .'://'.$this->ffConfig->getServerAddress()
             .'/'.$this->ffConfig->getContext();
     }
@@ -125,8 +120,12 @@ class ElioFactFinderService
     public function getSuggestions(string $query):array
     {
         $this->upsertRequestParam('query', $query);
-        $request = $this->client->request('GET',$this->getUri().'/Suggest.ff', $this->getRequestParams());
-        return json_decode($request->getBody()->getContents(),true);
+
+        /*** @var Client $client */
+        $client = new Client();
+        $request = $client->request('GET', $this->getUri() . '/Suggest.ff', $this->getRequestParams());
+
+        return json_decode($request->getBody()->getContents(),true)['suggestions'];
     }
 
 

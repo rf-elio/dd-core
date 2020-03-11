@@ -45,6 +45,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class FactFinderConfiguration implements FactFinderConfigurationInterface
 {
+
     /**
      * @var SystemConfigService
      */

@@ -33,71 +33,61 @@
 
 namespace Elio\FactFinder\Components\Search;
 
-use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchGatewayInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
-use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Content\Product\Events\ProductSearchCriteriaEvent;
-use Shopware\Core\Content\Product\ProductEvents;
-use Elio\FactFinder\Service\FactFinderConfigurationInterface;
-use Elio\FactFinder\Components\ElioFactFinderService;
 
 /**
  *
- * Class FactFinderSuggest
+ * Class FactFinderSearchResult
  *
- * @category  Service Component
- * @package   Shopware\Plugins\FactFinder\Components
+ * @category   Shopware
+ * @package   Shopware\Plugins\FactFinder\Components\Search
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinderSuggest implements ProductSearchGatewayInterface
+class FactFinderSearchResult extends EntitySearchResult
 {
     /**
-     * @var EventDispatcherInterface
+     * @var array
      */
-    private $eventDispatcher;
+    protected  $ffRawSearchResult = [];
 
     /**
-     * @var ProductSearchBuilderInterface
+     * @var EntityCollection[]
      */
-    private $searchBuilder;
+    protected  $ffEntities = [];
+
 
     /**
-     * @var ElioFactFinderService
+     * @return array
      */
-    private $ffService;
-
-    /**
-     * @var FactFinderConfigurationInterface
-     */
-    private $ffConfig;
-
-    public function __construct(
-        ProductSearchBuilderInterface $searchBuilder,
-        EventDispatcherInterface $eventDispatcher,
-        ElioFactFinderService $ffService
-    ) {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->searchBuilder = $searchBuilder;
-        $this->ffService = $ffService;
-        $this->ffConfig = $ffService->getConfig();
-    }
-
-    public function search(Request $request, SalesChannelContext $context): EntitySearchResult
+    public function getFfRawSearchResult(): array
     {
-        $criteria = new Criteria();
-        $this->searchBuilder->build($request, $criteria, $context);
-
-        $this->eventDispatcher->dispatch(
-            new ProductSearchCriteriaEvent($request, $criteria, $context),
-            ProductEvents::PRODUCT_SEARCH_CRITERIA
-        );
-
-        $ffSuggestions = $this->ffService->getSuggestions($request->query->get('search'));
-
+        return $this->ffRawSearchResult;
     }
+
+    /**
+     * @param array $ffRawSearchResult
+     */
+    public function setFfRawSearchResult(array $ffRawSearchResult): void
+    {
+        $this->ffRawSearchResult = $ffRawSearchResult;
+    }
+
+    /**
+     * @return EntityCollection[]
+     */
+    public function getFfEntities(): array
+    {
+        return $this->ffEntities;
+    }
+
+    /**
+     * @param EntityCollection[] $ffEntities
+     */
+    public function setFfEntities(array $ffEntities): void
+    {
+        $this->ffEntities = $ffEntities;
+    }
+
 }
