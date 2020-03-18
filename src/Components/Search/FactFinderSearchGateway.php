@@ -33,37 +33,36 @@
 
 namespace Elio\FactFinder\Components\Search;
 
+use Elio\FactFinder\Components\ElioFactFinderService;
+use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;
-use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
+use Shopware\Core\Content\Product\Events\ProductSearchCriteriaEvent;
+use Shopware\Core\Content\Product\Events\ProductSearchResultEvent;
+use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestGatewayInterface;
+use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchGatewayInterface;
+use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
-use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Content\Product\ProductEvents;
-use Elio\FactFinder\Service\FactFinderConfigurationInterface;
-use Elio\FactFinder\Components\ElioFactFinderService;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  *
- * Class FactFinderSuggestGateway
+ * Class FactFinderSearchGateway
  *
  * @category  Service Component
  * @package   Shopware\Plugins\FactFinder\Components\Search
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
+class FactFinderSearchGateway implements ProductSearchGatewayInterface
 {
     /**
      * @var EventDispatcherInterface
@@ -88,17 +87,12 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
     /**
      * @var SalesChannelRepositoryInterface
      */
-    private $productRepository;
+    private $repository;
 
     /**
-     * @var ProductSuggestGatewayInterface
+     * @var ProductSearchGatewayInterface
      */
     private $decorated;
-
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $categoryRepository;
 
     /**
      * @var EntityRepositoryInterface
@@ -109,25 +103,22 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         ProductSearchBuilderInterface $searchBuilder,
         EventDispatcherInterface $eventDispatcher,
         ElioFactFinderService $ffService,
-        SalesChannelRepositoryInterface $productRepository,
-        ProductSuggestGatewayInterface $decorated,
-        SalesChannelRepositoryInterface $categoryRepository,
+        SalesChannelRepositoryInterface $repository,
+        ProductSearchGatewayInterface $decorated,
         EntityRepositoryInterface $productManufacturerRepository
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->searchBuilder = $searchBuilder;
         $this->ffService = $ffService;
         $this->ffConfig = $ffService->getConfig();
-        $this->productRepository = $productRepository;
+        $this->repository = $repository;
         $this->decorated = $decorated;
-        $this->categoryRepository = $categoryRepository;
         $this->productManufacturerRepository = $productManufacturerRepository;
     }
 
-    public function suggest(Request $request, SalesChannelContext $context): EntitySearchResult
+    public function search(Request $request, SalesChannelContext $context): EntitySearchResult
     {
         $criteria = new Criteria();
-        $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_EXACT);
         $criteria->addFilter(
             new ProductAvailableFilter(
                 $context->getSalesChannel()->getId(),
@@ -138,93 +129,108 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $this->searchBuilder->build($request, $criteria, $context);
 
         $this->eventDispatcher->dispatch(
-            new ProductSuggestCriteriaEvent($request, $criteria, $context),
-            ProductEvents::PRODUCT_SUGGEST_CRITERIA
+            new ProductSearchCriteriaEvent($request, $criteria, $context),
+            ProductEvents::PRODUCT_SEARCH_CRITERIA
         );
 
-        $result = $this->ffSuggest($request, $criteria, $context);
+        $result = $this->ffSearch($request, $criteria, $context);
 
         $result = ProductListingResult::createFrom($result);
 
         $this->eventDispatcher->dispatch(
-            new ProductSuggestResultEvent($request, $result, $context),
-            ProductEvents::PRODUCT_SUGGEST_RESULT
+            new ProductSearchResultEvent($request, $result, $context),
+            ProductEvents::PRODUCT_SEARCH_RESULT
         );
+
+        $result->addCurrentFilter('search', $request->query->get('search'));
 
         return $result;
     }
 
-    private function ffSuggest(
+    private function ffSearch (
         Request $request,
-        Criteria $productSearchCriteria,
+        Criteria $criteria,
         SalesChannelContext $context
     ):FactFinderSearchResult
     {
         $ids = [];
-        $ffSuggestEntities = [];
-        $manufacturerNameFilter = [];
-        $categoryNameFilter = [];
 
-        $categorySearchCriteria = new Criteria();
-        $manufacturerSearchCriteria = new Criteria();
+        $productCriteria = new Criteria(); //must create this new one to get product result
+        $productCriteria->setLimit($criteria->getLimit());
 
-        $ffHasProductNameType = false;
-        $ffHasCategoryType = false;
-        $ffHasBrandType = false;
+        $this->ffService->upsertRequestParam('productsPerPage', $productCriteria->getLimit());
+        $ffSearchResult = $this->ffService->search($request->query->get('search'));
 
-        $ffSuggestions = $this->ffService->getSuggestions($request->query->get('search'));
-
-        foreach ($ffSuggestions as $ffSuggestion){
-            if($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE){
-                $ffHasProductNameType = true;
-                $ids[] = $ffSuggestion['attributes']['id'];
-            }
-            if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE){
-                $ffHasCategoryType = true;
-                $categoryNameFilter[] = new EqualsFilter('category.name', htmlspecialchars_decode($ffSuggestion['name']));
-            }
-            if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_SUPPLIER_TYPE){
-                $ffHasBrandType = true;
-                $manufacturerNameFilter[] = new EqualsFilter('name', htmlspecialchars_decode($ffSuggestion['name']));
-            }
+        foreach ($ffSearchResult['records'] as $record){
+            $ids[] = $record['id'];
         }
 
-        $productSearchCriteria->setIds($ids);
-        $productSuggestResult = $this->productRepository->search($productSearchCriteria, $context);
-
-        if($ffHasProductNameType){
-            $ffSuggestEntities[] = $productSuggestResult->getEntities();
-        }
-        if ($ffHasCategoryType){
-            $categorySearchCriteria->addFilter(new MultiFilter(
-                MultiFilter::CONNECTION_OR,
-                $categoryNameFilter
-            ));
-            $ffSuggestEntities[] = $this->categoryRepository->search($categorySearchCriteria, $context)->getEntities();
-        }
-        if ($ffHasBrandType){
-            $manufacturerSearchCriteria->addFilter(new MultiFilter(
-                MultiFilter::CONNECTION_OR,
-                $manufacturerNameFilter
-            ));
-            $ffSuggestEntities[] = $this->productManufacturerRepository->search(
-                $manufacturerSearchCriteria,
-                $context->getContext()
-            )->getEntities();
-        }
+        $productCriteria->setIds($ids);
+        $productSearchResult = $this->repository->search($productCriteria, $context);
 
         $result = new FactFinderSearchResult(
-            count($ffSuggestions),
-            $productSuggestResult->getEntities(),
-            $productSuggestResult->getAggregations(),
-            $productSearchCriteria,
+            $ffSearchResult['resultCount'],
+            $productSearchResult->getEntities(),
+            $productSearchResult->getAggregations(),
+            $criteria,
             $context->getContext()
         );
 
-        $result->setFfRawData($ffSuggestions);
-        $result->setFfEntities($ffSuggestEntities);
+        $filters = $this->getFilters($ffSearchResult['groups'], $context);
+
+        $result->setFfRawData($ffSearchResult);
+        $result->setFfAsn($filters);
 
         return $result;
     }
 
+    private function getFilters(array $groups, SalesChannelContext $context):array
+    {
+        /** @var EntityCollection[] $entities */
+        $filters = [];
+        $criteria = null;
+
+        foreach ($groups as $group){
+            switch ($group['name']){
+                case FactFinderConfigurationInterface::CATEGORY_FILTER:
+                    break;
+
+                case FactFinderConfigurationInterface::MANUFACTURER_FILTER:
+
+                    $filters['manufacturer'] = $this->getEntities(
+                        $context,
+                        $group['elements'],
+                        'name',
+                        $this->productManufacturerRepository
+                    );
+
+                    break;
+            }
+        }
+        return $filters;
+    }
+
+    private function getEntities(
+        SalesChannelContext $context,
+        array $elements,
+        string $field,
+        EntityRepositoryInterface $repository
+    ):array
+    {
+        $entities = [];
+
+        foreach ($elements as $element){
+            $criteria = new Criteria();
+            $criteria->addFilter(
+                new EqualsFilter($field, htmlspecialchars_decode($element[$field]))
+            );
+            $entities[] = [
+                'entity' => $repository->search($criteria, $context->getContext())->first(),
+                'recordCount' => $element['recordCount'],
+                'searchParams' => $element['searchParams']
+            ];
+        }
+
+        return $entities;
+    }
 }

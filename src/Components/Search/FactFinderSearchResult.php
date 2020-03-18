@@ -50,28 +50,48 @@ class FactFinderSearchResult extends EntitySearchResult
     /**
      * @var array
      */
-    protected  $ffRawSearchResult = [];
+    protected  $ffRawData = [];
 
     /**
      * @var EntityCollection[]
      */
     protected  $ffEntities = [];
 
+    /**
+     * @var array
+     */
+    protected  $ffAsn = [];
 
     /**
      * @return array
      */
-    public function getFfRawSearchResult(): array
+    public function getFfAsn(): array
     {
-        return $this->ffRawSearchResult;
+        return $this->ffAsn;
     }
 
     /**
-     * @param array $ffRawSearchResult
+     * @param array $ffAsn
      */
-    public function setFfRawSearchResult(array $ffRawSearchResult): void
+    public function setFfAsn(array $ffAsn): void
     {
-        $this->ffRawSearchResult = $ffRawSearchResult;
+        $this->ffAsn = $ffAsn;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFfRawData(): array
+    {
+        return $this->ffRawData;
+    }
+
+    /**
+     * @param array $ffRawData
+     */
+    public function setFfRawData(array $ffRawData): void
+    {
+        $this->ffRawData = $ffRawData;
     }
 
     /**

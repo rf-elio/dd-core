@@ -35,7 +35,6 @@ namespace Elio\FactFinder\Components;
 
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 
 /**
  *
@@ -54,42 +53,62 @@ class ElioFactFinderService
     private $ffConfig;
 
     /**
+     * @var Client
+     */
+    private $client;
+
+    /**
      * @var array
      */
-    private $params;
-
+    private $params = [
+        'query'=>[]
+    ];
 
     public function __construct(FactFinderConfigurationInterface $ffConfig)
     {
         $this->ffConfig = $ffConfig;
+        $this->client = new Client();
         $this->params = $this->getRequestDefaulParams();
     }
 
     public function getRequestDefaulParams():array
     {
-        $timestamp = time() . '000'; //milliseconds needed;
-        $hashedPW = md5($this->ffConfig->getAuthenticationPrefix()
-            .$timestamp
-            .md5($this->ffConfig->getPassword())
-            .$this->ffConfig->getAuthenticationPostfix()
-        );
+        $this->upsertRequestParam('format', 'json');
+        $this->upsertRequestParam('username', $this->ffConfig->getUserName());
+        $this->upsertRequestParam('password', $this->getHashedPassword());
+        $this->upsertRequestParam('channel', $this->ffConfig->getChannel());
+        $this->upsertRequestParam('version', $this->ffConfig->getVersion());
 
-        return $params = [
-            'query' => [
-                'format' => 'json',
-                'timestamp' => $timestamp,
-                'username' => $this->ffConfig->getUserName(),
-                'password' => $hashedPW,
-                'channel' => $this->ffConfig->getChannel()
-            ]
-        ];
+        return $this->params;
+    }
+
+    private function getHashedPassword():string
+    {
+        $hashedPW = '';
+        switch($this->ffConfig->getAuthenticationType())
+        {
+            case FactFinderConfigurationInterface::ADVANCED_AUTHENTICATION:
+                $timestamp = time() . '000'; //milliseconds needed;
+                $this->upsertRequestParam('timestamp', $timestamp);
+                $hashedPW = md5($this->ffConfig->getAuthenticationPrefix()
+                    .$timestamp
+                    .md5($this->ffConfig->getPassword())
+                    .$this->ffConfig->getAuthenticationPostfix()
+                );
+                break;
+            case FactFinderConfigurationInterface::SIMPLE_AUTHENTICATION:
+                $hashedPW = md5($this->ffConfig->getPassword());
+                break;
+        }
+        return $hashedPW;
     }
 
     public function getUri():string
     {
-        return $this->ffConfig->getRequestProtocol()
-            .'://'.$this->ffConfig->getServerAddress()
-            .'/'.$this->ffConfig->getContext();
+        return $this->ffConfig->getRequestProtocol() . '://'
+            .$this->ffConfig->getServerAddress() . ':'
+            .$this->ffConfig->getServerPort() . '/'
+            .$this->ffConfig->getContext();
     }
 
     public function getConfig():FactFinderConfigurationInterface
@@ -101,9 +120,9 @@ class ElioFactFinderService
      * Update request parameter when exist or insert it when it does not exist.
      *
      * @param string $key
-     * @param string $value
+     * @param $value
      */
-    public function upsertRequestParam(string $key, string $value):void
+    public function upsertRequestParam(string $key, $value):void
     {
         foreach ($this->params as $param)
         {
@@ -117,15 +136,29 @@ class ElioFactFinderService
         return $this->params;
     }
 
+    public  function resetResquestParams():void
+    {
+        $this->params = [
+            'query'=>[]
+        ];
+    }
+
     public function getSuggestions(string $query):array
     {
         $this->upsertRequestParam('query', $query);
 
-        /*** @var Client $client */
-        $client = new Client();
-        $request = $client->request('GET', $this->getUri() . '/Suggest.ff', $this->getRequestParams());
+        $request = $this->client->request('GET', $this->getUri() . '/Suggest.ff', $this->getRequestParams());
 
         return json_decode($request->getBody()->getContents(),true)['suggestions'];
+    }
+
+    public function search(string $query):array
+    {
+        $this->upsertRequestParam('query', $query);
+
+        $request = $this->client->request('GET', $this->getUri() . '/Search.ff', $this->getRequestParams());
+
+        return json_decode($request->getBody()->getContents(),true)['searchResult'];
     }
 
 

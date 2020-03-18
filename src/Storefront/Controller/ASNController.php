@@ -31,41 +31,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Service;
+namespace Elio\FactFinder\Storefront\Controller;
+
+use Elio\FactFinder\Components\ElioFactFinderService;
+use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
- * interface FactFinderConfigurationInterface
- * @category  Service
- * @package   Shopware\Plugins\FactFinder\Service
+ *
+ * Class ASNController
+ *
+ * @category  Controller
+ * @package   Shopware\Plugins\FactFinder\Storefront\Controller
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ *
+ * @RouteScope(scopes={"storefront"})
  */
-interface FactFinderConfigurationInterface
+class ASNController extends StorefrontController
 {
-    const ITEM_PRODUCT_TYPE = 'productName';
-    const ITEM_CATEGORY_TYPE = 'category';
-    const ITEM_SEARCHTERM_TYPE = 'searchTerm';
-    const ITEM_SUPPLIER_TYPE = 'brand';
+    /**
+     * @var ElioFactFinderService
+     */
+    private $ffService;
 
-    const CATEGORY_FILTER = 'CategoryPath';
-    const MANUFACTURER_FILTER = 'Manufacturer';
+    public function __construct(ElioFactFinderService $ffService)
+    {
+        $this->ffService = $ffService;
+    }
 
-    const SIMPLE_AUTHENTICATION   = 'simple';
-    const ADVANCED_AUTHENTICATION = 'advanced';
-
-    Const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
-
-    public function getRequestProtocol();
-    public function getServerAddress();
-    public function getServerPort();
-    public function getContext();
-    public function getVersion();
-    public function getAuthenticationType();
-    public function getUserName();
-    public function getPassword();
-    public function getAuthenticationPrefix();
-    public function getAuthenticationPostfix();
-    public function getChannel();
-
+    /**
+     * @Route("ff/asn", name="frontend.ff.asn", methods={"GET"})
+     */
+    public function filter(Request $request, SalesChannelContext $context): Response
+    {
+        $this->ffService->upsertRequestParam('productsPerPage', 24);
+        //$this->ffService->upsertRequestParam('filterManufacturer', 'Beer, Nolan and Simonis');
+        //$this->ffService->upsertRequestParam('followSearch', 9444);
+        $ffSearchResult = $this->ffService->search('jewelery');
+        //dd($ffSearchResult['groups']);
+        dd($ffSearchResult);
+        //return $this->renderStorefront('@Storefront/storefront/page/account/order-history/index.html.twig', ['page' => $page]);
+    }
 }

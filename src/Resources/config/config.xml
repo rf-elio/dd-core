@@ -34,11 +34,11 @@
             <label>Eingesetzte FACT-Finder Version</label>
             <options>
                 <option>
-                    <id>seventwo</id>
+                    <id>7.2</id>
                     <name>7.2</name>
                 </option>
                 <option>
-                    <id>seventhree</id>
+                    <id>7.3</id>
                     <name>7.3</name>
                 </option>
             </options>
