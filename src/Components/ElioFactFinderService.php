@@ -68,16 +68,16 @@ class ElioFactFinderService
     {
         $this->ffConfig = $ffConfig;
         $this->client = new Client();
-        $this->params = $this->getRequestDefaulParams();
+        $this->params = $this->getBaseRequestParams();
     }
 
-    public function getRequestDefaulParams():array
+    private function getBaseRequestParams():array
     {
-        $this->upsertRequestParam('format', 'json');
         $this->upsertRequestParam('username', $this->ffConfig->getUserName());
         $this->upsertRequestParam('password', $this->getHashedPassword());
         $this->upsertRequestParam('channel', $this->ffConfig->getChannel());
         $this->upsertRequestParam('version', $this->ffConfig->getVersion());
+        $this->upsertRequestParam('format', 'json');
 
         return $this->params;
     }
@@ -87,7 +87,7 @@ class ElioFactFinderService
         $hashedPW = '';
         switch($this->ffConfig->getAuthenticationType())
         {
-            case FactFinderConfigurationInterface::ADVANCED_AUTHENTICATION:
+            case FactFinderConfigurationInterface::AUTHENTICATION_ADVANCED:
                 $timestamp = time() . '000'; //milliseconds needed;
                 $this->upsertRequestParam('timestamp', $timestamp);
                 $hashedPW = md5($this->ffConfig->getAuthenticationPrefix()
@@ -96,19 +96,23 @@ class ElioFactFinderService
                     .$this->ffConfig->getAuthenticationPostfix()
                 );
                 break;
-            case FactFinderConfigurationInterface::SIMPLE_AUTHENTICATION:
+            case FactFinderConfigurationInterface::AUTHENTICATION_SIMPLE:
                 $hashedPW = md5($this->ffConfig->getPassword());
                 break;
         }
         return $hashedPW;
     }
 
-    public function getUri():string
+    public function getBaseUri(bool $context = true):string
     {
-        return $this->ffConfig->getRequestProtocol() . '://'
+        $baseUri = $this->ffConfig->getRequestProtocol() . '://'
             .$this->ffConfig->getServerAddress() . ':'
-            .$this->ffConfig->getServerPort() . '/'
-            .$this->ffConfig->getContext();
+            .$this->ffConfig->getServerPort();
+
+        if ($context)
+            $baseUri = $baseUri.'/'.$this->ffConfig->getContext();
+
+        return $baseUri;
     }
 
     public function getConfig():FactFinderConfigurationInterface
@@ -136,6 +140,11 @@ class ElioFactFinderService
         return $this->params;
     }
 
+    public function setRequestParams(array $params):void
+    {
+        $this->params = $params;
+    }
+
     public  function resetResquestParams():void
     {
         $this->params = [
@@ -143,22 +152,65 @@ class ElioFactFinderService
         ];
     }
 
+    public  function removeRequestParam(string $key):void
+    {
+        unset($this->params['query'][$key]);
+    }
+
     public function getSuggestions(string $query):array
     {
         $this->upsertRequestParam('query', $query);
-
-        $request = $this->client->request('GET', $this->getUri() . '/Suggest.ff', $this->getRequestParams());
+        $request = $this->client->request(
+            'GET',
+            $this->getBaseUri() . '/Suggest.ff',
+            $this->getRequestParams()
+        );
 
         return json_decode($request->getBody()->getContents(),true)['suggestions'];
     }
 
-    public function search(string $query):array
+    public function search(?string $query, ?string $searchParams=null):array
     {
-        $this->upsertRequestParam('query', $query);
+        $request = null;
 
-        $request = $this->client->request('GET', $this->getUri() . '/Search.ff', $this->getRequestParams());
+        if (empty($searchParams)){
+            $this->upsertRequestParam('query', $query);
+            $request = $this->client->request(
+                'GET',
+                $this->getBaseUri() . '/Search.ff',
+                $this->getRequestParams()
+            );
+        }else{
+            $request = $this->client->request(
+                'GET',
+                $this->getBaseUri(false)
+                . $searchParams
+                .$this->getMissingParams()
+            );
+        }
 
         return json_decode($request->getBody()->getContents(),true)['searchResult'];
+    }
+
+    private function getMissingParams():string
+    {
+        $params = '';
+        $currentParams = $this->getRequestParams();
+
+        $this->resetResquestParams();
+
+        $this->upsertRequestParam('username', $this->ffConfig->getUserName());
+        $this->upsertRequestParam('password', $this->getHashedPassword());
+
+        foreach ($this->getRequestParams() as $requestParam){
+            foreach ($requestParam as $key => $value){
+                $params .="&$key=$value";
+            }
+        }
+
+        $this->setRequestParams($currentParams);
+
+        return $params;
     }
 
 

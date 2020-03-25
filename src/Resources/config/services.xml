@@ -55,9 +55,16 @@
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSearchGateway.inner"/>
             <argument type="service" id="product_manufacturer.repository"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="property_group_option.repository"/>
+            <argument type="service" id="Elio\FactFinder\Components\Helper\FactFinderHelper"/>
         </service>
-        <service id="Elio\FactFinder\Storefront\Controller\ASNController" public="true">
+        <service id="Elio\FactFinder\Storefront\Controller\AfterSearchNavigationController" public="true">
             <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
+            <argument type="service" id="Elio\FactFinder\Components\Helper\FactFinderHelper"/>
+        </service>
+        <service id="Elio\FactFinder\Components\Helper\FactFinderHelper" public="true">
+            <argument type="service" id="sales_channel.product.repository"/>
         </service>
     </services>
 </container>

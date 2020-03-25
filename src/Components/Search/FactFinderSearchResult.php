@@ -53,29 +53,42 @@ class FactFinderSearchResult extends EntitySearchResult
     protected  $ffRawData = [];
 
     /**
-     * @var EntityCollection[]
+     * @var array
      */
-    protected  $ffEntities = [];
+    protected  $ffFilters = [];
 
     /**
      * @var array
      */
-    protected  $ffAsn = [];
+    protected  $ffSearchTerms = [];
+
+    /**
+     * @var array
+     */
+    protected  $ffEntities = [];
+
+    /**
+     * @param array $ffEntities
+     */
+    public function setFfEntities(array $ffEntities): void
+    {
+        $this->ffEntities = $ffEntities;
+    }
 
     /**
      * @return array
      */
-    public function getFfAsn(): array
+    public function getFfSearchTerms(): array
     {
-        return $this->ffAsn;
+        return $this->ffSearchTerms;
     }
 
     /**
-     * @param array $ffAsn
+     * @param array $ffSearchTerms
      */
-    public function setFfAsn(array $ffAsn): void
+    public function setFfSearchTerms(array $ffSearchTerms): void
     {
-        $this->ffAsn = $ffAsn;
+        $this->ffSearchTerms = $ffSearchTerms;
     }
 
     /**
@@ -95,19 +108,19 @@ class FactFinderSearchResult extends EntitySearchResult
     }
 
     /**
-     * @return EntityCollection[]
+     * @return array
      */
-    public function getFfEntities(): array
+    public function getFfFilters(): array
     {
-        return $this->ffEntities;
+        return $this->ffFilters;
     }
 
     /**
-     * @param EntityCollection[] $ffEntities
+     * @param array $ffFilters
      */
-    public function setFfEntities(array $ffEntities): void
+    public function setFfFilters(array $ffFilters): void
     {
-        $this->ffEntities = $ffEntities;
+        $this->ffFilters = $ffFilters;
     }
 
 }

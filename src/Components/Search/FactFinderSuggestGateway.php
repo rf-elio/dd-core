@@ -33,6 +33,8 @@
 
 namespace Elio\FactFinder\Components\Search;
 
+use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
@@ -105,6 +107,11 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
      */
     private $productManufacturerRepository;
 
+    /**
+     * @var EntityCollection
+     */
+    private $entities;
+
     public function __construct(
         ProductSearchBuilderInterface $searchBuilder,
         EventDispatcherInterface $eventDispatcher,
@@ -122,11 +129,14 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $this->decorated = $decorated;
         $this->categoryRepository = $categoryRepository;
         $this->productManufacturerRepository = $productManufacturerRepository;
+        $this->entities = new EntityCollection();
     }
 
     public function suggest(Request $request, SalesChannelContext $context): EntitySearchResult
     {
         $criteria = new Criteria();
+
+        $criteria->setLimit(10);
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_EXACT);
         $criteria->addFilter(
             new ProductAvailableFilter(
@@ -156,75 +166,159 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
 
     private function ffSuggest(
         Request $request,
-        Criteria $productSearchCriteria,
+        Criteria $productCriteria,
         SalesChannelContext $context
     ):FactFinderSearchResult
     {
-        $ids = [];
-        $ffSuggestEntities = [];
-        $manufacturerNameFilter = [];
-        $categoryNameFilter = [];
-
-        $categorySearchCriteria = new Criteria();
-        $manufacturerSearchCriteria = new Criteria();
-
-        $ffHasProductNameType = false;
-        $ffHasCategoryType = false;
-        $ffHasBrandType = false;
+        $extraEntities = [];
 
         $ffSuggestions = $this->ffService->getSuggestions($request->query->get('search'));
 
-        foreach ($ffSuggestions as $ffSuggestion){
-            if($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE){
-                $ffHasProductNameType = true;
-                $ids[] = $ffSuggestion['attributes']['id'];
-            }
-            if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE){
-                $ffHasCategoryType = true;
-                $categoryNameFilter[] = new EqualsFilter('category.name', htmlspecialchars_decode($ffSuggestion['name']));
-            }
-            if ($ffSuggestion['type'] === FactFinderConfigurationInterface::ITEM_SUPPLIER_TYPE){
-                $ffHasBrandType = true;
-                $manufacturerNameFilter[] = new EqualsFilter('name', htmlspecialchars_decode($ffSuggestion['name']));
-            }
-        }
+        $entities = $this->toEntityCollection(
+            FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE,
+            $ffSuggestions,
+            $productCriteria,
+            $context
+        );
 
-        $productSearchCriteria->setIds($ids);
-        $productSuggestResult = $this->productRepository->search($productSearchCriteria, $context);
+        $extraEntities['category'] = $this->toEntityCollection(
+            FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE,
+            $ffSuggestions,
+            new Criteria(),
+            $context
+        );
 
-        if($ffHasProductNameType){
-            $ffSuggestEntities[] = $productSuggestResult->getEntities();
-        }
-        if ($ffHasCategoryType){
-            $categorySearchCriteria->addFilter(new MultiFilter(
-                MultiFilter::CONNECTION_OR,
-                $categoryNameFilter
-            ));
-            $ffSuggestEntities[] = $this->categoryRepository->search($categorySearchCriteria, $context)->getEntities();
-        }
-        if ($ffHasBrandType){
-            $manufacturerSearchCriteria->addFilter(new MultiFilter(
-                MultiFilter::CONNECTION_OR,
-                $manufacturerNameFilter
-            ));
-            $ffSuggestEntities[] = $this->productManufacturerRepository->search(
-                $manufacturerSearchCriteria,
-                $context->getContext()
-            )->getEntities();
-        }
+        $extraEntities['manufacturer'] = $this->toEntityCollection(
+            FactFinderConfigurationInterface::ITEM_BRAND_TYPE,
+            $ffSuggestions,
+            new Criteria(),
+            $context
+        );
+
+        $searchTerns = $this->getSearchTerms($ffSuggestions);
 
         $result = new FactFinderSearchResult(
             count($ffSuggestions),
-            $productSuggestResult->getEntities(),
-            $productSuggestResult->getAggregations(),
-            $productSearchCriteria,
+            $entities,
+            null,// suggestion request supports no aggregations or filters
+            $productCriteria,
             $context->getContext()
         );
 
         $result->setFfRawData($ffSuggestions);
-        $result->setFfEntities($ffSuggestEntities);
+        $result->setFfEntities($extraEntities);
+        $result->setFfSearchTerms($searchTerns);
 
         return $result;
     }
 
+    private function toEntityCollection(
+        string $type,
+        array $suggestions,
+        Criteria $criteria,
+        SalesChannelContext $context
+    ):EntityCollection
+    {
+        switch ($type){
+            case FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE:
+
+                $ids = [];
+                foreach ($suggestions as $suggestion){
+                    if ($suggestion['type'] === $type){
+                        $ids[] = $suggestion['attributes']['id'];
+                    }
+                }
+                $criteria->setIds($ids);
+                return $this->productRepository->search($criteria, $context)->getEntities();
+
+            case FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE:
+
+                $criteria->resetFilters();
+
+                $criteria = $this->addFilter(
+                    $type,
+                    $criteria,
+                    $suggestions,
+                    'category.name',
+                    'name'
+                );
+
+                if(count($criteria->getFilters()) === 0)
+                    return new CategoryCollection();
+
+                return $this->categoryRepository->search(
+                    $criteria,
+                    $context)->getEntities();
+
+            case FactFinderConfigurationInterface::ITEM_BRAND_TYPE:
+
+                $criteria->resetFilters();
+
+                $criteria = $this->addFilter(
+                    $type,
+                    $criteria,
+                    $suggestions,
+                    'name'
+                );
+
+                if(count($criteria->getFilters()) === 0)
+                    return new ProductManufacturerCollection();
+
+                return $this->productManufacturerRepository->search(
+                    $criteria,
+                    $context->getContext())->getEntities();
+
+        }
+    }
+
+    private function addFilter(
+        string $type,
+        Criteria $criteria,
+        array $suggestions,
+        string $filterField,
+        string $suggestionField = ''
+    ): Criteria
+    {
+        $filters = [];
+
+        if (empty($suggestionField))
+            $suggestionField = $filterField;
+
+        foreach ($suggestions as $suggestion){
+            if ($suggestion['type'] === $type)
+            $filters[] = new EqualsFilter($filterField, htmlspecialchars_decode($suggestion[$suggestionField]));
+        }
+        if (count($filters) > 0){
+            $criteria->addFilter(new MultiFilter(
+                MultiFilter::CONNECTION_OR,
+                $filters
+            ));
+        }
+        return $criteria;
+    }
+
+    private function addEntities(EntityCollection $collection):void
+    {
+        foreach ($collection->getElements() as $entity){
+            $this->entities->add($entity);
+        }
+    }
+
+    private function resetEntities():void
+    {
+        $this->entities = new EntityCollection();
+    }
+
+    private function getSearchTerms(array $suggestions):array
+    {
+        $searchTerms = [];
+
+        foreach ($suggestions as $suggestion){
+            if ($suggestion['type'] === FactFinderConfigurationInterface::ITEM_SEARCHTERM_TYPE){
+                $searchTerms[] = $suggestion['name'];
+            }
+        }
+
+        return $searchTerms;
+    }
 }

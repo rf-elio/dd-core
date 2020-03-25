@@ -31,51 +31,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Controller;
+namespace Elio\FactFinder\Components\Helper;
 
-use Elio\FactFinder\Components\ElioFactFinderService;
-use Shopware\Storefront\Controller\StorefrontController;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Response;
-
 
 /**
  *
- * Class ASNController
+ * Class FactFinderHelper
  *
- * @category  Controller
- * @package   Shopware\Plugins\FactFinder\Storefront\Controller
+ * @category  Helper
+ * @package   Shopware\Plugins\FactFinder\Components\Helper
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
- *
- * @RouteScope(scopes={"storefront"})
  */
-class ASNController extends StorefrontController
+class FactFinderHelper
 {
     /**
-     * @var ElioFactFinderService
+     * @var SalesChannelRepositoryInterface
      */
-    private $ffService;
+    private $productRepository;
 
-    public function __construct(ElioFactFinderService $ffService)
+    public function __construct(SalesChannelRepositoryInterface $productRepository)
     {
-        $this->ffService = $ffService;
+        $this->productRepository = $productRepository;
     }
 
     /**
-     * @Route("ff/asn", name="frontend.ff.asn", methods={"GET"})
+     * Converts Fact-Finder records to shopware products
+     *
+     * @param SalesChannelContext $context
+     * @param Criteria $criteria
+     * @param array $records
+     * @return EntitySearchResult
      */
-    public function filter(Request $request, SalesChannelContext $context): Response
+    public function convertRecords(SalesChannelContext $context, Criteria $criteria, array $records): EntitySearchResult
     {
-        $this->ffService->upsertRequestParam('productsPerPage', 24);
-        //$this->ffService->upsertRequestParam('filterManufacturer', 'Beer, Nolan and Simonis');
-        //$this->ffService->upsertRequestParam('followSearch', 9444);
-        $ffSearchResult = $this->ffService->search('jewelery');
-        //dd($ffSearchResult['groups']);
-        dd($ffSearchResult);
-        //return $this->renderStorefront('@Storefront/storefront/page/account/order-history/index.html.twig', ['page' => $page]);
+        $ids = [];
+
+        foreach ($records as $record){
+            $ids[] = $record['id'];
+        }
+        $criteria->setIds($ids);
+
+        return $this->productRepository->search($criteria, $context);
     }
 }

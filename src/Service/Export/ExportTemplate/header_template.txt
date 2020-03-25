@@ -10,6 +10,7 @@
 "CategoryPath";{#- -#}
 "EAN";{#- -#}
 "Keywords";{#- -#}
+"SearchKeywords";{#- -#}
 "Stock";{#- -#}
 "RatingAverage";{#- -#}
 "Attribute";{#- -#}

@@ -104,6 +104,7 @@ class Exporter implements ExporterInterface
         'CategoryPath',
         'EAN',
         'Keywords',
+        'SearchKeywords',
         'Stock',
         'RatingAverage',
         'Attribute'
@@ -194,6 +195,7 @@ class Exporter implements ExporterInterface
             ->addAssociation('prices')
             ->addAssociation('properties.group')
             ->addAssociation('keywords')
+            ->addAssociation('searchKeywords')
             ->addAssociation('seoUrls');
 
         $iterator = new SalesChannelRepositoryIterator($this->productRepository, $context, $criteria);
@@ -235,6 +237,7 @@ class Exporter implements ExporterInterface
             if (!$productExport->isIncludeVariants() && $product->getParentId()) {
                 continue; // Skip variants unless they are included
             }
+
             array_push($data, array(
                 $updatedProduct->getId(),
                 $updatedProduct->getProductNumber(),
@@ -248,6 +251,7 @@ class Exporter implements ExporterInterface
                 $factFinderProductUpdater->getCategoryPath(),
                 $updatedProduct->getEan(),
                 $updatedProduct->getKeywords(),
+                $factFinderProductUpdater->getSearchKeywords(),
                 $updatedProduct->getStock(),
                 $updatedProduct->getRatingAverage(),
                 $factFinderProductUpdater->getProductAttribute()

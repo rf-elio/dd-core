@@ -46,13 +46,19 @@ interface FactFinderConfigurationInterface
     const ITEM_PRODUCT_TYPE = 'productName';
     const ITEM_CATEGORY_TYPE = 'category';
     const ITEM_SEARCHTERM_TYPE = 'searchTerm';
-    const ITEM_SUPPLIER_TYPE = 'brand';
+    const ITEM_BRAND_TYPE = 'brand';
 
-    const CATEGORY_FILTER = 'CategoryPath';
-    const MANUFACTURER_FILTER = 'Manufacturer';
+    const FILTER_CATEGORY = 'CategoryPath';
+    const FILTER_MANUFACTURER = 'Manufacturer';
+    const FILTER_COLOR = 'Color';
+    const FILTER_CONTENT = 'Content';
+    const FILTER_LENGTH = 'Length';
+    const FILTER_SIZE = 'Size';
+    const FILTER_TEXTILE = 'Textile';
+    const FILTER_WIDTH = 'Width';
 
-    const SIMPLE_AUTHENTICATION   = 'simple';
-    const ADVANCED_AUTHENTICATION = 'advanced';
+    const AUTHENTICATION_SIMPLE  = 'simple';
+    const AUTHENTICATION_ADVANCED = 'advanced';
 
     Const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
 
