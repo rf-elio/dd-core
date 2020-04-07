@@ -33,6 +33,7 @@
 
 namespace Elio\FactFinder\Components\Search;
 
+use Doctrine\DBAL\Connection;
 use Elio\FactFinder\Components\ElioFactFinderService;
 use Elio\FactFinder\Components\Helper\FactFinderHelper;
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
@@ -45,21 +46,27 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchGatewayInterface;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Content\Product\SearchKeyword\ProductSearchTermInterpreterInterface;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\EntityAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * Decorates the service ProductSearchGateway
  *
  * Class FactFinderSearchGateway
  *
@@ -120,6 +127,16 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
      */
     private $ffHelper;
 
+    /**
+     * @var Connection
+     */
+    private $connection;
+
+    /**
+     * @var ProductSearchTermInterpreterInterface
+     */
+    private $interpreter;
+
     public function __construct(
         ProductSearchBuilderInterface $searchBuilder,
         EventDispatcherInterface $eventDispatcher,
@@ -129,8 +146,11 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         EntityRepositoryInterface $productManufacturerRepository,
         SalesChannelRepositoryInterface $categoryRepository,
         EntityRepositoryInterface $propertyGroupOptionRepository,
-        FactFinderHelper $ffHelper
-    ) {
+        FactFinderHelper $ffHelper,
+        Connection $connection,
+        ProductSearchTermInterpreterInterface $interpreter
+    )
+    {
         $this->eventDispatcher = $eventDispatcher;
         $this->searchBuilder = $searchBuilder;
         $this->ffService = $ffService;
@@ -141,6 +161,10 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         $this->categoryRepository = $categoryRepository;
         $this->propertyGroupOptionRepository = $propertyGroupOptionRepository;
         $this->ffHelper = $ffHelper;
+        $this->connection = $connection;
+        $this->interpreter = $interpreter;
+
+        $this->ffService->upsertRequestParam('productsPerPage', 500);
     }
 
     public function search(Request $request, SalesChannelContext $context): EntitySearchResult
@@ -155,6 +179,7 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         );
 
         $result = $this->ffSearch($request, $criteria, $context);
+        //$result = $this->repository->search($criteria, $context);
 
         $result = ProductListingResult::createFrom($result);
 
@@ -168,16 +193,15 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         return $result;
     }
 
-    private function ffSearch (
+    private function ffSearch(
         Request $request,
         Criteria $criteria,
         SalesChannelContext $context
-    ):FactFinderSearchResult
+    ): FactFinderSearchResult
     {
-        $criteria->resetSorting();
         $criteria->resetQueries();
         $criteria->resetFilters();
-        //$criteria->resetAggregations();
+        $criteria->resetPostFilters();
 
         $criteria->addFilter(
             new ProductAvailableFilter(
@@ -186,18 +210,31 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
             )
         );
 
-        $this->ffService->upsertRequestParam('productsPerPage', 500);
+        $pattern = $this->interpreter->interpret($request->query->get('search'), $context->getContext());
+
+        // Necessary for the functionality of the default sorting (Top results)
+        $criteria->addQuery(
+            new ScoreQuery(
+                new ContainsFilter('product.searchKeywords.keyword', ''),
+                $pattern->getOriginal()->getScore(),
+                'product.searchKeywords.ranking'
+            )
+        );
+
+        $this->handleManufacturerFilter($request, $context->getContext());
+        $this->handlePropertyFilter($request, $context->getContext());
+
         $ffSearchResult = $this->ffService->search($request->query->get('search'));
         $productSearchResult = $this->ffHelper->convertRecords($context, $criteria, $ffSearchResult['records']);
 
         $filters = $this->getFilters($ffSearchResult['groups'], $context);
-
-        $aggregations = $this->overrideAggregations($productSearchResult->getAggregations(), $filters);
+        //$aggregations = $this->overrideAggregations($productSearchResult->getAggregations(), $filters, $context);
 
         $result = new FactFinderSearchResult(
             $ffSearchResult['resultCount'],
             $productSearchResult->getEntities(),
-            $aggregations,
+            $productSearchResult->getAggregations(),
+            //$aggregations,
             $criteria,
             $context->getContext()
         );
@@ -208,14 +245,15 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         return $result;
     }
 
-    private function getFilters(array $groups, SalesChannelContext $context):array
+    private function getFilters(array $groups, SalesChannelContext $context): array
     {
         $filters = [];
+        $PropertyGroups = [];
         $criteria = null;
 
-        foreach ($groups as $group){
+        foreach ($groups as $group) {
 
-            switch ($group['name']){
+            switch ($group['name']) {
 
                 case FactFinderConfigurationInterface::FILTER_CATEGORY:
 
@@ -247,16 +285,30 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
                 case FactFinderConfigurationInterface::FILTER_TEXTILE:
                 case FactFinderConfigurationInterface::FILTER_WIDTH:
 
-                    $filters[strtolower($group['name'])] = $this->getEntities(
+
+                    $PropertyGroups[] = $this->getEntities(
                         $context->getContext(),
                         $this->propertyGroupOptionRepository,
                         $group['elements'],
                         'name'
                     );
 
+                    /*
+                    // Get grouped properties
+                    $filters[strtolower($group['name'])] = $this->getEntities(
+                        $context->getContext(),
+                        $this->propertyGroupOptionRepository,
+                        $group['elements'],
+                        'name'
+                    );
+                    */
+
                     break;
             }
         }
+
+
+        $filters['properties'] = $this->getListProperties($PropertyGroups);
 
         return $filters;
     }
@@ -267,19 +319,20 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         array $elements,
         string $filterField,
         string $elementField = ''
-    ):array
+    ): array
     {
         $entities = [];
 
         if (empty($elementField))
             $elementField = $filterField;
 
-        foreach ($elements as $element){
+        foreach ($elements as $element) {
 
             $criteria = new Criteria();
             $criteria->addFilter(
-                new EqualsFilter($filterField, htmlspecialchars_decode($element[$elementField]))
+                new EqualsFilter($filterField, htmlspecialchars_decode(str_replace('&#039;', "'", $element[$elementField])))
             );
+
 
             $entities[] = [
                 'entity' => $repository->search($criteria, $context)->first(),
@@ -291,20 +344,141 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         return $entities;
     }
 
-    private function overrideAggregations(
-        AggregationResultCollection $aggregations,
-        array $filters
-    ):AggregationResultCollection
+    private function getListProperties(array $propertyGroups): array
     {
-        $manufacturerResult = new EntityResult('manufacturer', new ProductManufacturerCollection());
-        //$propertyResult = new TermsResult('properties');
+        $listProperties = [];
 
-        foreach ($filters['manufacturer'] as $manufacturer){
-            $manufacturerResult->add($manufacturer['entity']);
+        foreach ($propertyGroups as $groups) {
+            foreach ($groups as $property) {
+                $listProperties[] = $property;
+            }
         }
 
-        $aggregations->set('manufacturer', $manufacturerResult);
+        return $listProperties;
+    }
+
+    private function overrideAggregations(
+        AggregationResultCollection $aggregations,
+        array $filters,
+        SalesChannelContext $context
+    ): AggregationResultCollection
+    {
+        /** @var Bucket[] $buckets */
+        $buckets = [];
+        $propertyGroupOptionIds = [];
+
+        $manufacturerResult = new EntityResult('manufacturer', new ProductManufacturerCollection());
+
+        foreach ($filters['manufacturer'] as $manufacturer) {
+            $entity = $manufacturer['entity'];
+            $manufacturerResult->add($entity);
+        }
+
+        foreach ($filters['properties'] as $property) {
+
+            /** @var PropertyGroupOptionEntity $entity */
+            $entity = $property['entity'];
+
+            $buckets[] = new Bucket($entity->getId(), $property['recordCount'], null);
+
+            $propertyGroupOptionIds[] = $entity->getId();
+        }
+
+        $propertyResult = new TermsResult('properties', $buckets);
+
+        $criteria = new  Criteria();
+        $criteria->setIds($propertyGroupOptionIds);
+        $criteria->addAggregation(new TermsAggregation('properties', 'id'));
+
+        //$aggregations->set('manufacturer', $manufacturerResult);
+        $aggregations->set('properties', $propertyResult);
+        /*
+        $aggregations->set(
+            'properties',
+            $this->propertyGroupOptionRepository->aggregate($criteria, $context->getContext())->get('properties')
+        );
+        */
 
         return $aggregations;
+    }
+
+
+    private function getManufacturerIds(Request $request): array
+    {
+        $ids = $request->query->get('manufacturer', '');
+        $ids = explode('|', $ids);
+
+        return array_filter($ids);
+    }
+
+    private function getPropertyIds(Request $request): array
+    {
+        $ids = $request->query->get('properties', '');
+        $ids = explode('|', $ids);
+
+        return array_filter($ids);
+    }
+
+    private function handleManufacturerFilter(Request $request, Context $context): void
+    {
+        if (count($this->getManufacturerIds($request)) > 0) {
+
+            $elements = [];
+
+            $entities = $this->productManufacturerRepository->search(
+                new Criteria($this->getManufacturerIds($request)),
+                $context
+            )->getEntities();
+
+
+            foreach ($entities->getElements() as $manufacturer) {
+                $elements[] = $manufacturer->getTranslation('name');
+            }
+
+            $manufacturers = $this->ffHelper->concatenateElements(
+                FactFinderConfigurationInterface:: OR,
+                $elements
+            );
+
+            $this->ffService->upsertRequestParam(
+                FactFinderConfigurationInterface::PREFIX_FILTER . FactFinderConfigurationInterface::FILTER_MANUFACTURER,
+                $manufacturers
+            );
+        }
+    }
+
+    private function handlePropertyFilter(Request $request, Context $context): void
+    {
+        if (count($this->getPropertyIds($request)) > 0) {
+            $criteria = new Criteria($this->getPropertyIds($request));
+            $criteria->addAssociation('group');
+
+            $entities = $this->propertyGroupOptionRepository->search(
+                $criteria,
+                $context
+            )->getEntities();
+
+
+            foreach ($entities->getElements() as $property) {
+                $filterName = FactFinderConfigurationInterface::PREFIX_FILTER . $property
+                        ->getGroup()
+                        ->getTranslation('name');
+
+                if ($this->ffService->requestParamExist($filterName)) {
+                    $oldFilterValue = $this->ffService->getRequestParam($filterName);
+                    $this->ffService->removeRequestParam($filterName);
+
+                    $this->ffService->upsertRequestParam(
+                        $filterName,
+                        $oldFilterValue . FactFinderConfigurationInterface:: OR . $property->getTranslation('name')
+                    );
+                } else {
+                    $this->ffService->upsertRequestParam(
+                        $filterName,
+                        $property->getTranslation('name')
+                    );
+                }
+            }
+        }
     }
 }

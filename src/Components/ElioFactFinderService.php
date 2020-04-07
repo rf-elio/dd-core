@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -145,7 +144,7 @@ class ElioFactFinderService
         $this->params = $params;
     }
 
-    public  function resetResquestParams():void
+    public  function resetRequestParams():void
     {
         $this->params = [
             'query'=>[]
@@ -155,6 +154,24 @@ class ElioFactFinderService
     public  function removeRequestParam(string $key):void
     {
         unset($this->params['query'][$key]);
+    }
+
+    public function getRequestParam(string  $key):string
+    {
+        $value = "";
+
+        if (array_key_exists($key, $this->params['query']))
+            $value = $this->params['query'][$key];
+
+        return $value;
+    }
+
+    public function requestParamExist(string  $key):bool
+    {
+        if (array_key_exists($key, $this->params['query']))
+            return true;
+
+        return false;
     }
 
     public function getSuggestions(string $query):array
@@ -197,7 +214,7 @@ class ElioFactFinderService
         $params = '';
         $currentParams = $this->getRequestParams();
 
-        $this->resetResquestParams();
+        $this->resetRequestParams();
 
         $this->upsertRequestParam('username', $this->ffConfig->getUserName());
         $this->upsertRequestParam('password', $this->getHashedPassword());

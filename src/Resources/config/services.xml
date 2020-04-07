@@ -58,6 +58,8 @@
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="property_group_option.repository"/>
             <argument type="service" id="Elio\FactFinder\Components\Helper\FactFinderHelper"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchTermInterpreter"/>
         </service>
         <service id="Elio\FactFinder\Storefront\Controller\AfterSearchNavigationController" public="true">
             <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>

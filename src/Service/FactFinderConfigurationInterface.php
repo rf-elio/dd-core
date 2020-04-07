@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -43,10 +42,10 @@ namespace Elio\FactFinder\Service;
  */
 interface FactFinderConfigurationInterface
 {
-    const ITEM_PRODUCT_TYPE = 'productName';
-    const ITEM_CATEGORY_TYPE = 'category';
-    const ITEM_SEARCHTERM_TYPE = 'searchTerm';
-    const ITEM_BRAND_TYPE = 'brand';
+    const ITEM_PRODUCT = 'productName';
+    const ITEM_CATEGORY = 'category';
+    const ITEM_SEARCH_TERM = 'searchTerm';
+    const ITEM_BRAND = 'brand';
 
     const FILTER_CATEGORY = 'CategoryPath';
     const FILTER_MANUFACTURER = 'Manufacturer';
@@ -61,6 +60,12 @@ interface FactFinderConfigurationInterface
     const AUTHENTICATION_ADVANCED = 'advanced';
 
     Const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
+
+    Const AND = '___';
+    Const OR = '~~~';
+
+    const PREFIX_SORT = 'sort';
+    const PREFIX_FILTER = 'filter';
 
     public function getRequestProtocol();
     public function getServerAddress();

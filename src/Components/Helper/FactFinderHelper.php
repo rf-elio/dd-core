@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -35,6 +34,7 @@ namespace Elio\FactFinder\Components\Helper;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -77,5 +77,30 @@ class FactFinderHelper
         $criteria->setIds($ids);
 
         return $this->productRepository->search($criteria, $context);
+    }
+
+    /**
+     * Concatenates elements with the given operator
+     *
+     * @param string $operator
+     * @param array $elements
+     * @return string
+     */
+    public function concatenateElements(string $operator, array $elements = []): string
+    {
+        if (count($elements) === 0)
+            return "";
+
+        if (count($elements) === 1)
+            return $elements[0];
+
+        $concatenated = "";
+        $index = 0;
+        foreach ($elements as $element){
+            ++$index ;
+            $concatenated .= ($index === count($elements)) ? $element : $element . $operator;
+        }
+
+        return $concatenated;
     }
 }

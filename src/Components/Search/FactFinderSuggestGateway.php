@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -57,6 +56,7 @@ use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use Elio\FactFinder\Components\ElioFactFinderService;
 
 /**
+ * Decorates the service ProductSuggestGateway
  *
  * Class FactFinderSuggestGateway
  *
@@ -175,21 +175,21 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $ffSuggestions = $this->ffService->getSuggestions($request->query->get('search'));
 
         $entities = $this->toEntityCollection(
-            FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE,
+            FactFinderConfigurationInterface::ITEM_PRODUCT,
             $ffSuggestions,
             $productCriteria,
             $context
         );
 
         $extraEntities['category'] = $this->toEntityCollection(
-            FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE,
+            FactFinderConfigurationInterface::ITEM_CATEGORY,
             $ffSuggestions,
             new Criteria(),
             $context
         );
 
         $extraEntities['manufacturer'] = $this->toEntityCollection(
-            FactFinderConfigurationInterface::ITEM_BRAND_TYPE,
+            FactFinderConfigurationInterface::ITEM_BRAND,
             $ffSuggestions,
             new Criteria(),
             $context
@@ -220,7 +220,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
     ):EntityCollection
     {
         switch ($type){
-            case FactFinderConfigurationInterface::ITEM_PRODUCT_TYPE:
+            case FactFinderConfigurationInterface::ITEM_PRODUCT:
 
                 $ids = [];
                 foreach ($suggestions as $suggestion){
@@ -231,7 +231,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
                 $criteria->setIds($ids);
                 return $this->productRepository->search($criteria, $context)->getEntities();
 
-            case FactFinderConfigurationInterface::ITEM_CATEGORY_TYPE:
+            case FactFinderConfigurationInterface::ITEM_CATEGORY:
 
                 $criteria->resetFilters();
 
@@ -250,7 +250,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
                     $criteria,
                     $context)->getEntities();
 
-            case FactFinderConfigurationInterface::ITEM_BRAND_TYPE:
+            case FactFinderConfigurationInterface::ITEM_BRAND:
 
                 $criteria->resetFilters();
 
@@ -276,7 +276,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         Criteria $criteria,
         array $suggestions,
         string $filterField,
-        string $suggestionField = ''
+        string $suggestionField = ""
     ): Criteria
     {
         $filters = [];
@@ -314,7 +314,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $searchTerms = [];
 
         foreach ($suggestions as $suggestion){
-            if ($suggestion['type'] === FactFinderConfigurationInterface::ITEM_SEARCHTERM_TYPE){
+            if ($suggestion['type'] === FactFinderConfigurationInterface::ITEM_SEARCH_TERM){
                 $searchTerms[] = $suggestion['name'];
             }
         }
