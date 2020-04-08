@@ -81,7 +81,7 @@ class FactFinderConfiguration implements FactFinderConfigurationInterface
         return $this->get('context');
     }
 
-    public function getFactFinderVersion()
+    public function getVersion()
     {
         return $this->get('ffVersion');
     }

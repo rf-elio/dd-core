@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -31,96 +30,77 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Components\Search;
+namespace Elio\FactFinder\Components\Helper;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  *
- * Class FactFinderSearchResult
+ * Class FactFinderHelper
  *
- * @category   Shopware
- * @package   Shopware\Plugins\FactFinder\Components\Search
+ * @category  Helper
+ * @package   Shopware\Plugins\FactFinder\Components\Helper
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinderSearchResult extends EntitySearchResult
+class FactFinderHelper
 {
     /**
-     * @var array
+     * @var SalesChannelRepositoryInterface
      */
-    protected  $ffRawData = [];
+    private $productRepository;
 
-    /**
-     * @var array
-     */
-    protected  $ffFilters = [];
-
-    /**
-     * @var array
-     */
-    protected  $ffSearchTerms = [];
-
-    /**
-     * @var array
-     */
-    protected  $ffEntities = [];
-
-    /**
-     * @param array $ffEntities
-     */
-    public function setFfEntities(array $ffEntities): void
+    public function __construct(SalesChannelRepositoryInterface $productRepository)
     {
-        $this->ffEntities = $ffEntities;
+        $this->productRepository = $productRepository;
     }
 
     /**
-     * @return array
+     * Converts Fact-Finder records to shopware products
+     *
+     * @param SalesChannelContext $context
+     * @param Criteria $criteria
+     * @param array $records
+     * @return EntitySearchResult
      */
-    public function getFfSearchTerms(): array
+    public function convertRecords(SalesChannelContext $context, Criteria $criteria, array $records): EntitySearchResult
     {
-        return $this->ffSearchTerms;
+        $ids = [];
+
+        foreach ($records as $record){
+            $ids[] = $record['id'];
+        }
+        $criteria->setIds($ids);
+
+        return $this->productRepository->search($criteria, $context);
     }
 
     /**
-     * @param array $ffSearchTerms
+     * Concatenates elements with the given operator
+     *
+     * @param string $operator
+     * @param array $elements
+     * @return string
      */
-    public function setFfSearchTerms(array $ffSearchTerms): void
+    public function concatenateElements(string $operator, array $elements = []): string
     {
-        $this->ffSearchTerms = $ffSearchTerms;
-    }
+        if (count($elements) === 0)
+            return "";
 
-    /**
-     * @return array
-     */
-    public function getFfRawData(): array
-    {
-        return $this->ffRawData;
-    }
+        if (count($elements) === 1)
+            return $elements[0];
 
-    /**
-     * @param array $ffRawData
-     */
-    public function setFfRawData(array $ffRawData): void
-    {
-        $this->ffRawData = $ffRawData;
-    }
+        $concatenated = "";
+        $index = 0;
+        foreach ($elements as $element){
+            ++$index ;
+            $concatenated .= ($index === count($elements)) ? $element : $element . $operator;
+        }
 
-    /**
-     * @return array
-     */
-    public function getFfFilters(): array
-    {
-        return $this->ffFilters;
+        return $concatenated;
     }
-
-    /**
-     * @param array $ffFilters
-     */
-    public function setFfFilters(array $ffFilters): void
-    {
-        $this->ffFilters = $ffFilters;
-    }
-
 }

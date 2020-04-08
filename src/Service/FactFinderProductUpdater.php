@@ -213,6 +213,21 @@ class FactFinderProductUpdater
             $this->cleanValue($this->product->getKeywords())
         );
     }
+
+    public  function getSearchKeywords():string
+    {
+        $keywords = [];
+        $searchKeywords = $this->product->getSearchKeywords();
+
+        if (empty($searchKeywords))
+            return "";
+
+        foreach ($searchKeywords->getElements() as $searchKeyword){
+            $keywords[] = $searchKeyword->getKeyword();
+        }
+        return $this->cleanValue(implode("|", $keywords));
+    }
+
     private function setManufacturerNumber()
     {
         $this->product->setManufacturerNumber(
@@ -226,7 +241,7 @@ class FactFinderProductUpdater
         return trim(strip_tags($value));
     }
 
-    public function truncate(string $text, int $chars = 900) :string
+    public function truncate(string $text, int $chars = 900):string
     {
         if (strlen($text) <= $chars) {
             return $text;

@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -73,7 +72,8 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
     {
         return [
             new TwigFilter('clean_value', [$this, 'cleanValue']),
-            new TwigFilter('truncate_value', [$this, 'truncateValue'])
+            new TwigFilter('truncate_value', [$this, 'truncateValue']),
+            new TwigFilter('utf8_encode', [$this, 'utf8Encode'])
         ];
     }
 
@@ -87,6 +87,7 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
             new TwigFunction('productAttribute', [$this, 'productAttribute']),
             new TwigFunction('productCustomField', [$this, 'productCustomField']),
             new TwigFunction('productManufacturer', [$this, 'productManufacturer']),
+            new TwigFunction('productSearchKeywords', [$this, 'productSearchKeywords']),
         ];
     }
 
@@ -100,6 +101,11 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater(null);
         return $factFinderProductUpdater->truncate($content);
+    }
+
+    public function utf8Encode($content):string
+    {
+        return utf8_encode($content);
     }
 
     public function productImageUrl(ProductEntity $product): string
@@ -135,6 +141,12 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getManufacturer();
+    }
+
+    public function productSearchKeywords(ProductEntity $product)
+    {
+        $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
+        return $factFinderProductUpdater->getSearchKeywords();
     }
 
 
