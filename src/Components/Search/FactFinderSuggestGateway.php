@@ -120,7 +120,8 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         ProductSuggestGatewayInterface $decorated,
         SalesChannelRepositoryInterface $categoryRepository,
         EntityRepositoryInterface $productManufacturerRepository
-    ) {
+    )
+    {
         $this->eventDispatcher = $eventDispatcher;
         $this->searchBuilder = $searchBuilder;
         $this->ffService = $ffService;
@@ -132,6 +133,12 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $this->entities = new EntityCollection();
     }
 
+    /**
+     * @param Request $request
+     * @param SalesChannelContext $context
+     * @return EntitySearchResult
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     */
     public function suggest(Request $request, SalesChannelContext $context): EntitySearchResult
     {
         $criteria = new Criteria();
@@ -164,11 +171,19 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         return $result;
     }
 
+    /**
+     * @param Request $request
+     * @param Criteria $productCriteria
+     * @param SalesChannelContext $context
+     * @return FactFinderSearchResult
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     */
     private function ffSuggest(
         Request $request,
         Criteria $productCriteria,
         SalesChannelContext $context
-    ):FactFinderSearchResult
+    ): FactFinderSearchResult
     {
         $extraEntities = [];
 
@@ -212,19 +227,26 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         return $result;
     }
 
+    /**
+     * @param string $type
+     * @param array $suggestions
+     * @param Criteria $criteria
+     * @param SalesChannelContext $context
+     * @return EntityCollection
+     */
     private function toEntityCollection(
         string $type,
         array $suggestions,
         Criteria $criteria,
         SalesChannelContext $context
-    ):EntityCollection
+    ): EntityCollection
     {
-        switch ($type){
+        switch ($type) {
             case FactFinderConfigurationInterface::ITEM_PRODUCT:
 
                 $ids = [];
-                foreach ($suggestions as $suggestion){
-                    if ($suggestion['type'] === $type){
+                foreach ($suggestions as $suggestion) {
+                    if ($suggestion['type'] === $type) {
                         $ids[] = $suggestion['attributes']['id'];
                     }
                 }
@@ -243,7 +265,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
                     'name'
                 );
 
-                if(count($criteria->getFilters()) === 0)
+                if (count($criteria->getFilters()) === 0)
                     return new CategoryCollection();
 
                 return $this->categoryRepository->search(
@@ -261,7 +283,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
                     'name'
                 );
 
-                if(count($criteria->getFilters()) === 0)
+                if (count($criteria->getFilters()) === 0)
                     return new ProductManufacturerCollection();
 
                 return $this->productManufacturerRepository->search(
@@ -271,6 +293,14 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         }
     }
 
+    /**
+     * @param string $type
+     * @param Criteria $criteria
+     * @param array $suggestions
+     * @param string $filterField
+     * @param string $suggestionField
+     * @return Criteria
+     */
     private function addFilter(
         string $type,
         Criteria $criteria,
@@ -284,11 +314,11 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         if (empty($suggestionField))
             $suggestionField = $filterField;
 
-        foreach ($suggestions as $suggestion){
+        foreach ($suggestions as $suggestion) {
             if ($suggestion['type'] === $type)
-            $filters[] = new EqualsFilter($filterField, htmlspecialchars_decode($suggestion[$suggestionField]));
+                $filters[] = new EqualsFilter($filterField, htmlspecialchars_decode($suggestion[$suggestionField]));
         }
-        if (count($filters) > 0){
+        if (count($filters) > 0) {
             $criteria->addFilter(new MultiFilter(
                 MultiFilter::CONNECTION_OR,
                 $filters
@@ -297,24 +327,31 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         return $criteria;
     }
 
-    private function addEntities(EntityCollection $collection):void
+    /**
+     * @param EntityCollection $collection
+     */
+    private function addEntities(EntityCollection $collection): void
     {
-        foreach ($collection->getElements() as $entity){
+        foreach ($collection->getElements() as $entity) {
             $this->entities->add($entity);
         }
     }
 
-    private function resetEntities():void
+    private function resetEntities(): void
     {
         $this->entities = new EntityCollection();
     }
 
-    private function getSearchTerms(array $suggestions):array
+    /**
+     * @param array $suggestions
+     * @return array
+     */
+    private function getSearchTerms(array $suggestions): array
     {
         $searchTerms = [];
 
-        foreach ($suggestions as $suggestion){
-            if ($suggestion['type'] === FactFinderConfigurationInterface::ITEM_SEARCH_TERM){
+        foreach ($suggestions as $suggestion) {
+            if ($suggestion['type'] === FactFinderConfigurationInterface::ITEM_SEARCH_TERM) {
                 $searchTerms[] = $suggestion['name'];
             }
         }

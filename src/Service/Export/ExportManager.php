@@ -134,25 +134,28 @@ class ExportManager implements ExportManagerInterface
         $this->context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addAssociation('language');
-        $this->salesChannels =  $this->salesChannelRepository->search($criteria, $this->context)->getElements();
+        $this->salesChannels = $this->salesChannelRepository->search($criteria, $this->context)->getElements();
 
-        $dir = dirname(__FILE__)."/"."ExportTemplate"."/";
-        if(!$this->templateHeader = file_get_contents($dir.self::TEMPLATE_HEADER))
-            throw new \Exception("Couldn't read header template file: ".self::TEMPLATE_HEADER);
+        $dir = dirname(__FILE__) . "/" . "ExportTemplate" . "/";
+        if (!$this->templateHeader = file_get_contents($dir . self::TEMPLATE_HEADER))
+            throw new \Exception("Couldn't read header template file: " . self::TEMPLATE_HEADER);
 
-        if(!$this->templateBody = file_get_contents($dir.self::TEMPLATE_BODY))
-            throw new \Exception("Couldn't read body template file: ".self::TEMPLATE_BODY);
+        if (!$this->templateBody = file_get_contents($dir . self::TEMPLATE_BODY))
+            throw new \Exception("Couldn't read body template file: " . self::TEMPLATE_BODY);
     }
 
-
-    public function install():array
+    /**
+     * @return array
+     * @throws InconsistentCriteriaIdsException
+     */
+    public function install(): array
     {
         $ids = [];
         foreach ($this->salesChannels as $salesChannel) {
             $upsertResult = $this->upsertEntity($salesChannel);
             $elements = $upsertResult->getEvents()->getElements();
-            if(!empty($elements)){
-                foreach ($elements as $element){
+            if (!empty($elements)) {
+                foreach ($elements as $element) {
                     $ids[] = $element->getIds();
                 }
             }
@@ -172,7 +175,7 @@ class ExportManager implements ExportManagerInterface
     private function upsertEntity(SalesChannelEntity $salesChannel): EntityWrittenContainerEvent
     {
         $language = $salesChannel->getLanguage()->getName();
-        $filename = "factfinder_".strtolower($salesChannel->getName())."_".strtolower($language).".csv";
+        $filename = "factfinder_" . strtolower($salesChannel->getName()) . "_" . strtolower($language) . ".csv";
 
         $this->createProductStream();
 
@@ -198,26 +201,36 @@ class ExportManager implements ExportManagerInterface
 
         /** @var ProductExportEntity $productExport */
         $productExport = $this->productExportRepository->search($criteria, $this->context)->first();
-        empty($productExport) ? $data['fileName'] = $filename : $data['id'] =  $productExport->getId();
+        empty($productExport) ? $data['fileName'] = $filename : $data['id'] = $productExport->getId();
 
         return $this->productExportRepository->upsert([$data], $this->context);
     }
 
-    private function createProductStream():EntityWrittenContainerEvent
+    /**
+     * @return EntityWrittenContainerEvent
+     */
+    private function createProductStream(): EntityWrittenContainerEvent
     {
         return $this->productStreamRepository->upsert([
             [
                 'id' => self::PRODUCT_STREAM_ID,
                 'name' => 'Fact-finder product stream',
-                'description' =>'Automatic created product stream to get all active products during product export.',
-                'filters' => [["type"=> "multi", "queries"=> [["type"=> "multi",
-                    "queries" => [["type"=> "equals", "field"=> "product.active",
-                        "value" => "1"]], "operator"=> "AND"]], "operator"=> "OR"]]
+                'description' => 'Automatic created product stream to get all active products during product export.',
+                'filters' => [["type" => "multi", "queries" => [["type" => "multi",
+                    "queries" => [["type" => "equals", "field" => "product.active",
+                        "value" => "1"]], "operator" => "AND"]], "operator" => "OR"]]
             ],
         ], $this->context);
     }
 
-    public function generate():array
+    /**
+     * @return array
+     * @throws InconsistentCriteriaIdsException
+     * @throws \League\Flysystem\FileExistsException
+     * @throws \League\Flysystem\FileNotFoundException
+     * @throws \Shopware\Core\Content\ProductExport\Exception\EmptyExportException
+     */
+    public function generate(): array
     {
         $csvExporter = $this->exporter->create($this->exporter::TYPE_CSV);
         $exportResults = [];
@@ -228,18 +241,22 @@ class ExportManager implements ExportManagerInterface
         $productExports = $this->productExportRepository->search($criteria, $this->context)->getElements();
 
         /** @var ProductExportEntity $productExport */
-        foreach ($productExports as $productExport){
-           $exportResult = $csvExporter->generate($productExport, new ExportBehavior());
-           $exportResults[] = [
-               "filename" => $productExport->getFileName(),
-               "content" => $exportResult->getContent(),
-               "errors" => $this->productExportValidator->validate($productExport, $exportResult->getContent()),
-               "total" =>$exportResult->getTotal()
-           ];
+        foreach ($productExports as $productExport) {
+            $exportResult = $csvExporter->generate($productExport, new ExportBehavior());
+            $exportResults[] = [
+                "filename" => $productExport->getFileName(),
+                "content" => $exportResult->getContent(),
+                "errors" => $this->productExportValidator->validate($productExport, $exportResult->getContent()),
+                "total" => $exportResult->getTotal()
+            ];
         }
         return $exportResults;
     }
 
+    /**
+     * @return SalesChannelDomainEntity
+     * @throws InconsistentCriteriaIdsException
+     */
     private function getSalesChannelDomain(): SalesChannelDomainEntity
     {
         return $this->salesChannelDomainRepository->search(new Criteria(), $this->context)->first();

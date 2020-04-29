@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -76,38 +75,38 @@ class FactFinder extends Plugin
         $productStreamBuilder = $this->container->get("Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder");
         /** @var SalesChannelRepositoryInterface $productRepository */
         $productRepository = $this->container->get("sales_channel.product.repository");
-        /** @var SalesChannelContextServiceInterface $salesChannelContextService*/
+        /** @var SalesChannelContextServiceInterface $salesChannelContextService */
         //$salesChannelContextService = $this->container->get("Shopware\Core\System\SalesChannel\Context\SalesChannelContextService");
         /** @var EventDispatcherInterface $eventDispatcher */
         $eventDispatcher = $this->container->get("event_dispatcher");
         /** @var int $readBufferSize */
         $readBufferSize = $this->container->getParameter('product_export.read_buffer_size');
         /** @var ProductExportFileHandlerInterface $productExportFileHandler */
-       // $productExportFileHandler = $this->container->get("Shopware\Core\Content\ProductExport\Service\ProductExportFileHandler");
+        // $productExportFileHandler = $this->container->get("Shopware\Core\Content\ProductExport\Service\ProductExportFileHandler");
         /** @var FilesystemInterface $filesystem */
         //$filesystem = $this->container->get("shopware.filesystem.private");
 
         /** @var ExporterInterface $exporter */
-       /* $exporter = new Exporter(
-            $productStreamBuilder,
-            $productRepository,
-            $salesChannelContextService,
-            $eventDispatcher,
-            $readBufferSize,
-            $productExportFileHandler,
-            $filesystem
-        );
+        /* $exporter = new Exporter(
+             $productStreamBuilder,
+             $productRepository,
+             $salesChannelContextService,
+             $eventDispatcher,
+             $readBufferSize,
+             $productExportFileHandler,
+             $filesystem
+         );
 
-        $productExportManager = new ExportManager(
-            $productExportRepository,
-            $salesChannelDomainRepository,
-            $productStreamRepository,
-            $salesChannelRepository,
-            $exporter
-        );
+         $productExportManager = new ExportManager(
+             $productExportRepository,
+             $salesChannelDomainRepository,
+             $productStreamRepository,
+             $salesChannelRepository,
+             $exporter
+         );
 
-        $productExportManager->install();
-        */
+         $productExportManager->install();
+         */
 
 
     }

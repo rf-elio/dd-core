@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -77,7 +76,11 @@ class AfterSearchNavigationController extends StorefrontController
 
     /**
      * @Route("filter", name="frontend.filter", options={"seo"="false"}, methods={"GET"})
-     * @throws MissingRequestParameterException
+     * @param Request $request
+     * @param SalesChannelContext $context
+     * @return Response
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
      */
     public function filter(Request $request, SalesChannelContext $context): Response
     {
@@ -88,7 +91,7 @@ class AfterSearchNavigationController extends StorefrontController
         */
         $searchParams = '/Eliomedia7.2/Search.ff?query=industrial&filterCategoryPathROOT=Automotive%2C+Industrial+%26amp%3B+Toys&channel=sw610&productsPerPage=24&followSearch=9993&format=JSON';
         $ffSearchResult = $this->ffService->search(null, $searchParams);
-        $filteredProducts = $this->ffHelper->convertRecords($context, new Criteria(), $ffSearchResult['records']);
+        $filteredProducts = $this->ffHelper->getProducts($context, new Criteria(), $ffSearchResult['records']);
 
 
         //dd($filteredProducts);

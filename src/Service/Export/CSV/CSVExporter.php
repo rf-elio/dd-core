@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -64,7 +63,8 @@ class CSVExporter extends Exporter
         ProductExportFileHandlerInterface $productExportFileHandler,
         FilesystemInterface $filesystem,
         UrlGeneratorInterface $generator,
-        EntityRepositoryInterface $currencyRepository
+        EntityRepositoryInterface $currencyRepository,
+        EntityRepositoryInterface $ruleRepository
     )
     {
         parent::__construct(
@@ -76,7 +76,8 @@ class CSVExporter extends Exporter
             $productExportFileHandler,
             $filesystem,
             $generator,
-            $currencyRepository
+            $currencyRepository,
+            $ruleRepository
         );
     }
 

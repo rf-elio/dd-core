@@ -60,21 +60,14 @@ class FactFinderHelper
     }
 
     /**
-     * Converts Fact-Finder records to shopware products
-     *
      * @param SalesChannelContext $context
      * @param Criteria $criteria
-     * @param array $records
+     * @param array $productIds
      * @return EntitySearchResult
      */
-    public function convertRecords(SalesChannelContext $context, Criteria $criteria, array $records): EntitySearchResult
+    public function getProducts(SalesChannelContext $context, Criteria $criteria, array $productIds): EntitySearchResult
     {
-        $ids = [];
-
-        foreach ($records as $record){
-            $ids[] = $record['id'];
-        }
-        $criteria->setIds($ids);
+        $criteria->setIds($productIds);
 
         return $this->productRepository->search($criteria, $context);
     }
@@ -96,8 +89,8 @@ class FactFinderHelper
 
         $concatenated = "";
         $index = 0;
-        foreach ($elements as $element){
-            ++$index ;
+        foreach ($elements as $element) {
+            ++$index;
             $concatenated .= ($index === count($elements)) ? $element : $element . $operator;
         }
 
