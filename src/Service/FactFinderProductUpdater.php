@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -35,6 +34,7 @@ namespace Elio\FactFinder\Service;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
 
@@ -74,17 +74,26 @@ class FactFinderProductUpdater
      */
     private $currencyRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $ruleRepository;
 
     public function __construct(
         ?ProductEntity $product,
         UrlGeneratorInterface $generator,
-        EntityRepositoryInterface $currencyRepository
+        EntityRepositoryInterface $currencyRepository,
+        EntityRepositoryInterface $ruleRepository
     )
     {
         $this->product = $product;
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
+        $this->ruleRepository = $ruleRepository;
         $this->context = Context::createDefaultContext();
+
+        $ruleIds = $this->ruleRepository->searchIds(new Criteria(), $this->context)->getIds();
+        $this->context->setRuleIds($ruleIds);
     }
 
     /**
@@ -92,7 +101,7 @@ class FactFinderProductUpdater
      *
      * @return ProductEntity
      */
-    public function update():ProductEntity
+    public function update(): ProductEntity
     {
         $this->setName();
         $this->setDescription();
@@ -104,7 +113,11 @@ class FactFinderProductUpdater
         return $this->product;
     }
 
-    public function getProductURL($schemeRelative = false):string
+    /**
+     * @param bool $schemeRelative
+     * @return string
+     */
+    public function getProductURL($schemeRelative = false): string
     {
         return $this->generator->generate(
             self::SEO_URL_ROUTE_NAME_DETAIL_PAGE,
@@ -113,51 +126,78 @@ class FactFinderProductUpdater
         );
     }
 
-    public function getImageURL():string
+    /**
+     * @return string
+     */
+    public function getImageURL(): string
     {
         $thumbnails = $this->product->getCover()->getMedia()->getThumbnails()->getElements();
-        foreach ($thumbnails as $thumbnail){
-          if (
-              $thumbnail->getHeight() === self::THUMBNAIL_LARGE_SIZE &&
-              $thumbnail->getWidth() === self::THUMBNAIL_LARGE_SIZE
-          )
-              return $thumbnail->getUrl();
+        foreach ($thumbnails as $thumbnail) {
+            if (
+                $thumbnail->getHeight() === self::THUMBNAIL_LARGE_SIZE &&
+                $thumbnail->getWidth() === self::THUMBNAIL_LARGE_SIZE
+            )
+                return $thumbnail->getUrl();
         }
         return "";
     }
 
-    public function getPrice():string
+    /**
+     * @return string
+     */
+    public function getPrice(): string
     {
+        //dd($this->product->getId());
+        /*
         $resultPrice = '|';
-        foreach ($this->product->getPrice()->getElements() as $price)
-        {
-            $resultPrice .= 'gross='.$price->getGross().'|net='.number_format($price->getNet(), 2, '.', '').'|';
+        foreach ($this->product->getPrice()->getElements() as $price) {
+            $resultPrice .= 'gross=' . $price->getGross() . '|net=' . number_format($price->getNet(), 2, '.', '') . '|';
         }
+        */
+        /*
+        dd($this->product);
+        dd($this->context);
 
-        return $this->cleanValue($resultPrice);
+
+        dd(($this->product->getListingPrices()->getContextPrice($this->context)));
+
+        dd($this->product->getListingPrices());
+
+        foreach ($this->product->getListingPrices() as $price){
+
+        }
+ */
+        //return $this->cleanValue($resultPrice);
+        return "";
     }
 
-    public function getManufacturer():string
+    /**
+     * @return string
+     */
+    public function getManufacturer(): string
     {
         return $this->cleanValue(
             '|name='
-            .$this->product->getManufacturer()->getTranslation('name')
-            .'|id='.$this->product->getManufacturer()->getId()
-            .'|'
+            . $this->product->getManufacturer()->getTranslation('name')
+            . '|id=' . $this->product->getManufacturer()->getId()
+            . '|'
         );
     }
 
-    public function getCategoryPath():string
+    /**
+     * @return string
+     */
+    public function getCategoryPath(): string
     {
         $path = '';
         $categories = $this->product->getCategories()->getElements();
 
         $index = 0;
         $numCategories = count($categories);
-        foreach($categories as $category){
-            $path .= join('/',array_slice($category->getBreadcrumb(),1));
-            if(++$index < $numCategories){
-                $path = $path.'|' ;
+        foreach ($categories as $category) {
+            $path .= join('/', array_slice($category->getBreadcrumb(), 1));
+            if (++$index < $numCategories) {
+                $path = $path . '|';
             }
 
 
@@ -165,56 +205,66 @@ class FactFinderProductUpdater
         return $this->cleanValue($path);
     }
 
-    public function getProductAttribute():string
+    /**
+     * @return string
+     */
+    public function getProductAttribute(): string
     {
         $resultAttribute = '|';
         $attributes = $this->product->getProperties()->getElements();
-        foreach ($attributes as $attribute){
-            $resultAttribute.= $attribute->getGroup()->getName().'='.$attribute->getName().'|';
+        foreach ($attributes as $attribute) {
+            $resultAttribute .= $attribute->getGroup()->getName() . '=' . $attribute->getName() . '|';
         }
 
         return $this->cleanValue($resultAttribute);
     }
 
+    /**
+     * @param string $field
+     * @return mixed|string
+     */
     public function getProductCustomField(string $field)
     {
         $customFields = $this->product->getCustomFields();
-        return (empty($customFields))? "":$customFields[$field];
+        return (empty($customFields)) ? "" : $customFields[$field];
     }
 
-    private function setName():void
+    private function setName(): void
     {
         $this->product->setName(
             $this->cleanValue($this->product->getName())
         );
     }
-    private function setDescription():void
+
+    private function setDescription(): void
     {
         $this->product->setDescription(
             $this->truncate($this->cleanValue($this->product->getDescription()))
         );
     }
 
-    private function setManufacturer():void
+    private function setManufacturer(): void
     {
         $this->product->getManufacturer()->setName(
             $this->cleanValue($this->product->getManufacturer()->getName())
         );
     }
-    private function setEan():void
+
+    private function setEan(): void
     {
         $this->product->setEan(
             $this->cleanValue($this->product->getEan())
         );
     }
-    private function setKeywords():void
+
+    private function setKeywords(): void
     {
         $this->product->setKeywords(
             $this->cleanValue($this->product->getKeywords())
         );
     }
 
-    public  function getSearchKeywords():string
+    public function getSearchKeywords(): string
     {
         $keywords = [];
         $searchKeywords = $this->product->getSearchKeywords();
@@ -222,7 +272,7 @@ class FactFinderProductUpdater
         if (empty($searchKeywords))
             return "";
 
-        foreach ($searchKeywords->getElements() as $searchKeyword){
+        foreach ($searchKeywords->getElements() as $searchKeyword) {
             $keywords[] = $searchKeyword->getKeyword();
         }
         return $this->cleanValue(implode("|", $keywords));
@@ -235,21 +285,30 @@ class FactFinderProductUpdater
         );
     }
 
-    public function cleanValue(?string $value):string
+    /**
+     * @param string|null $value
+     * @return string
+     */
+    public function cleanValue(?string $value): string
     {
-        $value = empty($value)? "":$value;
+        $value = empty($value) ? "" : $value;
         return trim(strip_tags($value));
     }
 
-    public function truncate(string $text, int $chars = 900):string
+    /**
+     * @param string $text
+     * @param int $chars
+     * @return string
+     */
+    public function truncate(string $text, int $chars = 900): string
     {
         if (strlen($text) <= $chars) {
             return $text;
         }
-        $text = $text." ";
-        $text = substr($text,0,$chars);
-        $text = substr($text,0,strrpos($text,' '));
-        $text = $text."...";
+        $text = $text . " ";
+        $text = substr($text, 0, $chars);
+        $text = substr($text, 0, strrpos($text, ' '));
+        $text = $text . "...";
 
         return $text;
     }

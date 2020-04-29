@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -56,69 +55,103 @@ class FactFinderConfiguration implements FactFinderConfigurationInterface
         $this->configService = $configService;
     }
 
+    /**
+     * @param string $key
+     * @param string|null $salesChannelId
+     * @return array|mixed|null
+     */
     private function get(string $key, ?string $salesChannelId = null)
     {
-        return $this->configService->get(self::PLUGIN_CONFIG_PREFIX.$key, $salesChannelId);
+        return $this->configService->get(self::PLUGIN_CONFIG_PREFIX . $key, $salesChannelId);
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getRequestProtocol()
     {
         return $this->get('protocol');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getServerAddress()
     {
         return $this->get('ffServer');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getServerPort()
     {
         return $this->get('port');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getContext()
     {
         return $this->get('context');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getVersion()
     {
         return $this->get('ffVersion');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getAuthenticationType()
     {
         return $this->get('authtype');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getUserName()
     {
         return $this->get('authusername');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getPassword()
     {
         return $this->get('authpassword');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getAuthenticationPrefix()
     {
         return $this->get('authprefix');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getAuthenticationPostfix()
     {
         return $this->get('authpostfix');
     }
 
+    /**
+     * @return array|mixed|null
+     */
     public function getChannel()
     {
         return $this->get('channel');
     }
-
-
-
-
 
 
 }

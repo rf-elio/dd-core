@@ -32,8 +32,12 @@
 
 namespace Elio\FactFinder\Components;
 
+use Elio\FactFinder\Components\Helper\FactFinderHelper;
+use Shopware\Core\Framework\Context;
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use GuzzleHttp\Client;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 /**
  *
@@ -60,39 +64,70 @@ class ElioFactFinderService
      * @var array
      */
     private $params = [
-        'query'=>[]
+        'query' => []
     ];
 
-    public function __construct(FactFinderConfigurationInterface $ffConfig)
+    /**
+     * @var Context
+     */
+    private $context;
+
+    /**
+     * @var FactFinderHelper
+     */
+    private $ffHelper;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $productManufacturerRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $propertyGroupOptionRepository;
+
+    public function __construct(
+        FactFinderConfigurationInterface $ffConfig,
+        FactFinderHelper $ffHelper,
+        EntityRepositoryInterface $productManufacturerRepository,
+        EntityRepositoryInterface $propertyGroupOptionRepository
+    )
     {
         $this->ffConfig = $ffConfig;
         $this->client = new Client();
-        $this->params = $this->getBaseRequestParams();
+        $this->setBaseRequestParams();
+        $this->context = Context::createDefaultContext();
+        $this->ffHelper = $ffHelper;
+        $this->productManufacturerRepository = $productManufacturerRepository;
+        $this->propertyGroupOptionRepository = $propertyGroupOptionRepository;
     }
 
-    private function getBaseRequestParams():array
+
+    private function setBaseRequestParams(): void
     {
         $this->upsertRequestParam('username', $this->ffConfig->getUserName());
         $this->upsertRequestParam('password', $this->getHashedPassword());
         $this->upsertRequestParam('channel', $this->ffConfig->getChannel());
         $this->upsertRequestParam('version', $this->ffConfig->getVersion());
         $this->upsertRequestParam('format', 'json');
-
-        return $this->params;
     }
 
-    private function getHashedPassword():string
+    /**
+     * @return string
+     */
+    private function getHashedPassword(): string
     {
-        $hashedPW = '';
-        switch($this->ffConfig->getAuthenticationType())
-        {
+        $hashedPW = "";
+
+        switch ($this->ffConfig->getAuthenticationType()) {
             case FactFinderConfigurationInterface::AUTHENTICATION_ADVANCED:
                 $timestamp = time() . '000'; //milliseconds needed;
                 $this->upsertRequestParam('timestamp', $timestamp);
                 $hashedPW = md5($this->ffConfig->getAuthenticationPrefix()
-                    .$timestamp
-                    .md5($this->ffConfig->getPassword())
-                    .$this->ffConfig->getAuthenticationPostfix()
+                    . $timestamp
+                    . md5($this->ffConfig->getPassword())
+                    . $this->ffConfig->getAuthenticationPostfix()
                 );
                 break;
             case FactFinderConfigurationInterface::AUTHENTICATION_SIMPLE:
@@ -102,19 +137,26 @@ class ElioFactFinderService
         return $hashedPW;
     }
 
-    public function getBaseUri(bool $context = true):string
+    /**
+     * @param bool $context
+     * @return string
+     */
+    public function getBaseUri(bool $context = true): string
     {
         $baseUri = $this->ffConfig->getRequestProtocol() . '://'
-            .$this->ffConfig->getServerAddress() . ':'
-            .$this->ffConfig->getServerPort();
+            . $this->ffConfig->getServerAddress() . ':'
+            . $this->ffConfig->getServerPort();
 
         if ($context)
-            $baseUri = $baseUri.'/'.$this->ffConfig->getContext();
+            $baseUri = $baseUri . '/' . $this->ffConfig->getContext();
 
         return $baseUri;
     }
 
-    public function getConfig():FactFinderConfigurationInterface
+    /**
+     * @return FactFinderConfigurationInterface
+     */
+    public function getConfig(): FactFinderConfigurationInterface
     {
         return $this->ffConfig;
     }
@@ -125,93 +167,121 @@ class ElioFactFinderService
      * @param string $key
      * @param $value
      */
-    public function upsertRequestParam(string $key, $value):void
+    public function upsertRequestParam(string $key, $value): void
     {
-        foreach ($this->params as $param)
-        {
+        foreach ($this->params as $param) {
             $param[$key] = $value;
         }
         $this->params['query'] = $param;
     }
 
-    public function getRequestParams():array
+    /**
+     * @return array
+     */
+    public function getRequestParams(): array
     {
         return $this->params;
     }
 
-    public function setRequestParams(array $params):void
+    /**
+     * @param array $params
+     */
+    public function setRequestParams(array $params): void
     {
         $this->params = $params;
     }
 
-    public  function resetRequestParams():void
+    public function resetRequestParams(): void
     {
         $this->params = [
-            'query'=>[]
+            'query' => []
         ];
     }
 
-    public  function removeRequestParam(string $key):void
+    /**
+     * @param string $key
+     */
+    public function removeRequestParam(string $key): void
     {
         unset($this->params['query'][$key]);
     }
 
-    public function getRequestParam(string  $key):string
+    /**
+     * @param string $key
+     * @return string
+     */
+    public function getRequestParam(string $key): string
     {
         $value = "";
 
-        if (array_key_exists($key, $this->params['query']))
+        if ($this->requestParamExists($key))
             $value = $this->params['query'][$key];
 
         return $value;
     }
 
-    public function requestParamExist(string  $key):bool
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function requestParamExists(string $key): bool
     {
-        if (array_key_exists($key, $this->params['query']))
-            return true;
-
-        return false;
+        return array_key_exists($key, $this->params['query']);
     }
 
-    public function getSuggestions(string $query):array
+    /**
+     * @param string $query
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getSuggestions(string $query): array
     {
         $this->upsertRequestParam('query', $query);
+
         $request = $this->client->request(
             'GET',
             $this->getBaseUri() . '/Suggest.ff',
             $this->getRequestParams()
         );
 
-        return json_decode($request->getBody()->getContents(),true)['suggestions'];
+        return json_decode($request->getBody()->getContents(), true)['suggestions'];
     }
 
-    public function search(?string $query, ?string $searchParams=null):array
+    /**
+     * @param string|null $query
+     * @param string|null $searchParams
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function search(?string $query, ?string $searchParams = null): array
     {
         $request = null;
 
-        if (empty($searchParams)){
+        if (empty($searchParams)) {
             $this->upsertRequestParam('query', $query);
             $request = $this->client->request(
                 'GET',
                 $this->getBaseUri() . '/Search.ff',
                 $this->getRequestParams()
             );
-        }else{
+        } else {
             $request = $this->client->request(
                 'GET',
                 $this->getBaseUri(false)
                 . $searchParams
-                .$this->getMissingParams()
+                . $this->getMissingParams()
             );
         }
 
-        return json_decode($request->getBody()->getContents(),true)['searchResult'];
+        return json_decode($request->getBody()->getContents(), true)['searchResult'];
     }
 
-    private function getMissingParams():string
+    /**
+     * @return string
+     */
+    private function getMissingParams(): string
     {
-        $params = '';
+        $params = "";
         $currentParams = $this->getRequestParams();
 
         $this->resetRequestParams();
@@ -219,15 +289,130 @@ class ElioFactFinderService
         $this->upsertRequestParam('username', $this->ffConfig->getUserName());
         $this->upsertRequestParam('password', $this->getHashedPassword());
 
-        foreach ($this->getRequestParams() as $requestParam){
-            foreach ($requestParam as $key => $value){
-                $params .="&$key=$value";
+        foreach ($this->getRequestParams() as $requestParam) {
+            foreach ($requestParam as $key => $value) {
+                $params .= "&$key=$value";
             }
         }
 
         $this->setRequestParams($currentParams);
 
         return $params;
+    }
+
+    /**
+     * @param array $manufacturerIds
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     */
+    public function setManufacturerFilter(array $manufacturerIds): void
+    {
+        if (count($manufacturerIds) > 0) {
+
+            $elements = [];
+
+            $entities = $this->productManufacturerRepository->search(
+                new Criteria($manufacturerIds),
+                $this->context
+            )->getEntities();
+
+
+            foreach ($entities->getElements() as $manufacturer) {
+                $elements[] = $manufacturer->getTranslation('name');
+            }
+
+            $manufacturers = $this->ffHelper->concatenateElements(
+                FactFinderConfigurationInterface:: OR,
+                $elements
+            );
+
+            $this->upsertRequestParam(
+                FactFinderConfigurationInterface::PREFIX_FILTER .
+                FactFinderConfigurationInterface::FILTER_MANUFACTURER,
+                $manufacturers
+            );
+        }
+    }
+
+    /**
+     * @param array $propertyIds
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     */
+    public function setPropertyFilter(array $propertyIds): void
+    {
+        if (count($propertyIds) > 0) {
+
+            $criteria = new Criteria($propertyIds);
+            $criteria->addAssociation('group');
+
+            $entities = $this->propertyGroupOptionRepository->search(
+                $criteria,
+                $this->context
+            )->getEntities();
+
+
+            foreach ($entities->getElements() as $property) {
+                $filterName = FactFinderConfigurationInterface::PREFIX_FILTER . $property
+                        ->getGroup()
+                        ->getTranslation('name');
+
+                if ($this->requestParamExists($filterName)) {
+                    $oldFilterValue = $this->getRequestParam($filterName);
+                    $this->removeRequestParam($filterName);
+
+                    $this->upsertRequestParam(
+                        $filterName,
+                        $oldFilterValue . FactFinderConfigurationInterface:: OR . $property->getTranslation('name')
+                    );
+                } else {
+                    $this->upsertRequestParam(
+                        $filterName,
+                        $property->getTranslation('name')
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $rating
+     */
+    public function setRatingFilter($rating): void
+    {
+        if ($rating) {
+            $this->upsertRequestParam(
+                FactFinderConfigurationInterface::PREFIX_FILTER . FactFinderConfigurationInterface::FILTER_RATING,
+                FactFinderConfigurationInterface::GTE . (int)$rating
+            );
+        }
+    }
+
+    /**
+     * @param $min
+     * @param $max
+     */
+    public function setPriceFilter($min, $max): void
+    {
+        $range = "";
+
+        if (!$min && !$max) {
+            return;
+        }
+
+        if ($min > 0) {
+            $range .= FactFinderConfigurationInterface::GTE . $min;
+        }
+        if ($max > 0) {
+            if ($min > 0) {
+                $range .= FactFinderConfigurationInterface:: AND;
+            }
+            $range .= FactFinderConfigurationInterface::LTE . $max;
+        }
+
+        $this->upsertRequestParam(
+            FactFinderConfigurationInterface::PREFIX_FILTER . FactFinderConfigurationInterface::FILTER_PRICE,
+            $range
+        );
+
     }
 
 

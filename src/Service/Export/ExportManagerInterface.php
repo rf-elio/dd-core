@@ -17,7 +17,7 @@ interface ExportManagerInterface
      *
      * @return array contents Ids from created or updated product export and when occurred the errors
      */
-    public function install():array ;
+    public function install(): array;
 
     /**
      * generate product export file
@@ -25,5 +25,5 @@ interface ExportManagerInterface
      * @return array contents the generated filenames, the exported contents, the amount of generated products
      * and when occurred the errors
      */
-    public function generate():array;
+    public function generate(): array;
 }

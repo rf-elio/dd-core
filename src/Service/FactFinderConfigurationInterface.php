@@ -49,6 +49,8 @@ interface FactFinderConfigurationInterface
 
     const FILTER_CATEGORY = 'CategoryPath';
     const FILTER_MANUFACTURER = 'Manufacturer';
+    const FILTER_PRICE = 'Price';
+    const FILTER_RATING = 'RatingAverage';
     const FILTER_COLOR = 'Color';
     const FILTER_CONTENT = 'Content';
     const FILTER_LENGTH = 'Length';
@@ -56,7 +58,7 @@ interface FactFinderConfigurationInterface
     const FILTER_TEXTILE = 'Textile';
     const FILTER_WIDTH = 'Width';
 
-    const AUTHENTICATION_SIMPLE  = 'simple';
+    const AUTHENTICATION_SIMPLE = 'simple';
     const AUTHENTICATION_ADVANCED = 'advanced';
 
     Const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
@@ -67,16 +69,31 @@ interface FactFinderConfigurationInterface
     const PREFIX_SORT = 'sort';
     const PREFIX_FILTER = 'filter';
 
+    const GTE = '>=';
+    const GT = '>';
+    const LTE = '<=';
+    const LT = '<';
+
     public function getRequestProtocol();
+
     public function getServerAddress();
+
     public function getServerPort();
+
     public function getContext();
+
     public function getVersion();
+
     public function getAuthenticationType();
+
     public function getUserName();
+
     public function getPassword();
+
     public function getAuthenticationPrefix();
+
     public function getAuthenticationPostfix();
+
     public function getChannel();
 
 }

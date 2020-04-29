@@ -68,6 +68,9 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
         $this->currencyRepository = $currencyRepository;
     }
 
+    /**
+     * @return array|TwigFilter[]
+     */
     public function getFilters()
     {
         return [
@@ -77,6 +80,9 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @return array|TwigFunction[]
+     */
     public function getFunctions()
     {
         return [
@@ -91,66 +97,111 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @param $content
+     * @return string
+     */
     public function cleanValue($content): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater(null);
         return $factFinderProductUpdater->cleanValue($content);
     }
 
+    /**
+     * @param $content
+     * @return string
+     */
     public function truncateValue($content)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater(null);
         return $factFinderProductUpdater->truncate($content);
     }
 
-    public function utf8Encode($content):string
+    /**
+     * @param $content
+     * @return string
+     */
+    public function utf8Encode($content): string
     {
         return utf8_encode($content);
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productImageUrl(ProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getImageURL();
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productPrice(ProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);;
         return $factFinderProductUpdater->getPrice();
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productCategoryPath(ProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getCategoryPath();
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productAttribute(ProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getProductAttribute();
     }
+
+    /**
+     * @param ProductEntity $product
+     * @param string $field
+     * @return mixed|string
+     */
     public function productCustomField(ProductEntity $product, string $field)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getProductCustomField($field);
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productManufacturer(ProductEntity $product)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getManufacturer();
     }
 
+    /**
+     * @param ProductEntity $product
+     * @return string
+     */
     public function productSearchKeywords(ProductEntity $product)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getSearchKeywords();
     }
 
-
-    private function getFactFinderProductUpdater(?ProductEntity $product):FactFinderProductUpdater
+    /**
+     * @param ProductEntity|null $product
+     * @return FactFinderProductUpdater
+     */
+    private function getFactFinderProductUpdater(?ProductEntity $product): FactFinderProductUpdater
     {
         return new FactFinderProductUpdater(
             $product,

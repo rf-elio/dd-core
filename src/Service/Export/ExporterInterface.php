@@ -24,6 +24,6 @@ interface ExporterInterface extends ProductExportGeneratorInterface
      * @param int $type
      * @return Exporter The exporter for the desired output format.
      */
-    public function create(int $type):Exporter;
+    public function create(int $type): Exporter;
 
 }

@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -50,22 +49,22 @@ class FactFinderSearchResult extends EntitySearchResult
     /**
      * @var array
      */
-    protected  $ffRawData = [];
+    protected $ffRawData = [];
 
     /**
      * @var array
      */
-    protected  $ffFilters = [];
+    protected $ffFilters = [];
 
     /**
      * @var array
      */
-    protected  $ffSearchTerms = [];
+    protected $ffSearchTerms = [];
 
     /**
      * @var array
      */
-    protected  $ffEntities = [];
+    protected $ffEntities = [];
 
     /**
      * @param array $ffEntities

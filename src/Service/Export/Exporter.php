@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * Copyright (c) 2020, elio GmbH.
  * All rights reserved.
@@ -120,6 +119,10 @@ class Exporter implements ExporterInterface
      */
     private $currencyRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $ruleRepository;
 
     public function __construct(
         ProductStreamBuilderInterface $productStreamBuilder,
@@ -130,7 +133,8 @@ class Exporter implements ExporterInterface
         ProductExportFileHandlerInterface $productExportFileHandler,
         FilesystemInterface $filesystem,
         UrlGeneratorInterface $generator,
-        EntityRepositoryInterface $currencyRepository
+        EntityRepositoryInterface $currencyRepository,
+        EntityRepositoryInterface $ruleRepository
     )
     {
         $this->productStreamBuilder = $productStreamBuilder;
@@ -142,8 +146,13 @@ class Exporter implements ExporterInterface
         $this->filesystem = $filesystem;
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
+        $this->ruleRepository = $ruleRepository;
     }
 
+    /**
+     * @param int $type
+     * @return Exporter
+     */
     public function create(int $type): Exporter
     {
         switch ($type) {
@@ -157,7 +166,8 @@ class Exporter implements ExporterInterface
                     $this->productExportFileHandler,
                     $this->filesystem,
                     $this->generator,
-                    $this->currencyRepository
+                    $this->currencyRepository,
+                    $this->ruleRepository
                 );
                 break;
             default:
@@ -167,7 +177,15 @@ class Exporter implements ExporterInterface
         return $exporter;
     }
 
-
+    /**
+     * @param ProductExportEntity $productExport
+     * @param ExportBehavior $exportBehavior
+     * @return ProductExportResult|null
+     * @throws EmptyExportException
+     * @throws \League\Flysystem\FileExistsException
+     * @throws \League\Flysystem\FileNotFoundException
+     * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
+     */
     public function generate(ProductExportEntity $productExport, ExportBehavior $exportBehavior): ?ProductExportResult
     {
         $data = [];
@@ -220,13 +238,14 @@ class Exporter implements ExporterInterface
         $products = $productResult->getEntities();
 
         /** @var ProductEntity $product */
-        foreach ($products as $product){
+        foreach ($products as $product) {
 
             /** @var FactFinderProductUpdater $factFinderProductUpdater */
             $factFinderProductUpdater = new FactFinderProductUpdater(
                 $product,
                 $this->generator,
-                $this->currencyRepository
+                $this->currencyRepository,
+                $this->ruleRepository
             );
 
             $updatedProduct = $factFinderProductUpdater->update();
@@ -268,8 +287,7 @@ class Exporter implements ExporterInterface
                 $data,
                 ";"),
             [],
-            $total)
-            ;
+            $total);
     }
 
     /**
@@ -302,9 +320,9 @@ class Exporter implements ExporterInterface
         rewind($stream);
         $content = mb_convert_encoding(stream_get_contents($stream), $productExport->getEncoding());
 
-        if(!$this->filesystem->has($filePath)){
+        if (!$this->filesystem->has($filePath)) {
             $this->filesystem->write($filePath, $content);
-        }else{
+        } else {
             $this->filesystem->update($filePath, $content);
         }
 
