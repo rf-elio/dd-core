@@ -14,6 +14,7 @@
 "Stock";{#- -#}
 "RatingAverage";{#- -#}
 "Attribute";{#- -#}
+"ShippingFree";{#- -#}
 "CustomHomeAutOditEos";{#- -#}
 "OfficiisSitIllo"{#- -#}
 

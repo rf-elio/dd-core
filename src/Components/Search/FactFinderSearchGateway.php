@@ -60,11 +60,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\StatsAggregation;
 
 /**
  * Decorates the service ProductSearchGateway
@@ -200,16 +202,23 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         SalesChannelContext $context
     ): FactFinderSearchResult
     {
-        /*
-        foreach ($criteria->getPostFilters() as $postFilter){
-
-        }
-        */
-        //dd($criteria);
-        //dd($criteria->getPostFilters());
         $criteria->resetQueries();
         $criteria->resetFilters();
+
+        $postFilters = $criteria->getPostFilters();
+        $i=0;
+        foreach ($postFilters as $postFilter){
+            foreach ($postFilter->getFields() as $field){
+                if ($field !== 'product.listingPrices')
+                    unset($postFilters[$i]);
+            }
+            ++$i;
+        }
+
         $criteria->resetPostFilters();
+
+        if(count($postFilters) > 0)
+            $criteria->addPostFilter($postFilters[0]);
 
         $criteria->addFilter(
             new ProductAvailableFilter(
@@ -243,7 +252,8 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         //$aggregations = $this->overrideAggregations($productSearchResult->getAggregations(), $filters, $context);
 
         $result = new FactFinderSearchResult(
-            $ffSearchResult['resultCount'],
+            //$ffSearchResult['resultCount'],
+            $productSearchResult->getTotal(),
             $productSearchResult->getEntities(),
             $productSearchResult->getAggregations(),
             //$aggregations,
@@ -447,6 +457,8 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         $this->ffService->setManufacturerFilter($this->getManufacturerIds($request));
         $this->ffService->setPropertyFilter($this->getPropertyIds($request));
         $this->ffService->setRatingFilter($request->get('rating'));
+        $this->ffService->setShippingFreeFilter($request->get('shipping-free'));
+        //$this->ffService->setPriceFilter($request->get('min-price'), $request->get('max-price'));
     }
 
 }

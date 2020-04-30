@@ -13,6 +13,7 @@
 "{{ productSearchKeywords(product) }}";{#- -#}
 "{{ product.stock }}";{#- -#}
 "{{ product.ratingAverage }}";{#- -#}
+"{{ product.shippingFree }}";{#- -#}
 "{{ productAttribute(product) }}";{#- -#}
 "{{ productCustomField(product,'custom_home_aut_odit_eos') }}";{#- -#}
 "{{ productCustomField(product,'custom_industrial_officiis_sit_illo') }}"{#- -#}
