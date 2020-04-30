@@ -148,27 +148,22 @@ class FactFinderProductUpdater
     public function getPrice(): string
     {
         //dd($this->product->getId());
-        /*
+
         $resultPrice = '|';
         foreach ($this->product->getPrice()->getElements() as $price) {
             $resultPrice .= 'gross=' . $price->getGross() . '|net=' . number_format($price->getNet(), 2, '.', '') . '|';
         }
-        */
+
         /*
         dd($this->product);
         dd($this->context);
 
-
         dd(($this->product->getListingPrices()->getContextPrice($this->context)));
-
         dd($this->product->getListingPrices());
-
         foreach ($this->product->getListingPrices() as $price){
-
         }
- */
-        //return $this->cleanValue($resultPrice);
-        return "";
+        */
+        return $this->cleanValue($resultPrice);
     }
 
     /**

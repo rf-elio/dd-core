@@ -415,5 +415,15 @@ class ElioFactFinderService
 
     }
 
+    public function setShippingFreeFilter($shippingFree): void
+    {
+        if ($shippingFree) {
+            $this->upsertRequestParam(
+                FactFinderConfigurationInterface::PREFIX_FILTER . FactFinderConfigurationInterface::FILTER_SHIPPING_FREE,
+                $shippingFree
+            );
+        }
+    }
+
 
 }

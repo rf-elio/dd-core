@@ -106,6 +106,7 @@ class Exporter implements ExporterInterface
         'SearchKeywords',
         'Stock',
         'RatingAverage',
+        'ShippingFree',
         'Attribute'
     ];
 
@@ -273,6 +274,7 @@ class Exporter implements ExporterInterface
                 $factFinderProductUpdater->getSearchKeywords(),
                 $updatedProduct->getStock(),
                 $updatedProduct->getRatingAverage(),
+                $updatedProduct->getShippingFree(),
                 $factFinderProductUpdater->getProductAttribute()
             ));
         }

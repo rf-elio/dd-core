@@ -51,6 +51,7 @@ interface FactFinderConfigurationInterface
     const FILTER_MANUFACTURER = 'Manufacturer';
     const FILTER_PRICE = 'Price';
     const FILTER_RATING = 'RatingAverage';
+    const FILTER_SHIPPING_FREE = 'ShippingFree';
     const FILTER_COLOR = 'Color';
     const FILTER_CONTENT = 'Content';
     const FILTER_LENGTH = 'Length';
