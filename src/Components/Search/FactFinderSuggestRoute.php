@@ -39,7 +39,7 @@ use Shopware\Core\Content\Product\Events\ProductSuggestCriteriaEvent;
 use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestGatewayInterface;
+use Shopware\Core\Content\Product\SalesChannel\Suggest\AbstractProductSuggestRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -54,18 +54,19 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEvents;
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use Elio\FactFinder\Components\ElioFactFinderService;
+use Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRouteResponse;
 
 /**
- * Decorates the service ProductSuggestGateway
+ * Decorates the service ProductSuggestRoute
  *
- * Class FactFinderSuggestGateway
+ * Class FactFinderSuggestRoute
  *
  * @category  Service Component
  * @package   Shopware\Plugins\FactFinder\Components\Search
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
+class FactFinderSuggestRoute extends AbstractProductSuggestRoute
 {
     /**
      * @var EventDispatcherInterface
@@ -93,7 +94,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
     private $productRepository;
 
     /**
-     * @var ProductSuggestGatewayInterface
+     * @var AbstractProductSuggestRoute
      */
     private $decorated;
 
@@ -117,7 +118,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         EventDispatcherInterface $eventDispatcher,
         ElioFactFinderService $ffService,
         SalesChannelRepositoryInterface $productRepository,
-        ProductSuggestGatewayInterface $decorated,
+        AbstractProductSuggestRoute $decorated,
         SalesChannelRepositoryInterface $categoryRepository,
         EntityRepositoryInterface $productManufacturerRepository
     )
@@ -133,13 +134,18 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
         $this->entities = new EntityCollection();
     }
 
+    public function getDecorated(): AbstractProductSuggestRoute
+    {
+        return $this->decorated;
+    }
+
     /**
      * @param Request $request
      * @param SalesChannelContext $context
      * @return EntitySearchResult
      * @throws \Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException
      */
-    public function suggest(Request $request, SalesChannelContext $context): EntitySearchResult
+    public function load(Request $request, SalesChannelContext $context): ProductSuggestRouteResponse
     {
         $criteria = new Criteria();
 
@@ -168,7 +174,7 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
             ProductEvents::PRODUCT_SUGGEST_RESULT
         );
 
-        return $result;
+        return new ProductSuggestRouteResponse($result);
     }
 
     /**
@@ -358,4 +364,5 @@ class FactFinderSuggestGateway implements ProductSuggestGatewayInterface
 
         return $searchTerms;
     }
+
 }

@@ -44,24 +44,24 @@
             <argument type="service" id="property_group_option.repository"/>
         </service>
 
-        <service id="Elio\FactFinder\Components\Search\FactFinderSuggestGateway"
-                 decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestGateway">
+        <service id="Elio\FactFinder\Components\Search\FactFinderSuggestRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Suggest\ProductSuggestRoute">
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
             <argument type="service" id="sales_channel.product.repository"/>
-            <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSuggestGateway.inner"/>
+            <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSuggestRoute.inner"/>
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="product_manufacturer.repository"/>
         </service>
 
-        <service id="Elio\FactFinder\Components\Search\FactFinderSearchGateway"
-                 decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchGateway">
+        <service id="Elio\FactFinder\Components\Search\FactFinderSearchRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute">
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
             <argument type="service" id="sales_channel.product.repository"/>
-            <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSearchGateway.inner"/>
+            <argument type="service" id="Elio\FactFinder\Components\Search\FactFinderSearchRoute.inner"/>
             <argument type="service" id="product_manufacturer.repository"/>
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="property_group_option.repository"/>
@@ -78,5 +78,16 @@
         <service id="Elio\FactFinder\Components\Helper\FactFinderHelper" public="true">
             <argument type="service" id="sales_channel.product.repository"/>
         </service>
+
+        <service id="Elio\FactFinder\Command\ExportInstallCommand">
+            <argument type="service" id="Elio\FactFinder\Service\Export\ExportManager"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Elio\FactFinder\Command\ExportGenerateCommand">
+            <argument type="service" id="Elio\FactFinder\Service\Export\ExportManager"/>
+            <tag name="console.command"/>
+        </service>
+
     </services>
 </container>

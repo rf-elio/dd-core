@@ -33,7 +33,6 @@
 
 namespace Elio\FactFinder\Components\Search;
 
-use _HumbugBox3ab8cff0fda0\___PHPSTORM_HELPERS\this;
 use Doctrine\DBAL\Connection;
 use Elio\FactFinder\Components\ElioFactFinderService;
 use Elio\FactFinder\Components\Helper\FactFinderHelper;
@@ -45,11 +44,10 @@ use Shopware\Core\Content\Product\Events\ProductSearchResultEvent;
 use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchGatewayInterface;
+use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchTermInterpreterInterface;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
@@ -57,28 +55,26 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\StatsAggregation;
+use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 
 /**
- * Decorates the service ProductSearchGateway
+ * Decorates the service ProductSearchRoute
  *
- * Class FactFinderSearchGateway
+ * Class FactFinderSearchRoute
  *
  * @category  Service Component
  * @package   Shopware\Plugins\FactFinder\Components\Search
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinderSearchGateway implements ProductSearchGatewayInterface
+class FactFinderSearchRoute extends AbstractProductSearchRoute
 {
     /**
      * @var EventDispatcherInterface
@@ -106,7 +102,7 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
     private $repository;
 
     /**
-     * @var ProductSearchGatewayInterface
+     * @var AbstractProductSearchRoute
      */
     private $decorated;
 
@@ -145,7 +141,7 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         EventDispatcherInterface $eventDispatcher,
         ElioFactFinderService $ffService,
         SalesChannelRepositoryInterface $repository,
-        ProductSearchGatewayInterface $decorated,
+        AbstractProductSearchRoute $decorated,
         EntityRepositoryInterface $productManufacturerRepository,
         SalesChannelRepositoryInterface $categoryRepository,
         EntityRepositoryInterface $propertyGroupOptionRepository,
@@ -170,7 +166,12 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         $this->ffService->upsertRequestParam('productsPerPage', 500);
     }
 
-    public function search(Request $request, SalesChannelContext $context): EntitySearchResult
+    public function getDecorated(): AbstractProductSearchRoute
+    {
+        return $this->decorated;
+    }
+
+    public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse
     {
         $criteria = new Criteria();
 
@@ -193,7 +194,7 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
 
         $result->addCurrentFilter('search', $request->query->get('search'));
 
-        return $result;
+        return new ProductSearchRouteResponse($result);
     }
 
     private function ffSearch(
@@ -252,7 +253,7 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
         //$aggregations = $this->overrideAggregations($productSearchResult->getAggregations(), $filters, $context);
 
         $result = new FactFinderSearchResult(
-            //$ffSearchResult['resultCount'],
+            //$ffSearchResult['resultCount'], //To use when filter price is fully implement
             $productSearchResult->getTotal(),
             $productSearchResult->getEntities(),
             $productSearchResult->getAggregations(),
@@ -260,7 +261,6 @@ class FactFinderSearchGateway implements ProductSearchGatewayInterface
             $criteria,
             $context->getContext()
         );
-        //dd($ffSearchResult['groups']);
 
         $result->setFfRawData($ffSearchResult);
         $result->setFfFilters($filters);
