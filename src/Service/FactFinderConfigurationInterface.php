@@ -59,6 +59,13 @@ interface FactFinderConfigurationInterface
     const FILTER_TEXTILE = 'Textile';
     const FILTER_WIDTH = 'Width';
 
+    const TRACKING_EVENT_CLICK = 'click';
+    const TRACKING_EVENT_CART = 'cart';
+    const TRACKING_EVENT_CHECKOUT = 'checkout';
+    const TRACKING_EVENT_LOGIN = 'login';
+    const TRACKING_EVENT_RECOMMENDATION_CLICK = 'recommendationClick';
+    const TRACKING_EVENT_FEEDBACK = 'feedback';
+
     const AUTHENTICATION_SIMPLE = 'simple';
     const AUTHENTICATION_ADVANCED = 'advanced';
 
