@@ -88,6 +88,10 @@
             <argument type="service" id="Elio\FactFinder\Service\Export\ExportManager"/>
             <tag name="console.command"/>
         </service>
-
+        <!--
+        <service id="Elio\FactFinder\Subscriber\TrackingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        -->
     </services>
 </container>

@@ -381,7 +381,7 @@ class ElioFactFinderService
         if ($rating) {
             $this->upsertRequestParam(
                 FactFinderConfigurationInterface::PREFIX_FILTER . FactFinderConfigurationInterface::FILTER_RATING,
-                FactFinderConfigurationInterface::GTE . (int)$rating
+                FactFinderConfigurationInterface::GTE . $rating
             );
         }
     }
