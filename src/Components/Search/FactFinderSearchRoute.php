@@ -241,7 +241,11 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
 
         $this->handleFilters($request);
 
-        $ffSearchResult = $this->ffService->search($request->query->get('search'));
+        $ffSearchResult = $this->ffService->search(
+            $request->query->get('search'),
+            null,
+            true
+        );
 
         $productSearchResult = $this->ffHelper->getProducts(
             $context,

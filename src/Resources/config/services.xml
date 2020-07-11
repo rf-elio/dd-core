@@ -42,6 +42,7 @@
             <argument type="service" id="Elio\FactFinder\Components\Helper\FactFinderHelper"/>
             <argument type="service" id="product_manufacturer.repository"/>
             <argument type="service" id="property_group_option.repository"/>
+            <argument type="service" id="logger"/>
         </service>
 
         <service id="Elio\FactFinder\Components\Search\FactFinderSuggestRoute"
@@ -88,10 +89,13 @@
             <argument type="service" id="Elio\FactFinder\Service\Export\ExportManager"/>
             <tag name="console.command"/>
         </service>
-        <!--
+
         <service id="Elio\FactFinder\Subscriber\TrackingSubscriber">
+            <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        -->
+
     </services>
 </container>

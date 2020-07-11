@@ -36,8 +36,10 @@ use Elio\FactFinder\Components\Helper\FactFinderHelper;
 use Shopware\Core\Framework\Context;
 use Elio\FactFinder\Service\FactFinderConfigurationInterface;
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Psr\Log\LoggerInterface;
 
 /**
  *
@@ -87,11 +89,17 @@ class ElioFactFinderService
      */
     private $propertyGroupOptionRepository;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         FactFinderConfigurationInterface $ffConfig,
         FactFinderHelper $ffHelper,
         EntityRepositoryInterface $productManufacturerRepository,
-        EntityRepositoryInterface $propertyGroupOptionRepository
+        EntityRepositoryInterface $propertyGroupOptionRepository,
+        LoggerInterface $logger
     )
     {
         $this->ffConfig = $ffConfig;
@@ -101,6 +109,7 @@ class ElioFactFinderService
         $this->ffHelper = $ffHelper;
         $this->productManufacturerRepository = $productManufacturerRepository;
         $this->propertyGroupOptionRepository = $propertyGroupOptionRepository;
+        $this->logger = $logger;
     }
 
 
@@ -173,6 +182,18 @@ class ElioFactFinderService
             $param[$key] = $value;
         }
         $this->params['query'] = $param;
+    }
+
+    /**
+     * @param array $params Associative array of params
+     */
+    public function addRequestParams(array $params): void
+    {
+        if (count($params) > 0) {
+            foreach ($params as $key => $value) {
+                $this->upsertRequestParam($key, $value);
+            }
+        }
     }
 
     /**
@@ -250,36 +271,35 @@ class ElioFactFinderService
     /**
      * @param string|null $query
      * @param string|null $searchParams
+     * @param bool $queryFromSuggest
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function search(?string $query, ?string $searchParams = null): array
+    public function search(?string $query, ?string $searchParams = null, bool $queryFromSuggest = false): array
     {
-        $request = null;
-
         if (empty($searchParams)) {
+
+            if ($queryFromSuggest)
+                $this->trackSuggest($query);
+
             $this->upsertRequestParam('query', $query);
-            $request = $this->client->request(
-                'GET',
-                $this->getBaseUri() . '/Search.ff',
-                $this->getRequestParams()
-            );
+            $uri = $this->getBaseUri() . '/Search.ff';
+            $params = $this->getRequestParams();
+
         } else {
-            $request = $this->client->request(
-                'GET',
-                $this->getBaseUri(false)
-                . $searchParams
-                . $this->getMissingParams()
-            );
+            $uri = $this->getBaseUri(false). $searchParams . $this->getMissingParams($queryFromSuggest, $query);
+            $params = [];
         }
+
+        $request = $this->client->request(
+            'GET',
+            $uri,
+            $params
+        );
 
         return json_decode($request->getBody()->getContents(), true)['searchResult'];
     }
 
-    /**
-     * @return string
-     */
-    private function getMissingParams(): string
+    private function getMissingParams(bool $queryFromSuggest = false, string $userInput = ""): string
     {
         $params = "";
         $currentParams = $this->getRequestParams();
@@ -288,6 +308,9 @@ class ElioFactFinderService
 
         $this->upsertRequestParam('username', $this->ffConfig->getUserName());
         $this->upsertRequestParam('password', $this->getHashedPassword());
+
+        if ($queryFromSuggest)
+            $this->trackSuggest($userInput);
 
         foreach ($this->getRequestParams() as $requestParam) {
             foreach ($requestParam as $key => $value) {
@@ -298,6 +321,12 @@ class ElioFactFinderService
         $this->setRequestParams($currentParams);
 
         return $params;
+    }
+
+    private function trackSuggest(string $userInput):void
+    {
+        $this->upsertRequestParam('queryFromSuggest', true);
+        $this->upsertRequestParam('userInput', $userInput);
     }
 
     /**
@@ -314,7 +343,6 @@ class ElioFactFinderService
                 new Criteria($manufacturerIds),
                 $this->context
             )->getEntities();
-
 
             foreach ($entities->getElements() as $manufacturer) {
                 $elements[] = $manufacturer->getTranslation('name');
@@ -424,6 +452,40 @@ class ElioFactFinderService
             );
         }
     }
+
+    public function doTrack(string $eventName, ?string $sessionId, array $extraParams)
+    {
+        $this->upsertRequestParam('event', $eventName);
+
+        if (!empty($sessionId)){
+            $this->upsertRequestParam('sid', $sessionId);
+        }else{
+            $this->upsertRequestParam('sid', session_id());
+        }
+
+        $this->addRequestParams($extraParams);
+
+        $promises = [];
+
+        $promises[] = $this->client->requestAsync(
+            'GET',
+            $this->getBaseUri() . '/Tracking.ff',
+            $this->getRequestParams()
+        )
+            ->then(function ($response) use ($eventName) {
+                $this->logger->info(
+                    sprintf(
+                        'Tracking(%s) ended with status code %s: %s',
+                        $eventName,
+                        $response->getStatusCode(),
+                        $response->getBody()
+                    )
+                );
+            });
+
+        return Promise\unwrap($promises);
+    }
+
 
 
 }
