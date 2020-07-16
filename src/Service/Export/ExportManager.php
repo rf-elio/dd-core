@@ -215,7 +215,7 @@ class ExportManager implements ExportManagerInterface
             [
                 'id' => self::PRODUCT_STREAM_ID,
                 'name' => 'Fact-finder product stream',
-                'description' => 'Automatic created product stream to get all active products during product export.',
+                'description' => 'Automatically created product stream to get all active products during export.',
                 'filters' => [["type" => "multi", "queries" => [["type" => "multi",
                     "queries" => [["type" => "equals", "field" => "product.active",
                         "value" => "1"]], "operator" => "AND"]], "operator" => "OR"]]

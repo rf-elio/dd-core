@@ -30,6 +30,7 @@
         <service id="Elio\FactFinder\Twig\TwigProductUpdaterFunctionExtension" public="true">
             <argument type="service" id="router" />
             <argument type="service" id="currency.repository"/>
+            <argument type="service" id="rule.repository"/>
             <tag name="twig.extension"/>
         </service>
 
@@ -94,6 +95,8 @@
             <argument type="service" id="Elio\FactFinder\Components\ElioFactFinderService"/>
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

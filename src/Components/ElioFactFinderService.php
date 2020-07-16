@@ -473,14 +473,16 @@ class ElioFactFinderService
             $this->getRequestParams()
         )
             ->then(function ($response) use ($eventName) {
-                $this->logger->info(
-                    sprintf(
-                        'Tracking(%s) ended with status code %s: %s',
-                        $eventName,
-                        $response->getStatusCode(),
-                        $response->getBody()
-                    )
-                );
+                if ($response->getStatusCode() != 200){
+                    $this->logger->error(
+                        sprintf(
+                            'Tracking(%s) ended with status code %s: %s',
+                            $eventName,
+                            $response->getStatusCode(),
+                            $response->getBody()
+                        )
+                    );
+                }
             });
 
         return Promise\unwrap($promises);

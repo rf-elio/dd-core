@@ -61,11 +61,20 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
      */
     private $currencyRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $ruleRepository;
 
-    public function __construct(UrlGeneratorInterface $generator, EntityRepositoryInterface $currencyRepository)
+    public function __construct(
+        UrlGeneratorInterface $generator,
+        EntityRepositoryInterface $currencyRepository,
+        EntityRepositoryInterface $ruleRepository
+    )
     {
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
+        $this->ruleRepository = $ruleRepository;
     }
 
     /**
@@ -206,7 +215,8 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
         return new FactFinderProductUpdater(
             $product,
             $this->generator,
-            $this->currencyRepository
+            $this->currencyRepository,
+            $this->ruleRepository
         );
     }
 }

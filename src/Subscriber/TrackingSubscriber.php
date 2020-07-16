@@ -39,20 +39,27 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
-use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
-use Shopware\Storefront\Event\RouteRequest\OrderRouteRequestEvent;
-use Shopware\Core\Content\Product\ProductEvents;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent;
 use Shopware\Core\Checkout\Cart\Event\LineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Symfony\Component\HttpFoundation\Request;
+use Shopware\Storefront\Page\Search\SearchPageLoader;
+use Shopware\Storefront\Page\Search\SearchPage;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
+/**
+ *
+ * Class TrackingSubscriber
+ * @category  Subscriber
+ * @package   Shopware\Plugins\FactFinder\Subscriber
+ * @author    Raoul Yemetio <ry@elio-systems.com>
+ * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ */
 class TrackingSubscriber implements EventSubscriberInterface
 {
     /**
@@ -75,15 +82,29 @@ class TrackingSubscriber implements EventSubscriberInterface
      */
     private $salesChannelContextFactory;
 
+    /**
+     * @var SearchPageLoader
+     */
+    private $searchPageLoader;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
     public function __construct(
         ElioFactFinderService $ffService,
         SalesChannelRepositoryInterface $productRepository,
-        SalesChannelContextFactory $salesChannelContextFactory
+        SalesChannelContextFactory $salesChannelContextFactory,
+        SearchPageLoader $searchPageLoader,
+        RequestStack $requestStack
     )
     {
         $this->ffService = $ffService;
         $this->productRepository = $productRepository;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+        $this->searchPageLoader = $searchPageLoader;
+        $this->requestStack = $requestStack;
     }
 
     public static function getSubscribedEvents()
@@ -97,24 +118,117 @@ class TrackingSubscriber implements EventSubscriberInterface
 
     public function trackClick(ProductPageLoadedEvent $event):void
     {
-        #dd($event);
         $request = $event->getRequest();
         $session = $request->getSession();
 
-        if (!$request->query->has('search'))
+        $this->doTrackClick(
+            $request,
+            $event->getSalesChannelContext(),
+            $event->getPage()->getProduct(),
+            $session->getId()
+        );
+    }
+
+    private function doTrackClick(
+        Request $request,
+        SalesChannelContext $salesChannelContext,
+        SalesChannelProductEntity $product,
+        string $sessionId = null
+    ):void
+    {
+        $query = $this->getQuery($request);
+
+        if (empty($query))
             return;
 
-        $product = $event->getPage()->getProduct();
+        $request->query->set('search', $query);
+
+        /** @var SearchPage $origPage */
+        $origPage = $this->searchPageLoader->load($request, $salesChannelContext);
+
+        foreach ($this->getFilters($request) as $key => $value){
+            $request->query->set($key, $value);
+        }
+
+        /** @var SearchPage $page */
+        $page = $this->searchPageLoader->load($request, $salesChannelContext);
 
         $this->setParams(
             $product,
-            $event->getSalesChannelContext()
+            $salesChannelContext
         );
-        #dd($request->query->get('search'));
 
-        //$this->ffService->doTrack($this->ffService->getConfig()::TRACKING_EVENT_CLICK, $session->getId(), $this->getParams());
+        $this->addParam('query', $query);
+        $this->addParam('pos', $this->getProductPosition($page, $product));
+        $this->addParam('origPos', $this->getProductPosition($origPage, $product));
+        $this->addParam('page', $page->getListing()->getPage());
+        $this->addParam('pageSize', $page->getListing()->getLimit());
+        $this->addParam('origPageSize', $origPage->getListing()->getLimit());
+
+        $this->ffService->doTrack(
+            $this->ffService->getConfig()::TRACKING_EVENT_CLICK,
+            $sessionId,
+            $this->getParams()
+        );
+
     }
 
+    private function getQuery(Request $request):?string
+    {
+        $referer = $request->server->getHeaders()['REFERER'];
+        $data = explode('search=', $referer);
+
+        return (count($data) > 1)? $data[1] : null;
+    }
+
+    private function getProductPosition(SearchPage $searchPage, SalesChannelProductEntity $product):?int
+    {
+        $pos = 0;
+
+        /** @var SalesChannelProductEntity $entity */
+        foreach ($searchPage->getListing()->getEntities()->getElements() as $entity){
+            if ($entity->getId() === $product->getId())
+                return $pos + 1;
+            ++$pos;
+        }
+
+        return null;
+    }
+
+    private function filterExist(Request $request):bool
+    {
+        $referer = $request->server->getHeaders()['REFERER'];
+
+        return ( str_contains($referer, 'manufacturer=') |
+                 str_contains($referer, 'properties=') |
+                 str_contains($referer, 'min-price=')  |
+                 str_contains($referer, 'max-price=') |
+                 str_contains($referer, 'rating=') |
+                 str_contains($referer, 'shipping-free=') |
+                 str_contains($referer, 'order=') |
+                 str_contains($referer, 'p=')
+               ) ? true : false;
+
+    }
+
+    private function getFilters(Request $request):array
+    {
+        if (!$this->filterExist($request))
+            return [];
+
+        $filters = [];
+        $referer = $request->server->getHeaders()['REFERER'];
+        $data = explode('&', explode('?', $referer)[1]);
+
+        foreach ($data as $element){
+            $filter = explode('=', $element);
+
+            if ($filter[0] != 'search')
+                $filters[$filter[0]] = urldecode($filter[1]);
+        }
+
+        return $filters;
+    }
 
     private function setParams(SalesChannelProductEntity $product, SalesChannelContext $context):void
     {
@@ -144,6 +258,7 @@ class TrackingSubscriber implements EventSubscriberInterface
     public function trackCart(LineItemAddedEvent $event): void
     {
         $lineItem = $event->getLineItem();
+        $request = $this->requestStack->getMasterRequest();
 
         if($lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE){
             /** @var SalesChannelProductEntity $product */
@@ -165,6 +280,8 @@ class TrackingSubscriber implements EventSubscriberInterface
                 null,
                 $this->getParams()
             );
+
+            $this->doTrackClick($request, $event->getContext(), $product);
 
         }
     }
