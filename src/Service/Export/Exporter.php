@@ -52,6 +52,7 @@ use Shopware\Core\Content\ProductExport\Event\ProductExportLoggingEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\ProductExport\Service\ProductExportFileHandlerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 /**
  * Create an exporter type and generate product export file for that type
@@ -238,7 +239,7 @@ class Exporter implements ExporterInterface
         $productResult = $iterator->fetch();
         $products = $productResult->getEntities();
 
-        /** @var ProductEntity $product */
+        /** @var SalesChannelProductEntity $product */
         foreach ($products as $product) {
 
             /** @var FactFinderProductUpdater $factFinderProductUpdater */
@@ -266,7 +267,8 @@ class Exporter implements ExporterInterface
                 $updatedProduct->getDescription(),
                 $factFinderProductUpdater->getProductURL(),
                 $factFinderProductUpdater->getImageURL(),
-                $factFinderProductUpdater->getPrice(),
+                #$factFinderProductUpdater->getPrice($context),
+                $product->getCalculatedPrice()->getTotalPrice(),
                 $factFinderProductUpdater->cleanValue($updatedProduct->getManufacturer()->getTranslation('name')),
                 $factFinderProductUpdater->getCategoryPath(),
                 $updatedProduct->getEan(),

@@ -35,8 +35,10 @@ namespace Elio\FactFinder\Service;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 /**
  * Updates products according to Fact-finder requirements
@@ -80,7 +82,7 @@ class FactFinderProductUpdater
     private $ruleRepository;
 
     public function __construct(
-        ?ProductEntity $product,
+        ?SalesChannelProductEntity $product,
         UrlGeneratorInterface $generator,
         EntityRepositoryInterface $currencyRepository,
         EntityRepositoryInterface $ruleRepository
@@ -143,27 +145,11 @@ class FactFinderProductUpdater
     }
 
     /**
-     * @return string
+     * @return float
      */
-    public function getPrice(): string
+    public function getPrice(): float
     {
-        //dd($this->product->getId());
-
-        $resultPrice = '|';
-        foreach ($this->product->getPrice()->getElements() as $price) {
-            $resultPrice .= 'gross=' . $price->getGross() . '|net=' . number_format($price->getNet(), 2, '.', '') . '|';
-        }
-
-        /*
-        dd($this->product);
-        dd($this->context);
-
-        dd(($this->product->getListingPrices()->getContextPrice($this->context)));
-        dd($this->product->getListingPrices());
-        foreach ($this->product->getListingPrices() as $price){
-        }
-        */
-        return $this->cleanValue($resultPrice);
+        return $this->product->getCalculatedPrice()->getTotalPrice();
     }
 
     /**

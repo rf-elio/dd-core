@@ -184,6 +184,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
 
         $result = $this->ffSearch($request, $criteria, $context);
         //$result = $this->repository->search($criteria, $context);
+        #dd($result);
 
         $result = ProductListingResult::createFrom($result);
 
@@ -206,6 +207,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
         $criteria->resetQueries();
         $criteria->resetFilters();
 
+        /*
         $postFilters = $criteria->getPostFilters();
         $i=0;
         foreach ($postFilters as $postFilter){
@@ -215,11 +217,12 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             }
             ++$i;
         }
+        */
 
         $criteria->resetPostFilters();
 
-        if(count($postFilters) > 0)
-            $criteria->addPostFilter($postFilters[0]);
+        #if(count($postFilters) > 0)
+            #$criteria->addPostFilter($postFilters[0]);
 
         $criteria->addFilter(
             new ProductAvailableFilter(
@@ -462,7 +465,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
         $this->ffService->setPropertyFilter($this->getPropertyIds($request));
         $this->ffService->setRatingFilter($request->get('rating'));
         $this->ffService->setShippingFreeFilter($request->get('shipping-free'));
-        //$this->ffService->setPriceFilter($request->get('min-price'), $request->get('max-price'));
+        $this->ffService->setPriceFilter($request->get('min-price'), $request->get('max-price'));
     }
 
 }

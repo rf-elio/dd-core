@@ -295,6 +295,7 @@ class ElioFactFinderService
             $uri,
             $params
         );
+        #dd($params);
 
         return json_decode($request->getBody()->getContents(), true)['searchResult'];
     }

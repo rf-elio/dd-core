@@ -44,6 +44,7 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\ProductExport\Service\ProductExportFileHandlerInterface;
+use Elio\FactFinder\Service\Export\ExportManagerInterface;
 
 /**
  * Plugin base. It create product export during plugin installation.
@@ -106,7 +107,11 @@ class FactFinder extends Plugin
          );
 
          $productExportManager->install();
-         */
+
+
+        /** @var ExportManagerInterface $exportManager */
+        #$exportManager = $this->container->get("Elio\FactFinder\Service\Export\ExportManager");
+        #$exportManager->install();
 
 
     }
