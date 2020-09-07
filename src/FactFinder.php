@@ -32,19 +32,9 @@
 
 namespace Elio\FactFinder;
 
-use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Framework\Plugin;
-use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Elio\FactFinder\Service\Export\ExportManager;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Elio\FactFinder\Service\Export\ExporterInterface;
-use Elio\FactFinder\Service\Export\Exporter;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Content\ProductExport\Service\ProductExportFileHandlerInterface;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
 
 /**
  * Plugin base. It create product export during plugin installation.
@@ -58,61 +48,22 @@ use Elio\FactFinder\Service\Export\ExportManagerInterface;
 class FactFinder extends Plugin
 {
 
-    public function install(InstallContext $installContext): void
+    /**
+     * @var ExportManager
+     */
+    private $exporter;
+
+    public function activate(ActivateContext $context): void
     {
-        parent::install($installContext);
+        $this->exporter->install();
+        $this->exporter->generate();
+    }
 
-
-        /** @var EntityRepositoryInterface $productExportRepository */
-        $productExportRepository = $this->container->get("product_export.repository");
-        /** @var EntityRepositoryInterface $salesChannelDomainRepository */
-        $salesChannelDomainRepository = $this->container->get("sales_channel_domain.repository");
-        /** @var EntityRepositoryInterface $productStreamRepository */
-        $productStreamRepository = $this->container->get("product_stream.repository");
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get("sales_channel.repository");
-
-        /** @var ProductStreamBuilderInterface $productStreamBuilder */
-        $productStreamBuilder = $this->container->get("Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder");
-        /** @var SalesChannelRepositoryInterface $productRepository */
-        $productRepository = $this->container->get("sales_channel.product.repository");
-        /** @var SalesChannelContextServiceInterface $salesChannelContextService */
-        //$salesChannelContextService = $this->container->get("Shopware\Core\System\SalesChannel\Context\SalesChannelContextService");
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->container->get("event_dispatcher");
-        /** @var int $readBufferSize */
-        $readBufferSize = $this->container->getParameter('product_export.read_buffer_size');
-        /** @var ProductExportFileHandlerInterface $productExportFileHandler */
-        // $productExportFileHandler = $this->container->get("Shopware\Core\Content\ProductExport\Service\ProductExportFileHandler");
-        /** @var FilesystemInterface $filesystem */
-        //$filesystem = $this->container->get("shopware.filesystem.private");
-
-        /** @var ExporterInterface $exporter */
-        /* $exporter = new Exporter(
-             $productStreamBuilder,
-             $productRepository,
-             $salesChannelContextService,
-             $eventDispatcher,
-             $readBufferSize,
-             $productExportFileHandler,
-             $filesystem
-         );
-
-         $productExportManager = new ExportManager(
-             $productExportRepository,
-             $salesChannelDomainRepository,
-             $productStreamRepository,
-             $salesChannelRepository,
-             $exporter
-         );
-
-         $productExportManager->install();
-
-
-        /** @var ExportManagerInterface $exportManager */
-        #$exportManager = $this->container->get("Elio\FactFinder\Service\Export\ExportManager");
-        #$exportManager->install();
-
-
+    /**
+     * @required
+     */
+    public function setExportManager(ExportManager $exporter): void
+    {
+        $this->exporter = $exporter;
     }
 }
