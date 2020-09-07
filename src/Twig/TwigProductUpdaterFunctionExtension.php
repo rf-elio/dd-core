@@ -39,6 +39,7 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Elio\FactFinder\Service\FactFinderProductUpdater;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 /**
  * Extend twig with news filters and functions
@@ -61,11 +62,20 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
      */
     private $currencyRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $ruleRepository;
 
-    public function __construct(UrlGeneratorInterface $generator, EntityRepositoryInterface $currencyRepository)
+    public function __construct(
+        UrlGeneratorInterface $generator,
+        EntityRepositoryInterface $currencyRepository,
+        EntityRepositoryInterface $ruleRepository
+    )
     {
         $this->generator = $generator;
         $this->currencyRepository = $currencyRepository;
+        $this->ruleRepository = $ruleRepository;
     }
 
     /**
@@ -127,86 +137,87 @@ class TwigProductUpdaterFunctionExtension extends AbstractExtension
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @return string
      */
-    public function productImageUrl(ProductEntity $product): string
+    public function productImageUrl(SalesChannelProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getImageURL();
     }
 
     /**
-     * @param ProductEntity $product
-     * @return string
+     * @param SalesChannelProductEntity $product
+     * @return float
      */
-    public function productPrice(ProductEntity $product): string
+    public function productPrice(SalesChannelProductEntity $product): float
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);;
         return $factFinderProductUpdater->getPrice();
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @return string
      */
-    public function productCategoryPath(ProductEntity $product): string
+    public function productCategoryPath(SalesChannelProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getCategoryPath();
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @return string
      */
-    public function productAttribute(ProductEntity $product): string
+    public function productAttribute(SalesChannelProductEntity $product): string
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getProductAttribute();
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @param string $field
      * @return mixed|string
      */
-    public function productCustomField(ProductEntity $product, string $field)
+    public function productCustomField(SalesChannelProductEntity $product, string $field)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getProductCustomField($field);
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @return string
      */
-    public function productManufacturer(ProductEntity $product)
+    public function productManufacturer(SalesChannelProductEntity $product)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getManufacturer();
     }
 
     /**
-     * @param ProductEntity $product
+     * @param SalesChannelProductEntity $product
      * @return string
      */
-    public function productSearchKeywords(ProductEntity $product)
+    public function productSearchKeywords(SalesChannelProductEntity $product)
     {
         $factFinderProductUpdater = $this->getFactFinderProductUpdater($product);
         return $factFinderProductUpdater->getSearchKeywords();
     }
 
     /**
-     * @param ProductEntity|null $product
+     * @param SalesChannelProductEntity|null $product
      * @return FactFinderProductUpdater
      */
-    private function getFactFinderProductUpdater(?ProductEntity $product): FactFinderProductUpdater
+    private function getFactFinderProductUpdater(?SalesChannelProductEntity $product): FactFinderProductUpdater
     {
         return new FactFinderProductUpdater(
             $product,
             $this->generator,
-            $this->currencyRepository
+            $this->currencyRepository,
+            $this->ruleRepository
         );
     }
 }
