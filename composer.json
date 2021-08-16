@@ -1,7 +1,7 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v1.0.0",
+    "version": "v2.0.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -9,7 +9,10 @@
         }
     ],
     "require": {
-        "shopware/core": "*"
+        "shopware/core": "*",
+        "shopware/storefront": "*",
+        "php": ">= 7.4",
+        "elio/fact-finder-api-client": "dev-master"
     },
     "extra": {
         "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",
@@ -25,6 +28,21 @@
     "autoload": {
         "psr-4": {
             "Elio\\FactFinder\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elio\\FactFinder\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "gitlab-domains": ["git.elio-systems.io"]
+    },
+
+    "repositories": {
+        "git.elio-systems.io/201": {
+            "type": "composer",
+            "url": "https://git.elio-systems.io/api/v4/group/201/-/packages/composer/packages.json"
         }
     }
 }
