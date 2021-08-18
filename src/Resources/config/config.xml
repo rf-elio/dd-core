@@ -3,91 +3,311 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
 
     <card>
-        <title>Basic configuration</title>
-        <title lang="de-DE">Grundeinstellungen</title>
+        <title>API configuration</title>
+        <title lang="de-DE">API-Einstellungen</title>
         <input-field>
-            <name>protocol</name>
-            <label>Server Protocol</label>
-            <defaultValue>http</defaultValue>
-            <helpText>Das verwendete Protokoll zur Kommunikation mit dem Server</helpText>
+            <name>apiUrl</name>
+            <label>API Url</label>
+            <label lang="de-DE">API-Url</label>
+            <placeholder>example.FACT-Finder.de</placeholder>
+            <helpText>Die URL des FACT-Finders Servers</helpText>
         </input-field>
         <input-field>
-            <name>ffServer</name>
-            <label>Server Url</label>
-            <placeholder>example.fact-finder.de</placeholder>
-            <helpText>Die URL des Fact-Finders Servers</helpText>
-        </input-field>
-        <input-field>
-            <name>port</name>
-            <label>Server Port</label>
-            <defaultValue>80</defaultValue>
-            <helpText>Der Port für die Kommunikation zum Server</helpText>
-        </input-field>
-        <input-field>
-            <name>context</name>
-            <label>Context-Name</label>
+            <name>apiContext</name>
+            <label>API context name</label>
+            <label lang="de-DE">API-Context</label>
             <placeholder>FACT-Finder</placeholder>
-            <helpText>Name der FACT-Finder Anwendung. Zu finden in Partner-Url z.B. example.fact-finder.de/CONTEXTNAME/Management.ff</helpText>
-        </input-field>
-        <input-field type="single-select">
-            <name>ffVersion</name>
-            <label>Eingesetzte FACT-Finder Version</label>
-            <options>
-                <option>
-                    <id>7.2</id>
-                    <name>7.2</name>
-                </option>
-                <option>
-                    <id>7.3</id>
-                    <name>7.3</name>
-                </option>
-            </options>
-            <defaultValue>sevenTwo</defaultValue>
-        </input-field>
-        <input-field type="single-select">
-            <name>authtype</name>
-            <label>Authentifizierungs-Methode</label>
-            <options>
-                <option>
-                    <id>advanced</id>
-                    <name>advanced</name>
-                </option>
-                <option>
-                    <id>simple</id>
-                    <name>simple</name>
-                </option>
-            </options>
-            <defaultValue>advanced</defaultValue>
-            <helpText>Gibt die Methode an die zur Anmeldung bei FACT-Finder bentzt werden soll.</helpText>
+            <helpText>Name of the FACT-Finder application. Visible in the partner URL, e.g. example.FACT-Finder.de/CONTEXTNAME/Management.ff</helpText>
+            <helpText lang="de-DE">Name der FACT-Finder Anwendung. Zu finden in Partner-Url z.B. example.FACT-Finder.de/CONTEXTNAME/Management.ff</helpText>
         </input-field>
         <input-field>
-            <name>authusername</name>
-            <label>API Benutzername</label>
+            <name>apiUsername</name>
+            <label>API user name</label>
+            <label lang="de-DE">API-Benutzername</label>
             <placeholder>User</placeholder>
-            <helpText>FACT-Finder-Benutzer mit der nötigen Berechtigung</helpText>
+            <helpText>FACT-Finder API user with the necessary rights</helpText>
+            <helpText lang="de-DE">FACT-Finder API-Benutzer mit der nötigen Berechtigung</helpText>
         </input-field>
         <input-field type="password">
-            <name>authpassword</name>
-            <label>API Passwort</label>
+            <name>apiPassword</name>
+            <label>API password</label>
+            <label lang="de-DE">API-Passwort</label>
             <placeholder>Password</placeholder>
-            <helpText>Passwort des FACT-Finder-Benutzers</helpText>
+            <helpText>Password of FACT-Finder API user</helpText>
+            <helpText lang="de-DE">Passwort des FACT-Finder API-Benutzers</helpText>
         </input-field>
         <input-field>
-            <name>authprefix</name>
-            <label>Advanced Authentication Prefix</label>
-            <placeholder>FACT-FINDER</placeholder>
-            <helpText>Der Advanced-Authentication-Prefix wird nur benutzt, wenn die Authentifizierungs-Methode advanced ausgewählt wird.</helpText>
+            <name>apiChannel</name>
+            <label>API channel</label>
+            <label lang="de-DE">API-Channel</label>
+            <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
+            <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
-        <input-field>
-            <name>authpostfix</name>
-            <label>Advanced Authentication Postfix</label>
-            <placeholder>FACT-FINDER</placeholder>
-            <helpText>Der Advanced-Authentication-Postfix wird nur benutzt, wenn die Authentifizierungs-Methode advanced ausgewählt wird.</helpText>
+        <input-field type="int">
+            <name>apiTimeout</name>
+            <label>API request timeout</label>
+            <label lang="de-DE">API Timeout</label>
+            <defaultValue>10</defaultValue>
+            <helpText>maximum request duration in seconds</helpText>
+            <helpText lang="de-DE">Maximale Laufzeit für Anfragen an Factfinder in Sekunden</helpText>
         </input-field>
-        <input-field>
-            <name>channel</name>
-            <label>Channel</label>
-            <helpText>Name des Channels in FACT-Finder. Für mehrere Sprachen werden mehrere Channels benutzt.</helpText>
+    </card>
+    <card>
+        <title>WebComponents-Settings</title>
+        <title lang="de-DE">WebComponents-Einstellungen</title>
+        <input-field type="bool">
+            <name>replaceSuggest</name>
+            <label>Replace the shopware suggest by the FF web components suggest</label>
+            <label lang="de-DE">Shopware Suggests durch FACT-Finder-Suggests ersetzen</label>
         </input-field>
+        <input-field type="text">
+            <name>webComponentUri</name>
+            <label>Web Components endpoint URL</label>
+            <label lang="de-DE">Web Components Endpunkt-URL</label>
+            <placeholder>example.FACT-Finder.de</placeholder>
+        </input-field>
+    </card>
+    <card>
+        <title>Basic configuration</title>
+        <title lang="de-DE">Grundeinstellungen</title>
+        <input-field type="bool">
+            <name>useAso</name>
+            <label>After search optimization active</label>
+            <label lang="de-DE">After Search Optimization benutzen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useABTests</name>
+            <label>FACT-Finder AB-Tests active</label>
+            <label lang="de-DE">FACT-Finder AB-Tests benutzen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useCache</name>
+            <label>FACT-Finder Cache active</label>
+            <label lang="de-DE">FACT-Finder Cache benutzen</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Listing configuration</title>
+        <title lang="de-DE">Listing-Einstellungen</title>
+        <input-field type="bool">
+            <name>replaceSimilarProducts</name>
+            <label>Replaces or adds a product slider to show similar products</label>
+            <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>replaceShopListing</name>
+            <label>Replace the default Shopware listing with FF listing</label>
+            <label lang="de-DE">Listing in Kategorien aus FACT-Finder befüllen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>replaceSearchListing</name>
+            <label>Replaces the default Shopware search listing with FF listing</label>
+            <label lang="de-DE">Listing in Suchergebnissen aus FACT-Finder befüllen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useCategoryFilterLists</name>
+            <label>Apply lists of blocked and allowed filter lists in categories</label>
+            <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Recommendations</title>
+        <title lang="de-DE">Recommendations</title>
+        <input-field type="bool">
+            <name>useProductDetailRecommendations</name>
+            <label>Display the FACT-Finder product recommendation slider on product detail pages</label>
+            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useCartRecommendations</name>
+            <label>Display the FACT-Finder product recommendation slider on the cart page</label>
+            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Warenkorb anzeigen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useOffCanvasRecommendations</name>
+            <label>Display the FACT-Finder product recommendation slider inside the offcanvas-cart</label>
+            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useConfirmRecommendations</name>
+            <label>Display the FACT-Finder product recommendation slider in the checkout confirm page</label>
+            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Checkout anzeigen</label>
+        </input-field>
+        <component name="sw-entity-multi-id-select">
+            <name>recommendationExcludedProducts</name>
+            <label>exclude selected products from recommendations</label>
+            <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
+            <entity>product</entity>
+        </component>
+    </card>
+    <card>
+        <title>Tracking</title>
+        <title lang="de-DE">Tracking</title>
+        <input-field type="bool">
+            <name>trackLogin</name>
+            <label>Tracks the customer login</label>
+            <label lang="de-DE">Kundenlogin tracken</label>
+        </input-field>
+        <input-field type="bool">
+            <name>trackProductView</name>
+            <label>Tracks the view of a product (detail page)</label>
+            <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
+        </input-field>
+        <input-field type="bool">
+            <name>trackCart</name>
+            <label>Tracking of the shopware cart</label>
+            <label lang="de-DE">Shopware-Warenkorb tracken</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Suggest export</title>
+        <title lang="de-DE">Suggest-Export</title>
+        <input-field type="bool">
+            <name>suggestExportActive</name>
+            <label>Activates the xml suggest export</label>
+            <label lang="de-DE">Suggest XML-Export benutzen</label>
+        </input-field>
+        <input-field type="text">
+            <name>suggestExportInterval</name>
+            <label>suggest export interval</label>
+            <label lang="de-DE">Suggest-Export-Intervall</label>
+            <placeholder>0 * * * *</placeholder>
+            <helpText>Crontab like format: 0 * * * *</helpText>
+            <helpText lang="de-DE">Im Cron-Tab-Format: 0 * * * * (Minute, Stunde, Tag, Monat, Jahr)</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportProductCategories</name>
+            <label>Export product categories</label>
+            <label lang="de-DE">Produktkategorien exportieren</label>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportStructureCategories</name>
+            <label>Export structure categories</label>
+            <label lang="de-DE">Strukturkategorien exportieren</label>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportLinkCategories</name>
+            <label>Export link categories</label>
+            <label lang="de-DE">Linkkategorien exportieren</label>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportFooterNavigation</name>
+            <label>Export footer categories</label>
+            <label lang="de-DE">Footerkategorien exportieren</label>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportServiceNavigation</name>
+            <label>Export service categories</label>
+            <label lang="de-DE">Servicekategorien exportieren</label>
+        </input-field>
+        <input-field type="bool">
+            <name>suggestExportManufacturers</name>
+            <label>Export manufacturers</label>
+            <label lang="de-DE">Hersteller exportieren</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Bot-Protection</title>
+        <title lang="de-DE">Bot-Protection</title>
+        <input-field type="bool">
+            <name>botProtectionActive</name>
+            <label>Activates the bot protection</label>
+            <label lang="de-DE">Bot-Schutz aktivieren</label>
+        </input-field>
+        <component name="sw-textarea-field">
+            <name>searchTermFilter</name>
+            <label>If one of the strings configured here, appear in the search term, the request will be blocked</label>
+            <label lang="de-DE">Suchanfragen mit einem dieser Inhalte werden geblockt</label>
+            <placeholder>"DROP TABLE;"|Banane|Ralf Frommherz|"³¼½"</placeholder>
+            <helpText>search strings separated by pipes(|) </helpText>
+            <helpText lang="de-DE">Suchbegriffe jeweils durch Pipes(|) getrennt</helpText>
+        </component>
+        <component name="sw-textarea-field">
+            <name>userAgentFilter</name>
+            <label>If one of the configured strings can be found in the user agent, the request will be blocked</label>
+            <label lang="de-DE">User Agents dieser Typen werden geblockt</label>
+            <placeholder>AhrefsBot|Mozilla/5.0</placeholder>
+            <helpText>user agent separated by pipes(|) </helpText>
+            <helpText lang="de-DE">User Agents jeweils durch Pipes(|) getrennt</helpText>
+        </component>
+        <component name="sw-textarea-field">
+            <name>ipFilter</name>
+            <label>If one of the configured ip addresses can be found in the requested ip address, the request will be blocked</label>
+            <label lang="de-DE">Anfragen von hier konfigurierten IP-Adressen werden geblockt</label>
+            <placeholder>1.1.1.1|2.2.2.2|3.3.3.3</placeholder>
+            <helpText>Ip addresses separated by pipes(|) </helpText>
+            <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </component>
+    </card>
+    <card>
+        <title>Logging and Report</title>
+        <title lang="de-DE">Logging und Reporting</title>
+        <input-field type="int">
+            <name>reportMaxAgeSuccess</name>
+            <label>Max age in days for successful reports (when is a cleanup performed)</label>
+            <label lang="de-DE">Zeitraum in Tagen bis Reports ohne Fehler gelöscht werden</label>
+            <defaultValue>3</defaultValue>
+        </input-field>
+        <input-field type="int">
+            <name>reportMaxAgeError</name>
+            <label>Max age in days for reports that contains errors (when is a cleanup performed)</label>
+            <label lang="de-DE">Zeitraum in Tagen bis Reports mit Fehlern gelöscht werden</label>
+            <defaultValue>30</defaultValue>
+        </input-field>
+        <input-field type="text">
+            <name>reportEmailSuccess</name>
+            <label>Email addresses for reports without errors</label>
+            <label lang="de-DE">E-Mail-Adresse für Reports ohne Auffälligkeiten</label>
+            <placeholder>test@test.test</placeholder>
+            <helpText>Multiple email addresses separated by pipes(|) </helpText>
+            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>reportEmailError</name>
+            <label>Email addresses for reports with errors</label>
+            <label lang="de-DE">E-Mail-Adresse für Reports mit Fehlermeldungen</label>
+            <placeholder>test@test.test</placeholder>
+            <helpText>Multiple email addresses separated by pipes(|) </helpText>
+            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>logLevel</name>
+            <label>Log level</label>
+            <options>
+                <option>
+                    <id>prod</id>
+                    <name>productive</name>
+                    <name lang="de-DE">Produktiv</name>
+                </option>
+                <option>
+                    <id>dev</id>
+                    <name>development</name>
+                    <name lang="de-DE">Debugging</name>
+                </option>
+            </options>
+            <defaultValue>prod</defaultValue>
+            <helpText>log level</helpText>
+            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </input-field>
+        <component name="sw-textarea-field">
+            <name>logDebugIpFilter</name>
+            <label>The debug log is only created if this field is empty or if this list contains the users ip address</label>
+            <label lang="de-DE">Falls befüllt, werden Debug-Logs nur für Benutzer mit diesen IP-Adressen erstellt</label>
+            <placeholder>1.1.1.1|2.2.2.2|3.3.3.3</placeholder>
+            <helpText>Ip addresses separated by pipes(|) </helpText>
+            <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </component>
+    </card>
+    <card>
+        <title>Advanced</title>
+        <title lang="de-DE">Advanced</title>
+        <component name="sw-textarea-field">
+            <name>additionalRequestParameters</name>
+            <label>Additional parameters for request to FACT-Finder</label>
+            <label lang="de-DE">Zusatzparameter für Requests nach FACT-Finder</label>
+            <placeholder>name=value&amp;otherName=otherValue</placeholder>
+            <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
+            <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
+        </component>
     </card>
 </config>
