@@ -53,21 +53,6 @@
         </input-field>
     </card>
     <card>
-        <title>WebComponents-Settings</title>
-        <title lang="de-DE">WebComponents-Einstellungen</title>
-        <input-field type="bool">
-            <name>replaceSuggest</name>
-            <label>Replace the shopware suggest by the FF web components suggest</label>
-            <label lang="de-DE">Shopware Suggests durch FACT-Finder-Suggests ersetzen</label>
-        </input-field>
-        <input-field type="text">
-            <name>webComponentUri</name>
-            <label>Web Components endpoint URL</label>
-            <label lang="de-DE">Web Components Endpunkt-URL</label>
-            <placeholder>example.FACT-Finder.de</placeholder>
-        </input-field>
-    </card>
-    <card>
         <title>Basic configuration</title>
         <title lang="de-DE">Grundeinstellungen</title>
         <input-field type="bool">
