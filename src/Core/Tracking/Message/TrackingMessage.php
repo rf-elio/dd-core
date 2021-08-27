@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Core\Tracking\Message;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class TrackingMessage
+ * @package Elio\FactFinder\Core\Tracking\Message
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class TrackingMessage
 {
-    private ExportService $exportService;
+    private TrackingRequest $request;
+    private string $salesChannelId;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * TrackingMessage constructor.
+     * @param TrackingRequest $request
+     * @param string $salesChannelId
      */
-    public function __construct(ExportService $exportService)
+    public function __construct(TrackingRequest $request, string $salesChannelId)
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        $this->request = $request;
+        $this->salesChannelId = $salesChannelId;
     }
 
-    protected function configure(): void
+    /**
+     * @return TrackingRequest
+     */
+    public function getRequest(): TrackingRequest
     {
-        $this->setName('elio-ff:export:generate');
+        return $this->request;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @return string
+     */
+    public function getSalesChannelId(): string
     {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
+        return $this->salesChannelId;
     }
 }

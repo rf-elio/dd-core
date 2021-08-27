@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,63 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
-
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+namespace Elio\FactFinder\Api\Tracking\Request;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class CheckoutTrackingRequest
+ * @package Elio\FactFinder\Api\Tracking\Request
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class CheckoutTrackingRequest extends TrackingRequest
 {
-    private ExportService $exportService;
+    /**
+     * @var array
+     */
+    protected array $events = [];
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * @param string $id
+     * @param string $productNumber
+     * @param string $title
+     * @param int $quantity
+     * @param float $price
+     * @param string|null $customerId
      */
-    public function __construct(ExportService $exportService)
+    public function addEvent(
+        string $id,
+        string $productNumber,
+        string $title,
+        int $quantity,
+        float $price,
+        ?string $customerId
+    ) : void
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        $this->events[] = [
+            'id' => $id,
+            'productNumber' => $productNumber,
+            'title' => $title,
+            'count' => $quantity,
+            'price' => $price,
+            'customerId' => $customerId
+        ];
     }
 
-    protected function configure(): void
+    /**
+     * @return bool
+     */
+    public function hasEvents() : bool
     {
-        $this->setName('elio-ff:export:generate');
+        return !empty($this->events);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @return array
+     */
+    public function getEvents(): array
     {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
+        return $this->events;
     }
 }

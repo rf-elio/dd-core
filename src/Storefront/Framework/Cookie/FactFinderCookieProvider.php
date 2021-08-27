@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,57 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Storefront\Framework\Cookie;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class FactFinderCookieProvider
+ * @package Elio\FactFinder\Storefront\Framework\Cookie
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class FactFinderCookieProvider implements CookieProviderInterface
 {
-    private ExportService $exportService;
+    private CookieProviderInterface $cookieProvider;
+
+    private const TRACKING_COOKIE = [
+        'snippet_name' => 'elioFactFinder.cookies.tracking.name',
+        'snippet_description' => 'elioFactFinder.cookies.tracking.description',
+        'cookie' => 'elio_ff_tracking'
+    ];
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * FactFinderCookieProvider constructor.
+     * @param CookieProviderInterface $cookieProvider
      */
-    public function __construct(ExportService $exportService)
+    public function __construct(CookieProviderInterface $cookieProvider)
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        $this->cookieProvider = $cookieProvider;
     }
 
-    protected function configure(): void
+    /**
+     * @return array
+     */
+    public function getCookieGroups(): array
     {
-        $this->setName('elio-ff:export:generate');
-    }
+        $cookieGroups = $this->cookieProvider->getCookieGroups();
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
+        foreach ($cookieGroups as &$cookieGroup) {
+            if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
+                continue;
+            }
 
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
+            $cookieGroup['entries'] = array_merge(
+                $cookieGroup['entries'],
+                [self::TRACKING_COOKIE]
+            );
 
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
+            break;
         }
 
-        return Command::SUCCESS;
+        return $cookieGroups;
     }
 }

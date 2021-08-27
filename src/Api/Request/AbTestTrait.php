@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Api\Request;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ExportGenerateCommand
- *
- * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * Trait AbTestTrait
+ * @package Elio\FactFinder\Api\Request
  */
-class ExportGenerateCommand extends Command
+trait AbTestTrait
 {
-    private ExportService $exportService;
+    /**
+     * AB test
+     *
+     * "activeAbTests": {
+     *    "additionalProp1": "string",
+     *    "additionalProp2": "string",
+     *    "additionalProp3": "string"
+     * },
+     * @var array|null
+     */
+    protected ?array $activeAbTests = null;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * @return array|null
      */
-    public function __construct(ExportService $exportService)
+    public function getActiveAbTests(): ?array
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        return $this->activeAbTests;
     }
 
-    protected function configure(): void
+    /**
+     * @param array|null $activeAbTests
+     */
+    public function setActiveAbTests(?array $activeAbTests): void
     {
-        $this->setName('elio-ff:export:generate');
+        $this->activeAbTests = $activeAbTests;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
-    }
 }

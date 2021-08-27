@@ -35,6 +35,13 @@ namespace Elio\FactFinder;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Elio\FactFinder\Service\Export\ExportManager;
+use Swag\EnterpriseSearch\Boosting\EntityStream\DependencyInjection\CompilerPass\EntityStreamEntityIndexerCompilerPass;
+use Swag\EnterpriseSearch\Boosting\EntityStream\DependencyInjection\CompilerPass\EntityStreamTagCompilerPass;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\FileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
  * Plugin base. It create product export during plugin installation.
@@ -47,23 +54,37 @@ use Elio\FactFinder\Service\Export\ExportManager;
  */
 class FactFinder extends Plugin
 {
+    private const PLUGIN_CONFIG = 'FactFinder.config.';
+    public const PLUGIN_CONFIG_API_URL = self::PLUGIN_CONFIG.'apiUrl';
+    public const PLUGIN_CONFIG_API_USERNAME = self::PLUGIN_CONFIG.'apiUsername';
+    public const PLUGIN_CONFIG_API_PASSWORD = self::PLUGIN_CONFIG.'apiPassword';
+    public const PLUGIN_CONFIG_API_CHANNEL = self::PLUGIN_CONFIG.'apiChannel';
 
-    /**
-     * @var ExportManager
-     */
-    private $exporter;
+    public function build(ContainerBuilder $container): void
+    {
+        if($container->has('MY SERVICE ID')) {
+            parent::build($container);
+
+            $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
+            $loader->load('services.xml');
+        }
+    }
+//    /**
+//     * @var ExportManager
+//     */
+//    private $exporter;
 
     public function activate(ActivateContext $context): void
     {
-        $this->exporter->install();
-        $this->exporter->generate();
+//        $this->exporter->install();
+//        $this->exporter->generate();
     }
 
-    /**
-     * @required
-     */
-    public function setExportManager(ExportManager $exporter): void
-    {
-        $this->exporter = $exporter;
-    }
+//    /**
+//     * @required
+//     */
+//    public function setExportManager(ExportManager $exporter): void
+//    {
+////        $this->exporter = $exporter;
+//    }
 }

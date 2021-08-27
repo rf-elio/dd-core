@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2018, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Resources\snippet\en_GB;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\System\Snippet\Files\SnippetFileInterface;
 
-/**
- * Class ExportGenerateCommand
- *
- * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
- */
-class ExportGenerateCommand extends Command
+class SnippetFile_en_GB implements SnippetFileInterface
 {
-    private ExportService $exportService;
-
-    /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
-     */
-    public function __construct(ExportService $exportService)
+    public function getName(): string
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        return 'storefront.en-GB';
     }
 
-    protected function configure(): void
+    public function getPath(): string
     {
-        $this->setName('elio-ff:export:generate');
+        return __DIR__ . '/storefront.en-GB.json';
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function getIso(): string
     {
-        $context = Context::createDefaultContext();
+        return 'en-GB';
+    }
 
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
+    public function getAuthor(): string
+    {
+        return 'FACTFinder-Snippets';
+    }
 
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
+    public function isBase(): bool
+    {
+        return false;
     }
 }

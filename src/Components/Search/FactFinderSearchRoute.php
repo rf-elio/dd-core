@@ -171,10 +171,8 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
         return $this->decorated;
     }
 
-    public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse
+    public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSearchRouteResponse
     {
-        $criteria = new Criteria();
-
         $this->searchBuilder->build($request, $criteria, $context);
 
         $this->eventDispatcher->dispatch(
