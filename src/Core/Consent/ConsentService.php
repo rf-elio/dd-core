@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Core\Consent;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class ConsentService
+ * @package Elio\FactFinder\Core\Consent
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class ConsentService
 {
-    private ExportService $exportService;
+    private FactFinderConfigServiceInterface $configService;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * ConsentService constructor.
+     * @param FactFinderConfigServiceInterface $configService
      */
-    public function __construct(ExportService $exportService)
+    public function __construct(FactFinderConfigServiceInterface $configService)
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        $this->configService = $configService;
     }
 
-    protected function configure(): void
+    /**
+     * @param string $salesChannelId
+     * @return bool
+     */
+    public function isTrackingAllowed(string $salesChannelId) : bool
     {
-        $this->setName('elio-ff:export:generate');
-    }
+        $config = $this->configService->get($salesChannelId);
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
+        // if no consent is required -> tracking can always be active
+        if(!$config->isTrackRequireConsent()) {
+            return true;
         }
 
-        return Command::SUCCESS;
+        // @todo: implement based on user decision -> user the subscriber to get the details from the request
+        return true;
     }
 }

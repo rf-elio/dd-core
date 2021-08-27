@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- api -->
+        <service id="Elio\FactFinder\Api\ApiClientFactory">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument>%kernel.logs_dir%</argument>
+        </service>
+
+        <service id="Elio\FactFinder\Api\Campaign\CampaignApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Import\ImportApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Management\ManagementApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
+        </service>
+        <service id="Elio\FactFinder\Api\PredictiveBasket\PredictiveBasketApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\SearchApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Tracking\TrackingApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+        </service>
+
+        <!-- request transformer -->
+        <service id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer">
+            <argument type="service" id="event_dispatcher" />
+        </service>
+    </services>
+</container>

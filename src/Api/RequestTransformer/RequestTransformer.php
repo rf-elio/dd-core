@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Api\RequestTransformer;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Api\Request\ApiRequest;
+use Elio\FactFinder\Api\RequestTransformer\Event\RequestTransformEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class RequestTransformer
+ * @package Elio\FactFinder\Api\RequestTransformer
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class RequestTransformer
 {
-    private ExportService $exportService;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * RequestTransformer constructor.
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ExportService $exportService)
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
-    protected function configure(): void
+    /**
+     * Transforms the request object into the open api request object
+     *
+     * @param ApiRequest $request
+     * @return array
+     */
+    public function transform(ApiRequest $request) : array
     {
-        $this->setName('elio-ff:export:generate');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
+        $transformedRequest = ['params' => $request->toArray()];
+        $event = new RequestTransformEvent($request, $transformedRequest);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getTransformedRequest();
     }
 }

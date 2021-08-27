@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- storefront / controller -->
+        <service id="Elio\FactFinder\Storefront\Controller\TrackingController" public="true" >
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- core / messenger -->
+        <service id="Elio\FactFinder\Core\Tracking\Message\TrackingMessageHandler">
+            <argument type="service" id="Elio\FactFinder\Api\Tracking\TrackingApi" />
+            <argument type="service" id="Elio\FactFinder\Logger" />
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <!-- subscriber -->
+        <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="event_dispatcher"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

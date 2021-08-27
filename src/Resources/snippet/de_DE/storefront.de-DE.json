@@ -1,0 +1,10 @@
+{
+    "elioFactFinder": {
+        "cookies": {
+            "tracking": {
+                "name": "FACTFinder Tracking",
+                "description": ""
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Core\Export\Writer;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\ExportItem;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class CSVFileWriter
+ * @package Elio\FactFinder\Core\Export\Writer
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class CSVFileWriter extends BaseWriter implements FileWriterInterface
 {
-    private ExportService $exportService;
+    public const TYPE = 'csv';
+    private const SEPARATOR = '|';
+    private bool $headerWritten = false;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * Checks if the writer can be used for the given export
+     * @param ExportEntity $export
+     * @return bool
      */
-    public function __construct(ExportService $exportService)
+    public function supports(ExportEntity $export): bool
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        return $export->getFormat() === self::TYPE;
     }
 
-    protected function configure(): void
+    /**
+     * @return false|resource
+     */
+    public function open()
     {
-        $this->setName('elio-ff:export:generate');
+        $this->headerWritten = false;
+        return parent::open();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param resource $handle
+     * @param ExportItem $item
+     */
+    public function write($handle, ExportItem $item): void
     {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
+        if(!$this->headerWritten) {
+            fputcsv($handle, $item->getKeys(), self::SEPARATOR);
+            $this->headerWritten = true;
         }
 
-        return Command::SUCCESS;
+        fputcsv($handle, array_values($item->getParams()), self::SEPARATOR);
     }
 }

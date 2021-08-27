@@ -13,14 +13,6 @@
             <helpText>Die URL des FACT-Finders Servers</helpText>
         </input-field>
         <input-field>
-            <name>apiContext</name>
-            <label>API context name</label>
-            <label lang="de-DE">API-Context</label>
-            <placeholder>FACT-Finder</placeholder>
-            <helpText>Name of the FACT-Finder application. Visible in the partner URL, e.g. example.FACT-Finder.de/CONTEXTNAME/Management.ff</helpText>
-            <helpText lang="de-DE">Name der FACT-Finder Anwendung. Zu finden in Partner-Url z.B. example.FACT-Finder.de/CONTEXTNAME/Management.ff</helpText>
-        </input-field>
-        <input-field>
             <name>apiUsername</name>
             <label>API user name</label>
             <label lang="de-DE">API-Benutzername</label>
@@ -69,6 +61,16 @@
             <name>useCache</name>
             <label>FACT-Finder Cache active</label>
             <label lang="de-DE">FACT-Finder Cache benutzen</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Search configuration</title>
+        <title lang="de-DE">Such-Einstellungen</title>
+        <input-field type="bool">
+            <name>searchUseFactFinder</name>
+            <label>Replace shopware search by FACTFinder search</label>
+            <label lang="de-DE">Shopware Suche durch die FACTFinder-Suche ersetzten</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -129,19 +131,34 @@
         <title>Tracking</title>
         <title lang="de-DE">Tracking</title>
         <input-field type="bool">
+            <name>trackRequireConsent</name>
+            <label>Request tracking permissions via consent manager</label>
+            <label lang="de-DE">Erlaubnis über den Consent-Manager vom User anfordern</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>trackLogin</name>
             <label>Tracks the customer login</label>
             <label lang="de-DE">Kundenlogin tracken</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>trackProductView</name>
             <label>Tracks the view of a product (detail page)</label>
             <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>trackCart</name>
             <label>Tracking of the shopware cart</label>
             <label lang="de-DE">Shopware-Warenkorb tracken</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>trackCheckout</name>
+            <label>Tracking of the shopware checkout</label>
+            <label lang="de-DE">Shopware-Bestellabschluss tracken</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -294,5 +311,14 @@
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
+
+        <input-field type="bool">
+            <name>apiDebugActive</name>
+            <label>Api debugging active</label>
+            <label lang="de-DE">API debugging aktiv</label>
+            <defaultValue>false</defaultValue>
+            <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
+        </input-field>
+
     </card>
 </config>

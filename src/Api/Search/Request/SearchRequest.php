@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Api\Search\Request;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Api\Request\AbTestTrait;
+use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\FactFinder\Api\Request\CustomParametersTrait;
 
 /**
- * Class ExportGenerateCommand
- *
+ * Class SearchRequest
+ * @package Elio\FactFinder\Api\Request
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGenerateCommand extends Command
+class SearchRequest extends ChannelRequest
 {
-    private ExportService $exportService;
+    use AbTestTrait;
+    use CustomParametersTrait;
+
+    protected string $query = '*';
+    protected bool $excludeProductsNotInRange = true;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * @return string
      */
-    public function __construct(ExportService $exportService)
+    public function getQuery(): string
     {
-        parent::__construct();
-        $this->exportService = $exportService;
+        return $this->query;
     }
 
-    protected function configure(): void
+    /**
+     * @param string $query
+     */
+    public function setQuery(string $query): void
     {
-        $this->setName('elio-ff:export:generate');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
-
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
+        $this->query = $query;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,54 +30,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Core\Export\Writer;
 
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\ExportItem;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Class ExportGenerateCommand
- *
- * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * Interface FileWriterInterface
+ * @package Elio\FactFinder\Core\Export\Writer
  */
-class ExportGenerateCommand extends Command
+interface FileWriterInterface
 {
-    private ExportService $exportService;
+    /**
+     * Checks if the writer can be used for the given export
+     * @param ExportEntity $export
+     * @return bool
+     */
+    public function supports(ExportEntity $export) : bool;
 
     /**
-     * ExportGenerateCommand constructor.
-     * @param ExportService $exportService
+     * Opens a new file handle that is used to write the export in
+     * @return resource
      */
-    public function __construct(ExportService $exportService)
-    {
-        parent::__construct();
-        $this->exportService = $exportService;
-    }
+    public function open();
 
-    protected function configure(): void
-    {
-        $this->setName('elio-ff:export:generate');
-    }
+    /**
+     * @param resource $handle
+     * @param ExportItem $item
+     */
+    public function write($handle, ExportItem $item) : void;
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $context = Context::createDefaultContext();
+    /**
+     * Closes the export and finalizes the file
+     *
+     * @param ExportEntity $export
+     * @param SalesChannelContext $context
+     * @param $handle
+     * @return mixed
+     */
+    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
 
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
-
-        foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
-            $this->exportService->generate($dueExport, $context);
-        }
-
-        return Command::SUCCESS;
-    }
+    /**
+     * Abort the write process because of an error
+     * @param $fileHandle
+     * @return mixed
+     */
+    public function abort($fileHandle) : void;
 }
