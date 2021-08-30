@@ -77,6 +77,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         $configuration = new Configuration(
+            $config['active'],
             $config['apiChannel'],
             $config['apiTimeout'],
             $config['useAso'],

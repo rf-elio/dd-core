@@ -53,7 +53,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 
 /**
- *
+ * @todo: Keep what we need and remove this file
  * Class TrackingSubscriber
  * @category  Subscriber
  * @package   Shopware\Plugins\FactFinder\Subscriber

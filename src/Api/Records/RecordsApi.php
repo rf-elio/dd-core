@@ -1,6 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
 /**
- * Copyright (c) 2020, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,46 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\FactFinder\Api\Records;
 
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Records\Request\RecordRequest;
+use Swagger\Client\ApiException;
+use Swagger\Client\Model\FullRecordsResult;
 
 /**
- * Class ExportInstallCommand
- *
+ * Class RecordsApi
+ * @package Elio\FactFinder\Api\Records
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportInstallCommand extends Command
+class RecordsApi
 {
-    protected static $defaultName = 'factfinder-product-export:install';
+    private ApiClientFactoryInterface $apiFactory;
 
     /**
-     * @var ExportManagerInterface
+     * SearchApi constructor.
+     * @param ApiClientFactoryInterface $apiFactory
      */
-    private $exportManager;
-
-    public function __construct(ExportManagerInterface $exportManager)
+    public function __construct(
+        ApiClientFactoryInterface $apiFactory
+    )
     {
-        parent::__construct();
-
-        $this->exportManager = $exportManager;
+        $this->apiFactory = $apiFactory;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param RecordRequest $request
+     * @param string $salesChannelId
+     * @return FullRecordsResult
+     * @throws ApiException
+     */
+    public function getRecords(RecordRequest $request, string $salesChannelId) : FullRecordsResult
     {
-        $message = "Product Export successfully installed.";
-
-        $installResult = $this->exportManager->install();
-
-        if (!empty($installResult[0]['errors']))
-            $message = "Something went wrong.";
-
-        $output->writeln($message);
+        $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
+        return $apiClient->getFullRecordsUsingGET($request->getChannel(), $request->getId(), null, 'productNumber');
     }
 }

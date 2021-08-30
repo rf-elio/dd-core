@@ -30,70 +30,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Consent;
+namespace Elio\FactFinder\Api\Records\Request;
 
 
-use Shopware\Core\Framework\Routing\KernelListenerPriorities;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Elio\FactFinder\Api\Request\ChannelRequest;
 
 /**
- * Class ConsentSubscriber
- * @package Elio\FactFinder\Core\Consent
+ * Class RecordRequest
+ * @package Elio\FactFinder\Api\Records\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ConsentSubscriber implements EventSubscriberInterface
+class RecordRequest extends ChannelRequest
 {
-    private ConsentService $consentService;
+    private string $id;
 
     /**
-     * ConsentSubscriber constructor.
-     * @param ConsentService $consentService
+     * GetRecordsRequest constructor.
+     * @param string $channel
+     * @param string $id
      */
-    public function __construct(ConsentService $consentService)
+    public function __construct(string $channel, string $id)
     {
-        $this->consentService = $consentService;
+        parent::__construct($channel);
+        $this->id = $id;
     }
 
     /**
-     * @return array[]
+     * @return string
      */
-    public static function getSubscribedEvents() : array
+    public function getId(): string
     {
-        return [
-            KernelEvents::CONTROLLER => ['onKernelController', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_SCOPE_VALIDATE_POST]
-        ];
-    }
-
-    /**
-     * Tracks the current consent desicion of the user
-     *
-     * @param ControllerEvent $event
-     */
-    public function onKernelController(ControllerEvent $event): void
-    {
-        $request = $event->getRequest();
-        $cookiePreferences = $request->cookies->get('cookiePreferences');
-
-        if(empty($cookiePreferences)) {
-            return;
-        }
-        // @todo: fetch cookie preferences
-//
-//
-//        $cookiePreferences = json_decode($cookiePreferences, true);
-//
-//        if(!$cookiePreferences) {
-//            return;
-//        }
-//
-//        echo '<pre>'; var_dump($cookiePreferences); die();
-//
-//        $cookiePreferences = $request->cookies->get('cookiePreferences');
-//        echo '<pre>'; var_dump($cookiePreferences); die();
+        return $this->id;
     }
 }

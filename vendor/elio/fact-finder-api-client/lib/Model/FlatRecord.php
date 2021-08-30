@@ -177,6 +177,7 @@ class FlatRecord implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+
     }
 
     /**

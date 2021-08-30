@@ -52,6 +52,7 @@ class Configuration extends Struct
     private int $apiTimeout;
     private bool $trackCheckout;
     private bool $trackRequireConsent;
+    private bool $active;
 
     /**
      * Configuration constructor.
@@ -64,6 +65,7 @@ class Configuration extends Struct
      * @param bool $trackCheckout
      */
     public function __construct(
+        bool $active,
         string $apiChannel,
         int $apiTimeout,
         bool $useAso,
@@ -80,6 +82,7 @@ class Configuration extends Struct
         $this->apiTimeout = $apiTimeout;
         $this->trackCheckout = $trackCheckout;
         $this->trackRequireConsent = $trackRequireConsent;
+        $this->active = $active;
     }
 
     /**
@@ -137,5 +140,13 @@ class Configuration extends Struct
     public function isTrackRequireConsent(): bool
     {
         return $this->trackRequireConsent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
     }
 }

@@ -38,6 +38,7 @@ use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
 use Swagger\Client\Api\ManagementApi;
 use Swagger\Client\Api\PredbasketApi;
+use Swagger\Client\Api\RecordsApi;
 use Swagger\Client\Api\SearchApi;
 use Swagger\Client\Api\TrackingApi;
 
@@ -78,6 +79,14 @@ interface ApiClientFactoryInterface
      * @return PredbasketApi
      */
     public function createPredictiveBasketApi(SalesChannelContext $salesChannelContext) : PredbasketApi;
+
+    /**
+     * Creates the records api to update data directly in ff.
+     *
+     * @param string $salesChannelId
+     * @return RecordsApi
+     */
+    public function createRecordsApi(string $salesChannelId): RecordsApi;
 
     /**
      * Creates the search api instance, configured for the given sales channel.

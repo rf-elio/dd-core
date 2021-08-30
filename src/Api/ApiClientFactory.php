@@ -8,6 +8,7 @@ use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
 use Swagger\Client\Api\ManagementApi;
 use Swagger\Client\Api\PredbasketApi;
+use Swagger\Client\Api\RecordsApi;
 use Swagger\Client\Api\SearchApi;
 use Swagger\Client\Api\TrackingApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
@@ -96,6 +97,20 @@ class ApiClientFactory implements ApiClientFactoryInterface
         return new PredbasketApi(
             $this->createClient($salesChannelContext->getSalesChannelId()),
             $this->createConfiguration($salesChannelContext->getSalesChannelId())
+        );
+    }
+
+    /**
+     * Creates the records api to update data directly in ff.
+     *
+     * @param string $salesChannelId
+     * @return RecordsApi
+     */
+    public function createRecordsApi(string $salesChannelId): RecordsApi
+    {
+        return new RecordsApi(
+            $this->createClient($salesChannelId),
+            $this->createConfiguration($salesChannelId)
         );
     }
 
