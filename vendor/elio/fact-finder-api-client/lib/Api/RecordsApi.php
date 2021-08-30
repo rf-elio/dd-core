@@ -5040,6 +5040,7 @@ class RecordsApi
             $headers
         );
 
+
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'GET',

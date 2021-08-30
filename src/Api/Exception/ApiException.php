@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -30,34 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder;
+namespace Elio\FactFinder\Api\Exception;
 
-use Exception;
-use Shopware\Core\Framework\Plugin;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Plugin base. It create product export during plugin installation.
+ * Marker interface
  *
- * Class FactFinder
- * @category  Bootstrap
- * @package   Shopware\Plugins\FactFinder
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * Interface ApiException
+ * @package Elio\FactFinder\Api\Exception
  */
-class FactFinder extends Plugin
+interface ApiException
 {
-    /**
-     * Adds the additional service definitions
-     *
-     * @param ContainerBuilder $container
-     * @throws Exception
-     */
-    public function build(ContainerBuilder $container): void
-    {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('services.xml');
-    }
+
 }

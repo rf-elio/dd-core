@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -30,34 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder;
+namespace Elio\FactFinder\Api\Exception;
 
-use Exception;
-use Shopware\Core\Framework\Plugin;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+
+use RuntimeException;
 
 /**
- * Plugin base. It create product export during plugin installation.
- *
- * Class FactFinder
- * @category  Bootstrap
- * @package   Shopware\Plugins\FactFinder
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * Class FactFinderTimeoutException
+ * @package Elio\FactFinder\Api\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FactFinder extends Plugin
+class FactFinderTimeoutException extends RuntimeException implements ApiException
 {
-    /**
-     * Adds the additional service definitions
-     *
-     * @param ContainerBuilder $container
-     * @throws Exception
-     */
-    public function build(ContainerBuilder $container): void
-    {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('services.xml');
-    }
+
 }

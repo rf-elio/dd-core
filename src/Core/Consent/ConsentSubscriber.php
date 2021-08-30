@@ -82,16 +82,18 @@ class ConsentSubscriber implements EventSubscriberInterface
         if(empty($cookiePreferences)) {
             return;
         }
-
-        $cookiePreferences = json_decode($cookiePreferences, true);
-
-        if(!$cookiePreferences) {
-            return;
-        }
-
-        echo '<pre>'; var_dump($cookiePreferences); die();
-
-        $cookiePreferences = $request->cookies->get('cookiePreferences');
-        echo '<pre>'; var_dump($cookiePreferences); die();
+        // @todo: fetch cookie preferences
+//
+//
+//        $cookiePreferences = json_decode($cookiePreferences, true);
+//
+//        if(!$cookiePreferences) {
+//            return;
+//        }
+//
+//        echo '<pre>'; var_dump($cookiePreferences); die();
+//
+//        $cookiePreferences = $request->cookies->get('cookiePreferences');
+//        echo '<pre>'; var_dump($cookiePreferences); die();
     }
 }

@@ -42,7 +42,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Psr\Log\LoggerInterface;
 
 /**
- *
+ * @todo: keep what we need and remove this file
  * Class ElioFactFinderService
  *
  * @category  Service Component

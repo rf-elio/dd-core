@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -30,34 +30,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder;
+namespace Elio\FactFinder\Api\Records\Request;
 
-use Exception;
-use Shopware\Core\Framework\Plugin;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+
+use Elio\FactFinder\Api\Request\ChannelRequest;
 
 /**
- * Plugin base. It create product export during plugin installation.
- *
- * Class FactFinder
- * @category  Bootstrap
- * @package   Shopware\Plugins\FactFinder
- * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * Class RecordRequest
+ * @package Elio\FactFinder\Api\Records\Request
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FactFinder extends Plugin
+class RecordRequest extends ChannelRequest
 {
+    private string $id;
+
     /**
-     * Adds the additional service definitions
-     *
-     * @param ContainerBuilder $container
-     * @throws Exception
+     * GetRecordsRequest constructor.
+     * @param string $channel
+     * @param string $id
      */
-    public function build(ContainerBuilder $container): void
+    public function __construct(string $channel, string $id)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('services.xml');
+        parent::__construct($channel);
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 }

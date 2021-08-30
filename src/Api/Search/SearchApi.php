@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Api\Search;
 
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Exception\FactFinderTimeoutException;
 use Elio\FactFinder\Api\RequestTransformer\RequestTransformer;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -51,17 +52,14 @@ use Swagger\Client\Model\Result;
 class SearchApi
 {
     private ApiClientFactoryInterface $apiFactory;
-    private RequestTransformer $requestTransformer;
 
     /**
      * SearchApi constructor.
      * @param ApiClientFactoryInterface $apiFactory
-     * @param RequestTransformer $requestTransformer
      */
-    public function __construct(ApiClientFactoryInterface $apiFactory, RequestTransformer $requestTransformer)
+    public function __construct(ApiClientFactoryInterface $apiFactory)
     {
         $this->apiFactory = $apiFactory;
-        $this->requestTransformer = $requestTransformer;
     }
 
     /**
@@ -71,12 +69,25 @@ class SearchApi
      * @param SalesChannelContext $salesChannelContext
      * @return Result
      * @throws ApiException
+     * @throws FactFinderTimeoutException
      */
     public function search(SearchRequest $searchRequest, SalesChannelContext $salesChannelContext): Result
     {
         $apiClient = $this->apiFactory->createSearchApi($salesChannelContext);
-        return $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(
-            $this->requestTransformer->transform($searchRequest)
+        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(
+            ['params' => $searchRequest->toArray()]
         ));
+
+        if($result->getTimedOut()) {
+            throw new FactFinderTimeoutException('The request caused FACTFinder to timeout');
+        }
+
+
+
+        echo '<pre>'; var_dump($result->getHits()); die();
+
+echo '<pre>'; var_dump($result); die();
+
+        return $result;
     }
 }

@@ -48,6 +48,11 @@
         <title>Basic configuration</title>
         <title lang="de-DE">Grundeinstellungen</title>
         <input-field type="bool">
+            <name>active</name>
+            <label>FACT-Finder active</label>
+            <label lang="de-DE">FACT-Finder benutzen</label>
+        </input-field>
+        <input-field type="bool">
             <name>useAso</name>
             <label>After search optimization active</label>
             <label lang="de-DE">After Search Optimization benutzen</label>
