@@ -12,34 +12,24 @@
 
         <service id="Elio\FactFinder\Api\Campaign\CampaignApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Import\ImportApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Management\ManagementApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
         </service>
         <service id="Elio\FactFinder\Api\PredictiveBasket\PredictiveBasketApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Records\RecordsApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\SearchApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Tracking\TrackingApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-        </service>
-
-        <!-- request transformer -->
-        <service id="Elio\FactFinder\Api\RequestTransformer\RequestTransformer">
-            <argument type="service" id="event_dispatcher" />
         </service>
 
         <!-- commands -->

@@ -34,7 +34,6 @@ namespace Elio\FactFinder\Api\Import;
 
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\RequestTransformer\RequestTransformer;
 
 /**
  * Class ImportApi
@@ -47,16 +46,13 @@ use Elio\FactFinder\Api\RequestTransformer\RequestTransformer;
 class ImportApi
 {
     private ApiClientFactoryInterface $apiFactory;
-    private RequestTransformer $requestTransformer;
 
     /**
      * SearchApi constructor.
      * @param ApiClientFactoryInterface $apiFactory
-     * @param RequestTransformer $requestTransformer
      */
-    public function __construct(ApiClientFactoryInterface $apiFactory, RequestTransformer $requestTransformer)
+    public function __construct(ApiClientFactoryInterface $apiFactory)
     {
         $this->apiFactory = $apiFactory;
-        $this->requestTransformer = $requestTransformer;
     }
 }
