@@ -34,7 +34,10 @@ namespace Elio\FactFinder\Api\Tracking;
 
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Tracking\Exception\TrackingRequestNotSupportedException;
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\CartOrCheckoutEvent;
 
@@ -49,16 +52,38 @@ use Swagger\Client\Model\CartOrCheckoutEvent;
 class TrackingApi
 {
     private ApiClientFactoryInterface $apiFactory;
+    private LoggerInterface $logger;
 
     /**
      * SearchApi constructor.
      * @param ApiClientFactoryInterface $apiFactory
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory
+        ApiClientFactoryInterface $apiFactory,
+        LoggerInterface $logger
     )
     {
         $this->apiFactory = $apiFactory;
+        $this->logger = $logger;
+    }
+
+    /**
+     * Handles the tracking requests
+     * @throws ApiException
+     */
+    public function track(TrackingRequest $request, string $salesChannelId) : void
+    {
+        if($request instanceof CheckoutTrackingRequest) {
+            $this->trackCheckout($request, $salesChannelId);
+            return;
+        }
+
+        $this->logger->error('Not supported tracking request received', ['request' => get_class($request)]);
+        throw new TrackingRequestNotSupportedException(sprintf(
+            'Tracking request "%s" is not supported by "%s".',
+            get_class($request), self::class
+        ));
     }
 
     /**
@@ -68,7 +93,7 @@ class TrackingApi
      * @param string $salesChannelId
      * @throws ApiException
      */
-    public function trackCheckout(CheckoutTrackingRequest $checkoutTrackingRequest, string $salesChannelId) : void
+    protected function trackCheckout(CheckoutTrackingRequest $checkoutTrackingRequest, string $salesChannelId) : void
     {
         if(!$checkoutTrackingRequest->hasEvents()) {
             return;

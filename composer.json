@@ -9,10 +9,13 @@
         }
     ],
     "require": {
-        "shopware/core": "*",
-        "shopware/storefront": "*",
         "php": ">= 7.4",
-        "elio/fact-finder-api-client": "dev-master"
+        "elio/fact-finder-api-client": "dev-master",
+        "mtdowling/cron-expression": "^1.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^0.12.96"
     },
     "extra": {
         "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",

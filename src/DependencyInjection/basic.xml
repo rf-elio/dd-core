@@ -17,14 +17,5 @@
         <service id="Elio\FactFinder\Resources\snippet\en_GB\SnippetFile_en_GB">
             <tag name="shopware.snippet.file"/>
         </service>
-
-        <!-- consent -->
-        <service id="Elio\FactFinder\Core\Consent\ConsentService">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-        </service>
-        <service id="Elio\FactFinder\Core\Consent\ConsentSubscriber">
-            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService" />
-            <tag name="kernel.event_subscriber"/>
-        </service>
     </services>
 </container>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\FactFinder\Core\Consent\ConsentService">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        </service>
+        <service id="Elio\FactFinder\Core\Consent\ConsentSubscriber">
+            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService" />
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

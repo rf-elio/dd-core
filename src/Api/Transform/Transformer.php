@@ -30,60 +30,76 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\FactFinder\Api\Transform;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Api\Transform\Transformer;
+use Elio\FactFinder\Api\Transform\Event\TransformResponseEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
+use Swagger\Client\Model\ModelInterface;
 use Throwable;
 
 /**
- * Class SearchApi
- * @package Elio\FactFinder\Api\Search
+ * Class Transformer
+ * @package Elio\FactFinder\Api\Transform
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SearchApi
+class Transformer
 {
-    private ApiClientFactoryInterface $apiFactory;
-    private Transformer $transformer;
+    /**
+     * @var iterable|ResponseTransformerInterface[]
+     */
+    private iterable $responseTransformer;
+    private EventDispatcherInterface $eventDispatcher;
+    private LoggerInterface $logger;
 
     /**
-     * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     * @param Transformer $transformer
+     * Transformer constructor.
+     * @param iterable|ResponseTransformerInterface[] $responseTransformer
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory,
-        Transformer $transformer
+        iterable $responseTransformer,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
     )
     {
-        $this->apiFactory = $apiFactory;
-        $this->transformer = $transformer;
+        $this->responseTransformer = $responseTransformer;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
     }
 
     /**
-     * Executes the ff search request
-     *
-     * @param SearchRequest $searchRequest
+     * @param ModelInterface $model
      * @param SalesChannelContext $context
      * @return ResponseCollection
-     * @throws ApiException
      * @throws Throwable
      */
-    public function search(SearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
+    public function transformResponse(ModelInterface $model, SalesChannelContext $context) : ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(
-            ['params' => $searchRequest->toArray()]
-        ));
+        $collection = new ResponseCollection();
 
-        return $this->transformer->transformResponse($result, $context);
+        foreach ($this->responseTransformer as $responseTransformer) {
+            try {
+                if ($responseTransformer->supports($model, $context)) {
+                    $responseTransformer->transform($model, $collection, $context);
+                }
+            }
+            catch (Throwable $ex) {
+                $this->logger->error('Response transformer caused an error during transform', [
+                    'message' => $ex->getMessage(),
+                    'transformer' => get_class($responseTransformer),
+                    'model' => get_class($model)
+                ]);
+                throw $ex;
+            }
+        }
+
+        $this->eventDispatcher->dispatch(new TransformResponseEvent($model, $collection));
+        return $collection;
     }
 }

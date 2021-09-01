@@ -30,52 +30,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Transform\Event;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Swagger\Client\Model\ModelInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class TransformResponseEvent
+ * @package Elio\FactFinder\Api\Transform\Event
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class TransformResponseEvent extends Event
 {
-    /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private ModelInterface $model;
+    private ResponseCollection $responseCollection;
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
+     * TransformResponseEvent constructor.
+     * @param ModelInterface $model
+     * @param ResponseCollection $responseCollection
      */
-    public function open();
+    public function __construct(ModelInterface $model, ResponseCollection $responseCollection)
+    {
+        $this->model = $model;
+        $this->responseCollection = $responseCollection;
+    }
 
     /**
-     * @param resource $handle
-     * @param ExportItem $item
+     * @return ModelInterface
      */
-    public function write($handle, ExportItem $item) : void;
+    public function getModel(): ModelInterface
+    {
+        return $this->model;
+    }
 
     /**
-     * Closes the export and finalizes the file
-     *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
+     * @return ResponseCollection
      */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+    public function getResponseCollection(): ResponseCollection
+    {
+        return $this->responseCollection;
+    }
 }

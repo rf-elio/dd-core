@@ -30,52 +30,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Core\Search;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class SearchRequestBuilder
+ * @package Elio\FactFinder\Search
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class SearchRequestBuilder
 {
-    /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private FactFinderConfigServiceInterface $configService;
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
+     * SearchRequestBuilder constructor.
+     * @param FactFinderConfigServiceInterface $configService
      */
-    public function open();
+    public function __construct(FactFinderConfigServiceInterface $configService)
+    {
+        $this->configService = $configService;
+    }
 
     /**
-     * @param resource $handle
-     * @param ExportItem $item
+     * Builds the ff search request
+     * @param Request $request
+     * @param Criteria $criteria
+     * @param SalesChannelContext $salesChannelContext
+     * @return SearchRequest
      */
-    public function write($handle, ExportItem $item) : void;
+    public function build(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext) : SearchRequest
+    {
+        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $searchRequest = new SearchRequest(
+            $config->getApiChannel()
+        );
 
-    /**
-     * Closes the export and finalizes the file
-     *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
-     */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+        $searchRequest->setQuery($request->get('search'));
+        return $searchRequest;
+    }
 }

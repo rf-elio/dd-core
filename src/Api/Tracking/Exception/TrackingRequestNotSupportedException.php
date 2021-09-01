@@ -30,52 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Tracking\Exception;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use RuntimeException;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class TrackingRequestNotSupportedException
+ * @package Elio\FactFinder\Api\Tracking\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class TrackingRequestNotSupportedException extends RuntimeException
 {
-    /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
 
-    /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
-     */
-    public function open();
-
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    public function write($handle, ExportItem $item) : void;
-
-    /**
-     * Closes the export and finalizes the file
-     *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
-     */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
 }

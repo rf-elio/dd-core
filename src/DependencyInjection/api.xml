@@ -27,9 +27,39 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\SearchApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Tracking\TrackingApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Logger" />
+        </service>
+
+        <!-- transformer -->
+        <service id="Elio\FactFinder\Api\Transform\Transformer">
+            <argument type="tagged" tag="elio-ff.api.transformer.response"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Elio\FactFinder\Logger"/>
+        </service>
+
+        <!-- transformer / response / search -->
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\TimeoutTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\PagingTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\TotalHitsTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SortTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\ProductHandler">
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\FacetTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
         </service>
 
         <!-- commands -->

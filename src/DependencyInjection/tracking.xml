@@ -14,7 +14,6 @@
         <!-- core / messenger -->
         <service id="Elio\FactFinder\Core\Tracking\Message\TrackingMessageHandler">
             <argument type="service" id="Elio\FactFinder\Api\Tracking\TrackingApi" />
-            <argument type="service" id="Elio\FactFinder\Logger" />
             <tag name="messenger.message_handler"/>
         </service>
 

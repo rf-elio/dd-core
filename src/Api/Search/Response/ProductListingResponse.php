@@ -33,6 +33,10 @@
 namespace Elio\FactFinder\Api\Search\Response;
 
 
+use Elio\FactFinder\Api\Response\Response;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
+
 /**
  * Class ProductListingResponse
  * @package Elio\FactFinder\Api\Search\Response
@@ -41,7 +45,110 @@ namespace Elio\FactFinder\Api\Search\Response;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ProductListingResponse
+class ProductListingResponse extends Response
 {
+    protected int $totalHits = 0;
+    protected int $currentPage = 0;
+    protected int $hitsPerPage = 0;
+    protected int $pageCount = 0;
+    protected ?ProductSortingCollection $availableSortings = null;
+    protected ?ProductCollection $products = null;
 
+    /**
+     * @return int
+     */
+    public function getCurrentPage(): int
+    {
+        return $this->currentPage;
+    }
+
+    /**
+     * @param int $currentPage
+     */
+    public function setCurrentPage(int $currentPage): void
+    {
+        $this->currentPage = $currentPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHitsPerPage(): int
+    {
+        return $this->hitsPerPage;
+    }
+
+    /**
+     * @param int $hitsPerPage
+     */
+    public function setHitsPerPage(int $hitsPerPage): void
+    {
+        $this->hitsPerPage = $hitsPerPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageCount(): int
+    {
+        return $this->pageCount;
+    }
+
+    /**
+     * @param int $pageCount
+     */
+    public function setPageCount(int $pageCount): void
+    {
+        $this->pageCount = $pageCount;
+    }
+
+    /**
+     * @param int $totalHits
+     * @return ProductListingResponse
+     */
+    public function setTotalHits(int $totalHits): ProductListingResponse
+    {
+        $this->totalHits = $totalHits;
+        return $this;
+    }
+
+    /**
+     * @return ProductSortingCollection|null
+     */
+    public function getAvailableSortings(): ?ProductSortingCollection
+    {
+        return $this->availableSortings;
+    }
+
+    /**
+     * @param ProductSortingCollection|null $availableSortings
+     */
+    public function setAvailableSortings(?ProductSortingCollection $availableSortings): void
+    {
+        $this->availableSortings = $availableSortings;
+    }
+
+    /**
+     * @return ProductCollection|null
+     */
+    public function getProducts(): ?ProductCollection
+    {
+        return $this->products;
+    }
+
+    /**
+     * @param ProductCollection|null $products
+     */
+    public function setProducts(?ProductCollection $products): void
+    {
+        $this->products = $products;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalHits(): int
+    {
+        return $this->totalHits;
+    }
 }

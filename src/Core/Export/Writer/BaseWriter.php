@@ -74,7 +74,7 @@ abstract class BaseWriter
     /**
      * Closes the file handle
      *
-     * @param $handle
+     * @param resource $handle
      */
     public function abort($handle) : void
     {
@@ -84,7 +84,7 @@ abstract class BaseWriter
     /**
      * @param ExportEntity $export
      * @param SalesChannelContext $context
-     * @param $handle
+     * @param resource $handle
      * @throws FileExistsException
      * @throws FileNotFoundException
      */
