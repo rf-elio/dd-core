@@ -94,7 +94,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('categories');
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $export->getSalesChannelId()));
 
-        // @todo: don't fetch all products
+        // @todo: don't fetch all products (memory) use some pagination stuff
         $products = $this->productRepository->search($criteria, $context->getContext());
 
         // @todo: translations

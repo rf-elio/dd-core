@@ -79,6 +79,9 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         $this->consentService = $consentService;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents() : array
     {
         return [
@@ -98,6 +101,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         $config = $this->configService->get($salesChannelId);
 
         if(
+            !$config->isActive() ||
             !$config->isTrackCheckout() ||
             !$this->consentService->isTrackingAllowed($salesChannelId) ||
             !$order->getLineItems()

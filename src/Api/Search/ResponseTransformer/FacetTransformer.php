@@ -30,52 +30,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\ModelInterface;
+use Swagger\Client\Model\Result;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class FacetTransformer
+ * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class FacetTransformer implements ResponseTransformerInterface
 {
     /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
+     * @inheritDoc
      */
-    public function supports(ExportEntity $export) : bool;
+    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    {
+        return $model instanceof Result;
+    }
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
-     */
-    public function open();
-
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    public function write($handle, ExportItem $item) : void;
-
-    /**
-     * Closes the export and finalizes the file
-     *
-     * @param ExportEntity $export
+     * @param ModelInterface $model
+     * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
      */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
+    {
+        if(!$model instanceof Result) {
+            throw new InvalidTypeException($model, Result::class);
+        }
+    }
 }

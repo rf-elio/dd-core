@@ -92,7 +92,7 @@ class ExportService
      * Searches all due exports
      *
      * @param Context $context
-     * @return ExportCollection
+     * @return EntityCollection
      */
     public function getDueExports(Context $context) : EntityCollection
     {

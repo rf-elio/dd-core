@@ -70,6 +70,6 @@ class RecordsApi
     public function getRecords(RecordRequest $request, string $salesChannelId) : FullRecordsResult
     {
         $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
-        return $apiClient->getFullRecordsUsingGET($request->getChannel(), $request->getId(), null, 'productNumber');
+        return $apiClient->getFullRecordsUsingGET($request->getChannel(), [$request->getId()], null, 'productNumber');
     }
 }

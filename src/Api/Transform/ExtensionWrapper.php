@@ -30,52 +30,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Transform;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Struct\Struct;
+use Swagger\Client\Model\ModelInterface;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class ExtensionWrapper
+ * @package Elio\FactFinder\Api\Transform
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class ExtensionWrapper extends Struct
 {
-    /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    public const KEY = 'ff-api';
+    private ModelInterface $model;
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
+     * ExtensionWrapper constructor.
+     * @param ModelInterface $model
      */
-    public function open();
+    public function __construct(ModelInterface $model)
+    {
+        $this->model = $model;
+    }
 
     /**
-     * @param resource $handle
-     * @param ExportItem $item
+     * @return ModelInterface
      */
-    public function write($handle, ExportItem $item) : void;
-
-    /**
-     * Closes the export and finalizes the file
-     *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
-     */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+    public function getModel(): ModelInterface
+    {
+        return $this->model;
+    }
 }

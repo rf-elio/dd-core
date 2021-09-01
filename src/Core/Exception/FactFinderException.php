@@ -30,52 +30,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Core\Exception;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use RuntimeException;
+use Throwable;
+use function is_array;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class FactFinderException
+ * @package Elio\FactFinder\Core\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface FileWriterInterface
+class FactFinderException extends RuntimeException
 {
     /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
+     * FactFinderException constructor.
+     * @param string $message
+     * @param array $parameters
+     * @param int $code
+     * @param Throwable|null $e
      */
-    public function supports(ExportEntity $export) : bool;
+    public function __construct(string $message, array $parameters = [], $code = 0, ?Throwable $e = null)
+    {
+        $message = $this->parse($message, $parameters);
+        parent::__construct($message, $code, $e);
+    }
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
-     */
-    public function open();
-
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    public function write($handle, ExportItem $item) : void;
-
-    /**
-     * Closes the export and finalizes the file
+     * Parses the given message and interpolates the placeholders
      *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
+     * @param string $message
+     * @param array $parameters
+     * @return string
      */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
+    protected function parse(string $message, array $parameters = []): string
+    {
+        $regex = [];
+        foreach ($parameters as $key => $value) {
+            if (is_array($value)) {
+                continue;
+            }
 
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+            $key = preg_replace('/[^a-z]/i', '', $key);
+            $regex[sprintf('/\{\{(\s+)?(%s)(\s+)?\}\}/', $key)] = $value;
+        }
+
+        return preg_replace(array_keys($regex), array_values($regex), $message);
+    }
 }

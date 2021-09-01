@@ -30,53 +30,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Message;
+namespace Elio\FactFinder\Tests\Api\Transform;
 
+use Elio\FactFinder\Api\Transform\ExtensionWrapper;
+use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Struct\Struct;
+use Swagger\Client\Model\ModelInterface;
 
-use Elio\FactFinder\Api\Tracking\TrackingApi;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
-use Swagger\Client\ApiException;
 
 /**
- * Class TrackingMessageHandler
- * @package Elio\FactFinder\Core\Tracking\Message
+ * Class ExtensionWrapperTest
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingMessageHandler extends AbstractMessageHandler
+class ExtensionWrapperTest extends TestCase
 {
-    private TrackingApi $trackingApi;
-
     /**
-     * TrackingMessageHandler constructor.
-     * @param TrackingApi $trackingApi
+     * Tests if the key is still the same
      */
-    public function __construct(TrackingApi $trackingApi)
+    public function testKey(): void
     {
-        $this->trackingApi = $trackingApi;
+        $this->assertEquals(ExtensionWrapper::KEY, 'ff-api');
     }
 
     /**
-     * @param object $message
-     * @throws ApiException
+     * Tests if the input model is the same as the model that is provided in the get model method
      */
-    public function handle($message): void
+    public function testGetModel(): void
     {
-        if(!$message instanceof TrackingMessage) {
-            throw new InvalidTypeException($message, TrackingMessage::class);
-        }
-
-        $this->trackingApi->track(
-            $message->getRequest(),
-            $message->getSalesChannelId()
-        );
+        $wrapper = new ExtensionWrapper($this->getTestModel());
+        $this->assertSame($wrapper->getModel()->getModelName(), 'test');
     }
 
-    public static function getHandledMessages(): iterable
+    /**
+     * Tests if the wrapper is instance of struct
+     */
+    public function testExtensionWrapperType(): void
     {
-        return [TrackingMessage::class];
+        $wrapper = new ExtensionWrapper($this->getTestModel());
+        $this->assertInstanceOf(Struct::class, $wrapper);
+    }
+
+    /**
+     * @return ModelInterface
+     */
+    private function getTestModel() : ModelInterface
+    {
+        return new class () implements ModelInterface
+        {
+            public function getModelName()
+            {
+                return 'test';
+            }
+
+            public static function swaggerTypes() { return []; }
+            public static function swaggerFormats() { return []; }
+            public static function attributeMap() { return []; }
+            public static function setters() { return []; }
+            public static function getters() { return []; }
+            public function listInvalidProperties() { return []; }
+            public function valid() { return true; }
+        };
     }
 }

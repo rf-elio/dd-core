@@ -63,6 +63,9 @@ class ExportGenerateCommand extends Command
 
     protected function configure(): void
     {
+        // @todo: Support force refresh (elio-ff:export:generate -f)
+        // @todo: Support refresh of one export (elio-ff:export:generate 1)
+        // @todo: Support force refresh of one export (elio-ff:export:generate 1 -f)
         $this->setName('elio-ff:export:generate');
     }
 

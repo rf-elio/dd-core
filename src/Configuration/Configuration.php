@@ -56,6 +56,7 @@ class Configuration extends Struct
 
     /**
      * Configuration constructor.
+     * @param bool $active
      * @param string $apiChannel
      * @param int $apiTimeout
      * @param bool $useAso

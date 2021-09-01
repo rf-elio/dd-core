@@ -66,7 +66,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     /**
      * Fetches the ff plugin configuration for the given sales channel
      *
-     * @param string|null $salesChannelId
+     * @param string $salesChannelId
      * @return Configuration
      */
     public function get(string $salesChannelId) : Configuration

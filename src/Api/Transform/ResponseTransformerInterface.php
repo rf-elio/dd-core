@@ -30,52 +30,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Transform;
 
-
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Api\Response\ResponseCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\ModelInterface;
 
 /**
- * Interface FileWriterInterface
- * @package Elio\FactFinder\Core\Export\Writer
+ * Interface ResponseTransformerInterface
+ * @package Elio\FactFinder\Api\Transform
  */
-interface FileWriterInterface
+interface ResponseTransformerInterface
 {
     /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
+     * Checks if the given model is supported by the transformer
+     *
+     * @param ModelInterface $model
+     * @param SalesChannelContext $context
      * @return bool
      */
-    public function supports(ExportEntity $export) : bool;
+    public function supports(ModelInterface $model, SalesChannelContext $context) : bool;
 
     /**
-     * Opens a new file handle that is used to write the export in
-     * @return resource
-     */
-    public function open();
-
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    public function write($handle, ExportItem $item) : void;
-
-    /**
-     * Closes the export and finalizes the file
+     * Transforms the model to an response that can used by ff plugin components
      *
-     * @param ExportEntity $export
+     * @param ModelInterface $model
+     * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
-     * @param resource $handle
-     * @return void
      */
-    public function close(ExportEntity $export, SalesChannelContext $context, $handle) : void;
-
-    /**
-     * Abort the write process because of an error
-     * @param resource $fileHandle
-     * @return void
-     */
-    public function abort($fileHandle) : void;
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context) : void;
 }

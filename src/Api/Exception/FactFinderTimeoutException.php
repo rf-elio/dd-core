@@ -33,9 +33,12 @@
 namespace Elio\FactFinder\Api\Exception;
 
 
-use RuntimeException;
+use Elio\FactFinder\Core\Exception\FactFinderException;
 
 /**
+ * This exception will be thrown if ff run into an timeout. The timeout is not about the request or shopware, the
+ * timeout happened in ff.
+ *
  * Class FactFinderTimeoutException
  * @package Elio\FactFinder\Api\Exception
  * @category  Shopware
@@ -43,7 +46,7 @@ use RuntimeException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FactFinderTimeoutException extends RuntimeException implements ApiException
+class FactFinderTimeoutException extends FactFinderException
 {
 
 }
