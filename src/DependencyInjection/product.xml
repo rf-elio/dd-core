@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\FactFinder\Core\Content\Product\Search\SearchRequestBuilder">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"
+                 decoration-priority="-3000"
+        >
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute.inner" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\Search\SearchRequestBuilder" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute.inner" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
+        </service>
+
+    </services>
+</container>

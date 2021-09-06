@@ -30,18 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\FactFinder\Core\Snippets;
 
 
 /**
- * Class SearchResponseHandler
- * @package Elio\FactFinder\Api\Search
+ * Class Snippet
+ * @package Elio\FactFinder\Core\Snippets
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SearchResponseHandler
+class Snippet
 {
-
+    public const SNIPPET_PREFIX = 'elioFactFinder.';
+    public const SNIPPET_LISTING_PREFIX = self::SNIPPET_PREFIX.'listing.';
+    public const SNIPPET_LISTING_SORTING_PREFIX = self::SNIPPET_LISTING_PREFIX.'sorting.';
 }

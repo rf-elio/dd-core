@@ -30,51 +30,63 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Search;
+namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
 
 
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class SearchRequestBuilder
- * @package Elio\FactFinder\Search
+ * Class FactFinderProductListingRoute
+ * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Listing
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SearchRequestBuilder
+class FactFinderProductListingRoute extends AbstractProductListingRoute
 {
+    private AbstractProductListingRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
+    private SearchApi $searchApi;
 
     /**
-     * SearchRequestBuilder constructor.
+     * FactFinderProductListingRoute constructor.
+     * @param AbstractProductListingRoute $decorated
      * @param FactFinderConfigServiceInterface $configService
+     * @param SearchApi $searchApi
      */
-    public function __construct(FactFinderConfigServiceInterface $configService)
+    public function __construct(
+        AbstractProductListingRoute $decorated,
+        FactFinderConfigServiceInterface $configService,
+        SearchApi $searchApi
+    )
     {
+        $this->decorated = $decorated;
         $this->configService = $configService;
+        $this->searchApi = $searchApi;
     }
 
     /**
-     * Builds the ff search request
-     * @param Request $request
-     * @param Criteria $criteria
-     * @param SalesChannelContext $salesChannelContext
-     * @return SearchRequest
+     * @return AbstractProductListingRoute
      */
-    public function build(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext) : SearchRequest
+    public function getDecorated(): AbstractProductListingRoute
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
-        $searchRequest = new SearchRequest(
-            $config->getApiChannel()
-        );
+        return $this->decorated;
+    }
 
-        $searchRequest->setQuery($request->get('search'));
-        return $searchRequest;
+    public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
+    {
+        $config = $this->configService->get($context->getSalesChannelId());
+        if(!$config->isActive() || !$config->isListingUseFactFinder()) {
+            return $this->decorated->load($categoryId, $request, $context, $criteria);
+        }
+
+        return $this->decorated->load($categoryId, $request, $context, $criteria);
     }
 }

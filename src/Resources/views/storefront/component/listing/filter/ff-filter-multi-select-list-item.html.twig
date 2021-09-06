@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/component/listing/filter/filter-multi-select-list-item.html.twig' %}
+
+{% block component_filter_multi_select_list_item_checkbox_input %}
+    {% if element.extensions.ff is defined %}
+        {% set id = element.extensions.ff.key %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{% block component_filter_multi_select_list_item_label_element %}
+    {% if element.extensions.ff is defined %}
+        {% set id = element.extensions.ff.key %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}

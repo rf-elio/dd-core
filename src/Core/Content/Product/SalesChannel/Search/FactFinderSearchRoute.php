@@ -30,24 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Search;
-
+namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Search;
 
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Content\Product\Events\ProductSearchResultEvent;
+use Elio\FactFinder\Core\Content\Product\Search\SearchRequestBuilder;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Content\Product\ProductEvents;
-use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 /**
  * Class FactFinderSearchRoute
@@ -63,8 +61,6 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
     private SearchRequestBuilder $searchRequestBuilder;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
-    private ProductListingLoader $productListingLoader;
-    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * FactFinderSearchRoute constructor.
@@ -72,24 +68,18 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
      * @param SearchRequestBuilder $searchRequestBuilder
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
-     * @param ProductListingLoader $productListingLoader
-     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         AbstractProductSearchRoute $decorated,
         SearchRequestBuilder $searchRequestBuilder,
         FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi,
-        ProductListingLoader $productListingLoader,
-        EventDispatcherInterface $eventDispatcher
+        SearchApi $searchApi
     )
     {
         $this->decorated = $decorated;
         $this->searchRequestBuilder = $searchRequestBuilder;
         $this->configService = $configService;
         $this->searchApi = $searchApi;
-        $this->productListingLoader = $productListingLoader;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function getDecorated(): AbstractProductSearchRoute
@@ -97,6 +87,12 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
         return $this->decorated;
     }
 
+    /**
+     * Replaces the shopware search by ff search
+     *
+     * @throws Throwable
+     * @throws ApiException
+     */
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSearchRouteResponse
     {
         $config = $this->configService->get($context->getSalesChannelId());
@@ -113,28 +109,58 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             return $this->getDecorated()->load($request, $context, $criteria);
         }
 
-        // dummy code
-        $page = $this->getDecorated()->load($request, $context, $criteria);
-
         $shopwareProductListingResult = new ProductListingResult(
             ProductDefinition::ENTITY_NAME,
             $productListingResponse->getTotalHits(),
             $productListingResponse->getProducts(),
-            $page->getListingResult()->getAggregations(),
+            $productListingResponse->getAggregations(),
             $criteria,
             $context->getContext()
         );
-        $shopwareProductListingResult->setAvailableSortings($productListingResponse->getAvailableSortings());
-        $shopwareProductListingResult->setLimit($productListingResponse->getHitsPerPage());
-        $shopwareProductListingResult->setPage($productListingResponse->getCurrentPage());
-        //$shopwareProductListingResult->setSorting($productListingResponse->getCurrentPage());
-
-//        $this->eventDispatcher->dispatch(
-//            new ProductSearchResultEvent($request, $shopwareProductListingResult, $context),
-//            ProductEvents::PRODUCT_SEARCH_RESULT
-//        );
 
         $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
+        $this->addSorting($productListingResponse, $shopwareProductListingResult);
+        $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         return new ProductSearchRouteResponse($shopwareProductListingResult);
+    }
+
+    /**
+     * Adds the applied sorting to the shopware result
+     *
+     * @param ProductListingResponse $productListingResponse
+     * @param ProductListingResult $shopwareProductListingResult
+     */
+    protected function addSorting(
+        ProductListingResponse $productListingResponse,
+        ProductListingResult $shopwareProductListingResult
+    ) : void
+    {
+        $shopwareProductListingResult->setAvailableSortings($productListingResponse->getAvailableSortings());
+        if($productListingResponse->getCurrentSorting()) {
+            $shopwareProductListingResult->setSorting($productListingResponse->getCurrentSorting()->getKey());
+        }
+    }
+
+    /**
+     * Adds the pagination to the shopware result
+     *
+     * @param ProductListingResponse $productListingResponse
+     * @param ProductListingResult $shopwareProductListingResult
+     * @param Criteria $criteria
+     */
+    protected function addPagination(
+        ProductListingResponse $productListingResponse,
+        ProductListingResult $shopwareProductListingResult,
+        Criteria $criteria
+    ) : void
+    {
+        $limit = $productListingResponse->getHitsPerPage();
+        $page = $productListingResponse->getCurrentPage();
+
+        $shopwareProductListingResult->setLimit($limit);
+        $shopwareProductListingResult->setPage($page);
+
+        $criteria->setLimit($limit);
+        $criteria->setOffset($limit * ($page - 1));
     }
 }

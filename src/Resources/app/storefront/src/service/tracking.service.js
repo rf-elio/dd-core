@@ -15,7 +15,7 @@ export default class Tracking {
                 params[param] = extraParams[param];
         }
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "demo/tracking.php",
             data: params,
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",

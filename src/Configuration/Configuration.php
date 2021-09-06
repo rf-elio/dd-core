@@ -53,6 +53,8 @@ class Configuration extends Struct
     private bool $trackCheckout;
     private bool $trackRequireConsent;
     private bool $active;
+    private bool $listingUseFactFinder;
+    private array $additionalRequestParameters;
 
     /**
      * Configuration constructor.
@@ -64,6 +66,8 @@ class Configuration extends Struct
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
      * @param bool $trackCheckout
+     * @param bool $listingUseFactFinder
+     * @param array $additionalRequestParameters
      */
     public function __construct(
         bool $active,
@@ -73,7 +77,9 @@ class Configuration extends Struct
         bool $apiDebugActive,
         bool $searchUseFactFinder,
         bool $trackRequireConsent,
-        bool $trackCheckout
+        bool $trackCheckout,
+        bool $listingUseFactFinder,
+        array $additionalRequestParameters
     )
     {
         $this->useAso = $useAso;
@@ -84,6 +90,8 @@ class Configuration extends Struct
         $this->trackCheckout = $trackCheckout;
         $this->trackRequireConsent = $trackRequireConsent;
         $this->active = $active;
+        $this->listingUseFactFinder = $listingUseFactFinder;
+        $this->additionalRequestParameters = $additionalRequestParameters;
     }
 
     /**
@@ -149,5 +157,21 @@ class Configuration extends Struct
     public function isActive(): bool
     {
         return $this->active;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isListingUseFactFinder(): bool
+    {
+        return $this->listingUseFactFinder;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalRequestParameters(): array
+    {
+        return $this->additionalRequestParameters;
     }
 }

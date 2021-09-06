@@ -82,19 +82,15 @@
         <title>Listing configuration</title>
         <title lang="de-DE">Listing-Einstellungen</title>
         <input-field type="bool">
+            <name>listingUseFactFinder</name>
+            <label>Replace shopware listing by FACTFinder listing</label>
+            <label lang="de-DE">Shopware Listing durch die FACTFinder-Listing ersetzten</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>replaceSimilarProducts</name>
             <label>Replaces or adds a product slider to show similar products</label>
             <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
-        </input-field>
-        <input-field type="bool">
-            <name>replaceShopListing</name>
-            <label>Replace the default Shopware listing with FF listing</label>
-            <label lang="de-DE">Listing in Kategorien aus FACT-Finder befüllen</label>
-        </input-field>
-        <input-field type="bool">
-            <name>replaceSearchListing</name>
-            <label>Replaces the default Shopware search listing with FF listing</label>
-            <label lang="de-DE">Listing in Suchergebnissen aus FACT-Finder befüllen</label>
         </input-field>
         <input-field type="bool">
             <name>useCategoryFilterLists</name>
@@ -324,6 +320,5 @@
             <defaultValue>false</defaultValue>
             <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
         </input-field>
-
     </card>
 </config>

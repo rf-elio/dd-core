@@ -52,6 +52,10 @@ class SearchRequest extends ChannelRequest
 
     protected string $query = '*';
     protected bool $excludeProductsNotInRange = true;
+    protected int $page = 1;
+    protected ?array $sort = null;
+    protected array $filter = [];
+    protected ?array $additionalRequestParameters = null;
 
     /**
      * @return string
@@ -67,5 +71,91 @@ class SearchRequest extends ChannelRequest
     public function setQuery(string $query): void
     {
         $this->query = $query;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getSort(): ?array
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param string $name
+     * @param string $order
+     */
+    public function setSort(string $name, string $order): void
+    {
+        $this->sort = [
+            'name' => $name,
+            'order' => $order
+        ];
+    }
+
+    /**
+     * @return int
+     */
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param int $page
+     */
+    public function setPage(int $page): void
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getAdditionalRequestParameters(): ?array
+    {
+        return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @param array|null $additionalRequestParameters
+     */
+    public function setAdditionalRequestParameters(?array $additionalRequestParameters): void
+    {
+        $this->additionalRequestParameters = $additionalRequestParameters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilter(): array
+    {
+        return $this->filter;
+    }
+
+    /**
+     * @param array $filter
+     */
+    public function setFilter(array $filter): void
+    {
+        $this->filter = $filter;
+    }
+
+    /**
+     * Adds an filter to the ff search request
+     *
+     * @param string $name
+     * @param string $value
+     * @param bool $substring
+     */
+    public function addFilter(string $name, string $value, bool $substring = false) : void
+    {
+        if(!isset($this->filter[$name])) {
+            $this->filter[$name] = [
+                'values' => [],
+                'substring' => $substring
+            ];
+        }
+        $this->filter[$name]['values'][] = $value;
     }
 }
