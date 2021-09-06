@@ -43,6 +43,7 @@ use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\DescribedSortItem;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
@@ -78,26 +79,46 @@ class SortTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $sortingCollection = new ProductSortingCollection();
-        foreach ($model->getSortItems() as $priority => $sortItem) {
-            $sorting = new ProductSortingEntity();
-            $sorting->setId(Uuid::randomHex());
-            $sorting->setKey($sortItem->getDescription());
-            $sorting->setPriority($priority);
-            $sorting->setActive(true);
-            $sorting->setLabel($sortItem->getName());
-            $sorting->setTranslated(['label' => $sortItem->getName()]);
-            $sorting->setFields([
-                'order' => $sortItem->getOrder() === self::ASCENDING ? FieldSorting::ASCENDING : FieldSorting::DESCENDING
-            ]);
-            $sorting->setLocked(false);
-            $sorting->setUniqueIdentifier($sortItem->getName());
-            $sorting->addExtension(ExtensionWrapper::KEY, new ExtensionWrapper($sortItem));
-            $sortingCollection->add($sorting);
-        }
-
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
+
+        $sortingCollection = new ProductSortingCollection();
         $listing->setAvailableSortings($sortingCollection);
+
+        foreach ($model->getSortItems() as $priority => $sortItem) {
+            $label = $sortItem->getName() . ' ' . $sortItem->getOrder();
+            $sorting = new ProductSortingEntity();
+            $sorting->setId(Uuid::randomHex());
+            $sorting->setKey($this->createSortingKey($sortItem));
+            $sorting->setPriority($priority);
+            $sorting->setActive(true);
+            $sorting->setLabel($label);
+            $sorting->setTranslated(['label' => $label]);
+            $sorting->setFields([[
+                'field' => '_'.$sorting->getKey(),
+                'order' => $sortItem->getOrder() === self::ASCENDING ? FieldSorting::ASCENDING : FieldSorting::DESCENDING,
+                'priority' => $sorting->getPriority(),
+                'naturalSorting' => false
+            ]]);
+            $sorting->setLocked(false);
+            $sorting->setUniqueIdentifier($sortItem->getDescription());
+            $sorting->addExtension(ExtensionWrapper::KEY, new ExtensionWrapper($sortItem));
+            $sortingCollection->add($sorting);
+
+            if($sortItem->getSelected()) {
+                $listing->setCurrentSorting($sorting);
+            }
+        }
+    }
+
+    /**
+     * Generates the sorting key that identifies the sorting option
+     *
+     * @param DescribedSortItem $sortItem
+     * @return string
+     */
+    protected function createSortingKey(DescribedSortItem $sortItem) : string
+    {
+        return $sortItem->getName().'.'.$sortItem->getOrder();
     }
 }

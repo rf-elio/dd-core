@@ -39,6 +39,7 @@ use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
+use Swagger\Client\Model\SortItem;
 use Throwable;
 
 /**
@@ -80,10 +81,89 @@ class SearchApi
     public function search(SearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(
-            ['params' => $searchRequest->toArray()]
-        ));
-
+        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
+            'query' => $searchRequest->getQuery(),
+            'channel' => $searchRequest->getChannel(),
+            'sortItems' => $this->getSorting($searchRequest),
+            'page' => $searchRequest->getPage(),
+            'customParameters' => $this->getCustomParameters($searchRequest),
+            'filters' => $this->getFilters($searchRequest)
+        ]]));
         return $this->transformer->transformResponse($result, $context);
+    }
+
+    /**
+     * Converts the sortings to SortItem's
+     *
+     * @param SearchRequest $searchRequest
+     * @return array|SortItem[]
+     */
+    protected function getSorting(SearchRequest $searchRequest): array
+    {
+        if(!$searchRequest->getSort()) {
+            return [];
+        }
+
+        return [
+            new SortItem([
+                'name' => $searchRequest->getSort()['name'],
+                'order' => $searchRequest->getSort()['order']
+            ])
+        ];
+    }
+
+    /**
+     * Prepares the filters to match the ff request structure
+     *
+     * @param SearchRequest $searchRequest
+     * @return array
+     */
+    protected function getFilters(SearchRequest $searchRequest) : array
+    {
+        $preparedFilters = [];
+        foreach ($searchRequest->getFilter() as $name => $filter) {
+            $preparedFilter = [
+                'name' => $name,
+                'substring' => $filter['substring'],
+                'values' => [],
+            ];
+
+            foreach ($filter['values'] as $value) {
+                $preparedFilter['values'][] = [
+                    'exclude' => false,
+                    'type' => 'and',
+                    'value' => $value
+                ];
+            }
+
+            $preparedFilters[] = $preparedFilter;
+        }
+
+        return $preparedFilters;
+    }
+
+    /**
+     * Creates the custom params based on the additional parameters
+     *
+     * @param SearchRequest $searchRequest
+     * @return array
+     */
+    protected function getCustomParameters(SearchRequest $searchRequest): array
+    {
+        if(!$searchRequest->getAdditionalRequestParameters()) {
+            return [];
+        }
+
+        $customParameters = [];
+
+        foreach ($searchRequest->getAdditionalRequestParameters() as $name => $value) {
+            $customParameters[] = [
+                'cacheIrrelevant' => true,
+                'name' => $name,
+                'values' => [$value]
+            ];
+        }
+
+        return $customParameters;
     }
 }

@@ -34,9 +34,21 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
+use Shopware\Core\Content\Property\PropertyGroupCollection;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
@@ -68,5 +80,98 @@ class FacetTransformer implements ResponseTransformerInterface
         if(!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
+
+        $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
+        $responseCollection->set(ProductListingResponse::class, $listing);
+
+        $aggregationResultCollection = new AggregationResultCollection();
+        $listing->setAggregations($aggregationResultCollection);
+
+        $facetCollection = new FacetCollection('ff');
+        $aggregationResultCollection->add($facetCollection);
+
+        foreach ($model->getFacets() as $facet) {
+            $type = $facet->getType();
+            $style = $facet->getFilterStyle();
+
+            switch ($style) {
+                case 'DEFAULT':
+                    $defaultCollection = new PropertyGroupCollection();
+                    $defaultCollection->add($this->transformDefault($facet));
+                    $facetCollection->addAggregation(
+                        new EntityResult($facet->getName(), $defaultCollection),
+                        $style
+                    );
+                    break;
+                case 'SLIDER':
+                    $facetCollection->addAggregation(
+                        $this->transformSlider($facet),
+                        $style
+                    );
+                    break;
+                case 'TREE':
+
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Transforms the default filter to an "property" filter
+     *
+     * @param Facet $facet
+     * @return PropertyGroupEntity
+     */
+    protected function transformDefault(Facet $facet) : PropertyGroupEntity
+    {
+        $options = new PropertyGroupOptionCollection();
+
+        foreach ($facet->getElements() as $element) {
+            $elementLabel = $element->getText();
+            $option = new PropertyGroupOptionEntity();
+            $option->setId(Uuid::randomHex());
+            $option->setUniqueIdentifier(Uuid::randomHex());
+            $option->setName($elementLabel);
+            $option->setTranslated(['name' => $elementLabel]);
+            $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
+                $facet->getName(), $element->getText()
+            ));
+            $options->add($option);
+        }
+
+        $group = new PropertyGroupEntity();
+        $group->setId(Uuid::randomHex());
+        $group->setUniqueIdentifier(Uuid::randomHex());
+        $group->setOptions($options);
+        $group->setName($facet->getName());
+        $group->setTranslated(['name' => $facet->getName()]);
+        $group->setDisplayType('text');
+        return $group;
+    }
+
+    /**
+     * Transforms slider filters
+     *
+     * @param Facet $facet
+     * @return StatsResult|null
+     */
+    protected function transformSlider(Facet $facet): ?StatsResult
+    {
+        $minValue = null;
+        $maxValue = null;
+        foreach ($facet->getElements() as $element) {
+            $minValue = $element->getAbsoluteMinValue();
+            $maxValue = $element->getAbsoluteMaxValue();
+        }
+
+        if(!$minValue || !$maxValue) {
+            return null;
+        }
+
+        return new StatsResult(
+            $facet->getName(),
+            $minValue, $maxValue,
+            null, null
+        );
     }
 }

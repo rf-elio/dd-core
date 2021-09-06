@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Configuration;
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use function _PHPStan_68495e8a9\RingCentral\Psr7\parse_query;
 
 /**
  * Class ConfigurationService
@@ -76,6 +77,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
         }
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
+        parse_str($config['additionalRequestParameters'] ?? '', $additionalRequestParameters);
         $configuration = new Configuration(
             $config['active'],
             $config['apiChannel'],
@@ -85,6 +87,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $config['searchUseFactFinder'],
             $config['trackRequireConsent'],
             $config['trackCheckout'],
+            $config['listingUseFactFinder'],
+            $additionalRequestParameters
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

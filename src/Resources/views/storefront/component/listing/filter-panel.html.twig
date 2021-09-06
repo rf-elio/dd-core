@@ -1,0 +1,42 @@
+{% sw_extends '@Storefront/storefront/component/listing/filter-panel.html.twig' %}
+
+{% block component_filter_panel_item_manufacturer %}
+    {{ parent() }}
+
+    {% set ffAggregations = listing.aggregations.get('ff') %}
+    {% for ffAggregation in ffAggregations.aggregations %}
+        {% if ffAggregation.extensions.ff is defined %}
+            {% set parameterName = ffAggregation.extensions.ff.parameterName %}
+            {% set style = ffAggregation.extensions.ff.style %}
+
+            {% if style == 'DEFAULT' %}
+                {% if not ffAggregation.entities is empty %}
+                    {% for property in ffAggregation.entities %}
+                        {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-default-select.html.twig' with {
+                            elements: property.options,
+                            sidebar: sidebar,
+                            name: parameterName,
+                            displayName: property.translated.name,
+                            displayType: property.displayType,
+                            pluginSelector: 'filter-property-select',
+                            propertyName: property.translated.name
+                        } %}
+                    {% endfor %}
+                {% endif %}
+            {% elseif style == 'SLIDER' %}
+                {% if ffAggregation.min > 0 and ffAggregation.max > 0 %}
+                    {% sw_include '@Storefront/storefront/component/listing/filter/filter-range.html.twig' with {
+                        price: ffAggregation,
+                        sidebar: ffAggregation,
+                        name: ffAggregation.name,
+                        minKey: 'min-' ~ ffAggregation.name,
+                        maxKey: 'max-' ~ ffAggregation.name,
+                        displayName: ffAggregation.name,
+                    } %}
+                {% endif %}
+            {% elseif style == 'TREE' %}
+                TODO: TREE
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}

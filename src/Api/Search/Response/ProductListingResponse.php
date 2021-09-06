@@ -36,6 +36,9 @@ namespace Elio\FactFinder\Api\Search\Response;
 use Elio\FactFinder\Api\Response\Response;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
+use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class ProductListingResponse
@@ -52,7 +55,9 @@ class ProductListingResponse extends Response
     protected int $hitsPerPage = 0;
     protected int $pageCount = 0;
     protected ?ProductSortingCollection $availableSortings = null;
+    protected ?ProductSortingEntity $currentSorting = null;
     protected ?ProductCollection $products = null;
+    protected ?AggregationResultCollection $aggregations = null;
 
     /**
      * @return int
@@ -150,5 +155,37 @@ class ProductListingResponse extends Response
     public function getTotalHits(): int
     {
         return $this->totalHits;
+    }
+
+    /**
+     * @return ProductSortingEntity|null
+     */
+    public function getCurrentSorting(): ?ProductSortingEntity
+    {
+        return $this->currentSorting;
+    }
+
+    /**
+     * @param ProductSortingEntity|null $currentSorting
+     */
+    public function setCurrentSorting(?ProductSortingEntity $currentSorting): void
+    {
+        $this->currentSorting = $currentSorting;
+    }
+
+    /**
+     * @return AggregationResultCollection|null
+     */
+    public function getAggregations(): ?AggregationResultCollection
+    {
+        return $this->aggregations;
+    }
+
+    /**
+     * @param AggregationResultCollection|null $aggregations
+     */
+    public function setAggregations(?AggregationResultCollection $aggregations): void
+    {
+        $this->aggregations = $aggregations;
     }
 }

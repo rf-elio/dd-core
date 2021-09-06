@@ -38,6 +38,7 @@ use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -92,11 +93,23 @@ class ProductHandler implements ResponseTransformerInterface
         $productNumbers = array_map(static function (SearchRecord $searchRecord) {
             return $searchRecord->getId();
         }, $model->getHits());
+        $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
+
+        // sorts the product collection based on the original ff result order
+        $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
+            $aPosition = $productNumberSort[$a->getProductNumber()];
+            $bPosition = $productNumberSort[$b->getProductNumber()];
+
+            if ($aPosition === $bPosition) {
+                return 0;
+            }
+            return ($aPosition < $bPosition) ? -1 : 1;
+        });
 
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);

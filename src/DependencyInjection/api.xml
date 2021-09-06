@@ -54,6 +54,11 @@
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SortTransformer">
             <tag name="elio-ff.api.transformer.response"/>
         </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\TranslationSortTransformer"
+                 decorates="Elio\FactFinder\Api\Search\ResponseTransformer\SortTransformer">
+            <argument type="service" id="product_sorting.repository" />
+            <argument type="service" id="Elio\FactFinder\Api\Search\ResponseTransformer\TranslationSortTransformer.inner" />
+        </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\ProductHandler">
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
             <tag name="elio-ff.api.transformer.response"/>

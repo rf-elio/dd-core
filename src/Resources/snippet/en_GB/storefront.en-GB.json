@@ -2,9 +2,12 @@
     "elioFactFinder": {
         "cookies": {
             "tracking": {
-                "name": "FACTFinder tracking",
+                "name": "FACTFinder Tracking",
                 "description": ""
             }
+        },
+        "listing": {
+            "sorting": {}
         }
     }
 }

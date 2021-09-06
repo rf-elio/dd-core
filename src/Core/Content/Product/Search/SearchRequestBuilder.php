@@ -30,11 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Search;
+namespace Elio\FactFinder\Core\Content\Product\Search;
 
 
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +52,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class SearchRequestBuilder
 {
+    protected const PARAM_PAGE = 'p';
+    protected const PARAM_SORT = 'order';
+
     private FactFinderConfigServiceInterface $configService;
 
     /**
@@ -74,7 +80,73 @@ class SearchRequestBuilder
             $config->getApiChannel()
         );
 
+        $payload = $request->query->all();
         $searchRequest->setQuery($request->get('search'));
+        $searchRequest->setQuery('*');
+        $this->addPage($payload, $searchRequest);
+        $this->addSorting($payload, $searchRequest);
+        $this->addFilters($payload, $searchRequest);
+        $this->addCustomParameters($searchRequest, $config);
+
         return $searchRequest;
+    }
+
+    /**
+     * Adds the current page to the search request
+     *
+     * @param array $payload
+     * @param SearchRequest $searchRequest
+     */
+    protected function addPage(array $payload, SearchRequest $searchRequest) : void
+    {
+        if(!isset($payload[self::PARAM_PAGE]) || empty($payload[self::PARAM_PAGE])) {
+            return;
+        }
+
+        $page = (int)$payload[self::PARAM_PAGE];
+        $page = $page < 1 ? 1 : $page;
+        $searchRequest->setPage($page);
+    }
+
+    /**
+     * Adds the applied sorting to the ff request
+     * @param array $payload
+     * @param SearchRequest $searchRequest
+     */
+    protected function addSorting(array $payload, SearchRequest $searchRequest) : void
+    {
+        if(!isset($payload[self::PARAM_SORT]) || empty($payload[self::PARAM_SORT])) {
+            return;
+        }
+
+        [$field, $order] = explode('.', $payload[self::PARAM_SORT]);
+        $searchRequest->setSort($field, $order);
+    }
+
+    /**
+     * Adds the ff filter to the search request
+     *
+     * @param array $payload
+     * @param SearchRequest $searchRequest
+     */
+    protected function addFilters(array $payload, SearchRequest $searchRequest) : void
+    {
+         foreach ($payload as $key => $value) {
+             if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) === 0) {
+                 [$name, $value] = DefaultFacetExtension::parseKey($value);
+                $searchRequest->addFilter($name, $value);
+             }
+         }
+    }
+
+    /**
+     * Adds the additional request params to the ff request
+     *
+     * @param SearchRequest $searchRequest
+     * @param Configuration $config
+     */
+    protected function addCustomParameters(SearchRequest $searchRequest, Configuration $config) : void
+    {
+        $searchRequest->setAdditionalRequestParameters($config->getAdditionalRequestParameters());
     }
 }
