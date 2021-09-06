@@ -82,7 +82,6 @@ class SearchRequestBuilder
 
         $payload = $request->query->all();
         $searchRequest->setQuery($request->get('search'));
-        $searchRequest->setQuery('*');
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
