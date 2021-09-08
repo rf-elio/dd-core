@@ -47,6 +47,7 @@ use function _PHPStan_68495e8a9\RingCentral\Psr7\parse_query;
 class FactFinderConfigService implements FactFinderConfigServiceInterface
 {
     public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
+    protected const CONFIG_VALUE_SEPARATOR = '|';
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
@@ -88,13 +89,31 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $config['trackRequireConsent'],
             $config['trackCheckout'],
             $config['listingUseFactFinder'],
-            $additionalRequestParameters
+            $additionalRequestParameters,
+            $config['botProtectionActive'],
+            $config['botProtectionUseBadBotList'],
+            $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
+            $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
+            $this->prepareValueList($config, 'botProtectionIpFilter'),
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
         $this->eventDispatcher->dispatch($event);
         $this->loadedConfigurations[$salesChannelId] = $event->getConfiguration();
         return $event->getConfiguration();
+    }
+
+    /***
+     * Prepares a pipe separated values list
+     *
+     * @param array $config
+     * @param $value
+     * @return false|string[]
+     */
+    protected function prepareValueList(array $config, $value)
+    {
+        $valueList = explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
+        return array_filter($valueList);
     }
 
     /**

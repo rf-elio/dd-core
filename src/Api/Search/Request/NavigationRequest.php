@@ -30,85 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\FactFinder\Api\Search\Request;
 
-
-use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class DefaultFacetExtension
- * @package Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * Class NavigationRequest
+ * @package Elio\FactFinder\Api\Search\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class DefaultFacetExtension extends Struct
+class NavigationRequest extends SearchRequest
 {
-    public const KEY = 'ff_facet_extension';
-    protected const COMBINATION_CHAR = '~';
-    private string $name;
-    private string $value;
-    private int $totalHits;
-
-    /**
-     * FactFinderDefaultFacetExtension constructor.
-     * @param string $name
-     * @param string $value
-     * @param int $totalHits
-     */
-    public function __construct(
-        string $name,
-        string $value,
-        int $totalHits
-    )
-    {
-        $this->name = $name;
-        $this->value = $value;
-        $this->totalHits = $totalHits;
-    }
+    protected string $categoryPath = '';
 
     /**
      * @return string
      */
-    public function getName(): string
+    public function getCategoryPath(): string
     {
-        return $this->name;
+        return $this->categoryPath;
     }
 
     /**
-     * @return string
+     * @param string $categoryPath
      */
-    public function getValue(): string
+    public function setCategoryPath(string $categoryPath): void
     {
-        return $this->value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKey() : string
-    {
-        return $this->name . self::COMBINATION_CHAR . $this->value;
-    }
-
-    /**
-     * Separates the combined key into name and value.
-     * [$name, $value] = DefaultFacetExtension::parseKey(...);
-     *
-     * @param string $combinedKey
-     * @return array
-     */
-    public static function parseKey(string $combinedKey) : array
-    {
-        return explode(self::COMBINATION_CHAR, $combinedKey);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalHits(): int
-    {
-        return $this->totalHits;
+        $this->categoryPath = $categoryPath;
     }
 }

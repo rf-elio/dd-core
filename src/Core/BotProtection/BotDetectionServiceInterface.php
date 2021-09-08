@@ -30,85 +30,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\FactFinder\Core\BotProtection;
 
 
-use Shopware\Core\Framework\Struct\Struct;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class DefaultFacetExtension
- * @package Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * Class BotDetectionService
+ * @package Elio\FactFinder\Core\BotProtection
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class DefaultFacetExtension extends Struct
+interface BotDetectionServiceInterface
 {
-    public const KEY = 'ff_facet_extension';
-    protected const COMBINATION_CHAR = '~';
-    private string $name;
-    private string $value;
-    private int $totalHits;
-
     /**
-     * FactFinderDefaultFacetExtension constructor.
-     * @param string $name
-     * @param string $value
-     * @param int $totalHits
-     */
-    public function __construct(
-        string $name,
-        string $value,
-        int $totalHits
-    )
-    {
-        $this->name = $name;
-        $this->value = $value;
-        $this->totalHits = $totalHits;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKey() : string
-    {
-        return $this->name . self::COMBINATION_CHAR . $this->value;
-    }
-
-    /**
-     * Separates the combined key into name and value.
-     * [$name, $value] = DefaultFacetExtension::parseKey(...);
+     * Checks the given request for a possible blocked bot
      *
-     * @param string $combinedKey
-     * @return array
+     * @param string $salesChannelId
+     * @param Request $request
+     * @return bool
      */
-    public static function parseKey(string $combinedKey) : array
-    {
-        return explode(self::COMBINATION_CHAR, $combinedKey);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalHits(): int
-    {
-        return $this->totalHits;
-    }
+    public function detect(string $salesChannelId, Request $request): bool;
 }

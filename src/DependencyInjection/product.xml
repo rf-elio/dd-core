@@ -4,7 +4,9 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Core\Content\Product\Search\SearchRequestBuilder">
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer"/>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
         </service>
 
@@ -13,9 +15,10 @@
                  decoration-priority="-3000"
         >
             <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute.inner" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\Search\SearchRequestBuilder" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder" />
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
         </service>
 
         <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute"
@@ -24,9 +27,10 @@
                  public="true"
         >
             <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute.inner" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder" />
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
         </service>
-
     </services>
 </container>

@@ -7,6 +7,7 @@
         <import resource="basic.xml"/>
         <import resource="configuration.xml"/>
         <import resource="consent.xml"/>
+        <import resource="bot-protection.xml"/>
         <import resource="api.xml"/>
         <import resource="product.xml"/>
         <import resource="tracking.xml"/>

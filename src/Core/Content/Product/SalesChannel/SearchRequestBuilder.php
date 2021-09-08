@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Content\Product\Search;
+namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
 
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
@@ -44,7 +44,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SearchRequestBuilder
- * @package Elio\FactFinder\Search
+ * @package Elio\FactFinder\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -71,17 +71,26 @@ class SearchRequestBuilder
      * @param Request $request
      * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
+     * @param SearchRequest|null $searchRequest
      * @return SearchRequest
      */
-    public function build(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext) : SearchRequest
+    public function build(
+        Request $request,
+        Criteria $criteria,
+        SalesChannelContext $salesChannelContext,
+        ?SearchRequest $searchRequest = null
+    ) : SearchRequest
     {
         $config = $this->configService->get($salesChannelContext->getSalesChannelId());
-        $searchRequest = new SearchRequest(
+        $searchRequest = $searchRequest ?? new SearchRequest(
             $config->getApiChannel()
         );
 
         $payload = $request->query->all();
-        $searchRequest->setQuery($request->get('search'));
+        if(!empty($request->get('search'))) {
+            $searchRequest->setQuery($request->get('search'));
+        }
+        $searchRequest->setQuery('*');
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
@@ -114,7 +123,11 @@ class SearchRequestBuilder
      */
     protected function addSorting(array $payload, SearchRequest $searchRequest) : void
     {
-        if(!isset($payload[self::PARAM_SORT]) || empty($payload[self::PARAM_SORT])) {
+        if(
+            !isset($payload[self::PARAM_SORT]) ||
+            empty($payload[self::PARAM_SORT]) ||
+            strpos($payload[self::PARAM_SORT], '.') === false
+        ) {
             return;
         }
 
@@ -130,10 +143,13 @@ class SearchRequestBuilder
      */
     protected function addFilters(array $payload, SearchRequest $searchRequest) : void
     {
-         foreach ($payload as $key => $value) {
+         foreach ($payload as $key => $filterValues) {
              if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) === 0) {
-                 [$name, $value] = DefaultFacetExtension::parseKey($value);
-                $searchRequest->addFilter($name, $value);
+                 $filterValues = explode('|', $filterValues);
+                 foreach ($filterValues as $filterValue) {
+                     [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
+                     $searchRequest->addFilter($name, $value);
+                 }
              }
          }
     }

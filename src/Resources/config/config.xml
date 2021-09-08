@@ -88,6 +88,14 @@
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
+            <name>listingShowFacetResultCount</name>
+            <label>Facet: Show result count in facet name</label>
+            <label lang="de-DE">Facet: Anzahl der Ergebnisse im Facet anzeigen</label>
+            <helpText>Displays the result count after the filter value</helpText>
+            <helpText lang="de-DE">Zeigt die Anzahl der Ergebnisse nach dem Filterwert an</helpText>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>replaceSimilarProducts</name>
             <label>Replaces or adds a product slider to show similar products</label>
             <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
@@ -216,17 +224,26 @@
             <name>botProtectionActive</name>
             <label>Activates the bot protection</label>
             <label lang="de-DE">Bot-Schutz aktivieren</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>botProtectionUseBadBotList</name>
+            <label>Use bad bot list</label>
+            <label lang="de-DE">Bad-Bot Liste verwenden</label>
+            <helpText>The bad bot list (https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list) is used to detect not allowed bots.</helpText>
+            <helpText lang="de-DE">Die Bad-Bot Liste von (https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list) wird eingesetzt, um nicht erlaubte Bots zu erkennen.</helpText>
+            <defaultValue>true</defaultValue>
         </input-field>
         <component name="sw-textarea-field">
-            <name>searchTermFilter</name>
+            <name>botProtectionSearchTermFilter</name>
             <label>If one of the strings configured here, appear in the search term, the request will be blocked</label>
             <label lang="de-DE">Suchanfragen mit einem dieser Inhalte werden geblockt</label>
-            <placeholder>"DROP TABLE;"|Banane|Ralf Frommherz|"³¼½"</placeholder>
+            <placeholder>"DROP TABLE;"|Banane|"³¼½"</placeholder>
             <helpText>search strings separated by pipes(|) </helpText>
             <helpText lang="de-DE">Suchbegriffe jeweils durch Pipes(|) getrennt</helpText>
         </component>
         <component name="sw-textarea-field">
-            <name>userAgentFilter</name>
+            <name>botProtectionUserAgentFilter</name>
             <label>If one of the configured strings can be found in the user agent, the request will be blocked</label>
             <label lang="de-DE">User Agents dieser Typen werden geblockt</label>
             <placeholder>AhrefsBot|Mozilla/5.0</placeholder>
@@ -234,7 +251,7 @@
             <helpText lang="de-DE">User Agents jeweils durch Pipes(|) getrennt</helpText>
         </component>
         <component name="sw-textarea-field">
-            <name>ipFilter</name>
+            <name>botProtectionIpFilter</name>
             <label>If one of the configured ip addresses can be found in the requested ip address, the request will be blocked</label>
             <label lang="de-DE">Anfragen von hier konfigurierten IP-Adressen werden geblockt</label>
             <placeholder>1.1.1.1|2.2.2.2|3.3.3.3</placeholder>

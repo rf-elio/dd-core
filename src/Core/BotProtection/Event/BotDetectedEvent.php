@@ -30,85 +30,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\FactFinder\Core\BotProtection\Event;
 
 
-use Shopware\Core\Framework\Struct\Struct;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class DefaultFacetExtension
- * @package Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * Class BotDetectedEvent
+ * @package Elio\FactFinder\Core\BotProtection\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class DefaultFacetExtension extends Struct
+class BotDetectedEvent extends Event
 {
-    public const KEY = 'ff_facet_extension';
-    protected const COMBINATION_CHAR = '~';
-    private string $name;
-    private string $value;
-    private int $totalHits;
+    private string $salesChannelId;
+    private Request $request;
+    protected bool $detected;
 
     /**
-     * FactFinderDefaultFacetExtension constructor.
-     * @param string $name
-     * @param string $value
-     * @param int $totalHits
+     * BotDetectedEvent constructor.
+     * @param string $salesChannelId
+     * @param Request $request
+     * @param bool $detected
      */
-    public function __construct(
-        string $name,
-        string $value,
-        int $totalHits
-    )
+    public function __construct(string $salesChannelId, Request $request, bool $detected)
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->totalHits = $totalHits;
+        $this->salesChannelId = $salesChannelId;
+        $this->request = $request;
+        $this->detected = $detected;
     }
 
     /**
      * @return string
      */
-    public function getName(): string
+    public function getSalesChannelId(): string
     {
-        return $this->name;
+        return $this->salesChannelId;
     }
 
     /**
-     * @return string
+     * @return Request
      */
-    public function getValue(): string
+    public function getRequest(): Request
     {
-        return $this->value;
+        return $this->request;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getKey() : string
+    public function isDetected(): bool
     {
-        return $this->name . self::COMBINATION_CHAR . $this->value;
+        return $this->detected;
     }
 
     /**
-     * Separates the combined key into name and value.
-     * [$name, $value] = DefaultFacetExtension::parseKey(...);
-     *
-     * @param string $combinedKey
-     * @return array
+     * @param bool $detected
      */
-    public static function parseKey(string $combinedKey) : array
+    public function setDetected(bool $detected): void
     {
-        return explode(self::COMBINATION_CHAR, $combinedKey);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalHits(): int
-    {
-        return $this->totalHits;
+        $this->detected = $detected;
     }
 }

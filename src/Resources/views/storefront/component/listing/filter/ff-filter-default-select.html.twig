@@ -16,8 +16,8 @@
             {% set color = element.colorHexCode %}
             {% set media = element.media.url %}
             {% set name = element.translated.name %}
-            {% if element.extensions.ff is defined %}
-                {% set id = element.extensions.ff.key %}
+            {% if element.extensions.ff_facet_extension is defined %}
+                {% set id = element.extensions.ff_facet_extension.key %}
             {% endif %}
 
             {% block component_filter_property_select_preview %}

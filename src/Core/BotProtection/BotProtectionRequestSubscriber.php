@@ -30,85 +30,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\FactFinder\Core\BotProtection;
 
 
-use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Routing\KernelListenerPriorities;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class DefaultFacetExtension
- * @package Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * Class BotProtectionRequestSubscriber
+ * @package Elio\FactFinder\Core\BotProtection
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class DefaultFacetExtension extends Struct
+class BotProtectionRequestSubscriber implements EventSubscriberInterface
 {
-    public const KEY = 'ff_facet_extension';
-    protected const COMBINATION_CHAR = '~';
-    private string $name;
-    private string $value;
-    private int $totalHits;
+    private BotDetectionService $botDetectionService;
 
     /**
-     * FactFinderDefaultFacetExtension constructor.
-     * @param string $name
-     * @param string $value
-     * @param int $totalHits
+     * BotProtectionRequestSubscriber constructor.
+     * @param BotDetectionService $botDetectionService
      */
-    public function __construct(
-        string $name,
-        string $value,
-        int $totalHits
-    )
+    public function __construct(BotDetectionService $botDetectionService)
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->totalHits = $totalHits;
+        $this->botDetectionService = $botDetectionService;
     }
 
     /**
-     * @return string
+     * @return array[]
      */
-    public function getName(): string
+    public static function getSubscribedEvents() : array
     {
-        return $this->name;
+        return [
+            KernelEvents::CONTROLLER => ['onKernelController', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_SCOPE_VALIDATE_POST]
+        ];
     }
 
     /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKey() : string
-    {
-        return $this->name . self::COMBINATION_CHAR . $this->value;
-    }
-
-    /**
-     * Separates the combined key into name and value.
-     * [$name, $value] = DefaultFacetExtension::parseKey(...);
+     * Blocks the request if a blocked bot tries to access the page.
      *
-     * @param string $combinedKey
-     * @return array
+     * @param ControllerEvent $event
      */
-    public static function parseKey(string $combinedKey) : array
+    public function onKernelController(ControllerEvent $event) : void
     {
-        return explode(self::COMBINATION_CHAR, $combinedKey);
-    }
+        $request = $event->getRequest();
+        /** @var SalesChannelContext|null $context */
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
-    /**
-     * @return int
-     */
-    public function getTotalHits(): int
-    {
-        return $this->totalHits;
+        if(!$context) {
+            return;
+        }
+
+        if($this->botDetectionService->detect($context->getSalesChannelId(), $event->getRequest())) {
+            throw new AccessDeniedHttpException();
+        }
     }
 }
