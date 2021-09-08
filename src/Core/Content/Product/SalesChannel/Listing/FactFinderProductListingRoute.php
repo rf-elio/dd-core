@@ -33,13 +33,19 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
 
 
+use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 /**
  * Class FactFinderProductListingRoute
@@ -54,22 +60,30 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private AbstractProductListingRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
+    private SearchRequestBuilder $searchRequestBuilder;
+    private ProductListingResultTransformer $productListingResultTransformer;
 
     /**
      * FactFinderProductListingRoute constructor.
      * @param AbstractProductListingRoute $decorated
+     * @param SearchRequestBuilder $searchRequestBuilder
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
+     * @param ProductListingResultTransformer $productListingResultTransformer
      */
     public function __construct(
         AbstractProductListingRoute $decorated,
+        SearchRequestBuilder $searchRequestBuilder,
         FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi
+        SearchApi $searchApi,
+        ProductListingResultTransformer $productListingResultTransformer
     )
     {
         $this->decorated = $decorated;
         $this->configService = $configService;
         $this->searchApi = $searchApi;
+        $this->searchRequestBuilder = $searchRequestBuilder;
+        $this->productListingResultTransformer = $productListingResultTransformer;
     }
 
     /**
@@ -80,6 +94,17 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         return $this->decorated;
     }
 
+    /**
+     * Replaces the shopware product listing result by the ff product listing result
+     *
+     * @param string $categoryId
+     * @param Request $request
+     * @param SalesChannelContext $context
+     * @param Criteria $criteria
+     * @return ProductListingRouteResponse
+     * @throws ApiException
+     * @throws Throwable
+     */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
     {
         $config = $this->configService->get($context->getSalesChannelId());
@@ -87,6 +112,23 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
-        return $this->decorated->load($categoryId, $request, $context, $criteria);
+        /** @var NavigationRequest $navigationRequest */
+        $navigationRequest = $this->searchRequestBuilder->build(
+            $request, $criteria, $context, new NavigationRequest($config->getApiChannel())
+        );
+        $navigationRequest->setCategoryPath('todo'); // @todo: set category path
+        // @todo: create a new endpoint to execute a search request (nav is part of the search operation group -> method can be added to the search api)
+        $resultCollection = $this->searchApi->search($navigationRequest, $context);
+        /** @var ProductListingResponse|null $productListingResponse */
+        $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+
+        if(!$productListingResponse) {
+            return $this->decorated->load($categoryId, $request, $context, $criteria);
+        }
+
+        $shopwareProductListingResult = $this->productListingResultTransformer->transform(
+            $productListingResponse, $criteria, $context
+        );
+        return new ProductListingRouteResponse($shopwareProductListingResult);
     }
 }

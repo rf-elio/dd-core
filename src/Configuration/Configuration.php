@@ -55,6 +55,11 @@ class Configuration extends Struct
     private bool $active;
     private bool $listingUseFactFinder;
     private array $additionalRequestParameters;
+    private bool $botProtectionActive;
+    private bool $botProtectionUseBadBotList;
+    private array $botProtectionSearchTermFilter;
+    private array $botProtectionUserAgentFilter;
+    private array $botProtectionIpFilter;
 
     /**
      * Configuration constructor.
@@ -68,6 +73,11 @@ class Configuration extends Struct
      * @param bool $trackCheckout
      * @param bool $listingUseFactFinder
      * @param array $additionalRequestParameters
+     * @param bool $botProtectionActive
+     * @param bool $botProtectionUseBadBotList
+     * @param array $botProtectionSearchTermFilter
+     * @param array $botProtectionUserAgentFilter
+     * @param array $botProtectionIpFilter
      */
     public function __construct(
         bool $active,
@@ -79,7 +89,12 @@ class Configuration extends Struct
         bool $trackRequireConsent,
         bool $trackCheckout,
         bool $listingUseFactFinder,
-        array $additionalRequestParameters
+        array $additionalRequestParameters,
+        bool $botProtectionActive,
+        bool $botProtectionUseBadBotList,
+        array $botProtectionSearchTermFilter,
+        array $botProtectionUserAgentFilter,
+        array $botProtectionIpFilter
     )
     {
         $this->useAso = $useAso;
@@ -92,6 +107,11 @@ class Configuration extends Struct
         $this->active = $active;
         $this->listingUseFactFinder = $listingUseFactFinder;
         $this->additionalRequestParameters = $additionalRequestParameters;
+        $this->botProtectionActive = $botProtectionActive;
+        $this->botProtectionUseBadBotList = $botProtectionUseBadBotList;
+        $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
+        $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
+        $this->botProtectionIpFilter = $botProtectionIpFilter;
     }
 
     /**
@@ -173,5 +193,45 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBotProtectionActive(): bool
+    {
+        return $this->botProtectionActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBotProtectionUseBadBotList(): bool
+    {
+        return $this->botProtectionUseBadBotList;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBotProtectionSearchTermFilter(): array
+    {
+        return $this->botProtectionSearchTermFilter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBotProtectionUserAgentFilter(): array
+    {
+        return $this->botProtectionUserAgentFilter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBotProtectionIpFilter(): array
+    {
+        return $this->botProtectionIpFilter;
     }
 }

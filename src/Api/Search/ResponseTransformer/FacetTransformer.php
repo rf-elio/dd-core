@@ -91,9 +91,7 @@ class FacetTransformer implements ResponseTransformerInterface
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
-            $type = $facet->getType();
             $style = $facet->getFilterStyle();
-
             switch ($style) {
                 case 'DEFAULT':
                     $defaultCollection = new PropertyGroupCollection();
@@ -125,8 +123,8 @@ class FacetTransformer implements ResponseTransformerInterface
     protected function transformDefault(Facet $facet) : PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
-
-        foreach ($facet->getElements() as $element) {
+        $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
+        foreach ($elements as $element) {
             $elementLabel = $element->getText();
             $option = new PropertyGroupOptionEntity();
             $option->setId(Uuid::randomHex());
@@ -134,7 +132,8 @@ class FacetTransformer implements ResponseTransformerInterface
             $option->setName($elementLabel);
             $option->setTranslated(['name' => $elementLabel]);
             $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(), $element->getText()
+                $facet->getName(), $element->getText(),
+                $element->getTotalHits()
             ));
             $options->add($option);
         }

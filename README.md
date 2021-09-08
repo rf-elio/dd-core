@@ -2,10 +2,35 @@
 
 
 # Components
+## Bot protection
+*  IP-Address: Blocked ip addresses can be configured in the plugin settings. Request from those addresses will be blocked.
+*  User-Agents: Blocked user agents can be configured in the plugin settings. Request that contain those agents will be blocked.
+*  Search-Terms: Blocked search terms can be configured in the plugin settings. Requests with a not allowed search term will be blocked.
+*  Bad-User-Agent-List: The bot protection is using a predefined list of possible bad bot 
+   (https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list).
+   If the user agent matches one entry in the list, the request will be blocked.
+   
+### Update the "Bad-User-Agent-List"
+*  The latest list can be downloaded from: https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list
+*  The file must be places in Resources/files/bot-list.txt
+*  The file should not contain empty lines
+
+### Events
+*  **BotDetectionEvent**: This event can be used to inject custom detection components.
+```php
+function onBotDetectionEvent(BotDetectionEvent $event) {
+    $event->setDetected();
+}
+```
+*  **BotDetectedEvent**: This event is dispatched after all detections have been executed. Extensions can use this to
+change the detection state.
+
 ## Exports
 ### Profiles
+todo
 
 ### Extensions
+todo
 
 ### Usage
 Exports can be generated using the following console command. The command offers a way to automatically

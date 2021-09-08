@@ -131,7 +131,7 @@ class SearchApi
             foreach ($filter['values'] as $value) {
                 $preparedFilter['values'][] = [
                     'exclude' => false,
-                    'type' => 'and',
+                    'type' => 'or',
                     'value' => $value
                 ];
             }
