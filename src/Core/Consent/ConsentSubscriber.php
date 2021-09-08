@@ -34,7 +34,11 @@ namespace Elio\FactFinder\Core\Consent;
 
 
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\Event\SalesChannelContextRestoredEvent;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -65,7 +69,8 @@ class ConsentSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents() : array
     {
         return [
-            KernelEvents::CONTROLLER => ['onKernelController', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_SCOPE_VALIDATE_POST]
+            KernelEvents::CONTROLLER => ['onKernelController', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_CONTEXT_RESOLVE_POST],
+            SalesChannelContextRestoredEvent::class => 'onContextRestore'
         ];
     }
 
@@ -77,23 +82,35 @@ class ConsentSubscriber implements EventSubscriberInterface
     public function onKernelController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
-        $cookiePreferences = $request->cookies->get('cookiePreferences');
+        $cookiePreferences = $request->cookies->get('cookie-preference');
 
         if(empty($cookiePreferences)) {
             return;
         }
-        // @todo: fetch cookie preferences
-//
-//
-//        $cookiePreferences = json_decode($cookiePreferences, true);
-//
-//        if(!$cookiePreferences) {
-//            return;
-//        }
-//
-//        echo '<pre>'; var_dump($cookiePreferences); die();
-//
-//        $cookiePreferences = $request->cookies->get('cookiePreferences');
-//        echo '<pre>'; var_dump($cookiePreferences); die();
+        $attributes = $request->attributes;
+        /** @var SalesChannelContext|null $context */
+        $context = $attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) ?
+            $attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) : null;
+        if ($context === null){
+            return;
+        }
+        $trackingCookie = $request->cookies->get('elio_ff_tracking');
+        $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $context);
+    }
+
+    /**
+     * @param SalesChannelContextRestoredEvent $restoredEvent
+     */
+    public function onContextRestore(SalesChannelContextRestoredEvent $restoredEvent): void
+    {
+        $request = Request::createFromGlobals();
+        $cookiePreferences = $request->cookies->get('cookie-preference');
+
+        if(empty($cookiePreferences)) {
+            return;
+        }
+        $newContext = $restoredEvent->getRestoredSalesChannelContext();
+        $trackingCookie = $request->cookies->get('elio_ff_tracking');
+        $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $newContext);
     }
 }

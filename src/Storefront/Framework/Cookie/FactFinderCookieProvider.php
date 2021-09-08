@@ -32,7 +32,10 @@
 
 namespace Elio\FactFinder\Storefront\Framework\Cookie;
 
+use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Shopware\Core\PlatformRequest;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class FactFinderCookieProvider
@@ -49,16 +52,28 @@ class FactFinderCookieProvider implements CookieProviderInterface
     private const TRACKING_COOKIE = [
         'snippet_name' => 'elioFactFinder.cookies.tracking.name',
         'snippet_description' => 'elioFactFinder.cookies.tracking.description',
-        'cookie' => 'elio_ff_tracking'
+        'cookie' => 'elio_ff_tracking',
+        'value'=> '1',
+        'expiration' => '30'
     ];
+    private FactFinderConfigServiceInterface $configService;
+    private RequestStack $requestStack;
 
     /**
      * FactFinderCookieProvider constructor.
      * @param CookieProviderInterface $cookieProvider
+     * @param FactFinderConfigServiceInterface $configService
+     * @param RequestStack $requestStack
      */
-    public function __construct(CookieProviderInterface $cookieProvider)
+    public function __construct(
+        CookieProviderInterface $cookieProvider,
+        FactFinderConfigServiceInterface $configService,
+        RequestStack $requestStack
+    )
     {
         $this->cookieProvider = $cookieProvider;
+        $this->configService = $configService;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -68,17 +83,24 @@ class FactFinderCookieProvider implements CookieProviderInterface
     {
         $cookieGroups = $this->cookieProvider->getCookieGroups();
 
-        foreach ($cookieGroups as &$cookieGroup) {
-            if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
-                continue;
+        $masterRequest = $this->requestStack->getMainRequest();
+        if($masterRequest !== null){
+            $salesChannelContext = $masterRequest->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+            $config = $this->configService->get($salesChannelContext->getSalesChannel()->getId());
+            if($config->isTrackRequireConsent()) {
+                foreach ($cookieGroups as &$cookieGroup) {
+                    if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
+                        continue;
+                    }
+
+                    $cookieGroup['entries'] = array_merge(
+                        $cookieGroup['entries'],
+                        [self::TRACKING_COOKIE]
+                    );
+
+                    break;
+                }
             }
-
-            $cookieGroup['entries'] = array_merge(
-                $cookieGroup['entries'],
-                [self::TRACKING_COOKIE]
-            );
-
-            break;
         }
 
         return $cookieGroups;

@@ -30,43 +30,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\FactFinder\Core\Consent;
+
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class CheckoutTrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CheckoutTrackingRequest extends TrackingRequest
+class Consent extends Struct
 {
+    public const EXTENSION_KEY = 'elio_ff_consent';
+
+    private bool $trackingAllowed;
 
     /**
-     * @param string $id
-     * @param string $productNumber
-     * @param string $title
-     * @param int $quantity
-     * @param float $price
-     * @param string|null $customerId
+     * @param bool $trackingAllowed
      */
-    public function addEvent(
-        string $id,
-        string $productNumber,
-        string $title,
-        int $quantity,
-        float $price,
-        ?string $customerId
-    ) : void
+    public function __construct(bool $trackingAllowed)
     {
-        $this->events[] = [
-            'id' => $id,
-            'productNumber' => $productNumber,
-            'title' => $title,
-            'count' => $quantity,
-            'price' => $price,
-            'customerId' => $customerId
-        ];
+        $this->trackingAllowed = $trackingAllowed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrackingAllowed(): bool
+    {
+        return $this->trackingAllowed;
+    }
+
+    /**
+     * @param bool $trackingAllowed
+     */
+    public function setTrackingAllowed(bool $trackingAllowed): void
+    {
+        $this->trackingAllowed = $trackingAllowed;
     }
 }

@@ -36,10 +36,12 @@ namespace Elio\FactFinder\Api\Tracking;
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Tracking\Exception\TrackingRequestNotSupportedException;
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\CartOrCheckoutEvent;
+use Swagger\Client\Model\LoginEvent;
 
 /**
  * Class TrackingApi
@@ -74,8 +76,17 @@ class TrackingApi
      */
     public function track(TrackingRequest $request, string $salesChannelId) : void
     {
+        $this->logger->error('track received', ['request' => get_class($request)]);
+        if(!$request->hasEvents()) {
+            return;
+        }
         if($request instanceof CheckoutTrackingRequest) {
             $this->trackCheckout($request, $salesChannelId);
+            return;
+        }
+        if($request instanceof LoginTrackingRequest) {
+            $this->logger->error('LoginTrackingRequest received', ['request' => get_class($request)]);
+            $this->trackLogin($request, $salesChannelId);
             return;
         }
 
@@ -87,6 +98,20 @@ class TrackingApi
     }
 
     /**
+     * @param LoginTrackingRequest $loginTrackingRequest
+     * @param string $salesChannelId
+     * @throws ApiException
+     */
+    protected function trackLogin(LoginTrackingRequest $loginTrackingRequest, string $salesChannelId): void
+    {
+        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
+        $apiClient->trackLoginUsingPOST(
+            $loginTrackingRequest->getChannel(),
+            $this->convertLoginEvents($loginTrackingRequest)
+        );
+    }
+
+    /**
      * Tracks the checkout event
      *
      * @param CheckoutTrackingRequest $checkoutTrackingRequest
@@ -95,15 +120,25 @@ class TrackingApi
      */
     protected function trackCheckout(CheckoutTrackingRequest $checkoutTrackingRequest, string $salesChannelId) : void
     {
-        if(!$checkoutTrackingRequest->hasEvents()) {
-            return;
-        }
-
         $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
         $apiClient->trackCheckoutUsingPOST(
             $checkoutTrackingRequest->getChannel(),
             $this->convertCheckoutEvents($checkoutTrackingRequest)
         );
+    }
+
+    /**
+     * @param LoginTrackingRequest $loginTrackingRequest
+     * @return LoginEvent[]
+     */
+    protected function convertLoginEvents(LoginTrackingRequest $loginTrackingRequest): array
+    {
+        return array_map(static function (array $event) : LoginEvent {
+            return new LoginEvent([
+                'sid' => $event['sid'],
+                'user_id' => $event['userId'],
+            ]);
+        }, $loginTrackingRequest->getEvents());
     }
 
     /**

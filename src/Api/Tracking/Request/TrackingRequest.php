@@ -45,5 +45,24 @@ use Elio\FactFinder\Api\Request\ChannelRequest;
  */
 class TrackingRequest extends ChannelRequest
 {
+    /**
+     * @var array
+     */
+    protected array $events = [];
 
+    /**
+     * @return bool
+     */
+    public function hasEvents() : bool
+    {
+        return !empty($this->events);
+    }
+
+    /**
+     * @return array
+     */
+    public function getEvents(): array
+    {
+        return $this->events;
+    }
 }

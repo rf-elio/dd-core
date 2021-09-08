@@ -33,40 +33,26 @@
 namespace Elio\FactFinder\Api\Tracking\Request;
 
 /**
- * Class CheckoutTrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class LoginTrackingRequest
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CheckoutTrackingRequest extends TrackingRequest
+class LoginTrackingRequest extends TrackingRequest
 {
-
     /**
-     * @param string $id
-     * @param string $productNumber
-     * @param string $title
-     * @param int $quantity
-     * @param float $price
+     * @param string $sid
      * @param string|null $customerId
      */
     public function addEvent(
-        string $id,
-        string $productNumber,
-        string $title,
-        int $quantity,
-        float $price,
-        ?string $customerId
+        string $sid,
+        string $customerId
     ) : void
     {
         $this->events[] = [
-            'id' => $id,
-            'productNumber' => $productNumber,
-            'title' => $title,
-            'count' => $quantity,
-            'price' => $price,
-            'customerId' => $customerId
+            'sid' => $sid,
+            'userId' => $customerId
         ];
     }
 }
