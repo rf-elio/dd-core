@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Consent;
 
 
+use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -67,17 +68,17 @@ class ConsentService
     {
         $config = $this->configService->get($salesChannelId);
         // if no consent is required -> tracking can always be active
-        if(!$config->isTrackRequireConsent()) {
+        if(!$this->isTrackingConsentRequired($config)) {
             return true;
         }
         if ($salesChannelContext === null){
             $request = Request::createFromGlobals();
             $attributes = $request->attributes;
-            /** @var SalesChannelContext|null $context */
+            /** @var SalesChannelContext|null $salesChannelContext */
             $salesChannelContext = $attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) ?
                 $attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) : null;
-            if ($context === null){
-                return false;
+            if ($salesChannelContext === null){
+                return !empty($request->cookies->get('cookie-preference')) && !empty($request->cookies->get('elio_ff_tracking'));
             }
         }
         /** @var Consent|null $extension */
@@ -86,6 +87,21 @@ class ConsentService
             return false;
         }
         return $extension->isTrackingAllowed();
+    }
+
+    /**
+     * @param Configuration $config
+     * @return bool
+     */
+    public function isTrackingConsentRequired(Configuration $config): bool
+    {
+        return $config->isTrackRequireConsent() &&
+            (
+                $config->isTrackCart() ||
+                $config->isTrackCheckout() ||
+                $config->isTrackLogin() ||
+                $config->isTrackProductView()
+            );
     }
 
     /**

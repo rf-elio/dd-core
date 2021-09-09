@@ -33,23 +33,24 @@
 namespace Elio\FactFinder\Api\Tracking\Request;
 
 /**
- * Class CheckoutTrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class ProductDetailTrackingRequest
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CheckoutTrackingRequest extends TrackingRequest
+class ProductDetailTrackingRequest extends TrackingRequest
 {
-
     /**
      * @param string $id
      * @param string $sid
      * @param string $productNumber
      * @param string $title
-     * @param int $quantity
-     * @param float $price
+     * @param string $query
+     * @param int $pos
+     * @param int $page
+     * @param int $pageSize
+     * @param string|null $campaign
      * @param string|null $customerId
      */
     public function addEvent(
@@ -57,9 +58,12 @@ class CheckoutTrackingRequest extends TrackingRequest
         string $sid,
         string $productNumber,
         string $title,
-        int $quantity,
-        float $price,
-        ?string $customerId
+        string $query,
+        int $pos,
+        int $page,
+        int $pageSize,
+        ?string $campaign = null,
+        ?string $customerId = null
     ) : void
     {
         $this->events[] = [
@@ -67,8 +71,11 @@ class CheckoutTrackingRequest extends TrackingRequest
             'sid' => $sid,
             'productNumber' => $productNumber,
             'title' => $title,
-            'count' => $quantity,
-            'price' => $price,
+            'query' => $query,
+            'pos' => $pos,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'campaign' => $campaign,
             'customerId' => $customerId
         ];
     }

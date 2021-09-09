@@ -30,39 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Controller;
-
-
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\System\SalesChannel\SuccessResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Controller\StorefrontController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+namespace Elio\FactFinder\Api\Tracking\Request;
 
 /**
- * Class TrackingController
- * @package Elio\FactFinder\Storefront\Controller
+ * Class CartTrackingRequest
+ * @package Elio\FactFinder\Api\Tracking\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- *
- * @RouteScope(scopes={"storefront"})
  */
-class TrackingController extends StorefrontController
+class CartTrackingRequest extends TrackingRequest
 {
+
     /**
-     * @Route("/widgets/ff/tracking", name="frontend.ff.tracking", options={"seo"="false"}, methods={"GET"})
-     * @param Request $request
-     * @param SalesChannelContext $context
-     * @return Response
-     * @throws InconsistentCriteriaIdsException
+     * @param string $id
+     * @param string $sid
+     * @param string $productNumber
+     * @param string $title
+     * @param int $quantity
+     * @param float $price
+     * @param string|null $customerId
      */
-    public function track(Request $request, SalesChannelContext $context): Response
+    public function addEvent(
+        string $id,
+        string $sid,
+        string $productNumber,
+        string $title,
+        int $quantity,
+        float $price,
+        ?string $customerId
+    ) : void
     {
-        return new SuccessResponse();
+        $this->events[] = [
+            'id' => $id,
+            'sid' => $sid,
+            'productNumber' => $productNumber,
+            'title' => $title,
+            'count' => $quantity,
+            'price' => $price,
+            'customerId' => $customerId
+        ];
     }
 }

@@ -146,18 +146,6 @@
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
-            <name>trackLogin</name>
-            <label>Tracks the customer login</label>
-            <label lang="de-DE">Kundenlogin tracken</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>trackProductView</name>
-            <label>Tracks the view of a product (detail page)</label>
-            <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
             <name>trackCart</name>
             <label>Tracking of the shopware cart</label>
             <label lang="de-DE">Shopware-Warenkorb tracken</label>
@@ -167,6 +155,18 @@
             <name>trackCheckout</name>
             <label>Tracking of the shopware checkout</label>
             <label lang="de-DE">Shopware-Bestellabschluss tracken</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>trackLogin</name>
+            <label>Tracks the customer login</label>
+            <label lang="de-DE">Kundenlogin tracken</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>trackProductView</name>
+            <label>Tracks the view of a product (detail page)</label>
+            <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>

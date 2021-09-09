@@ -32,7 +32,20 @@
 
 namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
+use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
+use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Consent\ConsentService;
+use Elio\FactFinder\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
+use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
+use Shopware\Core\Checkout\Cart\Event\AfterLineItemQuantityChangedEvent;
+use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class TrackCartSubscriber
@@ -43,5 +56,97 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class TrackCartSubscriber implements EventSubscriberInterface
 {
+    private FactFinderConfigServiceInterface $configService;
+    private MessageBusInterface $bus;
+    private EventDispatcherInterface $eventDispatcher;
+    private ConsentService $consentService;
 
+    /**
+     * TrackCartSubscriber constructor.
+     * @param FactFinderConfigServiceInterface $configService
+     * @param ConsentService $consentService
+     * @param MessageBusInterface $bus
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(
+        FactFinderConfigServiceInterface $configService,
+        ConsentService $consentService,
+        MessageBusInterface $bus,
+        EventDispatcherInterface $eventDispatcher
+    )
+    {
+        $this->configService = $configService;
+        $this->bus = $bus;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->consentService = $consentService;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents() : array
+    {
+        return [
+            AfterLineItemAddedEvent::class => 'trackAddCart',
+            AfterLineItemQuantityChangedEvent::class => 'trackUpdateCart',
+        ];
+    }
+
+    /**
+     * @param AfterLineItemAddedEvent $event
+     */
+    public function trackAddCart(AfterLineItemAddedEvent $event): void
+    {
+        $this->trackCart($event->getSalesChannelContext(), $event->getLineItems());
+    }
+
+    /**
+     * @param AfterLineItemQuantityChangedEvent $event
+     */
+    public function trackUpdateCart(AfterLineItemQuantityChangedEvent $event): void
+    {
+        $this->trackCart($event->getSalesChannelContext(), $event->getItems(), $event->getCart());
+    }
+
+    protected function trackCart(SalesChannelContext $salesChannelContext, array $items, ?Cart $cart = null): void
+    {
+        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+
+        if(
+            !$config->isActive() ||
+            !$config->isTrackCart() ||
+            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext) ||
+            empty($items)
+        ) {
+            return;
+        }
+        $customerId = $salesChannelContext->getCustomer() ? $salesChannelContext->getCustomer()->getId() : null;
+        $request = new CartTrackingRequest($config->getApiChannel());
+        foreach ($items as $item) {
+            $lineItem = null;
+            if ($item instanceof LineItem){
+                $lineItem = $item;
+            }elseif ($cart !== null && $cart->getLineItems()->has($item['id'])){
+                $lineItem = $cart->getLineItems()->get($item['id']);
+            }
+            if ($lineItem !== null && $lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE) {
+                $request->addEvent(
+                    $lineItem->getReferencedId(),
+                    $salesChannelContext->getToken(),
+                    $lineItem->getPayload()['productNumber'] ?? '',
+                    $lineItem->getLabel(),
+                    $lineItem->getQuantity(),
+                    $lineItem->getPrice()->getUnitPrice(),
+                    $customerId
+                );
+            }
+        }
+
+        $requestCreatedEvent = new CartTrackingRequestCreatedEvent($request);
+        $this->eventDispatcher->dispatch($requestCreatedEvent);
+        $this->bus->dispatch(new TrackingMessage(
+            $requestCreatedEvent->getRequest(),
+            $salesChannelContext->getSalesChannelId()
+        ));
+    }
 }

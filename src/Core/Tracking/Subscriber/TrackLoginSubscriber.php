@@ -35,7 +35,7 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Consent\ConsentService;
-use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
+use Elio\FactFinder\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Customer\Event\CustomerBeforeLoginEvent;
@@ -96,26 +96,18 @@ class TrackLoginSubscriber implements EventSubscriberInterface
 
         if(
             !$config->isActive() ||
-            !$config->isTrackCheckout() ||
+            !$config->isTrackLogin() ||
             !$this->consentService->isTrackingAllowed($salesChannelId, $salesChannelContext) ||
             !$customer->getId()
         ) {
-            ini_set('xdebug.var_display_max_depth', '10');
-            ini_set('xdebug.var_display_max_children', '256');
-            ini_set('xdebug.var_display_max_data', '2048');
-            echo '<pre>';
-            var_dump('permissions');
-            echo '</pre>';
-            die();
             return;
         }
         $request = new LoginTrackingRequest($config->getApiChannel());
         $request->addEvent($event->getContextToken(), $customer->getId());
-//        $checkoutTrackingRequestCreatedEvent = new CheckoutTrackingRequestCreatedEvent($event, $request);
-//        $this->eventDispatcher->dispatch($checkoutTrackingRequestCreatedEvent);
+        $requestCreatedEvent = new LoginTrackingRequestCreatedEvent($request);
+        $this->eventDispatcher->dispatch($requestCreatedEvent);
         $this->bus->dispatch(new TrackingMessage(
-//            $checkoutTrackingRequestCreatedEvent->getRequest(),
-            $request,
+            $requestCreatedEvent->getRequest(),
             $salesChannelId
         ));
     }

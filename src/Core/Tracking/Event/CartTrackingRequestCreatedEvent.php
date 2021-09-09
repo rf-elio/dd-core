@@ -30,46 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\FactFinder\Core\Tracking\Event;
+
+use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class CheckoutTrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class CartTrackingRequestCreatedEvent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CheckoutTrackingRequest extends TrackingRequest
+class CartTrackingRequestCreatedEvent extends Event
 {
+    private CartTrackingRequest $request;
 
     /**
-     * @param string $id
-     * @param string $sid
-     * @param string $productNumber
-     * @param string $title
-     * @param int $quantity
-     * @param float $price
-     * @param string|null $customerId
+     * @param CartTrackingRequest $request
      */
-    public function addEvent(
-        string $id,
-        string $sid,
-        string $productNumber,
-        string $title,
-        int $quantity,
-        float $price,
-        ?string $customerId
-    ) : void
+    public function __construct(
+        CartTrackingRequest $request
+    )
     {
-        $this->events[] = [
-            'id' => $id,
-            'sid' => $sid,
-            'productNumber' => $productNumber,
-            'title' => $title,
-            'count' => $quantity,
-            'price' => $price,
-            'customerId' => $customerId
-        ];
+        $this->request = $request;
+    }
+
+    /**
+     * @return CartTrackingRequest
+     */
+    public function getRequest(): CartTrackingRequest
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param CartTrackingRequest $request
+     */
+    public function setRequest(CartTrackingRequest $request): void
+    {
+        $this->request = $request;
     }
 }

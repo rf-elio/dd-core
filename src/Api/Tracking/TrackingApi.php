@@ -35,12 +35,15 @@ namespace Elio\FactFinder\Api\Tracking;
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Tracking\Exception\TrackingRequestNotSupportedException;
+use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\CartOrCheckoutEvent;
+use Swagger\Client\Model\ClickEvent;
 use Swagger\Client\Model\LoginEvent;
 
 /**
@@ -76,8 +79,12 @@ class TrackingApi
      */
     public function track(TrackingRequest $request, string $salesChannelId) : void
     {
-        $this->logger->error('track received', ['request' => get_class($request)]);
+        $this->logger->debug('track received', ['request' => get_class($request), 'events' => $request->getEvents()]);
         if(!$request->hasEvents()) {
+            return;
+        }
+        if($request instanceof CartTrackingRequest) {
+            $this->trackCart($request, $salesChannelId);
             return;
         }
         if($request instanceof CheckoutTrackingRequest) {
@@ -85,8 +92,11 @@ class TrackingApi
             return;
         }
         if($request instanceof LoginTrackingRequest) {
-            $this->logger->error('LoginTrackingRequest received', ['request' => get_class($request)]);
             $this->trackLogin($request, $salesChannelId);
+            return;
+        }
+        if($request instanceof ProductDetailTrackingRequest) {
+            $this->trackProductDetail($request, $salesChannelId);
             return;
         }
 
@@ -98,16 +108,18 @@ class TrackingApi
     }
 
     /**
-     * @param LoginTrackingRequest $loginTrackingRequest
+     * Tracks the cart event
+     *
+     * @param CartTrackingRequest $cartTrackingRequest
      * @param string $salesChannelId
      * @throws ApiException
      */
-    protected function trackLogin(LoginTrackingRequest $loginTrackingRequest, string $salesChannelId): void
+    protected function trackCart(CartTrackingRequest $cartTrackingRequest, string $salesChannelId) : void
     {
         $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
-        $apiClient->trackLoginUsingPOST(
-            $loginTrackingRequest->getChannel(),
-            $this->convertLoginEvents($loginTrackingRequest)
+        $apiClient->trackCartUsingPOST(
+            $cartTrackingRequest->getChannel(),
+            $this->convertCartEvents($cartTrackingRequest)
         );
     }
 
@@ -125,6 +137,56 @@ class TrackingApi
             $checkoutTrackingRequest->getChannel(),
             $this->convertCheckoutEvents($checkoutTrackingRequest)
         );
+    }
+
+    /**
+     * @param LoginTrackingRequest $loginTrackingRequest
+     * @param string $salesChannelId
+     * @throws ApiException
+     */
+    protected function trackLogin(LoginTrackingRequest $loginTrackingRequest, string $salesChannelId): void
+    {
+        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
+        $apiClient->trackLoginUsingPOST(
+            $loginTrackingRequest->getChannel(),
+            $this->convertLoginEvents($loginTrackingRequest)
+        );
+    }
+
+    /**
+     * @param ProductDetailTrackingRequest $productDetailTrackingRequest
+     * @param string $salesChannelId
+     * @throws ApiException
+     */
+    protected function trackProductDetail(ProductDetailTrackingRequest $productDetailTrackingRequest, string $salesChannelId): void
+    {
+        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
+        $apiClient->trackClickUsingPOST(
+            $productDetailTrackingRequest->getChannel(),
+            $this->convertClickEvents($productDetailTrackingRequest)
+        );
+    }
+
+    /**
+     * @param ProductDetailTrackingRequest $productDetailTrackingRequest
+     * @return ClickEvent[]
+     */
+    protected function convertClickEvents(ProductDetailTrackingRequest $productDetailTrackingRequest): array
+    {
+        return array_map(static function (array $event) : ClickEvent {
+            return new ClickEvent([
+                'id' => $event['id'],
+                'sid' => $event['sid'],
+                'master_id' => $event['productNumber'],
+                'title' => $event['title'],
+                'query' => $event['query'],
+                'pos' => $event['pos'],
+                'page' => $event['page'],
+                'pageSize' => $event['pageSize'],
+                'campaign' => $event['campaign'],
+                'user_id' => $event['customerId'],
+            ]);
+        }, $productDetailTrackingRequest->getEvents());
     }
 
     /**
@@ -150,6 +212,7 @@ class TrackingApi
         return array_map(static function (array $event) : CartOrCheckoutEvent {
             return new CartOrCheckoutEvent([
                 'id' => $event['id'],
+                'sid' => $event['sid'],
                 'master_id' => $event['productNumber'],
                 'title' => $event['title'],
                 'count' => $event['count'],
@@ -157,5 +220,24 @@ class TrackingApi
                 'user_id' => $event['customerId'],
             ]);
         }, $checkoutTrackingRequest->getEvents());
+    }
+
+    /**
+     * @param CartTrackingRequest $cartTrackingRequest
+     * @return CartOrCheckoutEvent[]
+     */
+    protected function convertCartEvents(CartTrackingRequest $cartTrackingRequest): array
+    {
+        return array_map(static function (array $event) : CartOrCheckoutEvent {
+            return new CartOrCheckoutEvent([
+                'id' => $event['id'],
+                'sid' => $event['sid'],
+                'master_id' => $event['productNumber'],
+                'title' => $event['title'],
+                'count' => $event['count'],
+                'price' => $event['price'],
+                'user_id' => $event['customerId'],
+            ]);
+        }, $cartTrackingRequest->getEvents());
     }
 }

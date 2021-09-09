@@ -30,18 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Subscriber;
+namespace Elio\FactFinder\Core\Tracking\Event;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TrackProductDetailSubscriber
+ * Class LoginTrackingRequestCreatedEvent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackProductDetailSubscriber implements EventSubscriberInterface
+class LoginTrackingRequestCreatedEvent extends Event
 {
+    private LoginTrackingRequest $request;
+
+    /**
+     * @param LoginTrackingRequest $request
+     */
+    public function __construct(
+        LoginTrackingRequest $request
+    )
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return LoginTrackingRequest
+     */
+    public function getRequest(): LoginTrackingRequest
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param LoginTrackingRequest $request
+     */
+    public function setRequest(LoginTrackingRequest $request): void
+    {
+        $this->request = $request;
+    }
 
 }

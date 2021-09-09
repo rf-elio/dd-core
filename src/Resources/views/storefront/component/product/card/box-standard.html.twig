@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/component/product/card/box-standard.html.twig' %}
+
+{% block component_product_box_content %}
+    {% if config('FactFinder.config.trackProductView') %}
+        <div class="elio-ff-listing-box"
+             data-elio-ff-id="{{ id }}"
+             data-elio-ff-productNumber="{{ product.productNumber }}"
+             data-elio-ff-label="{{ name }}"
+             data-elio-ff-query="{{ elioFFQuery }}"
+             data-elio-ff-pos="{{ elioFFPos }}"
+             data-elio-ff-page="{{ elioFFPage }}"
+             data-elio-ff-pageSize="{{ elioFFPageSize }}"
+             data-elio-ff-campaign="{{ elioFFCampaign }}"
+             data-elio-ff-path="{{ elioFFPath }}"
+        >
+            {{ parent() }}
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
