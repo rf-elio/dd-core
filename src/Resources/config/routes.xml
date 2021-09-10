@@ -7,4 +7,5 @@
 
     <import resource="../../Controller" type="annotation" />
     <import resource="../../**/Storefront/Controller/*Controller.php" type="annotation" />
+    <import resource="../../**/Controller/*Controller.php" type="annotation" />
 </routes>

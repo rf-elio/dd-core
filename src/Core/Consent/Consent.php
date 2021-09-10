@@ -30,39 +30,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\FactFinder\Core\Consent;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class TrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class Consent extends Struct
 {
+    public const EXTENSION_KEY = 'elio_ff_consent';
+
+    private bool $trackingAllowed;
+
     /**
-     * @var array
+     * @param bool $trackingAllowed
      */
-    protected array $events = [];
+    public function __construct(bool $trackingAllowed)
+    {
+        $this->trackingAllowed = $trackingAllowed;
+    }
 
     /**
      * @return bool
      */
-    public function hasEvents() : bool
+    public function isTrackingAllowed(): bool
     {
-        return !empty($this->events);
+        return $this->trackingAllowed;
     }
 
     /**
-     * @return array
+     * @param bool $trackingAllowed
      */
-    public function getEvents(): array
+    public function setTrackingAllowed(bool $trackingAllowed): void
     {
-        return $this->events;
+        $this->trackingAllowed = $trackingAllowed;
     }
 }

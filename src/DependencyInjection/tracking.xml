@@ -5,7 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- storefront / controller -->
-        <service id="Elio\FactFinder\Storefront\Controller\TrackingController" public="true" >
+        <service id="Elio\FactFinder\Core\Tracking\Controller\ProductDetailTrackingController" public="true" >
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="event_dispatcher"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -18,7 +22,21 @@
         </service>
 
         <!-- subscriber -->
+        <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackCartSubscriber">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="event_dispatcher"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="event_dispatcher"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackLoginSubscriber">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
             <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
             <argument type="service" id="messenger.bus.shopware"/>

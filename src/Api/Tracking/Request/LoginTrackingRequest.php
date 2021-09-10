@@ -32,37 +32,27 @@
 
 namespace Elio\FactFinder\Api\Tracking\Request;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
-
 /**
- * Class TrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class LoginTrackingRequest
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class LoginTrackingRequest extends TrackingRequest
 {
     /**
-     * @var array
+     * @param string $sid
+     * @param string|null $customerId
      */
-    protected array $events = [];
-
-    /**
-     * @return bool
-     */
-    public function hasEvents() : bool
+    public function addEvent(
+        string $sid,
+        string $customerId
+    ) : void
     {
-        return !empty($this->events);
-    }
-
-    /**
-     * @return array
-     */
-    public function getEvents(): array
-    {
-        return $this->events;
+        $this->events[] = [
+            'sid' => $sid,
+            'userId' => $customerId
+        ];
     }
 }

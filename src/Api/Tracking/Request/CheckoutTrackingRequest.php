@@ -42,13 +42,10 @@ namespace Elio\FactFinder\Api\Tracking\Request;
  */
 class CheckoutTrackingRequest extends TrackingRequest
 {
-    /**
-     * @var array
-     */
-    protected array $events = [];
 
     /**
      * @param string $id
+     * @param string $sid
      * @param string $productNumber
      * @param string $title
      * @param int $quantity
@@ -57,6 +54,7 @@ class CheckoutTrackingRequest extends TrackingRequest
      */
     public function addEvent(
         string $id,
+        string $sid,
         string $productNumber,
         string $title,
         int $quantity,
@@ -66,27 +64,12 @@ class CheckoutTrackingRequest extends TrackingRequest
     {
         $this->events[] = [
             'id' => $id,
+            'sid' => $sid,
             'productNumber' => $productNumber,
             'title' => $title,
             'count' => $quantity,
             'price' => $price,
             'customerId' => $customerId
         ];
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEvents() : bool
-    {
-        return !empty($this->events);
-    }
-
-    /**
-     * @return array
-     */
-    public function getEvents(): array
-    {
-        return $this->events;
     }
 }

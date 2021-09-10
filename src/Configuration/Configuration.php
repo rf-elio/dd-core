@@ -55,6 +55,9 @@ class Configuration extends Struct
     private bool $active;
     private bool $listingUseFactFinder;
     private array $additionalRequestParameters;
+    private bool $trackCart;
+    private bool $trackLogin;
+    private bool $trackProductView;
     private bool $botProtectionActive;
     private bool $botProtectionUseBadBotList;
     private array $botProtectionSearchTermFilter;
@@ -87,7 +90,10 @@ class Configuration extends Struct
         bool $apiDebugActive,
         bool $searchUseFactFinder,
         bool $trackRequireConsent,
+        bool $trackCart,
         bool $trackCheckout,
+        bool $trackLogin,
+        bool $trackProductView,
         bool $listingUseFactFinder,
         array $additionalRequestParameters,
         bool $botProtectionActive,
@@ -107,6 +113,9 @@ class Configuration extends Struct
         $this->active = $active;
         $this->listingUseFactFinder = $listingUseFactFinder;
         $this->additionalRequestParameters = $additionalRequestParameters;
+        $this->trackCart = $trackCart;
+        $this->trackLogin = $trackLogin;
+        $this->trackProductView = $trackProductView;
         $this->botProtectionActive = $botProtectionActive;
         $this->botProtectionUseBadBotList = $botProtectionUseBadBotList;
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
@@ -193,6 +202,30 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrackCart(): bool
+    {
+        return $this->trackCart;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrackLogin(): bool
+    {
+        return $this->trackLogin;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrackProductView(): bool
+    {
+        return $this->trackProductView;
     }
 
     /**

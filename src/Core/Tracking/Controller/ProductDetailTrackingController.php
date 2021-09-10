@@ -30,29 +30,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Subscriber;
+namespace Elio\FactFinder\Core\Tracking\Controller;
 
-
-use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Consent\ConsentService;
-use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
+use Elio\FactFinder\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SuccessResponse;
+use Shopware\Storefront\Controller\StorefrontController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
 /**
- * Class TrackCheckoutSubscriber
- * @package Elio\FactFinder\Core\Tracking\Subscriber
+ * Class ProductDetailTrackingController
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * @RouteScope(scopes={"storefront"})
  */
-class TrackCheckoutSubscriber implements EventSubscriberInterface
+class ProductDetailTrackingController extends StorefrontController
 {
     private FactFinderConfigServiceInterface $configService;
     private MessageBusInterface $bus;
@@ -60,7 +64,6 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     private ConsentService $consentService;
 
     /**
-     * TrackCheckoutSubscriber constructor.
      * @param FactFinderConfigServiceInterface $configService
      * @param ConsentService $consentService
      * @param MessageBusInterface $bus
@@ -80,57 +83,50 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @return string[]
-     */
-    public static function getSubscribedEvents() : array
-    {
-        return [
-            CheckoutOrderPlacedEvent::class => 'trackCheckout',
-        ];
-    }
-
-    /**
-     * Tracks the checkout event if an order was placed in shopware
+     * @Route("/elioFactFinder/productDetailTrack", name="elio-factfinder.product-detail-track", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
-     * @param CheckoutOrderPlacedEvent $event
+     * @param Request $request
+     * @param RequestDataBag $dataBag
+     * @param SalesChannelContext $salesChannelContext
+     * @return Response
      */
-    public function trackCheckout(CheckoutOrderPlacedEvent $event): void
+    public function trackProductDetail(Request $request, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
     {
-        $order = $event->getOrder();
-        $salesChannelId = $event->getSalesChannelId();
-        $config = $this->configService->get($salesChannelId);
+        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
 
         if(
             !$config->isActive() ||
-            !$config->isTrackCheckout() ||
-            !$this->consentService->isTrackingAllowed($salesChannelId) ||
-            !$order->getLineItems()
+            !$config->isTrackProductView() ||
+            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         ) {
-            return;
+            return new SuccessResponse();
         }
-
-        $customerId = $order->getOrderCustomer() ? $order->getOrderCustomer()->getCustomerId() : null;
-        $request = new CheckoutTrackingRequest($config->getApiChannel());
-
-        foreach ($order->getLineItems() as $lineItem) {
-            if ($lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE) {
-                $request->addEvent(
-                    $lineItem->getReferencedId(),
-                    $customerId, //@TODO change
-                    $lineItem->getPayload()['productNumber'] ?? '',
-                    $lineItem->getLabel(),
-                    $lineItem->getQuantity(),
-                    $lineItem->getUnitPrice(),
-                    $customerId
-                );
-            }
+        if(!$dataBag->has('ffProductTrackingData')){
+            return new SuccessResponse();
         }
+        /** @var RequestDataBag $trackingData */
+        $trackingData = $dataBag->get('ffProductTrackingData');
+        $customerId = $salesChannelContext->getCustomer() ? $salesChannelContext->getCustomer()->getId() : null;
+        $request = new ProductDetailTrackingRequest($config->getApiChannel());
+        $request->addEvent(
+            $trackingData->get('id'),
+            $salesChannelContext->getToken(),
+            $trackingData->get('productNumber'),
+            $trackingData->get('label'),
+            $trackingData->get('query'),
+            $trackingData->get('pos'),
+            $trackingData->get('page'),
+            $trackingData->get('pageSize'),
+            $trackingData->get('campaign'),
+            $customerId
+        );
 
-        $checkoutTrackingRequestCreatedEvent = new CheckoutTrackingRequestCreatedEvent($event, $request);
-        $this->eventDispatcher->dispatch($checkoutTrackingRequestCreatedEvent);
+        $requestCreatedEvent = new ProductDetailTrackingRequestCreatedEvent($request);
+        $this->eventDispatcher->dispatch($requestCreatedEvent);
         $this->bus->dispatch(new TrackingMessage(
-            $checkoutTrackingRequestCreatedEvent->getRequest(),
-            $salesChannelId
+            $requestCreatedEvent->getRequest(),
+            $salesChannelContext->getSalesChannelId()
         ));
+        return new SuccessResponse();
     }
 }

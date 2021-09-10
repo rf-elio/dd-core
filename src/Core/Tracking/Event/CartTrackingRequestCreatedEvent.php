@@ -30,39 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\FactFinder\Core\Tracking\Event;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class CartTrackingRequestCreatedEvent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class CartTrackingRequestCreatedEvent extends Event
 {
-    /**
-     * @var array
-     */
-    protected array $events = [];
+    private CartTrackingRequest $request;
 
     /**
-     * @return bool
+     * @param CartTrackingRequest $request
      */
-    public function hasEvents() : bool
+    public function __construct(
+        CartTrackingRequest $request
+    )
     {
-        return !empty($this->events);
+        $this->request = $request;
     }
 
     /**
-     * @return array
+     * @return CartTrackingRequest
      */
-    public function getEvents(): array
+    public function getRequest(): CartTrackingRequest
     {
-        return $this->events;
+        return $this->request;
+    }
+
+    /**
+     * @param CartTrackingRequest $request
+     */
+    public function setRequest(CartTrackingRequest $request): void
+    {
+        $this->request = $request;
     }
 }

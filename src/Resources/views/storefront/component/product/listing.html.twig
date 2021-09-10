@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
+
+{% block product_listing %}
+    {% set elioFFQuery = 'main' %}
+    {% set elioFFPos = 3 %}
+    {% set elioFFPage = 1 %}
+    {% set elioFFPageSize = 2 %}
+{#    {% set elioFFCampaign = '' %}#}
+    {% set elioFFPath = path('elio-factfinder.product-detail-track') %}
+    {{ parent() }}
+{% endblock %}

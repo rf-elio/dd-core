@@ -32,37 +32,51 @@
 
 namespace Elio\FactFinder\Api\Tracking\Request;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
-
 /**
- * Class TrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class ProductDetailTrackingRequest
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class ProductDetailTrackingRequest extends TrackingRequest
 {
     /**
-     * @var array
+     * @param string $id
+     * @param string $sid
+     * @param string $productNumber
+     * @param string $title
+     * @param string $query
+     * @param int $pos
+     * @param int $page
+     * @param int $pageSize
+     * @param string|null $campaign
+     * @param string|null $customerId
      */
-    protected array $events = [];
-
-    /**
-     * @return bool
-     */
-    public function hasEvents() : bool
+    public function addEvent(
+        string $id,
+        string $sid,
+        string $productNumber,
+        string $title,
+        string $query,
+        int $pos,
+        int $page,
+        int $pageSize,
+        ?string $campaign = null,
+        ?string $customerId = null
+    ) : void
     {
-        return !empty($this->events);
-    }
-
-    /**
-     * @return array
-     */
-    public function getEvents(): array
-    {
-        return $this->events;
+        $this->events[] = [
+            'id' => $id,
+            'sid' => $sid,
+            'productNumber' => $productNumber,
+            'title' => $title,
+            'query' => $query,
+            'pos' => $pos,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'campaign' => $campaign,
+            'customerId' => $customerId
+        ];
     }
 }

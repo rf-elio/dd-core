@@ -30,39 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Controller;
+namespace Elio\FactFinder\Core\Tracking\Event;
 
-
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\System\SalesChannel\SuccessResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Controller\StorefrontController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TrackingController
- * @package Elio\FactFinder\Storefront\Controller
+ * Class LoginTrackingRequestCreatedEvent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- *
- * @RouteScope(scopes={"storefront"})
  */
-class TrackingController extends StorefrontController
+class LoginTrackingRequestCreatedEvent extends Event
 {
+    private LoginTrackingRequest $request;
+
     /**
-     * @Route("/widgets/ff/tracking", name="frontend.ff.tracking", options={"seo"="false"}, methods={"GET"})
-     * @param Request $request
-     * @param SalesChannelContext $context
-     * @return Response
-     * @throws InconsistentCriteriaIdsException
+     * @param LoginTrackingRequest $request
      */
-    public function track(Request $request, SalesChannelContext $context): Response
+    public function __construct(
+        LoginTrackingRequest $request
+    )
     {
-        return new SuccessResponse();
+        $this->request = $request;
     }
+
+    /**
+     * @return LoginTrackingRequest
+     */
+    public function getRequest(): LoginTrackingRequest
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param LoginTrackingRequest $request
+     */
+    public function setRequest(LoginTrackingRequest $request): void
+    {
+        $this->request = $request;
+    }
+
 }

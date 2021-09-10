@@ -33,7 +33,11 @@
 namespace Elio\FactFinder\Core\Consent;
 
 
+use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ConsentService
@@ -60,16 +64,54 @@ class ConsentService
      * @param string $salesChannelId
      * @return bool
      */
-    public function isTrackingAllowed(string $salesChannelId) : bool
+    public function isTrackingAllowed(string $salesChannelId, ?SalesChannelContext $salesChannelContext = null) : bool
     {
         $config = $this->configService->get($salesChannelId);
-
         // if no consent is required -> tracking can always be active
-        if(!$config->isTrackRequireConsent()) {
+        if(!$this->isTrackingConsentRequired($config)) {
             return true;
         }
+        if ($salesChannelContext === null){
+            $request = Request::createFromGlobals();
+            $attributes = $request->attributes;
+            /** @var SalesChannelContext|null $salesChannelContext */
+            $salesChannelContext = $attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) ?
+                $attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) : null;
+            if ($salesChannelContext === null){
+                return !empty($request->cookies->get('cookie-preference')) && !empty($request->cookies->get('elio_ff_tracking'));
+            }
+        }
+        /** @var Consent|null $extension */
+        $extension = $salesChannelContext->getExtension(Consent::EXTENSION_KEY);
+        if ($extension === null){
+            return false;
+        }
+        return $extension->isTrackingAllowed();
+    }
 
-        // @todo: implement based on user decision -> user the subscriber to get the details from the request
-        return true;
+    /**
+     * @param Configuration $config
+     * @return bool
+     */
+    public function isTrackingConsentRequired(Configuration $config): bool
+    {
+        return $config->isTrackRequireConsent() &&
+            (
+                $config->isTrackCart() ||
+                $config->isTrackCheckout() ||
+                $config->isTrackLogin() ||
+                $config->isTrackProductView()
+            );
+    }
+
+    /**
+     * @param bool $cookieIsSet
+     * @param SalesChannelContext $salesChannelContext
+     */
+    public function updateContextIfNecessary(bool $cookieIsSet, SalesChannelContext $salesChannelContext): void
+    {
+        $struct = new Consent($cookieIsSet);
+        $extensions = $salesChannelContext->getExtensions();
+        $salesChannelContext->setExtensions(array_merge_recursive([Consent::EXTENSION_KEY => $struct], $extensions));
     }
 }

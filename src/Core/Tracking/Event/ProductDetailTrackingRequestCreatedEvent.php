@@ -30,39 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\FactFinder\Core\Tracking\Event;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * Class ProductDetailTrackingRequestCreatedEvent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class ProductDetailTrackingRequestCreatedEvent extends Event
 {
-    /**
-     * @var array
-     */
-    protected array $events = [];
+    private ProductDetailTrackingRequest $request;
 
     /**
-     * @return bool
+     * @param ProductDetailTrackingRequest $request
      */
-    public function hasEvents() : bool
+    public function __construct(
+        ProductDetailTrackingRequest $request
+    )
     {
-        return !empty($this->events);
+        $this->request = $request;
     }
 
     /**
-     * @return array
+     * @return ProductDetailTrackingRequest
      */
-    public function getEvents(): array
+    public function getRequest(): ProductDetailTrackingRequest
     {
-        return $this->events;
+        return $this->request;
+    }
+
+    /**
+     * @param ProductDetailTrackingRequest $request
+     */
+    public function setRequest(ProductDetailTrackingRequest $request): void
+    {
+        $this->request = $request;
     }
 }

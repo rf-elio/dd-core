@@ -32,37 +32,44 @@
 
 namespace Elio\FactFinder\Api\Tracking\Request;
 
-
-use Elio\FactFinder\Api\Request\ChannelRequest;
-
 /**
- * Class TrackingRequest
+ * Class CartTrackingRequest
  * @package Elio\FactFinder\Api\Tracking\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingRequest extends ChannelRequest
+class CartTrackingRequest extends TrackingRequest
 {
-    /**
-     * @var array
-     */
-    protected array $events = [];
 
     /**
-     * @return bool
+     * @param string $id
+     * @param string $sid
+     * @param string $productNumber
+     * @param string $title
+     * @param int $quantity
+     * @param float $price
+     * @param string|null $customerId
      */
-    public function hasEvents() : bool
+    public function addEvent(
+        string $id,
+        string $sid,
+        string $productNumber,
+        string $title,
+        int $quantity,
+        float $price,
+        ?string $customerId
+    ) : void
     {
-        return !empty($this->events);
-    }
-
-    /**
-     * @return array
-     */
-    public function getEvents(): array
-    {
-        return $this->events;
+        $this->events[] = [
+            'id' => $id,
+            'sid' => $sid,
+            'productNumber' => $productNumber,
+            'title' => $title,
+            'count' => $quantity,
+            'price' => $price,
+            'customerId' => $customerId
+        ];
     }
 }
