@@ -32,8 +32,11 @@
 
 namespace Elio\FactFinder;
 
+use Elio\FactFinder\Core\Export\Setup\ExportSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Plugin\Context\ActivateContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -57,7 +60,23 @@ class FactFinder extends Plugin
      */
     public function build(ContainerBuilder $container): void
     {
+        parent::build($container);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
         $loader->load('services.xml');
+    }
+
+    public function postUpdate(UpdateContext $updateContext): void
+    {
+        if (!$this->isActive()) {
+            return;
+        }
+        $setup = new ExportSetup($this->container);
+        $setup->createExports($updateContext->getContext());
+    }
+
+    public function activate(ActivateContext $activateContext): void
+    {
+        $setup = new ExportSetup($this->container);
+        $setup->createExports($activateContext->getContext());
     }
 }

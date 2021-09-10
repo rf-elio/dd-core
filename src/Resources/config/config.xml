@@ -51,21 +51,25 @@
             <name>active</name>
             <label>FACT-Finder active</label>
             <label lang="de-DE">FACT-Finder benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useAso</name>
             <label>After search optimization active</label>
             <label lang="de-DE">After Search Optimization benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useABTests</name>
             <label>FACT-Finder AB-Tests active</label>
             <label lang="de-DE">FACT-Finder AB-Tests benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useCache</name>
             <label>FACT-Finder Cache active</label>
             <label lang="de-DE">FACT-Finder Cache benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -99,11 +103,13 @@
             <name>replaceSimilarProducts</name>
             <label>Replaces or adds a product slider to show similar products</label>
             <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useCategoryFilterLists</name>
             <label>Apply lists of blocked and allowed filter lists in categories</label>
             <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -113,21 +119,25 @@
             <name>useProductDetailRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on product detail pages</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useCartRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on the cart page</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Warenkorb anzeigen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useOffCanvasRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider inside the offcanvas-cart</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useConfirmRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider in the checkout confirm page</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Checkout anzeigen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <component name="sw-entity-multi-id-select">
             <name>recommendationExcludedProducts</name>
@@ -177,12 +187,13 @@
             <name>suggestExportActive</name>
             <label>Activates the xml suggest export</label>
             <label lang="de-DE">Suggest XML-Export benutzen</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="text">
             <name>suggestExportInterval</name>
             <label>suggest export interval</label>
             <label lang="de-DE">Suggest-Export-Intervall</label>
-            <placeholder>0 * * * *</placeholder>
+            <defaultValue>0 * * * *</defaultValue>
             <helpText>Crontab like format: 0 * * * *</helpText>
             <helpText lang="de-DE">Im Cron-Tab-Format: 0 * * * * (Minute, Stunde, Tag, Monat, Jahr)</helpText>
         </input-field>
@@ -190,31 +201,37 @@
             <name>suggestExportProductCategories</name>
             <label>Export product categories</label>
             <label lang="de-DE">Produktkategorien exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>suggestExportStructureCategories</name>
             <label>Export structure categories</label>
             <label lang="de-DE">Strukturkategorien exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>suggestExportLinkCategories</name>
             <label>Export link categories</label>
             <label lang="de-DE">Linkkategorien exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>suggestExportFooterNavigation</name>
             <label>Export footer categories</label>
             <label lang="de-DE">Footerkategorien exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>suggestExportServiceNavigation</name>
             <label>Export service categories</label>
             <label lang="de-DE">Servicekategorien exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>suggestExportManufacturers</name>
             <label>Export manufacturers</label>
             <label lang="de-DE">Hersteller exportieren</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -307,7 +324,7 @@
             </options>
             <defaultValue>prod</defaultValue>
             <helpText>log level</helpText>
-            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
+            <helpText lang="de-DE">Log Level</helpText>
         </input-field>
         <component name="sw-textarea-field">
             <name>logDebugIpFilter</name>
