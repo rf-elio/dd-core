@@ -5,11 +5,11 @@
     <services>
 
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterDefinition">
-            <tag name="shopware.entity.definition"/>
+            <tag name="shopware.entity.definition" entity="elio_ff_filter"/>
         </service>
 
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition">
-            <tag name="shopware.entity.definition"/>
+            <tag name="shopware.entity.definition" entity="elio_ff_filter_restrictions"/>
         </service>
 
         <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\CategoryExtension">

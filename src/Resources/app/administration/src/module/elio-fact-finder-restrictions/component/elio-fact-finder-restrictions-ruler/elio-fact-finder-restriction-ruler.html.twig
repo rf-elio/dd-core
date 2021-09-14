@@ -7,16 +7,15 @@
                  class="ruler-tab-filter-list ruler-tab-filter-list--main"
                  @drop="onDrop"
                  ondragover="event.preventDefault()"
+                 data-filter-column="all"
             >
-                {# todo: backend - fill the list #}
                 <div class="filter"
                      style="order: 1;"
                      draggable="true"
                      @dragstart="onDragStart"
-                >Size</div>
-                <div class="filter" style="order: 2;" draggable="true" @dragstart="onDragStart">Color</div>
-                <div class="filter" style="order: 3;" draggable="true" @dragstart="onDragStart">Weight</div>
-                <div class="filter" style="order: 4;" draggable="true" @dragstart="onDragStart">Price</div>
+                     v-for="filter in allList"
+                     :data-filter-id="filter.id"
+                >{{ filter.propertyName }}</div>
             </div>
         </div>
         <div class="ruler-tab">
@@ -46,8 +45,15 @@
                  class="ruler-tab-filter-list"
                  @drop="onDrop"
                  ondragover="event.preventDefault()"
+                 data-filter-column="allow"
             >
-                {# todo: backend - fill the list #}
+                <div class="filter"
+                     style="order: 1;"
+                     draggable="true"
+                     @dragstart="onDragStart"
+                     v-for="filter in allowList"
+                     :data-filter-id="filter.id"
+                >{{ filter.propertyName }}</div>
             </div>
         </div>
         <div class="ruler-tab">
@@ -77,8 +83,15 @@
                  class="ruler-tab-filter-list"
                  @drop="onDrop"
                  ondragover="event.preventDefault()"
+                 data-filter-column="block"
             >
-                {# todo: backend - fill the list #}
+                <div class="filter"
+                     style="order: 1;"
+                     draggable="true"
+                     @dragstart="onDragStart"
+                     v-for="filter in blockList"
+                     :data-filter-id="filter.id"
+                >{{ filter.propertyName }}</div>
             </div>
         </div>
     </div>
