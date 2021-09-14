@@ -1,4 +1,5 @@
 import './module/elio-fact-finder/index';
+import './module/elio-fact-finder-restrictions/index';
 import './module/elio-extension-config-detail/index';
 import './module/elio-fact-finder-export/index';
 

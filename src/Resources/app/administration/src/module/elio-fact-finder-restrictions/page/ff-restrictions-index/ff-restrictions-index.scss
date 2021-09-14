@@ -1,0 +1,34 @@
+.ruler {
+  display: flex;
+}
+.ruler-tab {
+  width: 30%;
+  margin-right: auto;
+}
+.ruler-tab-filter-list{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 10px;
+  padding-bottom: 50px;
+  min-height: 400px;
+}
+.ruler-tab-filter-list--main {
+  min-height: 500px;
+}
+.ruler-tab-permissions{
+  height: 100px;
+  padding: 0px 10px;
+}
+.ruler-tab-permissions-header {
+  margin-bottom: 10px;
+}
+.ruler-tab-permission-inputgroup {
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+.filter {
+  border: 1px solid;
+  padding: 5px;
+}
