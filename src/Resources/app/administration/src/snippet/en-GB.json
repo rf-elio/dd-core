@@ -13,6 +13,39 @@
         "orderReferenceLabel": "Bestellreferenznummer",
         "deliveryDateLabel": "Wunschliefertermin"
       }
+    },
+    "restrictions": {
+      "title": "FACTFinderRestrictions",
+      "description": "",
+      "tabs": {
+        "global": "Global",
+        "search": "Search",
+        "navigation": "Navigation",
+        "customfilters": "Custom Filters",
+        "categories": "Categories"
+      },
+      "ruler": {
+        "tabs": {
+          "permissions": "Permissions",
+          "available": {
+            "header": "Available filters"
+          },
+          "allowed": {
+            "header": "Allowed filters",
+            "permissions": {
+              "allowAll": "Allow all",
+              "allowOnlySelected": "Allow only selected"
+            }
+          },
+          "blocked": {
+            "header": "Blocked filters",
+            "permissions": {
+              "blockAll": "Exclude all",
+              "blockOnlySelected": "Exclude only selected"
+            }
+          }
+        }
+      }
     }
   }
 }

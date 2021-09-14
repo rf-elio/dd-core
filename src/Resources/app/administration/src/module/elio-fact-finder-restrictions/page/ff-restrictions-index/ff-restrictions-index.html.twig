@@ -1,0 +1,45 @@
+{% block ff_restrictions_index_page %}
+    <sw-meteor-page class="ff-restrictions-index" hideIcon>
+
+        {% block ff_restrictions_index_page_smart_bar_tabs %}
+            <template slot="page-tabs">
+                {% block ff_restrictions_index_page_smart_bar_tabs_global %}
+                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.global' }">
+                        {{ $tc('ff.restrictions.tabs.global') }}
+                    </sw-tabs-item>
+                {% endblock %}
+
+                {% block ff_restrictions_index_page_smart_bar_tabs_search %}
+                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.search' }">
+                        {{ $tc('ff.restrictions.tabs.search') }}
+                    </sw-tabs-item>
+                {% endblock %}
+
+                {% block ff_restrictions_index_page_smart_bar_tabs_navigation %}
+                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.navigation' }">
+                        {{ $tc('ff.restrictions.tabs.navigation') }}
+                    </sw-tabs-item>
+                {% endblock %}
+
+                {% block ff_restrictions_index_page_smart_bar_tabs_customfilters %}
+                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.customfilters' }">
+                        {{ $tc('ff.restrictions.tabs.customfilters') }}
+                    </sw-tabs-item>
+                {% endblock %}
+
+                {% block ff_restrictions_index_page_smart_bar_tabs_categories %}
+                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.categories' }">
+                        {{ $tc('ff.restrictions.tabs.categories') }}
+                    </sw-tabs-item>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block ff_restrictions_index_page_body %}
+            <template slot="default">
+                <router-view></router-view>
+            </template>
+        {% endblock %}
+
+    </sw-meteor-page>
+{% endblock %}
