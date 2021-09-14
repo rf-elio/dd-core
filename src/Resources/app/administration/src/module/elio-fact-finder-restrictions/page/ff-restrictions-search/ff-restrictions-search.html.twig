@@ -1,6 +1,7 @@
 {% block ff_restrictions_search_page %}
     <sw-meteor-card>
         <h1>{{ $tc('ff.restrictions.tabs.search') }}</h1>
-        <ff-restriction-ruler :type="type"></ff-restriction-ruler>
+        <ff-restriction-ruler :isCategory="false"
+                              :layer="type"></ff-restriction-ruler>
     </sw-meteor-card>
 {% endblock %}

@@ -12,12 +12,23 @@ Shopware.Component.register('ff-restriction-ruler', {
     ],
 
     props: {
-        type: {
-            type: String,
+        isCategory: {
+            type: Boolean,
             required: true,
+            default() {
+                return false;
+            }
+        },
+        layer: {
+            type: String,
+            required: false,
             default() {
                 return 'global';
             }
+        },
+        category_id: {
+            type: String,
+            required: false,
         },
     },
 
