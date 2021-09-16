@@ -1,0 +1,13 @@
+{% block sw_category_view_tabs_seo %}
+    {% parent %}
+    <sw-tabs-item
+            v-show="isPage"
+            :route="{ name: 'sw.category.detail.ruler', params: { id: $route.params.id } }"
+            :title="$tc('ff.restrictions.tabs.category')">
+        {{ $tc('ff.restrictions.tabs.category') }}
+    </sw-tabs-item>
+{% endblock %}
+
+{% block sw_category_view_content %}
+    <router-view :isLoading="isLoading" ref="routerView"></router-view>
+{% endblock %}

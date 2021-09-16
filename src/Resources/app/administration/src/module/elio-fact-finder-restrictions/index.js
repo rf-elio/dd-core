@@ -3,7 +3,6 @@ import './page/ff-restrictions-global';
 import './page/ff-restrictions-search';
 import './page/ff-restrictions-navigation';
 import './page/ff-restrictions-customfilters';
-import './page/ff-restrictions-categories';
 
 (async function initDependencies() {
     await import(/* webpackMode: 'eager' */ './component/elio-fact-finder-restrictions-ruler');
@@ -37,10 +36,6 @@ Shopware.Module.register('elio-factfinder-restrictions', {
                 customfilters: {
                     component: 'ff-restrictions-customfilters',
                     path: 'customfilters',
-                },
-                categories: {
-                    component: 'ff-restrictions-categories',
-                    path: 'categories',
                 }
             }
         }

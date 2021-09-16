@@ -101,6 +101,10 @@ class FilterRestrictionsDefinition extends EntityDefinition
                new ApiAware(),
                new Required()
            ),
+           (new BoolField('is_all_checked', 'isAllChecked'))->addFlags(
+               new ApiAware(),
+               new Required()
+           ),
            new OneToOneAssociationField(
                'category',
                'category_id',

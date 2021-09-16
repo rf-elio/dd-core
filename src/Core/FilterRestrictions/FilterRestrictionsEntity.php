@@ -68,7 +68,10 @@ class FilterRestrictionsEntity extends Entity
      * @var FilterCollection|null
      */
     protected $filters;
-
+    /**
+     * @var bool
+     */
+    protected bool $isAllChecked;
 
     /**
      * @return FilterCollection|null
@@ -150,4 +153,19 @@ class FilterRestrictionsEntity extends Entity
         $this->isCategory = $isCategory;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAllChecked(): bool
+    {
+        return $this->isAllChecked;
+    }
+
+    /**
+     * @param bool $isAllChecked
+     */
+    public function setIsAllChecked(bool $isAllChecked): void
+    {
+        $this->isAllChecked = $isAllChecked;
+    }
 }
