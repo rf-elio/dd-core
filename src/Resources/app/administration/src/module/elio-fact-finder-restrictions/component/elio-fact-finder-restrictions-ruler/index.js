@@ -69,9 +69,6 @@ Shopware.Component.register('ff-restriction-ruler', {
 
     methods: {
         onCreated() {
-            // console.log('isCategory', this.isCategory);
-            // console.log('layer', this.layer);
-            // console.log('categoryId', this.categoryId);
             this.loadFilters();
         },
 
@@ -316,10 +313,6 @@ Shopware.Component.register('ff-restriction-ruler', {
             // Saving new links into elio_ff_filter_restrictions_filters table
             await this.filterRestrictionFilterRepository.sync(entities, Shopware.Context.api, false)
                 .finally(() => {this.isLoading = false;});
-        },
-
-        onSave() {
-            console.log('ruler.onSave');
         }
     }
 });
