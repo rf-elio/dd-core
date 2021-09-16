@@ -4,8 +4,9 @@ Shopware.Component.override('sw-category-detail', {
 
     methods: {
         onSaveChanges() {
-            console.log(this.$refs.categoryView.$refs.routerView.$refs.ruler);
-
+            if (this.$refs.categoryView.$refs.routerView.$refs.ruler) {
+                this.$refs.categoryView.$refs.routerView.$refs.ruler.saveAll();
+            }
             this.onSave();
         }
     }
