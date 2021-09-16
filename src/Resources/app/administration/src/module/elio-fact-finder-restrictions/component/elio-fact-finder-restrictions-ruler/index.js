@@ -97,42 +97,29 @@ Shopware.Component.register('ff-restriction-ruler', {
 
         onAllowAllClicked() {
             if(this.allowListRestrictionId !== '') {
-                this.turnIsAllChecked(this.allowListRestrictionId, true);
+                this.allowAllChecked = true;
             }
         },
 
         onAllowSelectedClicked() {
             if(this.allowListRestrictionId !== '') {
-                this.turnIsAllChecked(this.allowListRestrictionId, false);
+                this.allowAllChecked = false;
             }
         },
 
         onBlockAllClicked() {
             if(this.blockListRestrictionId !== '') {
-                this.turnIsAllChecked(this.blockListRestrictionId, true);
+                this.blockAllChecked = true;
             }
         },
 
         onBlockSelectedClicked() {
             if(this.blockListRestrictionId !== '') {
-                this.turnIsAllChecked(this.blockListRestrictionId, true);
+                this.blockAllChecked = false;
             }
         },
 
-        turnIsAllChecked(restrictionId, _isAllChecked) {
-            //this.isLoading = true;
-            try {
-                var operator = this;
-                this.filterRestrictionRepository.get(restrictionId, Shopware.Context.api)
-                    .then((restriction) => {
-                        restriction.isAllChecked = _isAllChecked;
-                        operator.filterRestrictionRepository.save(restriction, Shopware.Context.api)
-                            .then(() => {
-                                operator.isLoading = false;
-                            });
-                    });
-            } catch {}
-        },
+        //todo: place below functions to seperate API/service
 
         async loadFilters() {
             this.isLoading = true;
@@ -277,6 +264,9 @@ Shopware.Component.register('ff-restriction-ruler', {
             await this.filterRestrictionRepository.search(criteria, Shopware.Context.api)
                 .then( (filterRestrictions) => {
                     filterRestrictions.forEach(function(filterRestriction) {
+
+                        filterRestriction.isAllChecked = (filterRestriction.isAllowed) ? operator.allowAllChecked : operator.blockAllChecked;
+
                         var filterIds = [];
                         filterRestriction.filters.forEach(
                             function(filter) {
@@ -312,7 +302,9 @@ Shopware.Component.register('ff-restriction-ruler', {
 
             // Saving new links into elio_ff_filter_restrictions_filters table
             await this.filterRestrictionFilterRepository.sync(entities, Shopware.Context.api, false)
-                .finally(() => {this.isLoading = false;});
+                .finally(() => {
+                    this.isLoading = false;
+                });
         }
     }
 });
