@@ -12,10 +12,12 @@
   border-radius: 5px;
   padding: 10px;
   padding-bottom: 50px;
-  min-height: 400px;
+  height: 400px;
+  overflow: scroll;
+  scroll-behavior: smooth;
 }
 .ruler-tab-filter-list--main {
-  min-height: 500px;
+  height: 500px;
 }
 .ruler-tab-permissions{
   height: 100px;
