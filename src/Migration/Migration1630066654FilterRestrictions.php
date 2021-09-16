@@ -19,7 +19,7 @@ class Migration1630066654FilterRestrictions extends MigrationStep
 CREATE TABLE IF NOT EXISTS `elio_ff_filter` (
     `id` BINARY(16) NOT NULL,
     `property_name` VARCHAR(255) NOT NULL,
-    `is_custom` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_custom` TINYINT(1) DEFAULT '0',
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`)
@@ -31,10 +31,11 @@ SQL;
         $query = <<<SQL
 CREATE TABLE IF NOT EXISTS `elio_ff_filter_restrictions` (
     `id` BINARY(16) NOT NULL,
-    `is_category` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_category` TINYINT(1) NULL DEFAULT '0',
     `layer` VARCHAR(255) NULL,
-    `is_allowed` TINYINT(1) NOT NULL DEFAULT '0',
-    `category_id` BINARY(16) NOT NULL,
+    `is_allowed` TINYINT(1) NULL DEFAULT '0',
+    `category_id` BINARY(16) NULL DEFAULT NULL,
+    `is_all_checked` TINYINT(1) NULL DEFAULT '0',
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`)

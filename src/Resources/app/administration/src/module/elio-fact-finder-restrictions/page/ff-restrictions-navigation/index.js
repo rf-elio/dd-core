@@ -1,5 +1,4 @@
 import template from './ff-restrictions-navigation.html.twig';
-import '../ff-restrictions-index/ff-restrictions-index.scss';
 
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;

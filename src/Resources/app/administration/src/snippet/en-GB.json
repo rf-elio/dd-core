@@ -22,7 +22,7 @@
         "search": "Search",
         "navigation": "Navigation",
         "customfilters": "Custom Filters",
-        "categories": "Categories"
+        "category": "Filter Restrictions"
       },
       "ruler": {
         "tabs": {

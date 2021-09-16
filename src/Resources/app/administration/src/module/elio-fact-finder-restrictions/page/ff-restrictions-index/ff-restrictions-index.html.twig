@@ -26,18 +26,20 @@
                         {{ $tc('ff.restrictions.tabs.customfilters') }}
                     </sw-tabs-item>
                 {% endblock %}
+            </template>
+        {% endblock %}
 
-                {% block ff_restrictions_index_page_smart_bar_tabs_categories %}
-                    <sw-tabs-item :route="{ name: 'elio.factfinder.restrictions.index.categories' }">
-                        {{ $tc('ff.restrictions.tabs.categories') }}
-                    </sw-tabs-item>
-                {% endblock %}
+        {% block ff_restrictions_index_page_smart_bar_actions %}
+            <template slot="smart-bar-actions">
+                <sw-button variant="primary" class="sw-extension-config__save-action" @click.prevent="onSave">
+                    {{ $tc('global.default.save') }}
+                </sw-button>
             </template>
         {% endblock %}
 
         {% block ff_restrictions_index_page_body %}
             <template slot="default">
-                <router-view></router-view>
+                <router-view ref="routerView"></router-view>
             </template>
         {% endblock %}
 
