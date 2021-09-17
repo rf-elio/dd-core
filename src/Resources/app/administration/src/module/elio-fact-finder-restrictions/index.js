@@ -38,6 +38,25 @@ Shopware.Module.register('elio-factfinder-restrictions', {
                     path: 'customfilters',
                 }
             }
+        },
+        customFilersDetail: {
+            component: 'ff-restrictions-customfilters-detail',
+            path: 'customfilter/detail/:id',
+            props: {
+                default: ($route) => {
+                    return { customFilterId: $route.params.id };
+                }
+            },
+            meta: {
+                parentPath: 'elio.factfinder.restrictions.index.customfilters'
+            }
+        },
+        customFilersCreate: {
+            component: 'ff-restrictions-customfilters-create',
+            path: 'customfilter/create',
+            meta: {
+                parentPath: 'elio.factfinder.restrictions.index.customfilters'
+            }
         }
     },
 
