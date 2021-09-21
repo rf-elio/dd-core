@@ -30,30 +30,82 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsEntity;
+use Elio\FactFinder\Core\FilterRestrictions\FilterEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\TranslationEntity;
 
 /**
- * Class FilterRestrictionEntity
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * Class FilterDefinitionTranslationEntity
+ * @package Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- * @method void              add(FilterRestrictionsEntity $entity)
- * @method void              set(string $key, FilterRestrictionsEntity $entity)
- * @method FilterRestrictionsEntity[]    getIterator()
- * @method FilterRestrictionsEntity[]    getElements()
- * @method FilterRestrictionsEntity|null get(string $key)
- * @method FilterRestrictionsEntity|null first()
- * @method FilterRestrictionsEntity|null last()
  */
-class FilterRestrictionsCollection extends EntityCollection
+class FilterDefinitionTranslationEntity extends TranslationEntity
 {
-    protected function getExpectedClass(): string
+    /**
+     * @var string|null
+     */
+    protected $propertyName;
+
+    /**
+     * @var FilterEntity|null
+     */
+    protected $filter;
+
+    /**
+     * @var string
+     */
+    protected $filterId;
+
+    /**
+     * @return string|null
+     */
+    public function getPropertyName(): ?string
     {
-        return FilterRestrictionsEntity::class;
+        return $this->propertyName;
     }
+
+    /**
+     * @param string|null $propertyName
+     */
+    public function setPropertyName(?string $propertyName): void
+    {
+        $this->propertyName = $propertyName;
+    }
+
+    /**
+     * @return FilterEntity|null
+     */
+    public function getFilter(): ?FilterEntity
+    {
+        return $this->filter;
+    }
+
+    /**
+     * @param FilterEntity|null $filter
+     */
+    public function setFilter(?FilterEntity $filter): void
+    {
+        $this->filter = $filter;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilterId(): string
+    {
+        return $this->filterId;
+    }
+
+    /**
+     * @param string $filterId
+     */
+    public function setFilterId(string $filterId): void
+    {
+        $this->filterId = $filterId;
+    }
+
 }

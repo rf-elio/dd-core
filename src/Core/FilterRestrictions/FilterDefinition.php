@@ -32,14 +32,18 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Elio\FactFinder\Core\FilterRestrictions\FilterEntity;
 use Elio\FactFinder\Core\FilterRestrictions\FilterCollection;
@@ -79,14 +83,15 @@ class FilterDefinition extends EntityDefinition
                new Required(),
                new PrimaryKey()
            ),
-           (new StringField('property_name', 'propertyName'))->addFlags(
-               new ApiAware(),
-               new Required()
-           ),
+           (new TranslatedField('propertyName'))->addFlags(new ApiAware()),
            (new BoolField('is_custom', 'isCustom'))->addFlags(
                new ApiAware(),
                new Required()
            ),
+           (new TranslationsAssociationField(
+               FilterDefinitionTranslationDefinition::class,
+               'elio_ff_filter_id'
+           ))->addFlags(new Required(), new CascadeDelete()),
            new ManyToManyAssociationField(
                'filterRestrictions',
                FilterRestrictionsDefinition::class,

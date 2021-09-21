@@ -20,5 +20,9 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
     </services>
 </container>

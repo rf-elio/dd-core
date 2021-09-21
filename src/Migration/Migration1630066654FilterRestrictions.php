@@ -18,7 +18,6 @@ class Migration1630066654FilterRestrictions extends MigrationStep
         $query = <<<SQL
 CREATE TABLE IF NOT EXISTS `elio_ff_filter` (
     `id` BINARY(16) NOT NULL,
-    `property_name` VARCHAR(255) NOT NULL,
     `is_custom` TINYINT(1) DEFAULT '0',
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
@@ -38,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `elio_ff_filter_restrictions` (
     `is_all_checked` TINYINT(1) NULL DEFAULT '0',
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`)    
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 
@@ -65,6 +64,32 @@ CREATE TABLE IF NOT EXISTS `elio_ff_filter_restrictions_filters` (
 SQL;
 
         $connection->executeStatement($query);
+
+        $query = <<<SQL
+CREATE TABLE IF NOT EXISTS `elio_ff_filter_translation` (
+    `property_name` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL,
+    `updated_at` DATETIME(3) NULL,
+    `elio_ff_filter_id` BINARY(16) NOT NULL,
+    `language_id` BINARY(16) NOT NULL,
+    PRIMARY KEY (`elio_ff_filter_id`,`language_id`),
+    KEY `fk.elio_ff_filter_translation.elio_ff_filter_id` (`elio_ff_filter_id`),
+    KEY `fk.elio_ff_filter_translation.language_id` (`language_id`),
+    CONSTRAINT `fk.elio_ff_filter_translation.elio_ff_filter_id` 
+        FOREIGN KEY (`elio_ff_filter_id`) 
+            REFERENCES `elio_ff_filter` (`id`) 
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    CONSTRAINT `fk.elio_ff_filter_translation.language_id`
+        FOREIGN KEY (`language_id`) 
+            REFERENCES `language` (`id`) 
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL;
+
+        $connection->executeStatement($query);
+
     }
 
     public function updateDestructive(Connection $connection): void
