@@ -31,7 +31,7 @@
 
         {% block ff_restrictions_index_page_smart_bar_actions %}
             <template slot="smart-bar-actions">
-                <sw-button-process
+                <sw-button-process v-if="!isCustomFiltersTab"
                                    class="sw-category-detail__save-action"
                                    :isLoading="isLoading"
                                    :processSuccess="isSaveSuccessful"
@@ -41,6 +41,12 @@
                                    @click.prevent="onSave">
                     {{ $tc('sw-category.general.buttonSafeCategory') }}
                 </sw-button-process>
+                <sw-button v-if="isCustomFiltersTab"
+                           class="sw-property-list__button-create"
+                           :routerLink="{ name: 'elio.factfinder.restrictions.customFiltersCreate' }"
+                           variant="primary">
+                    {{ $tc('sw-property.list.buttonAddProperty') }}
+                </sw-button>
             </template>
         {% endblock %}
 

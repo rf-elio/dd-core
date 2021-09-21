@@ -42,18 +42,16 @@ use Elio\FactFinder\Core\FilterRestrictions\FilterEntity;
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * @method void              add(FilterEntity $entity)
+ * @method void              set(string $key, FilterEntity $entity)
+ * @method FilterEntity[]    getIterator()
+ * @method FilterEntity[]    getElements()
+ * @method FilterEntity|null get(string $key)
+ * @method FilterEntity|null first()
+ * @method FilterEntity|null last()
  */
 class FilterCollection extends EntityCollection
 {
-    /**
-     * @method void              add(FilterEntity $entity)
-     * @method void              set(string $key, FilterEntity $entity)
-     * @method FilterEntity[]    getIterator()
-     * @method FilterEntity[]    getElements()
-     * @method FilterEntity|null get(string $key)
-     * @method FilterEntity|null first()
-     * @method FilterEntity|null last()
-     */
     protected function getExpectedClass(): string
     {
         return FilterEntity::class;

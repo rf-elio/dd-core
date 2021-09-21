@@ -3,6 +3,8 @@ import './page/ff-restrictions-global';
 import './page/ff-restrictions-search';
 import './page/ff-restrictions-navigation';
 import './page/ff-restrictions-customfilters';
+import './page/ff-restrictions-customfilters-detail';
+import './page/ff-restrictions-customfilters-create';
 
 (async function initDependencies() {
     await import(/* webpackMode: 'eager' */ './component/elio-fact-finder-restrictions-ruler');
@@ -39,7 +41,7 @@ Shopware.Module.register('elio-factfinder-restrictions', {
                 }
             }
         },
-        customFilersDetail: {
+        customFiltersDetail: {
             component: 'ff-restrictions-customfilters-detail',
             path: 'customfilter/detail/:id',
             props: {
@@ -51,7 +53,7 @@ Shopware.Module.register('elio-factfinder-restrictions', {
                 parentPath: 'elio.factfinder.restrictions.index.customfilters'
             }
         },
-        customFilersCreate: {
+        customFiltersCreate: {
             component: 'ff-restrictions-customfilters-create',
             path: 'customfilter/create',
             meta: {

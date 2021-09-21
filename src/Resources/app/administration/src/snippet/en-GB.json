@@ -24,6 +24,24 @@
         "customfilters": "Custom Filters",
         "category": "Filter Restrictions"
       },
+      "filters": {
+        "messageSaveError": "Error while saving",
+        "buttonSave": "Save",
+        "buttonCancel": "Cancel",
+        "detail": {
+          "cardTitleGroupInfo" : "Basic information",
+          "labelName": "Property Name",
+          "textHeadline": "New Property"
+        },
+        "placeholderPropertyName": "Property Name"
+      },
+      "customFilters": {
+        "contextMenuView": "Edit",
+        "contextMenuDelete": "Delete",
+        "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+        "buttonCancel": "Cancel",
+        "buttonDelete": "Delete"
+      },
       "ruler": {
         "tabs": {
           "permissions": "Permissions",

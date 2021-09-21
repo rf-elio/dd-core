@@ -1,5 +1,82 @@
 {% block ff_restrictions_customfilters_page %}
     <sw-meteor-card>
-        <h1>ff_restrictions_customfilters</h1>
+        <h1>{{ $tc('ff.restrictions.tabs.customfilters') }}</h1>
+
+
+        {% block ff_restrictions_customfilters_content %}
+        <div class="elio-ff-restrictions-customfilters-list__content">
+
+            {% block ff_restrictions_customfilters_grid %}
+            <sw-entity-listing
+                    class="elio-ff-restrictions-customfilters-list-grid"
+                    identifier="elio-ff-restrictions-customfilters-list"
+                    :items="filtersGroup"
+                    :columns="filtersColumns"
+                    :repository="filtersRepository"
+                    :isLoading="isLoading"
+
+                    :showSelection="false"
+                    :showSettings="false"
+                    :allowColumnEdit="false"
+                    :fullPage="false"
+                    :compactMode="false"
+
+                    :sortBy="sortBy"
+                    :sortDirection="sortDirection"
+                    @column-sort="onSortColumn"
+                    @page-change="onPageChange"
+                    :disableDataFetching="true"
+                    ref="filterList">
+
+                <template slot="column-propertyName" slot-scope="{ item }">
+                    {{ item.translated.propertyName }}
+                </template>
+
+                {% block ff_restrictions_customfilters_grid_columns_actions %}
+                <template slot="actions" slot-scope="{ item }">
+                    {% block ff_restrictions_customfilters_grid_columns_actions_detail %}
+                    <sw-context-menu-item
+                            :routerLink="{ name: 'elio.factfinder.restrictions.customFiltersDetail', params: { id: item.id } }">
+                        {{ $tc('ff.restrictions.customFilters.contextMenuView') }}
+                    </sw-context-menu-item>
+                    {% endblock %}
+
+                    {% block ff_restrictions_customfilters_grid_columns_actions_delete %}
+                        <sw-context-menu-item variant="danger"
+                                              @click="onDelete(item.id)">
+                            {{ $tc('ff.restrictions.customFilters.contextMenuDelete') }}
+                        </sw-context-menu-item>
+                    {% endblock %}
+                </template>
+                {% endblock %}
+
+                {% block ff_restrictions_customfilters_grid_action_modals %}
+                    <template slot="action-modals" slot-scope="{ item }">
+                        <sw-modal v-if="showDeleteModal === item.id"
+                                  variant="small"
+                                  :title="$tc('global.default.warning')"
+                                  @modal-close="onCloseDeleteModal">
+                            <p>
+                                {{ $tc('ff.restrictions.customFilters.textDeleteConfirm', 0, { propertyName: item.translated.propertyName }) }}
+                            </p>
+
+                            <template slot="modal-footer">
+                                <sw-button @click="onCloseDeleteModal" size="small">
+                                    {{ $tc('ff.restrictions.customFilters.buttonCancel') }}
+                                </sw-button>
+
+                                <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
+                                    {{ $tc('ff.restrictions.customFilters.buttonDelete') }}
+                                </sw-button>
+                            </template>
+                        </sw-modal>
+                    </template>
+                {% endblock %}
+
+            </sw-entity-listing>
+            {% endblock %}
+        </div>
+        {% endblock %}
+
     </sw-meteor-card>
 {% endblock %}

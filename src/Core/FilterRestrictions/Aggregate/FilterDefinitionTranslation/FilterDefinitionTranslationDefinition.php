@@ -30,30 +30,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsEntity;
+use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityTranslationDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
- * Class FilterRestrictionEntity
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * Class FilterDefinitionTranslationDefinition
+ * @package Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- * @method void              add(FilterRestrictionsEntity $entity)
- * @method void              set(string $key, FilterRestrictionsEntity $entity)
- * @method FilterRestrictionsEntity[]    getIterator()
- * @method FilterRestrictionsEntity[]    getElements()
- * @method FilterRestrictionsEntity|null get(string $key)
- * @method FilterRestrictionsEntity|null first()
- * @method FilterRestrictionsEntity|null last()
  */
-class FilterRestrictionsCollection extends EntityCollection
+class FilterDefinitionTranslationDefinition extends EntityTranslationDefinition
 {
-    protected function getExpectedClass(): string
+    public const ENTITY_NAME = 'elio_ff_filter_translation';
+
+    public function getEntityName(): string
     {
-        return FilterRestrictionsEntity::class;
+        return self::ENTITY_NAME;
     }
+
+    public function getCollectionClass(): string
+    {
+        return FilterDefinitionTranslationCollection::class;
+    }
+
+    public function getEntityClass(): string
+    {
+        return FilterDefinitionTranslationEntity::class;
+    }
+
+    public function since(): ?string
+    {
+        return '6.0.0.0';
+    }
+
+    protected function getParentDefinitionClass(): string
+    {
+        return FilterDefinition::class;
+    }
+
+    protected function defineFields(): FieldCollection
+    {
+        return new FieldCollection([
+           (new StringField('property_name', 'propertyName'))->addFlags(
+               new ApiAware(),
+               new Required()
+           )
+        ]);
+    }
+
 }
