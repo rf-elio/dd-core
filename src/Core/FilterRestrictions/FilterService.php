@@ -40,6 +40,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -84,7 +85,29 @@ class FilterService
 
     public function syncOne(string $salesChannelId, Context $context, string $propertyId)
     {
-        //todo: implement method
+        /** @var PropertyGroupEntity $property */
+        $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('propertyId', $property->getId())
+        );
+        $filter = $this->filterRepository->search($criteria, $context);
+        if ($filter->getTotal() > 0) {
+            // updating
+            /** @var FilterEntity $filterEntity */
+            $filterEntity = $filter->first();
+            $this->filterRepository->update(
+                ['id' => $filterEntity->getId(), 'propertyName' => $property->getName()],
+                $context
+            );
+        } else {
+            // creating
+            $this->filterRepository->create(
+                ['propertyName' => $property->getName(), 'propertyId' => $property->getId(), 'isCustom' => false],
+                $context
+            );
+        }
     }
 
     public function syncAll(string $salesChannelId, Context $context)
