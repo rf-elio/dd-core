@@ -33,15 +33,17 @@
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Shopware\Core\Content\Property\PropertyGroupDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -88,6 +90,9 @@ class FilterDefinition extends EntityDefinition
                new ApiAware(),
                new Required()
            ),
+           (new FkField('property_id', 'propertyId', PropertyGroupDefinition::class))->addFlags(
+               new ApiAware()
+           ),
            (new TranslationsAssociationField(
                FilterDefinitionTranslationDefinition::class,
                'elio_ff_filter_id'
@@ -98,7 +103,14 @@ class FilterDefinition extends EntityDefinition
                FilterRestrictionsFilterMapping::class,
                'filter_id',
                'filter_restriction_id'
-           )
+           ),
+           new OneToOneAssociationField(
+               'property',
+               'propertyId',
+               'id',
+               PropertyGroupDefinition::class,
+               false
+           ),
         ]);
     }
 }
