@@ -25,7 +25,6 @@
         </service>
 
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterService">
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="property_group.repository" />
             <argument type="service" id="elio_ff_filter.repository" />
             <argument type="service" id="sales_channel.repository" />
