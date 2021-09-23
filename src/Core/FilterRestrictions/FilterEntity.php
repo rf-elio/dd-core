@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -61,6 +62,11 @@ class FilterEntity extends Entity
      * @param FilterRestrictionsCollection|null
      */
     protected $filterRestrictions;
+
+    /**
+     * @var PropertyGroupEntity|null
+     */
+    protected $property;
 
     /**
      * @return string
@@ -108,5 +114,21 @@ class FilterEntity extends Entity
     public function setFilterRestrictions($filterRestrictions): void
     {
         $this->filterRestrictions = $filterRestrictions;
+    }
+
+    /**
+     * @return PropertyGroupEntity|null
+     */
+    public function getProperty(): ?PropertyGroupEntity
+    {
+        return $this->property;
+    }
+
+    /**
+     * @param PropertyGroupEntity|null $property
+     */
+    public function setProperty(?PropertyGroupEntity $property): void
+    {
+        $this->property = $property;
     }
 }

@@ -32,32 +32,32 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions\Extension;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Shopware\Core\Content\Category\CategoryDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
+use Shopware\Core\Content\Property\PropertyGroupDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
- * Class CategoryExtension
+ * Class PropertyGroupExtension
  * @package Elio\FactFinder\Core\FilterRestrictions\Extension
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CategoryExtension extends EntityExtension
+class PropertyGroupExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
 
             (new OneToOneAssociationField(
-                'filterRestriction',
-                'filter_restriction_id',
-                'category_id',
-                FilterRestrictionsDefinition::class,
+                'filter',
+                'filter_id',
+                'property_id',
+                FilterDefinition::class,
                 false
             ))->addFlags(new CascadeDelete())
         );
@@ -65,6 +65,6 @@ class CategoryExtension extends EntityExtension
 
     public function getDefinitionClass(): string
     {
-        return CategoryDefinition::class;
+        return PropertyGroupDefinition::class;
     }
 }

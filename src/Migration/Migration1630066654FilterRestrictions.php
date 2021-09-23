@@ -19,6 +19,7 @@ class Migration1630066654FilterRestrictions extends MigrationStep
 CREATE TABLE IF NOT EXISTS `elio_ff_filter` (
     `id` BINARY(16) NOT NULL,
     `is_custom` TINYINT(1) DEFAULT '0',
+    `property_id` BINARY(16) NULL DEFAULT NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`)
