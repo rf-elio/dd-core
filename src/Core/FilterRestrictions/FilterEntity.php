@@ -69,6 +69,11 @@ class FilterEntity extends Entity
     protected $property;
 
     /**
+     * @var string
+     */
+    protected $propertyId;
+
+    /**
      * @return string
      */
     public function getPropertyName(): string
@@ -130,5 +135,21 @@ class FilterEntity extends Entity
     public function setProperty(?PropertyGroupEntity $property): void
     {
         $this->property = $property;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPropertyId(): string
+    {
+        return $this->propertyId;
+    }
+
+    /**
+     * @param string $propertyId
+     */
+    public function setPropertyId(string $propertyId): void
+    {
+        $this->propertyId = $propertyId;
     }
 }

@@ -62,24 +62,20 @@ class FilterService
     private EntityRepositoryInterface $filterRepository;
     private EntityRepositoryInterface $salesChannelRepository;
     private LoggerInterface $logger;
-    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
     /**
      * FilterService constructor.
-     * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
      * @param EntityRepositoryInterface $propertyRepository
      * @param EntityRepositoryInterface $filterRepository
      * @param EntityRepositoryInterface $salesChannelRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractSalesChannelContextFactory $salesChannelContextFactory,
         EntityRepositoryInterface $propertyRepository,
         EntityRepositoryInterface $filterRepository,
         EntityRepositoryInterface $salesChannelRepository,
         LoggerInterface $logger
     ) {
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->propertyRepository = $propertyRepository;
         $this->filterRepository = $filterRepository;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -96,49 +92,99 @@ class FilterService
         /** @var SalesChannelEntity $salesChannel */
         $salesChannel = $this->salesChannelRepository->search(new Criteria([$salesChannelId]), $context)->first();
 
+        /**
+         * Getting all properties
+         */
         $properties = $this->propertyRepository->search(new Criteria(), $context);
-
         $propertiesNames = [];
+        $propertiesNamesUpdated = [];
         /** @var PropertyGroupEntity $property */
         foreach ($properties as $property) {
             $propertiesNames[$property->getId()] = $property->getName();
         }
 
+        /**
+         * Updating properties names
+         */
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsAnyFilter('propertyId', array_keys($propertiesNames))
         );
         $filters = $this->filterRepository->search($criteria, $context);
 
-        //array_keys($propertiesNames);
-        var_dump($filters->getTotal());
-        die();
-
-
-        if (!$salesChannel || !$salesChannel->getDomains()) {
+        $dataToUpdate = [];
+        /** @var FilterEntity $filter */
+        foreach ($filters as $filter) {
+            $dataToUpdate[] = ['id' => $filter->getId(), 'propertyName' => $propertiesNames[$filter->getPropertyId()]];
+            $propertiesNamesUpdated[$filter->getPropertyId()] = true;
+        }
+        try {
+            if (count($dataToUpdate) > 0) {
+                $this->filterRepository->update($dataToUpdate, $context);
+            }
+        } catch (Throwable $e) {
             $this->logger->info(
-                'Cannot find SalesChannelEntity with this id',
-                ['$salesChannelId' => $salesChannelId]
+                'Cannot update filters with this property ids',
+                ['$dataToUpdate' => $dataToUpdate]
             );
 
             throw new RuntimeException(
-                sprintf(
-                    'Cannot find SalesChannelEntity with this id: "%s"',
-                    $salesChannelId
-                )
+                sprintf('Sync failed, look logs for more info')
             );
         }
 
-        $languageIds = $salesChannel->getDomains()->map(function (SalesChannelDomainEntity $salesChannelDomain) {
-            return $salesChannelDomain->getLanguageId();
-        });
+        /**
+         * Deleting old filters
+         */
+        $criteriaToDelete = new Criteria();
+        $criteriaToDelete->addFilter(
+            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesNames))])
 
+        );
+        $filtersIdsToDelete = $this->filterRepository->searchIds($criteriaToDelete, $context)->getIds();
+        $dataToDelete = [];
+        foreach ($filtersIdsToDelete as $id) {
+            $dataToDelete[] = ['id' => $id];
+        }
+        try {
+            if (count($dataToDelete) > 0) {
+                $this->filterRepository->delete($dataToDelete, $context);
+            }
+        } catch (Throwable $e) {
+            $this->logger->info(
+                'Cannot delete filters with this property ids',
+                ['$dataToDelete' => $dataToDelete]
+            );
 
-        foreach ($languageIds as $languageId) {
-            $salesChannelContext = $this->salesChannelContextFactory->create(
-                '',
-                $salesChannel->getId(),
-                [SalesChannelContextService::LANGUAGE_ID => $languageId]
+            throw new RuntimeException(
+                sprintf('Sync failed, look logs for more info')
+            );
+        }
+
+        /**
+         * Creating filters for new properties
+         */
+        $propertyIdsToCreate = array_diff_key($propertiesNames, $propertiesNamesUpdated);
+        $dataToCreate = [];
+        foreach ($propertyIdsToCreate as $propertyId => $propertyName) {
+            $dataToCreate[] = [
+                'propertyName' => $propertyName,
+                'propertyId' => $propertyId,
+                'isCustom' => false
+            ];
+        }
+        try {
+            if (count($dataToCreate) > 0) {
+                $this->filterRepository->create($dataToCreate, $context);
+            }
+        } catch (Throwable $e) {
+            $this->logger->info(
+                'Cannot create filters with this property ids and names',
+                ['$dataToCreate' => $dataToCreate]
+            );
+
+            throw new RuntimeException(
+                sprintf('Sync failed, look logs for more info')
             );
         }
     }
