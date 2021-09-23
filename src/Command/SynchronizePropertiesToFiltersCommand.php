@@ -88,6 +88,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
         } catch (Throwable $e) {
             return Command::FAILURE;
         }
+        $output->writeln('<info>Success</info>');
         return Command::SUCCESS;
     }
 
