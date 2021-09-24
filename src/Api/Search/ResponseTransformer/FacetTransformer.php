@@ -152,7 +152,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
-        foreach ($facetCollection->getAggregations() as $aggregation) {
+        foreach ($facetCollection->getAggregations() as $aggregation){
             $aggregationResultCollection->add($aggregation);
         }
     }

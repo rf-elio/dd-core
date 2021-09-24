@@ -121,11 +121,16 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         if(!$config->isActive() || !$config->isListingUseFactFinder()) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
+
         /** @var NavigationRequest $navigationRequest */
         $navigationRequest = $this->searchRequestBuilder->build(
             $request, $criteria, $context, new NavigationRequest($config->getApiChannel())
         );
-        $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
+
+        $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
+        $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
+        $path = implode('/', array_values($path));
+        $navigationRequest->setCategoryPath($path);
 
         $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
         /** @var ProductListingResponse|null $productListingResponse */
@@ -141,6 +146,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
         return new ProductListingRouteResponse($shopwareProductListingResult);
     }
+
 
     /**
      * Adds the path to the current category and the id to the ff api request to filter for that category.
