@@ -10,7 +10,8 @@ Shopware.Component.register('ff-restrictions-index', {
         return {
             isLoading: false,
             isSaveSuccessful: false,
-            isCustomFiltersTab: false
+            isCustomFiltersTab: false,
+            salesChannelId: null
         }
     },
 
@@ -21,6 +22,11 @@ Shopware.Component.register('ff-restrictions-index', {
     watch: {
         $route() {
             this.routerViewTabChanged();
+        },
+        salesChannelId() {
+            if(this.$refs.routerView) {
+                this.$refs.routerView.$refs.ruler.setSalesChannelId(this.salesChannelId);
+            }
         }
     },
 
@@ -31,6 +37,10 @@ Shopware.Component.register('ff-restrictions-index', {
             } else {
                 this.isCustomFiltersTab = false;
             }
+        },
+
+        onSalesChannelChanged(salesChannelId) {
+            this.salesChannelId = salesChannelId;
         },
 
         async onSave() {

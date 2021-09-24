@@ -32,7 +32,6 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
-use DateTime;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
@@ -42,10 +41,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Throwable;
 
 /**
@@ -83,7 +78,7 @@ class FilterService
         $this->logger = $logger;
     }
 
-    public function syncOne(string $salesChannelId, Context $context, string $propertyId)
+    public function syncOne(Context $context, string $propertyId)
     {
         /** @var PropertyGroupEntity $property */
         $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
@@ -110,11 +105,8 @@ class FilterService
         }
     }
 
-    public function syncAll(string $salesChannelId, Context $context)
+    public function syncAll(Context $context)
     {
-        /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search(new Criteria([$salesChannelId]), $context)->first();
-
         /**
          * Getting all properties
          */

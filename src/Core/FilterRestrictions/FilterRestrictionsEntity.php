@@ -61,6 +61,10 @@ class FilterRestrictionsEntity extends Entity
      */
     protected $category;
     /**
+     * @var string
+     */
+    protected $salesChannelId;
+    /**
      * @var bool
      */
     protected bool $isAllowed;
@@ -167,5 +171,21 @@ class FilterRestrictionsEntity extends Entity
     public function setIsAllChecked(bool $isAllChecked): void
     {
         $this->isAllChecked = $isAllChecked;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    /**
+     * @param string $salesChannelId
+     */
+    public function setSalesChannelId(string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
     }
 }

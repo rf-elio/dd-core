@@ -16,6 +16,14 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\PropertyGroupExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\SalesChannelExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping">
             <tag name="shopware.entity.definition"/>
         </service>
