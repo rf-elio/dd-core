@@ -76,14 +76,12 @@ class SynchronizePropertiesToFiltersCommand extends Command
     {
         $propertyId = $input->getArgument('propertyId');
         $context = Context::createDefaultContext();
-        //$salesChannelId = $input->getArgument('salesChannelId');
-        $salesChannelId = '20e95b9683354988ac18cafc6cbb192b';
 
         try {
             if ($propertyId) {
-                $this->syncOne($salesChannelId, $context, $output, $propertyId);
+                $this->syncOne( $context, $output, $propertyId);
             } else {
-                $this->syncAll($salesChannelId, $context, $output);
+                $this->syncAll( $context, $output);
             }
         } catch (Throwable $e) {
             return Command::FAILURE;
@@ -92,15 +90,15 @@ class SynchronizePropertiesToFiltersCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function syncOne(string $salesChannelId, Context $context, OutputInterface $output, string $propertyId)
+    private function syncOne(Context $context, OutputInterface $output, string $propertyId)
     {
         $output->writeln(sprintf('<info>Sync property with id : "%s"</info>', $propertyId));
-        $this->filterService->syncOne($salesChannelId, $context, $propertyId);
+        $this->filterService->syncOne($context, $propertyId);
     }
 
-    private function syncAll(string $salesChannelId, Context $context, OutputInterface $output)
+    private function syncAll(Context $context, OutputInterface $output)
     {
         $output->writeln('<info>PropertyId is not defined, sync all...</info>');
-        $this->filterService->syncAll($salesChannelId, $context);
+        $this->filterService->syncAll($context);
     }
 }

@@ -59,12 +59,19 @@ Shopware.Component.register('ff-restriction-ruler', {
             blockListRestrictionId: '',
             allowAllChecked: false,
             blockAllChecked: false,
-            limitForCriteria: 500
+            limitForCriteria: 500,
+            salesChannelId: null
         }
     },
 
     created() {
         this.onCreated();
+    },
+
+    watch: {
+        salesChannelId() {
+            this.loadFilters();
+        }
     },
 
     methods: {
@@ -98,6 +105,7 @@ Shopware.Component.register('ff-restriction-ruler', {
         onAllowAllClicked() {
             if(this.allowListRestrictionId !== '') {
                 this.allowAllChecked = true;
+                this.blockAllChecked = false;
             }
         },
 
@@ -110,6 +118,7 @@ Shopware.Component.register('ff-restriction-ruler', {
         onBlockAllClicked() {
             if(this.blockListRestrictionId !== '') {
                 this.blockAllChecked = true;
+                this.allowAllChecked = false;
             }
         },
 
@@ -119,9 +128,22 @@ Shopware.Component.register('ff-restriction-ruler', {
             }
         },
 
+        setSalesChannelId(salesChannelId) {
+            this.salesChannelId = salesChannelId;
+        },
+
         //todo: place below functions to seperate API/service
 
         async loadFilters() {
+            this.allList = [];
+            this.allowList = [];
+            this.blockList = [];
+            this.allowListRestrictionId = '';
+            this.blockListRestrictionId = '';
+            this.currentDragItem = null;
+            this.allowAllChecked = false;
+            this.blockAllChecked = false;
+
             this.isLoading = true;
             try {
                 var criteria = new Criteria();
@@ -142,7 +164,8 @@ Shopware.Component.register('ff-restriction-ruler', {
                             'AND',
                             [
                                 Criteria.equals('elio_ff_filter_restrictions.isCategory', false),
-                                Criteria.equals('elio_ff_filter_restrictions.layer', this.layer)
+                                Criteria.equals('elio_ff_filter_restrictions.layer', this.layer),
+                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId)
                             ]
                         )
                     );
@@ -178,6 +201,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isCategory = this.isCategory;
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
+                                filterRestriction.salesChannelId = operator.salesChannelId;
                             } else {
                                 filterRestriction.categoryId = this.categoryId;
                             }
@@ -198,6 +222,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isCategory = this.isCategory;
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
+                                filterRestriction.salesChannelId = operator.salesChannelId;
                             } else {
                                 filterRestriction.categoryId = this.categoryId;
                             }

@@ -46,6 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsEntity;
 use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
  * Class FilterRestrictionsDefinition
@@ -94,6 +95,9 @@ class FilterRestrictionsDefinition extends EntityDefinition
            (new FkField('category_id', 'categoryId', CategoryDefinition::class))->addFlags(
                new ApiAware()
            ),
+           (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(
+               new ApiAware()
+           ),
            /**
             * is it collection of filters for allowed or blocked column
             */
@@ -104,6 +108,13 @@ class FilterRestrictionsDefinition extends EntityDefinition
            (new BoolField('is_all_checked', 'isAllChecked'))->addFlags(
                new ApiAware(),
                new Required()
+           ),
+           new OneToOneAssociationField(
+               'salesChannel',
+               'sales_channel_id',
+               'id',
+               SalesChannelDefinition::class,
+               false
            ),
            new OneToOneAssociationField(
                'category',

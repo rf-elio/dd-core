@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `elio_ff_filter_restrictions` (
     `layer` VARCHAR(255) NULL,
     `is_allowed` TINYINT(1) NULL DEFAULT '0',
     `category_id` BINARY(16) NULL DEFAULT NULL,
+    `sales_channel_id` BINARY(16) NULL DEFAULT NULL,
     `is_all_checked` TINYINT(1) NULL DEFAULT '0',
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
