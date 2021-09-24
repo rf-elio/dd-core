@@ -58,7 +58,7 @@ class AggregationExtension extends Struct
     public function __construct(string $style, string $parameterName)
     {
         $this->style = $style;
-        $this->parameterName = self::PARAMETER_NAME_PREFIX.strtolower($parameterName);
+        $this->parameterName = $parameterName;
     }
 
     /**

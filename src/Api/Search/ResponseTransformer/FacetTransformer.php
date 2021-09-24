@@ -84,10 +84,10 @@ class FacetTransformer implements ResponseTransformerInterface
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
-        $aggregationResultCollection = new AggregationResultCollection();
+        $aggregationResultCollection = $listing->getAggregations() ?? new AggregationResultCollection();
         $listing->setAggregations($aggregationResultCollection);
 
-        $facetCollection = new FacetCollection('ff');
+        $facetCollection = new FacetCollection('ff-default');
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
@@ -95,7 +95,8 @@ class FacetTransformer implements ResponseTransformerInterface
             switch ($style) {
                 case 'DEFAULT':
                     $defaultCollection = new PropertyGroupCollection();
-                    $defaultCollection->add($this->transformDefault($facet));
+                    $entity = $this->transformDefault($facet);
+                    $defaultCollection->add($entity);
                     $facetCollection->addAggregation(
                         new EntityResult($facet->getName(), $defaultCollection),
                         $style
@@ -111,6 +112,9 @@ class FacetTransformer implements ResponseTransformerInterface
 
                     break;
             }
+        }
+        foreach ($facetCollection->getAggregations() as $aggregation){
+            $aggregationResultCollection->add($aggregation);
         }
     }
 
@@ -158,7 +162,8 @@ class FacetTransformer implements ResponseTransformerInterface
     {
         $minValue = null;
         $maxValue = null;
-        foreach ($facet->getElements() as $element) {
+        $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
+        foreach ($elements as $element) {
             $minValue = $element->getAbsoluteMinValue();
             $maxValue = $element->getAbsoluteMaxValue();
         }

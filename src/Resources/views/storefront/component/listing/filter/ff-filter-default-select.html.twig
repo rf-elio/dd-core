@@ -10,6 +10,11 @@
     } %}
 {% endif %}
 
+{% block component_filter_multi_select %}
+    {% set filterItemId = 'filter-' ~ 'ffdefault' ~ '-' ~ random() %}
+    {{ parent() }}
+{% endblock %}
+
 {% block component_filter_multi_select_list_item %}
     <li class="filter-multi-select-list-item filter-property-select-list-item">
         {% if displayType == 'color' or displayType == 'media' %}
