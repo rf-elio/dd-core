@@ -129,6 +129,7 @@ Shopware.Component.register('ff-restriction-ruler', {
         },
 
         setSalesChannelId(salesChannelId) {
+            console.log(salesChannelId);
             this.salesChannelId = salesChannelId;
         },
 
@@ -138,8 +139,6 @@ Shopware.Component.register('ff-restriction-ruler', {
             this.allList = [];
             this.allowList = [];
             this.blockList = [];
-            this.allowListRestrictionId = '';
-            this.blockListRestrictionId = '';
             this.currentDragItem = null;
             this.allowAllChecked = false;
             this.blockAllChecked = false;
@@ -154,7 +153,8 @@ Shopware.Component.register('ff-restriction-ruler', {
                             'AND',
                             [
                                 Criteria.equals('elio_ff_filter_restrictions.isCategory', true),
-                                Criteria.equals('elio_ff_filter_restrictions.categoryId', this.categoryId)
+                                Criteria.equals('elio_ff_filter_restrictions.categoryId', this.categoryId),
+                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId)
                             ]
                         )
                     );
@@ -171,6 +171,8 @@ Shopware.Component.register('ff-restriction-ruler', {
                     );
                 }
 
+                var isAllowColumnPresent = false;
+                var isBlockColumnPresent = false;
                 this.movedFiltersIds = [];
                 var operator = this;
                 await this.filterRestrictionRepository
@@ -180,9 +182,11 @@ Shopware.Component.register('ff-restriction-ruler', {
                             if (restrictionColumn.isAllowed) {
                                 operator.allowListRestrictionId = restrictionColumn.id;
                                 operator.allowAllChecked = restrictionColumn.isAllChecked;
+                                isAllowColumnPresent = true;
                             } else {
                                 operator.blockListRestrictionId = restrictionColumn.id;
                                 operator.blockAllChecked = restrictionColumn.isAllChecked;
+                                isBlockColumnPresent = true;
                             }
                             restrictionColumn.filters.forEach(function (filter) {
                                 operator.movedFiltersIds.push(filter.id);
@@ -195,7 +199,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                         });
 
                         // Creating filterRestrictionsEntities if there is no-one into elio_ff_filter_restrictions
-                        if (this.allowListRestrictionId === '') {
+                        if (!isAllowColumnPresent) {
                             var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
 
                             filterRestriction.isCategory = this.isCategory;
@@ -216,7 +220,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                                     }
                                 });
                         }
-                        if (this.blockListRestrictionId === '') {
+                        if (!isBlockColumnPresent) {
                             filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
 
                             filterRestriction.isCategory = this.isCategory;
