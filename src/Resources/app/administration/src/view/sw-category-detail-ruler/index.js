@@ -14,9 +14,29 @@ Shopware.Component.register('elio-category-detail-ruler', {
         }
     },
 
+    data() {
+        return {
+            salesChannelId: null
+        }
+    },
+
+    watch: {
+        salesChannelId() {
+            if(this.$refs.ruler) {
+                this.$refs.ruler.setSalesChannelId(this.salesChannelId);
+            }
+        }
+    },
+
     computed: {
         ...mapState('swCategoryDetail', [
             'category',
         ])
+    },
+
+    methods: {
+        onSalesChannelChanged(salesChannelId) {
+            this.salesChannelId = salesChannelId;
+        },
     }
 });
