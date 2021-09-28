@@ -197,7 +197,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                                 }
                             });
                         });
-
+                        
                         // Creating filterRestrictionsEntities if there is no-one into elio_ff_filter_restrictions
                         if (!isAllowColumnPresent) {
                             var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
@@ -205,12 +205,12 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isCategory = this.isCategory;
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
-                                filterRestriction.salesChannelId = operator.salesChannelId;
                             } else {
                                 filterRestriction.categoryId = this.categoryId;
                             }
                             filterRestriction.isAllowed = true;
                             filterRestriction.isAllChecked = false;
+                            filterRestriction.salesChannelId = operator.salesChannelId;
 
                             this.filterRestrictionRepository.save(filterRestriction, Shopware.Context.api)
                                 .then((response) => {
@@ -226,12 +226,12 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isCategory = this.isCategory;
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
-                                filterRestriction.salesChannelId = operator.salesChannelId;
                             } else {
                                 filterRestriction.categoryId = this.categoryId;
                             }
                             filterRestriction.isAllowed = false;
                             filterRestriction.isAllChecked = false;
+                            filterRestriction.salesChannelId = operator.salesChannelId;
 
                             this.filterRestrictionRepository.save(filterRestriction, Shopware.Context.api)
                                 .then((response) => {
