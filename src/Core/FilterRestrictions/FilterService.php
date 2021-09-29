@@ -36,11 +36,13 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
 
 /**
@@ -53,6 +55,7 @@ use Throwable;
  */
 class FilterService
 {
+    public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
 
     public const LEVEL_GLOBAL = 1;
     public const LEVEL_SEARCH = 2;
@@ -63,24 +66,43 @@ class FilterService
     private EntityRepositoryInterface $filterRepository;
     private EntityRepositoryInterface $filterRestrictionsRepository;
     private LoggerInterface $logger;
+    private SystemConfigService $systemConfigService;
+    /**
+     * @var bool|null
+     */
+    private $configParentCategories;
+    /**
+     * @var bool|null
+     */
+    private $configIsOverridingTopToDown;
 
     /**
      * FilterService constructor.
      * @param EntityRepositoryInterface $propertyRepository
      * @param EntityRepositoryInterface $filterRepository
      * @param EntityRepositoryInterface $filterRestrictionsRepository
+     * @param SystemConfigService $systemConfigService
      * @param LoggerInterface $logger
      */
     public function __construct(
         EntityRepositoryInterface $propertyRepository,
         EntityRepositoryInterface $filterRepository,
         EntityRepositoryInterface $filterRestrictionsRepository,
+        SystemConfigService $systemConfigService,
         LoggerInterface $logger
     ) {
         $this->propertyRepository = $propertyRepository;
         $this->filterRepository = $filterRepository;
         $this->filterRestrictionsRepository = $filterRestrictionsRepository;
+        $this->systemConfigService = $systemConfigService;
         $this->logger = $logger;
+
+        $this->configParentCategories = $this->systemConfigService->get(
+                self::PLUGIN_CONFIG_PREFIX . '.restrictionsParentCategories'
+            ) ?? true;
+        $this->configIsOverridingTopToDown = $this->systemConfigService->get(
+                self::PLUGIN_CONFIG_PREFIX . '.restrictionsOverridingTopToDown'
+            ) ?? true;
     }
 
     /**
@@ -219,13 +241,176 @@ class FilterService
     }
 
     /**
+     * Get all allowed filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
+     * @param string|null $salesChannelId
+     * @param int $level
+     * @param string|null $categoryId
+     * @return array
+     */
+    public function getAllowedFilters(?string $salesChannelId, int $level, string $categoryId = null): array
+    {
+        $context = Context::createDefaultContext();
+
+        $filters = [];
+
+        // Global Level
+        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'global');
+        $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+        $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
+
+        // Applying overriding restrictions
+        if ($level == self::LEVEL_SEARCH) {
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'search');
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $filters = $this->applyRestrictionsToFiltersArray(
+                $filters,
+                $restrictions,
+                !$this->configIsOverridingTopToDown
+            );
+        } elseif ($level == self::LEVEL_NAVIGATION) {
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'navigation');
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $filters = $this->applyRestrictionsToFiltersArray(
+                $filters,
+                $restrictions,
+                !$this->configIsOverridingTopToDown
+            );
+        } elseif ($level == self::LEVEL_CATEGORY) {
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, '', $categoryId);
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $filters = $this->applyRestrictionsToFiltersArray(
+                $filters,
+                $restrictions,
+                !$this->configIsOverridingTopToDown
+            );
+        }
+
+        return $filters;
+    }
+
+    /**
+     * Modify array with keys of filterId and values ['propertyName'=>filterPropertyName, 'isAllowed'=>true]
+     * with provided FilterRestrictionsCollection and $isOverrides flag
+     * @param array $filters
+     * @param FilterRestrictionsCollection $restrictions
+     * @param bool $isOverrides
+     * @return array
+     */
+    private function applyRestrictionsToFiltersArray(
+        array $filters,
+        FilterRestrictionsCollection $restrictions,
+        bool $isOverrides
+    ): array {
+        $returningFilters = [];
+        $allowedFilterCollection = null;
+        $blockedFilterCollection = null;
+
+        foreach ($restrictions as $restriction) {
+            if ($restriction->isAllowed()) { // allowed column
+                if ($restriction->isAllChecked()) { // if Allow All checked
+                    if ($isOverrides) { // if this restriction overrides top-level restrictions
+                        return $this->getAllFilters(); // we return everything allowed
+                    } else { // if this restriction doesn't override top-level restrictions than we pass it as it is
+                        return $filters;
+                    }
+                } else { // if allow only selected checked (default)
+                    $allowedFilterCollection = $restriction->getFilters();
+                }
+            } else { // blocked column
+                if ($restriction->isAllChecked()) { // if Block All checked
+                    if ($isOverrides) { // if this restriction overrides top-level restrictions
+                        return []; // we block everything, no matter what was before
+                    } else { // if this restriction doesn't override top-level restrictions than we pass it as it is
+                        return $filters;
+                    }
+                } else { // if block only selected checked (default)
+                    $blockedFilterCollection = $restriction->getFilters();
+                }
+            }
+        }
+
+        if ($isOverrides) {
+            /** @var FilterEntity $filter */
+            foreach ($allowedFilterCollection as $filter) {
+                $returningFilters[$filter->getId()] = [
+                    'propertyName' => $filter->getPropertyName(),
+                    'isAllowed' => true
+                ];
+            }
+            /** @var FilterEntity $filter */
+            foreach ($blockedFilterCollection as $filter) {
+                $returningFilters[$filter->getId()] = [
+                    'propertyName' => $filter->getPropertyName(),
+                    'isAllowed' => false
+                ];
+            }
+        } else {
+            return $filters;
+        }
+
+        return $returningFilters;
+    }
+
+    /**
+     * Returns array with keys of filterId and values ['propertyName'=>filterPropertyName, 'isAllowed'=>true];
+     * @return array
+     */
+    private function getAllFilters(): array
+    {
+        $returning = [];
+        $context = Context::createDefaultContext();
+        $criteria = new Criteria();
+        $filters = $this->filterRepository->search($criteria, $context)->getEntities();
+
+        /** @var FilterEntity $filter */
+        foreach ($filters as $filter) {
+            $returning[$filter->getId()] = ['propertyName' => $filter->getPropertyName(), 'isAllowed' => true];
+        }
+
+        return $returning;
+    }
+
+    /**
+     * Returning criteria to search filter restrictions columns
+     * @param string|null $salesChannelId
+     * @param string $layer
+     * @param string|null $categoryId
+     * @return Criteria
+     */
+    private function getFilterRestrictionsCriteria(
+        ?string $salesChannelId,
+        string $layer,
+        string $categoryId = null
+    ): Criteria {
+        $criteria = new Criteria();
+        $criteria->addAssociation('filters');
+        $criteria->addFilter(
+            new EqualsFilter('salesChannelId', $salesChannelId)
+        );
+        if ($categoryId) {
+            $criteria->addFilter(
+                new EqualsFilter('isCategory', true)
+            );
+            $criteria->addFilter(
+                new EqualsFilter('categoryId', $categoryId)
+            );
+        } else {
+            $criteria->addFilter(
+                new EqualsFilter('layer', $layer)
+            );
+        }
+        return $criteria;
+    }
+
+    /**
      * Get info about filter by filterId, SalesChannelId and FilterService::LEVEL_% with optional CategoryId
      * @param string $filterId
      * @param string $salesChannelId
      * @param int $level
      * @param string|null $categoryId
+     * @return bool
      */
-    public function getFilterInfo(string $filterId, string $salesChannelId, int $level, string $categoryId = null)
+    public function getFilterInfo(string $filterId, string $salesChannelId, int $level, string $categoryId = null): bool
     {
         $context = Context::createDefaultContext();
         $isFilterAllowed = false;
@@ -262,8 +447,7 @@ class FilterService
             }
         }
 
-        var_dump($isFilterAllowed);
-        die();
+        return $isFilterAllowed;
     }
 
     /**
@@ -302,37 +486,5 @@ class FilterService
             }
         }
         return [$isFilterAllowed, $isModified];
-    }
-
-    /**
-     * Returning criteria to search filter restrictions columns
-     * @param string $salesChannelId
-     * @param string $layer
-     * @param string|null $categoryId
-     * @return Criteria
-     */
-    private function getFilterRestrictionsCriteria(
-        string $salesChannelId,
-        string $layer,
-        string $categoryId = null
-    ): Criteria {
-        $criteria = new Criteria();
-        $criteria->addAssociation('filters');
-        $criteria->addFilter(
-            new EqualsFilter('salesChannelId', $salesChannelId)
-        );
-        if ($categoryId) {
-            $criteria->addFilter(
-                new EqualsFilter('isCategory', true)
-            );
-            $criteria->addFilter(
-                new EqualsFilter('categoryId', $categoryId)
-            );
-        } else {
-            $criteria->addFilter(
-                new EqualsFilter('layer', $layer)
-            );
-        }
-        return $criteria;
     }
 }
