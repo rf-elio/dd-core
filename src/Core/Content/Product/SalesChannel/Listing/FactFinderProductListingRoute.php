@@ -129,6 +129,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
         $path = implode('/', array_values($path));
         $navigationRequest->setCategoryPath($path);
+        $navigationRequest->setCategoryId($categoryId);
         $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
         /** @var ProductListingResponse|null $productListingResponse */
         $productListingResponse = $resultCollection->get(ProductListingResponse::class);
