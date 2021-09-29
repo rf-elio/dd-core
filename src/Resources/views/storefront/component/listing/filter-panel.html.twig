@@ -3,7 +3,7 @@
 {% block component_filter_panel_item_manufacturer %}
     {{ parent() }}
 
-    {% set ffAggregations = listing.aggregations.get('ff') %}
+    {% set ffAggregations = listing.aggregations.get('ff-default') %}
     {% for ffAggregation in ffAggregations.aggregations %}
         {% if ffAggregation.extensions.ff is defined %}
             {% set parameterName = ffAggregation.extensions.ff.parameterName %}
@@ -18,14 +18,14 @@
                             name: parameterName,
                             displayName: property.translated.name,
                             displayType: property.displayType,
-                            pluginSelector: 'filter-property-select',
+                            pluginSelector: 'fact-finder-filter-property-select',
                             propertyName: property.translated.name
                         } %}
                     {% endfor %}
                 {% endif %}
             {% elseif style == 'SLIDER' %}
                 {% if ffAggregation.min > 0 and ffAggregation.max > 0 %}
-                    {% sw_include '@Storefront/storefront/component/listing/filter/filter-range.html.twig' with {
+                    {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-range.html.twig' with {
                         price: ffAggregation,
                         sidebar: ffAggregation,
                         name: ffAggregation.name,
