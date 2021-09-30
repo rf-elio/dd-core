@@ -76,7 +76,6 @@ class SynchronizePropertiesToFiltersCommand extends Command
     {
         $propertyId = $input->getArgument('propertyId');
         $context = Context::createDefaultContext();
-
         try {
             if ($propertyId) {
                 $this->syncOne( $context, $output, $propertyId);

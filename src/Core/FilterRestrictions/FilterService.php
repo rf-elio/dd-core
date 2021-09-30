@@ -254,30 +254,26 @@ class FilterService
         $filters = [];
 
         // Global Level
-        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'global');
-        $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+        $restrictions = $this->getRestrictions($salesChannelId, $context, 'global');
         $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
 
         // Applying overriding restrictions
         if ($level == self::LEVEL_SEARCH) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'search');
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $restrictions = $this->getRestrictions($salesChannelId, $context, 'search');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$this->configIsOverridingTopToDown
             );
         } elseif ($level == self::LEVEL_NAVIGATION) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'navigation');
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$this->configIsOverridingTopToDown
             );
         } elseif ($level == self::LEVEL_CATEGORY) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, '', $categoryId);
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            $restrictions = $this->getRestrictions($salesChannelId, $context, '', $categoryId);
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
@@ -286,6 +282,31 @@ class FilterService
         }
 
         return $filters;
+    }
+
+    /**
+     * @param string|null $salesChannelId
+     * @param Context $context
+     * @param string $layer
+     * @param string|null $categoryId
+     * @return EntityCollection
+     */
+    private function getRestrictions(
+        ?string $salesChannelId,
+        Context $context,
+        string $layer,
+        string $categoryId = null
+    ): EntityCollection {
+        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $layer, $categoryId);
+        $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+        if (count(
+                $restrictions
+            ) == 0) { // if config for specified salesChannelId wasn't set up, then we get settings for all salesChannels
+            $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+        }
+
+        return $restrictions;
     }
 
     /**
@@ -330,19 +351,23 @@ class FilterService
         }
 
         if ($isOverrides) {
-            /** @var FilterEntity $filter */
-            foreach ($allowedFilterCollection as $filter) {
-                $returningFilters[$filter->getId()] = [
-                    'propertyName' => $filter->getPropertyName(),
-                    'isAllowed' => true
-                ];
+            if ($allowedFilterCollection) {
+                /** @var FilterEntity $filter */
+                foreach ($allowedFilterCollection as $filter) {
+                    $returningFilters[$filter->getId()] = [
+                        'propertyName' => $filter->getPropertyName(),
+                        'isAllowed' => true
+                    ];
+                }
             }
-            /** @var FilterEntity $filter */
-            foreach ($blockedFilterCollection as $filter) {
-                $returningFilters[$filter->getId()] = [
-                    'propertyName' => $filter->getPropertyName(),
-                    'isAllowed' => false
-                ];
+            if ($blockedFilterCollection) {
+                /** @var FilterEntity $filter */
+                foreach ($blockedFilterCollection as $filter) {
+                    $returningFilters[$filter->getId()] = [
+                        'propertyName' => $filter->getPropertyName(),
+                        'isAllowed' => false
+                    ];
+                }
             }
         } else {
             return $filters;
@@ -401,6 +426,10 @@ class FilterService
         }
         return $criteria;
     }
+
+    /**
+     * below functions probably will be removed
+     */
 
     /**
      * Get info about filter by filterId, SalesChannelId and FilterService::LEVEL_% with optional CategoryId
