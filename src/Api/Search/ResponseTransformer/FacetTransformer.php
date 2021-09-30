@@ -34,7 +34,9 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
+use Elio\FactFinder\Api\Transform\NavigationRequestTrait;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
@@ -51,6 +53,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
+use Elio\FactFinder\Core\FilterRestrictions\FilterService;
 
 /**
  * Class FacetTransformer
@@ -62,6 +65,21 @@ use Swagger\Client\Model\Result;
  */
 class FacetTransformer implements ResponseTransformerInterface
 {
+    use NavigationRequestTrait;
+
+    private FilterService $filterService;
+
+    /**
+     * ProductHandler constructor.
+     * @param FilterService $filterService
+     */
+    public function __construct(
+        FilterService $filterService
+    )
+    {
+        $this->filterService = $filterService;
+    }
+
     /**
      * @inheritDoc
      */
@@ -81,6 +99,12 @@ class FacetTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
+        $allowedFilters = $this->filterService->getAllowedFilters($context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $this->getNavigationRequest()->getCategoryId());
+        $allowedFiltersNames = [];
+        foreach ($allowedFilters as $filter) {
+            $allowedFiltersNames[] = $filter['propertyName'];
+        }
+
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
@@ -91,6 +115,9 @@ class FacetTransformer implements ResponseTransformerInterface
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
+            if (!in_array($facet->getName(), $allowedFiltersNames)) {
+                continue;
+            }
             $style = $facet->getFilterStyle();
             switch ($style) {
                 case 'DEFAULT':

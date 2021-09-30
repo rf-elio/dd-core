@@ -113,7 +113,7 @@ class SearchApi
                 'filters' => $filters
             ]
         ]));
-        return $this->transformer->transformResponse($result, $context);
+        return $this->transformer->transformResponse($result, $context, $searchRequest);
     }
 
     /**

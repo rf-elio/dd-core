@@ -64,6 +64,7 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\FacetTransformer">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\FilterService" />
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 
