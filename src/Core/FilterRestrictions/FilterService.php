@@ -287,16 +287,20 @@ class FilterService
             );
 
             $categoriesTreeIds = [];
-            $maxDeepLevel = 0;
-            /** @var CategoryEntity $category */
-            $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
-            while($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
-                $categoriesTreeIds[] = $category->getId();
-                $category = $this->categoryRepository->search(new Criteria([$category->getParentId()]), $context)->first();
-                $maxDeepLevel++;
+            if ($this->configParentCategories) {
+                $maxDeepLevel = 0;
+                /** @var CategoryEntity $category */
+                $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
+                while($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
+                    $categoriesTreeIds[] = $category->getId();
+                    $category = $this->categoryRepository->search(new Criteria([$category->getParentId()]), $context)->first();
+                    $maxDeepLevel++;
+                }
+                $categoriesTreeIds[] = $category->getId(); // most top category
+                $categoriesTreeIds = array_reverse($categoriesTreeIds);
+            } else {
+                $categoriesTreeIds[] = $categoryId;
             }
-            $categoriesTreeIds[] = $category->getId(); // most top category
-            $categoriesTreeIds = array_reverse($categoriesTreeIds);
 
             foreach ($categoriesTreeIds as $currentCategoryId) {
                 $restrictions = $this->getRestrictions($salesChannelId, $context, '', $currentCategoryId);

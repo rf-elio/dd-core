@@ -101,6 +101,7 @@ class FacetTransformer implements ResponseTransformerInterface
 
         $allowedFilters = $this->filterService->getAllowedFilters($context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $this->getNavigationRequest()->getCategoryId());
         $allowedFiltersNames = [];
+
         foreach ($allowedFilters as $filter) {
             if ($filter['isAllowed']) {
                 $allowedFiltersNames[] = $filter['propertyName'];
