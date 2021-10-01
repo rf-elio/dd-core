@@ -9,3 +9,17 @@
     {% set elioFFPath = path('widgets.elio-ff.tracking.product-detail') %}
     {{ parent() }}
 {% endblock %}
+
+{% block element_product_listing_row %}
+    {% set ffcampaigns = searchResult.aggregations.getExtension('ff-campaigns') %}
+
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaigns.html.twig' with {
+        campaigns: ffcampaigns.campaigns,
+        location: 'above search result',
+    } %}
+    {{ parent() }}
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaigns.html.twig' with {
+        campaigns: ffcampaigns.campaigns,
+        location: 'below search result',
+    } %}
+{% endblock %}

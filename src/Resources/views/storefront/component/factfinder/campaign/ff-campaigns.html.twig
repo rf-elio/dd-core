@@ -1,0 +1,9 @@
+
+
+{% block elio_factfinder_campaigns %}
+    {% if campaigns.FEEDBACK is defined %}
+        {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+            feedback: campaigns.FEEDBACK,
+        } %}
+    {% endif %}
+{% endblock %}
