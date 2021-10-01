@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -61,10 +62,12 @@ class FilterService
     public const LEVEL_SEARCH = 2;
     public const LEVEL_NAVIGATION = 3;
     public const LEVEL_CATEGORY = 10;
+    const MAX_DEEP_CATEGORY = 20;
 
     private EntityRepositoryInterface $propertyRepository;
     private EntityRepositoryInterface $filterRepository;
     private EntityRepositoryInterface $filterRestrictionsRepository;
+    private EntityRepositoryInterface $categoryRepository;
     private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
     /**
@@ -81,6 +84,7 @@ class FilterService
      * @param EntityRepositoryInterface $propertyRepository
      * @param EntityRepositoryInterface $filterRepository
      * @param EntityRepositoryInterface $filterRestrictionsRepository
+     * @param EntityRepositoryInterface $categoryRepository
      * @param SystemConfigService $systemConfigService
      * @param LoggerInterface $logger
      */
@@ -88,6 +92,7 @@ class FilterService
         EntityRepositoryInterface $propertyRepository,
         EntityRepositoryInterface $filterRepository,
         EntityRepositoryInterface $filterRestrictionsRepository,
+        EntityRepositoryInterface $categoryRepository,
         SystemConfigService $systemConfigService,
         LoggerInterface $logger
     ) {
@@ -103,6 +108,7 @@ class FilterService
         $this->configIsOverridingTopToDown = $this->systemConfigService->get(
                 self::PLUGIN_CONFIG_PREFIX . '.restrictionsOverridingTopToDown'
             ) ?? true;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -273,12 +279,33 @@ class FilterService
                 !$this->configIsOverridingTopToDown
             );
         } elseif ($level == self::LEVEL_CATEGORY) {
-            $restrictions = $this->getRestrictions($salesChannelId, $context, '', $categoryId);
+            $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$this->configIsOverridingTopToDown
             );
+
+            $categoriesTreeIds = [];
+            $maxDeepLevel = 0;
+            /** @var CategoryEntity $category */
+            $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
+            while($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
+                $categoriesTreeIds[] = $category->getId();
+                $category = $this->categoryRepository->search(new Criteria([$category->getParentId()]), $context)->first();
+                $maxDeepLevel++;
+            }
+            $categoriesTreeIds[] = $category->getId(); // most top category
+            $categoriesTreeIds = array_reverse($categoriesTreeIds);
+
+            foreach ($categoriesTreeIds as $currentCategoryId) {
+                $restrictions = $this->getRestrictions($salesChannelId, $context, '', $currentCategoryId);
+                $filters = $this->applyRestrictionsToFiltersArray(
+                    $filters,
+                    $restrictions,
+                    !$this->configIsOverridingTopToDown
+                );
+            }
         }
 
         return $filters;
@@ -322,77 +349,94 @@ class FilterService
         FilterRestrictionsCollection $restrictions,
         bool $isOverrides
     ): array {
-        $returningFilters = [];
-        $allowedFilterCollection = null;
-        $blockedFilterCollection = null;
+        $allowedFilters = [];
+        $blockedFilters = [];
 
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) { // allowed column
                 if ($restriction->isAllChecked()) { // if Allow All checked
                     if ($isOverrides) { // if this restriction overrides top-level restrictions
-                        return $this->getAllFilters(); // we return everything allowed
-                    } else { // if this restriction doesn't override top-level restrictions than we pass it as it is
-                        return $filters;
+                        return $this->getAllFilters(true); // we return everything allowed
+                    } else { // if this restriction doesn't override top-level restrictions
+                        // we collect all filters to merge with current rules
+                        $allowedFilters = $this->getAllFilters(true);
                     }
                 } else { // if allow only selected checked (default)
-                    $allowedFilterCollection = $restriction->getFilters();
+                    $allowedFilters = $this->transformToSimpleForm($restriction->getFilters(), true);
                 }
             } else { // blocked column
                 if ($restriction->isAllChecked()) { // if Block All checked
                     if ($isOverrides) { // if this restriction overrides top-level restrictions
-                        return []; // we block everything, no matter what was before
-                    } else { // if this restriction doesn't override top-level restrictions than we pass it as it is
-                        return $filters;
+                        return $this->getAllFilters(false); // we block everything, no matter what was before
+                    } else { // if this restriction doesn't override top-level restrictions
+                        // we collect all filters to merge with current rules
+                        $blockedFilters = $this->getAllFilters(false);
                     }
                 } else { // if block only selected checked (default)
-                    $blockedFilterCollection = $restriction->getFilters();
+                    $blockedFilters = $this->transformToSimpleForm($restriction->getFilters(), false);
                 }
             }
         }
 
-        if ($isOverrides) {
-            if ($allowedFilterCollection) {
-                /** @var FilterEntity $filter */
-                foreach ($allowedFilterCollection as $filter) {
-                    $returningFilters[$filter->getId()] = [
-                        'propertyName' => $filter->getPropertyName(),
-                        'isAllowed' => true
-                    ];
-                }
-            }
-            if ($blockedFilterCollection) {
-                /** @var FilterEntity $filter */
-                foreach ($blockedFilterCollection as $filter) {
-                    $returningFilters[$filter->getId()] = [
-                        'propertyName' => $filter->getPropertyName(),
-                        'isAllowed' => false
-                    ];
-                }
-            }
-        } else {
-            return $filters;
-        }
-
-        return $returningFilters;
+        $currentLevelFiltersArray = $this->mergeFiltersArrays(
+            $allowedFilters,
+            $blockedFilters,
+            false
+        );
+        return $this->mergeFiltersArrays($filters, $currentLevelFiltersArray, $isOverrides);
     }
 
     /**
-     * Returns array with keys of filterId and values ['propertyName'=>filterPropertyName, 'isAllowed'=>true];
+     * Returns array with keys of filterId and
+     * values ['propertyName'=>filterPropertyName, 'isAllowed'=>$_isAllowed]
+     * for all filters in provided FilterCollection;
+     * @param FilterCollection|null $filterCollection
+     * @param bool $_isAllowed
      * @return array
      */
-    private function getAllFilters(): array
+    private function transformToSimpleForm(?FilterCollection $filterCollection, bool $_isAllowed): array
     {
         $returning = [];
+        /** @var FilterEntity $filter */
+        foreach ($filterCollection as $filter) {
+            $returning[$filter->getId()] = ['propertyName' => $filter->getPropertyName(), 'isAllowed' => $_isAllowed];
+        }
+        return $returning;
+    }
+
+    /**
+     * Merging 2 arrays in 1 with overriding order
+     * @param array|null $firstFilterArray
+     * @param array|null $secondFilterArray
+     * @param bool $isSecondOverride
+     * @return array
+     */
+    private function mergeFiltersArrays(
+        ?array $firstFilterArray,
+        ?array $secondFilterArray,
+        bool $isSecondOverride = false
+    ): array {
+        if ($isSecondOverride) {
+            return array_merge($firstFilterArray, $secondFilterArray);
+        } else {
+            return array_merge($secondFilterArray, $firstFilterArray);;
+        }
+    }
+
+    /**
+     * Returns array with keys of filterId and
+     * values ['propertyName'=>filterPropertyName, 'isAllowed'=>$_isAllowed]
+     * for all filters in database;
+     * @param bool $_isAllowed
+     * @return array
+     */
+    private function getAllFilters(bool $_isAllowed): array
+    {
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
+        /** @var FilterCollection $filters */
         $filters = $this->filterRepository->search($criteria, $context)->getEntities();
-
-        /** @var FilterEntity $filter */
-        foreach ($filters as $filter) {
-            $returning[$filter->getId()] = ['propertyName' => $filter->getPropertyName(), 'isAllowed' => true];
-        }
-
-        return $returning;
+        return $this->transformToSimpleForm($filters, $_isAllowed);;
     }
 
     /**
@@ -427,8 +471,10 @@ class FilterService
         return $criteria;
     }
 
+
+
     /**
-     * below functions probably will be removed
+     * below functions probably will be removed (not used anywhere)
      */
 
     /**
@@ -468,6 +514,12 @@ class FilterService
                 $isFilterAllowed = $newFilterAllowed;
             }
         } elseif ($level == self::LEVEL_CATEGORY) {
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'navigation');
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
+            if ($isModified) {
+                $isFilterAllowed = $newFilterAllowed;
+            }
             $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, '', $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
             [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
