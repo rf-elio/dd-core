@@ -36,6 +36,7 @@
             <argument type="service" id="property_group.repository" />
             <argument type="service" id="elio_ff_filter.repository" />
             <argument type="service" id="elio_ff_filter_restrictions.repository" />
+            <argument type="service" id="category.repository" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="logger" />
         </service>
