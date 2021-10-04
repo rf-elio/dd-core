@@ -25,7 +25,9 @@ Shopware.Component.register('ff-restrictions-index', {
         },
         salesChannelId() {
             if(this.$refs.routerView) {
-                this.$refs.routerView.$refs.ruler.setSalesChannelId(this.salesChannelId);
+                if (this.$refs.routerView.$refs.ruler) {
+                    this.$refs.routerView.$refs.ruler.setSalesChannelId(this.salesChannelId);
+                }
             }
         }
     },
