@@ -66,6 +66,9 @@ Shopware.Component.register('elio-plugin-config-detail', {
     watch: {
         languageId() {
             this.updateLanguage();
+        },
+        domain() {
+            this.onDomainChanged();
         }
     },
 
@@ -92,6 +95,11 @@ Shopware.Component.register('elio-plugin-config-detail', {
             this.$refs.systemConfig.readAll();
         },
 
+        onDomainChanged() {
+            this.$refs.systemConfig.readAll();
+            console.log(this.domain);
+        },
+
         async updateLanguage() {
             var operator = this;
             this.languageNameSpace = '';
@@ -100,7 +108,6 @@ Shopware.Component.register('elio-plugin-config-detail', {
                     operator.languageNameSpace = languages[0].locale.code;
                 }
             });
-            console.log(this.domain);
         },
     }
 });
