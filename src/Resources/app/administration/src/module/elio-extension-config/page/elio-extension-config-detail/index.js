@@ -25,16 +25,34 @@ Shopware.Component.register('elio-plugin-config-detail', {
         }
     },
 
+    created() {
+        this.onCreated();
+    },
+
     data() {
         return {
             salesChannelId: null,
-            languageId: null
+            languageId: '',
+            languageNameSpace: '',
         };
     },
 
     computed: {
         domain() {
-            return `${this.namespace}.config`;
+            return `${this.fullNamespace}.config`;
+        },
+        fullNamespace() {
+            if (this.languageNameSpace !== '') {
+                return this.languageNameSpace + '.' + this.namespace
+            } else {
+                return this.namespace;
+            }
+        }
+    },
+
+    watch: {
+        languageId() {
+            this.updateLanguage();
         }
     },
 
@@ -49,7 +67,21 @@ Shopware.Component.register('elio-plugin-config-detail', {
                     message: err
                 });
             });
-        }
-    }
+        },
 
+        onCreated() {
+            this.languageId = Shopware.Context.api.languageId;
+        },
+
+        onChangeLanguage(languageId) {
+            Shopware.State.commit('context/setApiLanguageId', languageId);
+            this.languageId = languageId;
+            this.$refs.systemConfig.readAll();
+        },
+
+        updateLanguage() {
+            this.languageNameSpace = '';
+            console.log(this.languageNameSpace);
+        },
+    }
 });
