@@ -7,6 +7,10 @@ const { Criteria } = Shopware.Data;
 Shopware.Component.register('elio-plugin-config-detail', {
     template: template,
 
+    inject: [
+        'repositoryFactory'
+    ],
+
     metaInfo() {
         return {
             title: this.$createTitle()
@@ -47,6 +51,15 @@ Shopware.Component.register('elio-plugin-config-detail', {
             } else {
                 return this.namespace;
             }
+        },
+        languageRepository() {
+            return this.repositoryFactory.create('language');
+        },
+        defaultLanguageCriteria() {
+            var criteria = new Criteria();
+            criteria.addAssociation('locale');
+            criteria.addFilter(Criteria.equals('language.id', this.languageId));
+            return criteria;
         }
     },
 
@@ -79,9 +92,15 @@ Shopware.Component.register('elio-plugin-config-detail', {
             this.$refs.systemConfig.readAll();
         },
 
-        updateLanguage() {
+        async updateLanguage() {
+            var operator = this;
             this.languageNameSpace = '';
-            console.log(this.languageNameSpace);
+            await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
+                if(languages.length > 0) {
+                    operator.languageNameSpace = languages[0].locale.code;
+                }
+            });
+            console.log(this.domain);
         },
     }
 });
