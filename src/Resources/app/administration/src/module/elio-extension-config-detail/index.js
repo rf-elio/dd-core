@@ -1,7 +1,6 @@
 import template from './elio-plugin-config-detail.html.twig';
 import './elio-plugin-config-detail.scss';
 
-const {Component, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 
 Shopware.Component.override('sw-extension-config', {
