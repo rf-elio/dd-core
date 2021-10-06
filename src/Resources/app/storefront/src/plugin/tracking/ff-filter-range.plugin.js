@@ -7,6 +7,7 @@ export default class FactFinderFilterRangePlugin extends FilterRangePlugin {
     static options = deepmerge(FilterRangePlugin.options, {
         inputMinValue: '',
         inputMaxValue: '',
+        rangeUnit: '',
         ffFilterName: 'ff-slider',
     });
 
@@ -19,7 +20,7 @@ export default class FactFinderFilterRangePlugin extends FilterRangePlugin {
 
         values[this.options.minKey] = this._inputMin.value;
         values[this.options.maxKey] = this._inputMax.value;
-        values[this.options.ffFilterName] = this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value;
+        values[this.options.ffFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
 
         return values;
     }
@@ -35,6 +36,31 @@ export default class FactFinderFilterRangePlugin extends FilterRangePlugin {
             || inputMinValue < this.options.inputMinValue
             || inputMaxValue > this.options.inputMaxValue;
     }
+
+    getLabels() {
+        let labels = [];
+
+        if (this._inputMin.value.length || this._inputMax.value.length) {
+            if (this._inputMin.value.length) {
+                labels.push({
+                    label: `${this.options.name} ${this.options.snippets.filterRangeActiveMinLabel} ${this._inputMin.value} ${this.options.rangeUnit}`,
+                    id: this.options.minKey,
+                });
+            }
+
+            if (this._inputMax.value.length) {
+                labels.push({
+                    label: `${this.options.name} ${this.options.snippets.filterRangeActiveMaxLabel} ${this._inputMax.value} ${this.options.rangeUnit}`,
+                    id: this.options.maxKey,
+                });
+            }
+        } else {
+            labels = [];
+        }
+
+        return labels;
+    }
+
     /**
      * @param id
      * @public
