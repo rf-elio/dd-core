@@ -4,7 +4,7 @@ import './elio-plugin-config-detail.scss';
 const {Component, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 
-Shopware.Component.register('elio-plugin-config-detail', {
+Shopware.Component.override('sw-extension-config', {
     template: template,
 
     inject: [
@@ -118,3 +118,5 @@ Shopware.Component.register('elio-plugin-config-detail', {
         }
     }
 });
+
+Shopware.Template.register('sw-extension-config', template);
