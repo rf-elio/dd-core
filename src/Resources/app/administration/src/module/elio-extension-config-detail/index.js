@@ -11,24 +11,6 @@ Shopware.Component.override('sw-extension-config', {
         'repositoryFactory'
     ],
 
-    metaInfo() {
-        return {
-            title: this.$createTitle()
-        };
-    },
-
-    mixins: [
-        Mixin.getByName('notification')
-    ],
-
-    props: {
-        namespace: {
-            type: String,
-            required: false,
-            default: 'FactFinder'
-        }
-    },
-
     created() {
         this.onCreated();
     },
@@ -42,9 +24,6 @@ Shopware.Component.override('sw-extension-config', {
     },
 
     computed: {
-        domain() {
-            return `${this.namespace}.config`;
-        },
         languageRepository() {
             return this.repositoryFactory.create('language');
         },
@@ -103,9 +82,6 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         onSave() {
-            console.log(this.$refs.systemConfig.actualConfigData[null]);
-            console.log(this.$refs.systemConfig.config);
-
             this.$refs.systemConfig.saveAll().then(() => {
                 this.createNotificationSuccess({
                     message: this.$tc('sw-extension-store.component.sw-extension-config.messageSaveSuccess')
