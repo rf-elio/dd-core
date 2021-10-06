@@ -30,7 +30,7 @@ Shopware.Component.register('elio-plugin-config-detail', {
     },
 
     created() {
-        this.onCreated();
+        this.languageId = Shopware.Context.api.languageId;
     },
 
     data() {
@@ -43,14 +43,7 @@ Shopware.Component.register('elio-plugin-config-detail', {
 
     computed: {
         domain() {
-            return `${this.fullNamespace}.config`;
-        },
-        fullNamespace() {
-            if (this.languageNameSpace !== '') {
-                return this.languageNameSpace + '.' + this.namespace
-            } else {
-                return this.namespace;
-            }
+            return `${this.namespace}.config`;
         },
         languageRepository() {
             return this.repositoryFactory.create('language');
@@ -74,6 +67,10 @@ Shopware.Component.register('elio-plugin-config-detail', {
 
     methods: {
         onSave() {
+
+            this.$refs.systemConfig.actualConfigData[null]['FactFinder.config.De-de_active'] = true;
+            console.log(this.$refs.systemConfig.actualConfigData[null]);
+
             this.$refs.systemConfig.saveAll().then(() => {
                 this.createNotificationSuccess({
                     message: this.$tc('sw-extension-store.component.sw-extension-config.messageSaveSuccess')
@@ -85,14 +82,11 @@ Shopware.Component.register('elio-plugin-config-detail', {
             });
         },
 
-        onCreated() {
-            this.languageId = Shopware.Context.api.languageId;
-        },
-
         onChangeLanguage(languageId) {
             Shopware.State.commit('context/setApiLanguageId', languageId);
             this.languageId = languageId;
-            this.$refs.systemConfig.readAll();
+            this.$refs.systemConfig.loadCurrentSalesChannelConfig();
+            this.$refs.systemConfig.readConfig();
         },
 
         onDomainChanged() {
