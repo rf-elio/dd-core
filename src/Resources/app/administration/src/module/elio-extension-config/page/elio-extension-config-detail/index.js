@@ -1,8 +1,8 @@
 import template from './elio-plugin-config-detail.html.twig';
 import './elio-plugin-config-detail.scss';
 
-const { Component, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
+const {Component, Mixin} = Shopware;
+const {Criteria} = Shopware.Data;
 
 Shopware.Component.register('elio-plugin-config-detail', {
     template: template,
@@ -30,7 +30,7 @@ Shopware.Component.register('elio-plugin-config-detail', {
     },
 
     created() {
-        this.languageId = Shopware.Context.api.languageId;
+        this.onCreated();
     },
 
     data() {
@@ -60,16 +60,51 @@ Shopware.Component.register('elio-plugin-config-detail', {
         languageId() {
             this.updateLanguage();
         },
-        domain() {
-            this.onDomainChanged();
+        languageNameSpace() {
+            this.updateActualConfigData();
         }
     },
 
     methods: {
-        onSave() {
+        onChangeLanguage(languageId) {
+            Shopware.State.commit('context/setApiLanguageId', languageId);
+            this.languageId = languageId;
+        },
 
-            this.$refs.systemConfig.actualConfigData[null]['FactFinder.config.De-de_active'] = true;
+        onCreated() {
+            this.languageId = Shopware.Context.api.languageId;
+        },
+
+        async updateLanguage() {
+            var operator = this;
+            await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
+                if (languages.length > 0) {
+                    operator.languageNameSpace = languages[0].locale.code;
+                }
+            });
+        },
+
+        updateActualConfigData() {
+            console.log('updateActualConfigData(' + this.languageNameSpace + ')');
+            var operator = this;
+
+            if (this.$refs.systemConfig.config) {
+                this.$refs.systemConfig.config.forEach((keyValue) => {
+                    keyValue.elements.forEach((configElem) => {
+                        var splited = configElem['name'].split('.');
+                        var newName = '';
+                        splited.forEach((entry, i) => {
+                            newName += (i > 0 ? '.' : '') + (i === (splited.length - 1) ? operator.languageNameSpace + '_' + entry.split('_')[entry.split('_').length-1] : entry);
+                        });
+                        configElem['name'] = newName;
+                    });
+                });
+            }
+        },
+
+        onSave() {
             console.log(this.$refs.systemConfig.actualConfigData[null]);
+            console.log(this.$refs.systemConfig.config);
 
             this.$refs.systemConfig.saveAll().then(() => {
                 this.createNotificationSuccess({
@@ -80,28 +115,6 @@ Shopware.Component.register('elio-plugin-config-detail', {
                     message: err
                 });
             });
-        },
-
-        onChangeLanguage(languageId) {
-            Shopware.State.commit('context/setApiLanguageId', languageId);
-            this.languageId = languageId;
-            this.$refs.systemConfig.loadCurrentSalesChannelConfig();
-            this.$refs.systemConfig.readConfig();
-        },
-
-        onDomainChanged() {
-            this.$refs.systemConfig.readAll();
-            console.log(this.domain);
-        },
-
-        async updateLanguage() {
-            var operator = this;
-            this.languageNameSpace = '';
-            await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
-                if(languages.length > 0) {
-                    operator.languageNameSpace = languages[0].locale.code;
-                }
-            });
-        },
+        }
     }
 });
