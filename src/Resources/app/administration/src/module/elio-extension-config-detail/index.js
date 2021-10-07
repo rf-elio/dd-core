@@ -17,8 +17,13 @@ Shopware.Component.override('sw-extension-config', {
     data() {
         return {
             salesChannelId: null,
-            languageId: '',
+            languageId: null,
             languageNameSpace: '',
+            languages: [
+                {'id': 'null', 'value': 'All', 'active': true},
+                {'id': '230a9120c81a432f8384222b356a0234', 'value': 'Deutsch', 'active': false},
+                {'id': '2fbb5fe2e29a4d70aa5854ce7ce3e20b', 'value': 'English', 'active': false}
+            ]
         };
     },
 
@@ -44,26 +49,24 @@ Shopware.Component.override('sw-extension-config', {
     },
 
     methods: {
-        onChangeLanguage(languageId) {
-            Shopware.State.commit('context/setApiLanguageId', languageId);
-            this.languageId = languageId;
-        },
-
         onCreated() {
-            this.languageId = Shopware.Context.api.languageId;
+            this.updateLanguage();
         },
 
         async updateLanguage() {
-            var operator = this;
-            await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
-                if (languages.length > 0) {
-                    operator.languageNameSpace = languages[0].locale.code;
-                }
-            });
+            if (this.languageId === 'null') {
+                this.languageNameSpace = '';
+            } else {
+                var operator = this;
+                await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
+                    if (languages.length > 0) {
+                        operator.languageNameSpace = languages[0].locale.code;
+                    }
+                });
+            }
         },
 
         updateActualConfigData() {
-            console.log('updateActualConfigData(' + this.languageNameSpace + ')');
             var operator = this;
 
             if (this.$refs.systemConfig.config) {
@@ -72,7 +75,9 @@ Shopware.Component.override('sw-extension-config', {
                         var splited = configElem['name'].split('.');
                         var newName = '';
                         splited.forEach((entry, i) => {
-                            newName += (i > 0 ? '.' : '') + (i === (splited.length - 1) ? operator.languageNameSpace + '_' + entry.split('_')[entry.split('_').length-1] : entry);
+                            newName += (i > 0 ? '.' : '') + (i === (splited.length - 1) ?
+                                ((operator.languageNameSpace !== '') ? operator.languageNameSpace + '_' : '') + entry.split('_')[entry.split('_').length - 1]
+                                : entry);
                         });
                         configElem['name'] = newName;
                     });
@@ -90,6 +95,41 @@ Shopware.Component.override('sw-extension-config', {
                     message: err
                 });
             });
+        },
+
+        onChangeLanguage(languageId) {
+            //Shopware.State.commit('context/setApiLanguageId', languageId);
+            this.languageId = languageId;
+        },
+
+        openSelector(event) {
+            var selector = event.target.closest('.elio-language-selector');
+            if (!selector) {
+                return;
+            }
+
+            if (!selector.classList.contains('elio-language-selector--opened')) {
+                selector.classList.add('elio-language-selector--opened');
+            } else {
+                selector.classList.remove('elio-language-selector--opened');
+            }
+        },
+
+        pickSelector(event) {
+            var selector = event.target.closest('.elio-language-selector');
+            if (!selector) {
+                return;
+            }
+
+            var pickedSpan = event.target.closest('.elio-language-selector__list-item').querySelector('span');
+            if (pickedSpan) {
+                this.onChangeLanguage(pickedSpan.dataset.selectorValue);
+                pickedSpan.closest('.elio-language-selector__inner').querySelector('button').querySelector('span').innerText = pickedSpan.innerText
+            }
+
+            if (selector.classList.contains('elio-language-selector--opened')) {
+                selector.classList.remove('elio-language-selector--opened');
+            }
         }
     }
 });

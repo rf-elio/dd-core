@@ -2,4 +2,130 @@
   .sw-meteor-page__smart-bar-content {
     margin-bottom: 24px;
   }
+
+  .elio-language-selector{
+    position: relative;
+    display: inline-block;
+    width: 130px;
+    height: 38px;
+    margin-right: 8px;
+    vertical-align: middle;
+    font-size: 14px;
+    font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    line-height: 22px;
+    text-align: left;
+    color: #52667a;
+  }
+
+  .elio-language-selector__inner {
+    width: 100%;
+    padding: 1px;
+    font-size: inherit;
+    background-color: #fff;
+    border: 1px solid #d1d9e0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+  }
+
+  .elio-language-selector--opened .elio-language-selector__inner {
+    border-color: #189eff;
+    box-shadow: 0 0 4px #b1deff;
+  }
+
+  .elio-language-selector__header {
+    width: 100%;
+    position: relative;
+    padding: 9px 15px;
+    border: 0;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    text-align: left;
+    color: #52667a;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .elio-language-selector__header span {
+    display: block;
+    font-size: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .elio-language-selector__header::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    width: 8px;
+    height: 8px;
+    border-bottom: 1px solid #d1d9e0;
+    border-right: 1px solid #d1d9e0;
+    -webkit-transform: rotate(45deg) translate(-50%,-50%);
+    transform: rotate(45deg) translate(-50%,-50%);
+  }
+
+  .elio-language-selector--opened .elio-language-selector__drop {
+    display: block;
+    z-index: 2;
+  }
+
+  .elio-language-selector__drop {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #d1d9e0;
+    border-top: none;
+  }
+
+  .elio-language-selector-scroll {
+    scrollbar-color: rgba(39,97,216,.9) rgba(255,255,255,.1);
+    scrollbar-width: thin;
+  }
+
+  .elio-language-selector__list {
+    position: relative;
+    max-height: 154px;
+    margin: 0;
+    padding: 5px 5px 0;
+    overflow: auto;
+    font-size: inherit;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .elio-language-selector__list-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 7px;
+    font-size: inherit;
+  }
+
+  .elio-language-selector__list-item--active {
+    background: #e4f4ff;
+    color: #189eff;
+  }
+
+  .elio-language-selector-check {
+    width: 100% !important;
+    font-size: inherit !important;
+    line-height: 1.3em;
+    display: block;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .elio-language-selector-check__descr {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    padding-left: 0px !important;
+  }
 }
