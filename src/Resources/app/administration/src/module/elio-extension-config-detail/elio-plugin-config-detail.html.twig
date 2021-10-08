@@ -17,14 +17,14 @@
                 <div class="elio-language-selector__inner">
                     <button class="elio-language-selector__header"
                             type="button"
-                            @click="openSelector">
+                            @click.prevent="openSelector">
                         <span>All</span>
                     </button>
                     <div class="elio-language-selector__drop">
                         <ul class="elio-language-selector__list elio-language-selector-scroll">
                             <li v-for="language in languages"
                                 class="elio-language-selector__list-item {% if (language.active) %}elio-language-selector__list-item--active{% endif %}"
-                                @click="pickSelector">
+                                @click.prevent="pickSelector">
                                 <label class="elio-language-selector-check">
                                     <span class="elio-language-selector-check__descr"
                                           :data-selector-value="language.id">{{ language.value }}</span>

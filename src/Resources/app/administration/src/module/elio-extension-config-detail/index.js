@@ -19,11 +19,7 @@ Shopware.Component.override('sw-extension-config', {
             salesChannelId: null,
             languageId: null,
             languageNameSpace: '',
-            languages: [
-                {'id': 'null', 'value': 'All', 'active': true},
-                {'id': '230a9120c81a432f8384222b356a0234', 'value': 'Deutsch', 'active': false},
-                {'id': '2fbb5fe2e29a4d70aa5854ce7ce3e20b', 'value': 'English', 'active': false}
-            ]
+            languages: [{'id': 'null', 'value': 'All', 'active': true}]
         };
     },
 
@@ -49,8 +45,20 @@ Shopware.Component.override('sw-extension-config', {
     },
 
     methods: {
-        onCreated() {
+        async onCreated() {
+            await this.loadLanguages();
             this.updateLanguage();
+        },
+
+        loadLanguages() {
+            var operator = this;
+            this.languageRepository.search(new Criteria(), Shopware.Context.api).then(languages => {
+                if (languages.length > 0) {
+                    languages.forEach((language) => {
+                        operator.languages.push({'id': language.id, 'value': language.name});
+                    });
+                }
+            });
         },
 
         async updateLanguage() {
