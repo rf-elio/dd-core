@@ -91,12 +91,12 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWLangPrefix($config, $languagePrefix, 'useAso'),
             $this->getConfigWLangPrefix($config, $languagePrefix, 'apiDebugActive'),
             $this->getConfigWLangPrefix($config, $languagePrefix, 'searchUseFactFinder'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackRequireConsent'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCart'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCheckout'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackLogin'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackProductView'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'listingUseFactFinder'),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackRequireConsent')),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCart')),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCheckout')),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackLogin')),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackProductView')),
+            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'listingUseFactFinder')),
             $additionalRequestParameters,
             $this->getConfigWLangPrefix($config, $languagePrefix, 'botProtectionActive'),
             $this->getConfigWLangPrefix($config, $languagePrefix, 'botProtectionUseBadBotList'),
@@ -140,7 +140,11 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
         if (key_exists($languagePrefix . $key, $config)) {
             return $config[$languagePrefix . $key];
         } else {
-            return $config[$key];
+            if (key_exists($key, $config)) {
+                return $config[$key];
+            } else {
+                return null;
+            }
         }
     }
 
