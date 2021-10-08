@@ -2,41 +2,16 @@
     <template slot="smart-bar-header">
         {{ namespace }}
     </template>
-
     <template slot="smart-bar-actions">
         <sw-button variant="primary" class="sw-extension-config__save-action" @click.prevent="onSave">
             {{ $tc('global.default.save') }}
         </sw-button>
     </template>
-
-    {% block sw_product_list_language_switch %}
-        <template slot="language-switch">
-            <sw-language-switch @on-change="onChangeLanguage"></sw-language-switch>
-
-            <div class="elio-language-selector">
-                <div class="elio-language-selector__inner">
-                    <button class="elio-language-selector__header"
-                            type="button"
-                            @click.prevent="openSelector">
-                        <span>All</span>
-                    </button>
-                    <div class="elio-language-selector__drop">
-                        <ul class="elio-language-selector__list elio-language-selector-scroll">
-                            <li v-for="language in languages"
-                                class="elio-language-selector__list-item {% if (language.active) %}elio-language-selector__list-item--active{% endif %}"
-                                @click.prevent="pickSelector">
-                                <label class="elio-language-selector-check">
-                                    <span class="elio-language-selector-check__descr"
-                                          :data-selector-value="language.id">{{ language.value }}</span>
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </template>
-    {% endblock %}
-
+    <template slot="language-switch">
+        <elio-language-selector
+                :languages="languages"
+                @on-selected="onChangeLanguage" ></elio-language-selector>
+    </template>
     <sw-card-view slot="content">
         <sw-system-config :domain="domain"
                           salesChannelSwitchable

@@ -1,6 +1,10 @@
 import template from './elio-plugin-config-detail.html.twig';
 import './elio-plugin-config-detail.scss';
 
+(async function initDependencies() {
+    await import(/* webpackMode: 'eager' */ './component/elio-language-selector');
+})();
+
 const {Criteria} = Shopware.Data;
 
 Shopware.Component.override('sw-extension-config', {
@@ -48,6 +52,8 @@ Shopware.Component.override('sw-extension-config', {
         async onCreated() {
             await this.loadLanguages();
             this.updateLanguage();
+
+
         },
 
         /**
@@ -124,42 +130,6 @@ Shopware.Component.override('sw-extension-config', {
                 });
             }
         },
-
-        /**
-         * onClick to open language selector
-         */
-        openSelector(event) {
-            var selector = event.target.closest('.elio-language-selector');
-            if (!selector) {
-                return;
-            }
-
-            if (!selector.classList.contains('elio-language-selector--opened')) {
-                selector.classList.add('elio-language-selector--opened');
-            } else {
-                selector.classList.remove('elio-language-selector--opened');
-            }
-        },
-
-        /**
-         * onClick on chosen language in selector
-         */
-        pickSelector(event) {
-            var selector = event.target.closest('.elio-language-selector');
-            if (!selector) {
-                return;
-            }
-
-            var pickedSpan = event.target.closest('.elio-language-selector__list-item').querySelector('span');
-            if (pickedSpan) {
-                this.onChangeLanguage(pickedSpan.dataset.selectorValue);
-                pickedSpan.closest('.elio-language-selector__inner').querySelector('button').querySelector('span').innerText = pickedSpan.innerText
-            }
-
-            if (selector.classList.contains('elio-language-selector--opened')) {
-                selector.classList.remove('elio-language-selector--opened');
-            }
-        }
     }
 });
 
