@@ -71,33 +71,75 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $salesChannelId
      * @return Configuration
      */
-    public function get(string $salesChannelId) : Configuration
+    public function get(string $salesChannelId): Configuration
     {
-        if(isset($this->loadedConfigurations[$salesChannelId])) {
+        if (isset($this->loadedConfigurations[$salesChannelId])) {
             return $this->loadedConfigurations[$salesChannelId];
         }
 
+        $languagePrefix = 'eb_GB';
+
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
-        parse_str($config['additionalRequestParameters'] ?? '', $additionalRequestParameters);
+        if (key_exists($languagePrefix . '_additionalRequestParameters', $config)) {
+            parse_str($config[$languagePrefix . '_additionalRequestParameters'] ?? '', $additionalRequestParameters);
+        } else {
+            parse_str($config['additionalRequestParameters'] ?? '', $additionalRequestParameters);
+        }
         $configuration = new Configuration(
-            $config['active'],
-            $config['apiChannel'],
-            $config['apiTimeout'],
-            $config['useAso'],
-            $config['apiDebugActive'],
-            $config['searchUseFactFinder'],
-            !empty($config['trackRequireConsent']),
-            !empty($config['trackCart']),
-            !empty($config['trackCheckout']),
-            !empty($config['trackLogin']),
-            !empty($config['trackProductView']),
-            !empty($config['listingUseFactFinder']),
+            $config[$languagePrefix . '_active'] ?? $config['active'],
+            $config[$languagePrefix . '_apiChannel'] ?? $config['apiChannel'],
+            $config[$languagePrefix . '_apiTimeout'] ?? $config['apiTimeout'],
+            $config[$languagePrefix . '_useAso'] ?? $config['useAso'],
+            $config[$languagePrefix . '_apiDebugActive'] ?? $config['apiDebugActive'],
+            $config[$languagePrefix . '_searchUseFactFinder'] ?? $config['searchUseFactFinder'],
+            (key_exists(
+                $languagePrefix . '_trackRequireConsent',
+                $config
+            ) ? !empty($config[$languagePrefix . '_trackRequireConsent']) : !empty($config['trackRequireConsent'])),
+            (key_exists(
+                $languagePrefix . '_trackCart',
+                $config
+            ) ? !empty($config[$languagePrefix . '_trackCart']) : !empty($config['trackCart'])),
+            (key_exists(
+                $languagePrefix . '_trackCheckout',
+                $config
+            ) ? !empty($config[$languagePrefix . '_trackCheckout']) : !empty($config['trackCheckout'])),
+            (key_exists(
+                $languagePrefix . '_trackLogin',
+                $config
+            ) ? !empty($config[$languagePrefix . '_trackLogin']) : !empty($config['trackLogin'])),
+            (key_exists(
+                $languagePrefix . '_trackProductView',
+                $config
+            ) ? !empty($config[$languagePrefix . '_trackProductView']) : !empty($config['trackProductView'])),
+            (key_exists(
+                $languagePrefix . '_listingUseFactFinder',
+                $config
+            ) ? !empty($config[$languagePrefix . '_listingUseFactFinder']) : !empty($config['listingUseFactFinder'])),
             $additionalRequestParameters,
-            $config['botProtectionActive'],
-            $config['botProtectionUseBadBotList'],
-            $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
-            $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
-            $this->prepareValueList($config, 'botProtectionIpFilter'),
+            $config[$languagePrefix . '_botProtectionActive'] ?? $config['botProtectionActive'],
+            $config[$languagePrefix . '_botProtectionUseBadBotList'] ?? $config['botProtectionUseBadBotList'],
+            $this->prepareValueList(
+                $config,
+                (key_exists(
+                    $languagePrefix . '_botProtectionSearchTermFilter',
+                    $config
+                ) ? $languagePrefix . '_botProtectionSearchTermFilter' : 'botProtectionSearchTermFilter')
+            ),
+            $this->prepareValueList(
+                $config,
+                (key_exists(
+                    $languagePrefix . '_botProtectionUserAgentFilter',
+                    $config
+                ) ? $languagePrefix . '_botProtectionUserAgentFilter' : 'botProtectionUserAgentFilter')
+            ),
+            $this->prepareValueList(
+                $config,
+                (key_exists(
+                    $languagePrefix . '_botProtectionIpFilter',
+                    $config
+                ) ? $languagePrefix . '_botProtectionIpFilter' : 'botProtectionIpFilter')
+            )
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
