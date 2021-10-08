@@ -50,30 +50,9 @@ Shopware.Component.override('sw-extension-config', {
             this.updateLanguage();
         },
 
-        loadLanguages() {
-            var operator = this;
-            this.languageRepository.search(new Criteria(), Shopware.Context.api).then(languages => {
-                if (languages.length > 0) {
-                    languages.forEach((language) => {
-                        operator.languages.push({'id': language.id, 'value': language.name});
-                    });
-                }
-            });
-        },
-
-        async updateLanguage() {
-            if (this.languageId === 'null') {
-                this.languageNameSpace = '';
-            } else {
-                var operator = this;
-                await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
-                    if (languages.length > 0) {
-                        operator.languageNameSpace = languages[0].locale.code;
-                    }
-                });
-            }
-        },
-
+        /**
+         * remake this.$refs.systemConfig.config for new names with new languageNameSpace
+         */
         updateActualConfigData() {
             var operator = this;
 
@@ -93,6 +72,9 @@ Shopware.Component.override('sw-extension-config', {
             }
         },
 
+        /**
+         * on saving configuration
+         */
         onSave() {
             this.$refs.systemConfig.saveAll().then(() => {
                 this.createNotificationSuccess({
@@ -105,11 +87,47 @@ Shopware.Component.override('sw-extension-config', {
             });
         },
 
+        /**
+         * loading languages to language selector
+         */
+        loadLanguages() {
+            var operator = this;
+            this.languageRepository.search(new Criteria(), Shopware.Context.api).then(languages => {
+                if (languages.length > 0) {
+                    languages.forEach((language) => {
+                        operator.languages.push({'id': language.id, 'value': language.name});
+                    });
+                }
+            });
+        },
+
+        /**
+         * on changing language
+         */
         onChangeLanguage(languageId) {
             //Shopware.State.commit('context/setApiLanguageId', languageId);
             this.languageId = languageId;
         },
 
+        /**
+         * on changing language we change languageNameSpace
+         */
+        async updateLanguage() {
+            if (this.languageId === 'null') {
+                this.languageNameSpace = '';
+            } else {
+                var operator = this;
+                await this.languageRepository.search(this.defaultLanguageCriteria, Shopware.Context.api).then(languages => {
+                    if (languages.length > 0) {
+                        operator.languageNameSpace = languages[0].locale.code;
+                    }
+                });
+            }
+        },
+
+        /**
+         * onClick to open language selector
+         */
         openSelector(event) {
             var selector = event.target.closest('.elio-language-selector');
             if (!selector) {
@@ -123,6 +141,9 @@ Shopware.Component.override('sw-extension-config', {
             }
         },
 
+        /**
+         * onClick on chosen language in selector
+         */
         pickSelector(event) {
             var selector = event.target.closest('.elio-language-selector');
             if (!selector) {
