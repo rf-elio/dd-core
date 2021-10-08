@@ -57,6 +57,7 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         /**
+         *
          * remake this.$refs.systemConfig.config for new names with new languageNameSpace
          */
         updateActualConfigData() {
@@ -79,6 +80,7 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         /**
+         *
          * on saving configuration
          */
         onSave() {
@@ -94,6 +96,7 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         /**
+         *
          * loading languages to language selector
          */
         loadLanguages() {
@@ -108,6 +111,7 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         /**
+         *
          * on changing language
          */
         onChangeLanguage(languageId) {
@@ -116,6 +120,7 @@ Shopware.Component.override('sw-extension-config', {
         },
 
         /**
+         *
          * on changing language we change languageNameSpace
          */
         async updateLanguage() {

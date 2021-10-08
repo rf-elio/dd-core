@@ -14,8 +14,48 @@ Shopware.Component.register('elio-language-selector', {
         }
     },
 
+    created() {
+        this.createdComponent();
+    },
+
+    beforeDestroy() {
+        this.beforeDestroyedComponent();
+    },
+
     methods: {
+        createdComponent() {
+            this.addEventListeners();
+        },
+
+        beforeDestroyedComponent() {
+            this.removeEventListeners();
+        },
+
+        addEventListeners() {
+            document.addEventListener('click', this.checkOutsideClick);
+        },
+
+        removeEventListeners() {
+            document.removeEventListener('click', this.checkOutsideClick);
+        },
+
         /**
+         *
+         * @param event {Event}
+         */
+        checkOutsideClick(event) {
+            event.stopPropagation();
+
+            const selectorContentClicked = this.$refs.elioLanguageSelector.contains(event.target);
+            const componentClicked = this.$el.contains(event.target);
+
+            if (!(selectorContentClicked && componentClicked)) {
+                this.closeSelector();
+            }
+        },
+
+        /**
+         *
          * onClick to open language selector
          */
         openSelector(event) {
@@ -31,6 +71,7 @@ Shopware.Component.register('elio-language-selector', {
         },
 
         /**
+         *
          * onClick on chosen language in selector
          */
         pickSelector(event) {
@@ -51,6 +92,7 @@ Shopware.Component.register('elio-language-selector', {
         },
 
         /**
+         *
          * close language selector
          */
         closeSelector() {
