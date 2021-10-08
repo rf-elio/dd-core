@@ -117,11 +117,8 @@ Shopware.Component.register('elio-language-selector', {
          * @param newLanguageId - id of new selected language for language.id in languages
          */
         swapActiveLanguage(newLanguageId) {
-            console.log(newLanguageId);
-
             var operator = this;
             this.languages.forEach((language) => {
-                console.log(language);
                 if (language.id === operator.languageId) {
                     language.active = false;
                 }
