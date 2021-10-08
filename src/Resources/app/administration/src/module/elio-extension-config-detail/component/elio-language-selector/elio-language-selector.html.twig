@@ -9,7 +9,7 @@
         <div class="elio-language-selector__drop">
             <ul class="elio-language-selector__list elio-language-selector-scroll">
                 <li v-for="language in languages"
-                    class="elio-language-selector__list-item {% if (language.active) %}elio-language-selector__list-item--active{% endif %}"
+                    :class="['elio-language-selector__list-item', {'elio-language-selector__list-item--active': language.active}]"
                     @click.prevent="pickSelector">
                     <label class="elio-language-selector-check">
                         <span class="elio-language-selector-check__descr"

@@ -104,7 +104,7 @@ Shopware.Component.override('sw-extension-config', {
             this.languageRepository.search(new Criteria(), Shopware.Context.api).then(languages => {
                 if (languages.length > 0) {
                     languages.forEach((language) => {
-                        operator.languages.push({'id': language.id, 'value': language.name});
+                        operator.languages.push({'id': language.id, 'value': language.name, 'active': false});
                     });
                 }
             });

@@ -14,6 +14,12 @@ Shopware.Component.register('elio-language-selector', {
         }
     },
 
+    data() {
+        return {
+            languageId: 'null'
+        };
+    },
+
     created() {
         this.createdComponent();
     },
@@ -82,9 +88,9 @@ Shopware.Component.register('elio-language-selector', {
 
             var pickedSpan = event.target.closest('.elio-language-selector__list-item').querySelector('span');
             if (pickedSpan) {
+                this.swapActiveLanguage(pickedSpan.dataset.selectorValue);
                 this.languageId = pickedSpan.dataset.selectorValue;
                 pickedSpan.closest('.elio-language-selector__inner').querySelector('button').querySelector('span').innerText = pickedSpan.innerText
-
                 this.$emit('on-selected', this.languageId);
                 //this.$root.$emit('on-change-application-language', { languageId: this.languageId });
             }
@@ -103,6 +109,26 @@ Shopware.Component.register('elio-language-selector', {
             if (selector.classList.contains('elio-language-selector--opened')) {
                 selector.classList.remove('elio-language-selector--opened');
             }
+        },
+
+        /**
+         *
+         * swap language.active on selector picked language
+         * @param newLanguageId - id of new selected language for language.id in languages
+         */
+        swapActiveLanguage(newLanguageId) {
+            console.log(newLanguageId);
+
+            var operator = this;
+            this.languages.forEach((language) => {
+                console.log(language);
+                if (language.id === operator.languageId) {
+                    language.active = false;
+                }
+                if (language.id === newLanguageId) {
+                    language.active = true;
+                }
+            });
         }
     }
 });
