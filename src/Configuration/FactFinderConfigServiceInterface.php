@@ -64,4 +64,12 @@ interface FactFinderConfigServiceInterface
      * @return Credentials
      */
     public function getApiCredentials(string $salesChannelId): Credentials;
+
+    /**
+     * Sets languagePrefix by languageId
+     * to fetch plugin configuration based on language
+     *
+     * @param string $languageId
+     */
+    public function setLanguagePrefix(string $languageId);
 }

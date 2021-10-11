@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Configuration;
 
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
@@ -84,14 +85,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     {
         if(count($salesChannelContext->getLanguageIdChain()) > 0) {
             $languageId = $salesChannelContext->getLanguageIdChain()[0];
-            $criteria = new Criteria([$languageId]);
-            $criteria->addAssociation('locale');
-            $language = $this->languageRepository->search($criteria, $salesChannelContext->getContext())->first();
-
-            /** @var LanguageEntity $language */
-            if($language && $language->getLocale()) {
-                $this->languagePrefix = str_replace('-', '_', $language->getLocale()->getCode()) . '_';
-            }
+            $this->setLanguagePrefix($languageId);
         }
 
         return $this->get($salesChannelContext->getSalesChannelId());
@@ -190,5 +184,24 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $config['apiUsername'],
             $config['apiPassword'],
         );
+    }
+
+    /**
+     * Sets languagePrefix by languageId
+     * to fetch plugin configuration based on language
+     *
+     * @param string $languageId
+     */
+    public function setLanguagePrefix(string $languageId) {
+        $criteria = new Criteria([$languageId]);
+        $criteria->addAssociation('locale');
+        $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
+
+        /** @var LanguageEntity $language */
+        if($language && $language->getLocale()) {
+            $this->languagePrefix = str_replace('-', '_', $language->getLocale()->getCode()) . '_';
+        } else {
+            $this->languagePrefix = "";
+        }
     }
 }
