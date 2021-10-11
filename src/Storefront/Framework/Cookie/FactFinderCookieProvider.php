@@ -86,7 +86,7 @@ class FactFinderCookieProvider implements CookieProviderInterface
         $masterRequest = $this->requestStack->getMainRequest();
         if($masterRequest !== null){
             $salesChannelContext = $masterRequest->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-            $config = $this->configService->get($salesChannelContext->getSalesChannel()->getId());
+            $config = $this->configService->getByContext($salesChannelContext);
             if($config->isTrackRequireConsent()) {
                 foreach ($cookieGroups as &$cookieGroup) {
                     if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
