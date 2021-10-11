@@ -53,8 +53,8 @@ class ApiClientFactory implements ApiClientFactoryInterface
     public function createCampaignApi(SalesChannelContext $salesChannelContext): CampaignApi
     {
         return new CampaignApi(
-            $this->createClient($salesChannelContext->getSalesChannelId()),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId())
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 
@@ -67,8 +67,8 @@ class ApiClientFactory implements ApiClientFactoryInterface
     public function createImportApi(SalesChannelContext $salesChannelContext): ImportApi
     {
         return new ImportApi(
-            $this->createClient($salesChannelContext->getSalesChannelId()),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId())
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 
@@ -81,8 +81,8 @@ class ApiClientFactory implements ApiClientFactoryInterface
     public function createManagementApi(SalesChannelContext $salesChannelContext): ManagementApi
     {
         return new ManagementApi(
-            $this->createClient($salesChannelContext->getSalesChannelId()),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId())
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 
@@ -95,8 +95,8 @@ class ApiClientFactory implements ApiClientFactoryInterface
     public function createPredictiveBasketApi(SalesChannelContext $salesChannelContext): PredbasketApi
     {
         return new PredbasketApi(
-            $this->createClient($salesChannelContext->getSalesChannelId()),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId())
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 
@@ -123,8 +123,8 @@ class ApiClientFactory implements ApiClientFactoryInterface
     public function createSearchApi(SalesChannelContext $salesChannelContext): SearchApi
     {
         return new SearchApi(
-            $this->createClient($salesChannelContext->getSalesChannelId()),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId())
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 
@@ -146,11 +146,16 @@ class ApiClientFactory implements ApiClientFactoryInterface
      * Creates the api client wit the configured settings
      *
      * @param string $salesChannelId
+     * @param SalesChannelContext|null $salesChannelContext
      * @return ClientInterface
      */
-    protected function createClient(string $salesChannelId) : ClientInterface
+    protected function createClient(string $salesChannelId, SalesChannelContext $salesChannelContext = null) : ClientInterface
     {
-        $configuration = $this->configService->get($salesChannelId);
+        if ($salesChannelContext === null) {
+            $configuration = $this->configService->get($salesChannelId);
+        } else {
+            $configuration = $this->configService->getByContext($salesChannelContext);
+        }
         return new Client([
             'max' => $configuration->getApiTimeout()
         ]);
@@ -160,12 +165,17 @@ class ApiClientFactory implements ApiClientFactoryInterface
      * Creates the configuration struct that contains the api address and credentials
      *
      * @param string $salesChannelId
+     * @param SalesChannelContext|null $salesChannelContext
      * @return Configuration
      */
-    protected function createConfiguration(string $salesChannelId) : Configuration
+    protected function createConfiguration(string $salesChannelId, SalesChannelContext $salesChannelContext = null) : Configuration
     {
         $credentials = $this->configService->getApiCredentials($salesChannelId);
-        $configuration = $this->configService->get($salesChannelId);
+        if ($salesChannelContext === null) {
+            $configuration = $this->configService->get($salesChannelId);
+        } else {
+            $configuration = $this->configService->getByContext($salesChannelContext);
+        }
 
         $apiConfiguration = new Configuration();
         $apiConfiguration->setHost($credentials->getApiUrl());
