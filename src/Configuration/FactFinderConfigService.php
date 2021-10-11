@@ -99,8 +99,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      */
     public function get(string $salesChannelId): Configuration
     {
-        if (isset($this->loadedConfigurations[$salesChannelId])) {
-            return $this->loadedConfigurations[$salesChannelId];
+        if (isset($this->loadedConfigurations[$salesChannelId][$this->languagePrefix])) {
+            return $this->loadedConfigurations[$salesChannelId][$this->languagePrefix];
         }
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
@@ -131,7 +131,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
         $this->eventDispatcher->dispatch($event);
-        $this->loadedConfigurations[$salesChannelId] = $event->getConfiguration();
+        $this->loadedConfigurations[$salesChannelId][$this->languagePrefix] = $event->getConfiguration();
         return $event->getConfiguration();
     }
 
