@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Configuration;
 
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+
 /**
  * Interface FactFinderConfigServiceInterface
  * @package Elio\FactFinder\Configuration
@@ -45,6 +47,14 @@ interface FactFinderConfigServiceInterface
      * @return Configuration
      */
     public function get(string $salesChannelId) : Configuration;
+
+    /**
+     * Fetches the ff plugin configuration for the given SalesChannelContext
+     *
+     * @param SalesChannelContext $salesChannelContext
+     * @return Configuration
+     */
+    public function getByContext(SalesChannelContext $salesChannelContext): Configuration;
 
     /**
      * Provides the api credentials. If the api credentials cannot be stored in the plugin settings according to some

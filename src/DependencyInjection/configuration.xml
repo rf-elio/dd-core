@@ -7,6 +7,7 @@
         <service id="Elio\FactFinder\Configuration\FactFinderConfigService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="language.repository"/>
         </service>
     </services>
 </container>

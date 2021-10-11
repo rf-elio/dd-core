@@ -34,6 +34,10 @@ namespace Elio\FactFinder\Configuration;
 
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use function _PHPStan_68495e8a9\RingCentral\Psr7\parse_query;
@@ -52,17 +56,45 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
+    private string $languagePrefix = "";
+    private EntityRepositoryInterface $languageRepository;
 
     /**
      * @param SystemConfigService $systemConfigService
      * @param EventDispatcherInterface $eventDispatcher
+     * @param EntityRepositoryInterface $languageRepository
      */
     public function __construct(
         SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        EntityRepositoryInterface $languageRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;
+        $this->languageRepository = $languageRepository;
+    }
+
+    /**
+     * Fetches the ff plugin configuration for the given SalesChannelContext
+     *
+     * @param SalesChannelContext $salesChannelContext
+     * @return Configuration
+     */
+    public function getByContext(SalesChannelContext $salesChannelContext): Configuration
+    {
+        if(count($salesChannelContext->getLanguageIdChain()) > 0) {
+            $languageId = $salesChannelContext->getLanguageIdChain()[0];
+            $criteria = new Criteria([$languageId]);
+            $criteria->addAssociation('locale');
+            $language = $this->languageRepository->search($criteria, $salesChannelContext->getContext())->first();
+
+            /** @var LanguageEntity $language */
+            if($language && $language->getLocale()) {
+                $this->languagePrefix = str_replace('-', '_', $language->getLocale()->getCode()) . '_';
+            }
+        }
+
+        return $this->get($salesChannelContext->getSalesChannelId());
     }
 
     /**
@@ -77,32 +109,30 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             return $this->loadedConfigurations[$salesChannelId];
         }
 
-        $languagePrefix = 'en_GB_';
-
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         parse_str(
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'additionalRequestParameters') ?? '',
+            $this->getConfigWLangPrefix($config, 'additionalRequestParameters') ?? '',
             $additionalRequestParameters
         );
         $configuration = new Configuration(
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'active'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'apiChannel'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'apiTimeout'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'useAso'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'apiDebugActive'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'searchUseFactFinder'),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackRequireConsent')),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCart')),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackCheckout')),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackLogin')),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'trackProductView')),
-            !empty($this->getConfigWLangPrefix($config, $languagePrefix, 'listingUseFactFinder')),
+            $this->getConfigWLangPrefix($config, 'active'),
+            $this->getConfigWLangPrefix($config, 'apiChannel'),
+            $this->getConfigWLangPrefix($config, 'apiTimeout'),
+            $this->getConfigWLangPrefix($config, 'useAso'),
+            $this->getConfigWLangPrefix($config, 'apiDebugActive'),
+            $this->getConfigWLangPrefix($config, 'searchUseFactFinder'),
+            !empty($this->getConfigWLangPrefix($config, 'trackRequireConsent')),
+            !empty($this->getConfigWLangPrefix($config, 'trackCart')),
+            !empty($this->getConfigWLangPrefix($config, 'trackCheckout')),
+            !empty($this->getConfigWLangPrefix($config, 'trackLogin')),
+            !empty($this->getConfigWLangPrefix($config, 'trackProductView')),
+            !empty($this->getConfigWLangPrefix($config, 'listingUseFactFinder')),
             $additionalRequestParameters,
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'botProtectionActive'),
-            $this->getConfigWLangPrefix($config, $languagePrefix, 'botProtectionUseBadBotList'),
-            $this->prepareValueList($config, $languagePrefix, 'botProtectionSearchTermFilter'),
-            $this->prepareValueList($config, $languagePrefix, 'botProtectionUserAgentFilter'),
-            $this->prepareValueList($config, $languagePrefix, 'botProtectionIpFilter')
+            $this->getConfigWLangPrefix($config, 'botProtectionActive'),
+            $this->getConfigWLangPrefix($config, 'botProtectionUseBadBotList'),
+            $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
+            $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
+            $this->prepareValueList($config, 'botProtectionIpFilter')
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
@@ -115,15 +145,14 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * Prepares a pipe separated values list
      *
      * @param array $config
-     * @param string $languagePrefix
      * @param $value
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, string $languagePrefix, $value)
+    protected function prepareValueList(array $config, $value)
     {
-        $valueList = key_exists($languagePrefix . $value, $config) ? explode(
+        $valueList = key_exists($this->languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
-            $config[$languagePrefix . $value] ?? ''
+            $config[$this->languagePrefix . $value] ?? ''
         ) : explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
         return array_filter($valueList);
     }
@@ -131,14 +160,13 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     /**
      * Returns plugin config for specified key with languagePrefix or default
      * @param array $config
-     * @param string $languagePrefix
      * @param string $key
      * @return mixed|string
      */
-    private function getConfigWLangPrefix(array $config, string $languagePrefix, string $key)
+    private function getConfigWLangPrefix(array $config, string $key)
     {
-        if (key_exists($languagePrefix . $key, $config)) {
-            return $config[$languagePrefix . $key];
+        if (key_exists($this->languagePrefix . $key, $config)) {
+            return $config[$this->languagePrefix . $key];
         } else {
             if (key_exists($key, $config)) {
                 return $config[$key];
