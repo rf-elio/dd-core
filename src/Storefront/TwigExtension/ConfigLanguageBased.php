@@ -80,12 +80,11 @@ class ConfigLanguageBased extends AbstractExtension
      *
      * @param array $context
      * @param string $key
-     * @param string $languageId
      * @return array|bool|float|int|string|null
      */
-    public function configByLanguage(array $context, string $key, string $languageId)
+    public function configByLanguage(array $context, string $key)
     {
-        $languagePrefix = $this->getLanguagePrefix($languageId);
+        $languagePrefix = $this->getLanguagePrefix($this->getLanguageId($context));
         $salesChannelId = $this->getSalesChannelId($context);
 
         $parts = explode('.', $key);
@@ -100,6 +99,25 @@ class ConfigLanguageBased extends AbstractExtension
         }
 
         return $config;
+    }
+
+    /**
+     * @param array $context
+     * @return string|null
+     */
+    private function getLanguageId(array $context): ?string
+    {
+        if (isset($context['context'])) {
+            $salesChannelContext = $context['context'];
+            if ($salesChannelContext instanceof SalesChannelContext) {
+                if ($salesChannelContext->getLanguageIdChain()) {
+                    if (count($salesChannelContext->getLanguageIdChain()) > 0) {
+                        return $salesChannelContext->getLanguageIdChain()[0];
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -126,11 +144,14 @@ class ConfigLanguageBased extends AbstractExtension
 
     /**
      * get LanguagePrefix by LanguageId
-     * @param string $languageId
+     * @param string|null $languageId
      * @return string
      */
-    public function getLanguagePrefix(string $languageId): string
+    private function getLanguagePrefix(?string $languageId): string
     {
+        if ($languageId === null) {
+            return '';
+        }
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
