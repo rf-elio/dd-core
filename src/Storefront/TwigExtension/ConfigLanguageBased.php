@@ -158,7 +158,7 @@ class ConfigLanguageBased extends AbstractExtension
 
         /** @var LanguageEntity $language */
         if ($language && $language->getLocale()) {
-            return str_replace('-', '_', $language->getLocale()->getCode()) . '_';
+            return $language->getLocale()->getCode() . '_';
         } else {
             return '';
         }

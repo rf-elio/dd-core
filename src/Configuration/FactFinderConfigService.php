@@ -199,7 +199,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
 
         /** @var LanguageEntity $language */
         if($language && $language->getLocale()) {
-            $this->languagePrefix = str_replace('-', '_', $language->getLocale()->getCode()) . '_';
+            $this->languagePrefix = $language->getLocale()->getCode() . '_';
         } else {
             $this->languagePrefix = "";
         }
