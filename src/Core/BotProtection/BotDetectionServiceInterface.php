@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\BotProtection;
 
 
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -48,9 +49,9 @@ interface BotDetectionServiceInterface
     /**
      * Checks the given request for a possible blocked bot
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      * @param Request $request
      * @return bool
      */
-    public function detect(string $salesChannelId, Request $request): bool;
+    public function detect(SalesChannelContext $salesChannelContext, Request $request): bool;
 }

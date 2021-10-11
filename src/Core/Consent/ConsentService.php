@@ -62,11 +62,17 @@ class ConsentService
 
     /**
      * @param string $salesChannelId
+     * @param SalesChannelContext|null $salesChannelContext
      * @return bool
      */
     public function isTrackingAllowed(string $salesChannelId, ?SalesChannelContext $salesChannelContext = null) : bool
     {
-        $config = $this->configService->get($salesChannelId);
+        if ($salesChannelContext === null) {
+            $config = $this->configService->get($salesChannelId);
+        } else {
+            $config = $this->configService->getByContext($salesChannelContext);
+        }
+
         // if no consent is required -> tracking can always be active
         if(!$this->isTrackingConsentRequired($config)) {
             return true;

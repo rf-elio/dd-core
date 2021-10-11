@@ -92,7 +92,7 @@ class TrackLoginSubscriber implements EventSubscriberInterface
         $customer = $event->getCustomer();
         $salesChannelId = $event->getSalesChannelId();
         $salesChannelContext = $event->getSalesChannelContext();
-        $config = $this->configService->get($salesChannelId);
+        $config = $this->configService->getByContext($event->getSalesChannelContext());
 
         if(
             !$config->isActive() ||
