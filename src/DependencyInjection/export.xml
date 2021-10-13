@@ -30,6 +30,20 @@
         <service id="Elio\FactFinder\Core\Export\Generator\SuggestExportGenerator">
             <tag name="elio-ff.export.generator"/>
         </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\CategoryExportGenerator">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="router"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\CategoryLinkExportGenerator">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="router"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\CMSExportGenerator">
+            <argument type="service" id="cms_page.repository" />
+            <tag name="elio-ff.export.generator" />
+        </service>
 
         <!-- writers -->
         <service id="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
