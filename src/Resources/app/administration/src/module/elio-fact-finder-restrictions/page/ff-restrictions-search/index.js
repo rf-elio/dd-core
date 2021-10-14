@@ -1,8 +1,5 @@
 import template from './ff-restrictions-search.html.twig';
 
-const { Component, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
-
 Shopware.Component.register('ff-restrictions-search', {
     template: template,
 

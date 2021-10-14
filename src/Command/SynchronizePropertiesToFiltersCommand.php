@@ -72,7 +72,14 @@ class SynchronizePropertiesToFiltersCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * Starts the sync process that updates the filter list by the shopware properties
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $propertyId = $input->getArgument('propertyId');
         $context = Context::createDefaultContext();
