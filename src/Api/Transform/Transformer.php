@@ -33,8 +33,8 @@
 namespace Elio\FactFinder\Api\Transform;
 
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Elio\FactFinder\Api\Transform\Event\TransformResponseEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -75,23 +75,22 @@ class Transformer
     }
 
     /**
+     * Transforms the ff response to an response that is supported by shopware
+     *
      * @param ModelInterface $model
      * @param SalesChannelContext $context
-     * @param NavigationRequest|null $navigationRequest
+     * @param ApiRequest $request
      * @return ResponseCollection
      * @throws Throwable
      */
-    public function transformResponse(ModelInterface $model, SalesChannelContext $context, NavigationRequest $navigationRequest = null) : ResponseCollection
+    public function transformResponse(ModelInterface $model, SalesChannelContext $context, ApiRequest $request) : ResponseCollection
     {
         $collection = new ResponseCollection();
 
         foreach ($this->responseTransformer as $responseTransformer) {
             try {
                 if ($responseTransformer->supports($model, $context)) {
-                    if(in_array(NavigationRequestTrait::class, class_uses($responseTransformer))) {
-                        $responseTransformer->setNavigationRequest($navigationRequest);
-                    }
-                    $responseTransformer->transform($model, $collection, $context);
+                    $responseTransformer->transform($model, $collection, $context, $request);
                 }
             }
             catch (Throwable $ex) {

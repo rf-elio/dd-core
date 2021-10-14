@@ -125,11 +125,8 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $navigationRequest = $this->searchRequestBuilder->build(
             $request, $criteria, $context, new NavigationRequest($config->getApiChannel())
         );
-        $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
-        $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
-        $path = implode('/', array_values($path));
-        $navigationRequest->setCategoryPath($path);
-        $navigationRequest->setCategoryId($categoryId);
+        $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
+
         $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
         /** @var ProductListingResponse|null $productListingResponse */
         $productListingResponse = $resultCollection->get(ProductListingResponse::class);
@@ -143,5 +140,21 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         );
         $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
         return new ProductListingRouteResponse($shopwareProductListingResult);
+    }
+
+    /**
+     * Adds the path to the current category and the id to the ff api request to filter for that category.
+     *
+     * @param NavigationRequest $navigationRequest
+     * @param string $categoryId
+     * @param SalesChannelContext $context
+     */
+    protected function addCurrentCategoryToNavigationRequest(NavigationRequest $navigationRequest, string $categoryId, SalesChannelContext $context): void
+    {
+        $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
+        $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
+        $path = implode('/', array_values($path));
+        $navigationRequest->setCategoryPath($path);
+        $navigationRequest->setCategoryId($categoryId);
     }
 }
