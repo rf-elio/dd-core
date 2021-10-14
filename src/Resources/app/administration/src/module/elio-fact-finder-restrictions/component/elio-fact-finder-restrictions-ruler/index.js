@@ -1,7 +1,6 @@
 import template from './elio-fact-finder-restriction-ruler.html.twig';
 import './elio-fact-finder-restriction-ruller.scss';
 
-const {Component, Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 
 Shopware.Component.register('ff-restriction-ruler', {

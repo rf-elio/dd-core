@@ -15,7 +15,7 @@
       }
     },
     "restrictions": {
-      "title": "FACTFinderRestrictions",
+      "title": "Filter Einschränkungen",
       "description": "",
       "tabs": {
         "global": "Global",

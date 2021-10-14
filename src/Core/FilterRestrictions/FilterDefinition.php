@@ -47,8 +47,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterEntity;
-use Elio\FactFinder\Core\FilterRestrictions\FilterCollection;
 
 /**
  * Class FilterDefinition

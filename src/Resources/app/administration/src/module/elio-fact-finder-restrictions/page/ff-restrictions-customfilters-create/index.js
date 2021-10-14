@@ -1,8 +1,5 @@
 import template from './ff-restrictions-customfilters-create.html.twig';
 
-const { Component, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
-
 Shopware.Component.extend('ff-restrictions-customfilters-create', 'ff-restrictions-customfilters-detail', {
     template: template,
 
