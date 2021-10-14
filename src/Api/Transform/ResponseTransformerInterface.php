@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Api\Transform;
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
@@ -57,6 +58,7 @@ interface ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context) : void;
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request) : void;
 }

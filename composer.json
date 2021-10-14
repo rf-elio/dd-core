@@ -10,6 +10,7 @@
     ],
     "require": {
         "php": ">= 7.4",
+        "ext-json": "*",
         "elio/fact-finder-api-client": "dev-master",
         "mtdowling/cron-expression": "^1.2"
     },

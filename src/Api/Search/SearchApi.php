@@ -90,10 +90,12 @@ class SearchApi
             'customParameters' => $this->getCustomParameters($searchRequest),
             'filters' => $this->getFilters($searchRequest)
         ]]));
-        return $this->transformer->transformResponse($result, $context);
+        return $this->transformer->transformResponse($result, $context, $searchRequest);
     }
 
     /**
+     * Executes the ff navigation request
+     *
      * @param NavigationRequest $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection

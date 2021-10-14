@@ -33,10 +33,10 @@
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Transform\NavigationRequestTrait;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
@@ -65,8 +65,6 @@ use Elio\FactFinder\Core\FilterRestrictions\FilterService;
  */
 class FacetTransformer implements ResponseTransformerInterface
 {
-    use NavigationRequestTrait;
-
     private FilterService $filterService;
 
     /**
@@ -92,15 +90,21 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
     {
         if(!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $allowedFilters = $this->filterService->getAllowedFilters($context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $this->getNavigationRequest()->getCategoryId());
         $allowedFiltersNames = [];
+        $allowedFilters = [];
+        if($request instanceof NavigationRequest) {
+            $allowedFilters = $this->filterService->getAllowedFilters(
+                $context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $request->getCategoryId()
+            );
+        }
 
         foreach ($allowedFilters as $filter) {
             if ($filter['isAllowed']) {
@@ -118,7 +122,7 @@ class FacetTransformer implements ResponseTransformerInterface
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
-            if (!in_array($facet->getName(), $allowedFiltersNames)) {
+            if (!in_array($facet->getName(), $allowedFiltersNames, true)) {
                 continue;
             }
             $style = $facet->getFilterStyle();
