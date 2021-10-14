@@ -55,6 +55,7 @@ class CategoryExportGenerator implements ExportGeneratorInterface
 {
     public const CATEGORY_TYPE = 'page';
     public const TYPE = 'category';
+    protected const SLOT_CONFIG_MAX_LENGTH = 255;
     private EntityRepositoryInterface $categoryRepository;
     private RouterInterface $router;
 
@@ -99,7 +100,11 @@ class CategoryExportGenerator implements ExportGeneratorInterface
             // @todo: rewrite url
             $item->set(
                 'LinkURL',
-                $this->router->generate('frontend.navigation.page', ['navigationId' => $category->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+                $this->router->generate(
+                    'frontend.navigation.page',
+                    ['navigationId' => $category->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
             );
 
             $output->write($item);
@@ -115,6 +120,10 @@ class CategoryExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
+        //$criteria->addAssociation('cmsPage.sections');
+        //$criteria->addAssociation('cmsPage.sections.blocks');
+        //$criteria->addAssociation('cmsPage.sections.blocks.slots');
+        $criteria->addAssociation('cmsPage.sections.blocks.slots.translations');
 
         $criteria->addFilter(new EqualsFilter('category.visible', true));
         $criteria->addFilter(new EqualsFilter('category.active', true));
@@ -130,11 +139,49 @@ class CategoryExportGenerator implements ExportGeneratorInterface
      */
     public function setExportItem(ExportItem $item, CategoryEntity $category, SalesChannelContext $context): ExportItem
     {
+        $slotConfig = '';
+
+        if ($category->getTranslated()['slotConfig']) {
+            if (gettype($category->getTranslated()['slotConfig']) == 'array') {
+                foreach ($category->getTranslated()['slotConfig'] as $slotConfigBlock) {
+                    if (key_exists('content', $slotConfigBlock)) {
+                        if (key_exists('value', $slotConfigBlock['content'])) {
+                            $slotConfig = $slotConfigBlock['content']['value'] ?? '';
+                            continue;
+                        }
+                    }
+                }
+            } else {
+                if (gettype($category->getTranslated()['slotConfig']) == 'string') {
+                    $slotConfig = $category->getTranslated()['slotConfig'] ?? '';
+                }
+            }
+        } else {
+            foreach ($category->getCmsPage()->getSections()->getBlocks()->getSlots() as $slot) {
+                if ($slot->getType() === 'text') {
+                    if (key_exists('config', $slot->getTranslated())) {
+                        if (key_exists('content', $slot->getTranslated()['config'])) {
+                            if (key_exists('value', $slot->getTranslated()['config']['content'])) {
+                                $slotConfig .= $slot->getTranslated()['config']['content']['value'];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $slotConfig = (strlen($slotConfig) > static::SLOT_CONFIG_MAX_LENGTH) ? substr(
+                $slotConfig,
+                0,
+                static::SLOT_CONFIG_MAX_LENGTH - 3
+            ) . '...' : $slotConfig;
+
         $item->set('CategoryID', $category->getId());
         $item->set('Name', $this->cleanValue($category->getName()));
         $item->set('Description', $this->cleanValue($category->getDescription()));
         $item->set('Path', $this->cleanValue($category->getPath()));
         $item->set('Keywords', $this->cleanValue($category->getKeywords()));
+        $item->set('PageContent', $this->cleanValue($slotConfig));
         return $item;
     }
 
