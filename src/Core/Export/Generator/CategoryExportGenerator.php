@@ -95,7 +95,7 @@ class CategoryExportGenerator implements ExportGeneratorInterface
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         // @todo: don't fetch all categories (memory) use some pagination stuff
-        $categories = $this->categoryRepository->search($this->getCriteria(), $context->getContext());
+        $categories = $this->categoryRepository->search($this->getCriteria($context), $context->getContext());
 
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
@@ -117,11 +117,12 @@ class CategoryExportGenerator implements ExportGeneratorInterface
     }
 
     /**
+     * @param SalesChannelContext $context
      * @return Criteria
      */
-    public function getCriteria(): Criteria
+    public function getCriteria(SalesChannelContext $context): Criteria
     {
-        $ids = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX.'categoriesToExport');
+        $ids = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX.'categoriesToExport', $context->getSalesChannelId());
         $criteria = new Criteria($ids);
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');

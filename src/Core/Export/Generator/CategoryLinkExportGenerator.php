@@ -36,6 +36,7 @@ use Elio\FactFinder\Core\Export\ExportItem;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -55,10 +56,11 @@ class CategoryLinkExportGenerator extends CategoryExportGenerator implements Exp
      * CategoryLinkExportGenerator constructor.
      * @param EntityRepositoryInterface $categoryRepository
      * @param RouterInterface $router
+     * @param SystemConfigService $systemConfigService
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router)
+    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router, SystemConfigService $systemConfigService)
     {
-        parent::__construct($categoryRepository, $router);
+        parent::__construct($categoryRepository, $router, $systemConfigService);
     }
 
     /**
@@ -75,7 +77,6 @@ class CategoryLinkExportGenerator extends CategoryExportGenerator implements Exp
         $item->set('Path', $this->cleanValue($category->getPath()));
         $item->set('Keywords', $this->cleanValue($category->getKeywords()));
         $item->set('LanguageId', $context->getLanguageIdChain()[0]);
-
         $item->set('LinkType', $this->cleanValue($category->getLinkType()));
         // $item->set('Link', $this->cleanValue($category->getInternalLink() ?? $category->getExternalLink() ));
 
