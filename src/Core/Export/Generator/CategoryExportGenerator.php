@@ -40,6 +40,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -56,8 +57,10 @@ class CategoryExportGenerator implements ExportGeneratorInterface
     public const CATEGORY_TYPE = 'page';
     public const TYPE = 'category';
     protected const SLOT_CONFIG_MAX_LENGTH = 255;
+    public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
     private EntityRepositoryInterface $categoryRepository;
     private RouterInterface $router;
+    private SystemConfigService $systemConfigService;
 
     /**
      * Checks if the generator can be used for the given export
@@ -73,11 +76,13 @@ class CategoryExportGenerator implements ExportGeneratorInterface
      * CategoryExportGenerator constructor.
      * @param EntityRepositoryInterface $categoryRepository
      * @param RouterInterface $router
+     * @param SystemConfigService $systemConfigService
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router)
+    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router, SystemConfigService $systemConfigService)
     {
         $this->categoryRepository = $categoryRepository;
         $this->router = $router;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -116,7 +121,8 @@ class CategoryExportGenerator implements ExportGeneratorInterface
      */
     public function getCriteria(): Criteria
     {
-        $criteria = new Criteria();
+        $ids = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX.'categoriesToExport');
+        $criteria = new Criteria($ids);
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
