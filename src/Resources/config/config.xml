@@ -119,6 +119,24 @@
         </input-field>
     </card>
     <card>
+        <title>Filter Restrictions</title>
+        <title lang="de-DE">Filter Restrictions</title>
+        <input-field type="bool">
+            <name>restrictionsParentCategories</name>
+            <label>Parent Categories giving impacts</label>
+            <label lang="de-DE">Übergeordnete Kategorien, die Auswirkungen haben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>restrictionsOverridingTopToDown</name>
+            <label>Restriction rules overriding from top to down</label>
+            <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
+        </input-field>
+    </card>
+    <card>
         <title>Recommendations</title>
         <title lang="de-DE">Recommendations</title>
         <input-field type="bool">
@@ -359,24 +377,6 @@
             <label lang="de-DE">API debugging aktiv</label>
             <defaultValue>false</defaultValue>
             <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
-        </input-field>
-    </card>
-    <card>
-        <title>Filter Restrictions</title>
-        <title lang="de-DE">Filter Restrictions</title>
-        <input-field type="bool">
-            <name>restrictionsParentCategories</name>
-            <label>Parent Categories giving impacts</label>
-            <label lang="de-DE">Übergeordnete Kategorien, die Auswirkungen haben</label>
-            <defaultValue>true</defaultValue>
-            <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
-        </input-field>
-        <input-field type="bool">
-            <name>restrictionsOverridingTopToDown</name>
-            <label>Restriction rules overriding from top to down</label>
-            <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
-            <defaultValue>true</defaultValue>
-            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
         </input-field>
     </card>
 </config>

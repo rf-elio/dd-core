@@ -85,9 +85,9 @@ class SynchronizePropertiesToFiltersCommand extends Command
         $context = Context::createDefaultContext();
         try {
             if ($propertyId) {
-                $this->syncOne( $context, $output, $propertyId);
+                $this->syncOne($context, $output, $propertyId);
             } else {
-                $this->syncAll( $context, $output);
+                $this->syncAll($context, $output);
             }
         } catch (Throwable $e) {
             return Command::FAILURE;
@@ -96,12 +96,25 @@ class SynchronizePropertiesToFiltersCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * Synchronizing property name to filter name by provided propertyId
+     *
+     * @param Context $context
+     * @param OutputInterface $output
+     * @param string $propertyId
+     */
     private function syncOne(Context $context, OutputInterface $output, string $propertyId)
     {
         $output->writeln(sprintf('<info>Sync property with id : "%s"</info>', $propertyId));
         $this->filterService->syncOne($context, $propertyId);
     }
 
+    /**
+     * Synchronizing properties name to filter names for all properties
+     *
+     * @param Context $context
+     * @param OutputInterface $output
+     */
     private function syncAll(Context $context, OutputInterface $output)
     {
         $output->writeln('<info>PropertyId is not defined, sync all...</info>');

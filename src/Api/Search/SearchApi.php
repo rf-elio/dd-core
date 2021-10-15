@@ -168,6 +168,12 @@ class SearchApi
         return $preparedFilters;
     }
 
+    /**
+     * Fetching filters from NavigationRequest
+     *
+     * @param NavigationRequest $navigationRequest
+     * @return array
+     */
     protected function getNavigationFilters(NavigationRequest $navigationRequest): array
     {
         $filters = $this->getFilters($navigationRequest);

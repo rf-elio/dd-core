@@ -85,10 +85,10 @@ Shopware.Component.register('ff-restrictions-customfilters', {
         getFiltersColumns() {
             return [{
                 property: 'propertyName',
-                label: 'propertyName',
+                label: 'Name',
                 routerLink: 'elio.factfinder.restrictions.customFiltersDetail',
                 inlineEdit: 'string',
-                allowResize: true,
+                allowResize: false,
                 primary: true
             }];
         }
