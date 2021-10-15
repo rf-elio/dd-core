@@ -65,6 +65,7 @@ class FilterRestrictionsEntity extends Entity
      */
     protected $salesChannelId;
     /**
+     * is it collection of filters for allowed or blocked column
      * @var bool
      */
     protected bool $isAllowed;

@@ -73,8 +73,7 @@ class FacetTransformer implements ResponseTransformerInterface
      */
     public function __construct(
         FilterService $filterService
-    )
-    {
+    ) {
         $this->filterService = $filterService;
     }
 
@@ -92,17 +91,23 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param SalesChannelContext $context
      * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
-    {
-        if(!$model instanceof Result) {
+    public function transform(
+        ModelInterface $model,
+        ResponseCollection $responseCollection,
+        SalesChannelContext $context,
+        ApiRequest $request
+    ): void {
+        if (!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
 
         $allowedFiltersNames = [];
         $allowedFilters = [];
-        if($request instanceof NavigationRequest) {
+        if ($request instanceof NavigationRequest) {
             $allowedFilters = $this->filterService->getAllowedFilters(
-                $context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $request->getCategoryId()
+                $context->getSalesChannelId(),
+                FilterService::LEVEL_CATEGORY,
+                $request
             );
         }
 
@@ -147,7 +152,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
-        foreach ($facetCollection->getAggregations() as $aggregation){
+        foreach ($facetCollection->getAggregations() as $aggregation) {
             $aggregationResultCollection->add($aggregation);
         }
     }
@@ -158,7 +163,7 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param Facet $facet
      * @return PropertyGroupEntity
      */
-    protected function transformDefault(Facet $facet) : PropertyGroupEntity
+    protected function transformDefault(Facet $facet): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
@@ -169,10 +174,13 @@ class FacetTransformer implements ResponseTransformerInterface
             $option->setUniqueIdentifier(Uuid::randomHex());
             $option->setName($elementLabel);
             $option->setTranslated(['name' => $elementLabel]);
-            $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(), $element->getText(),
-                $element->getTotalHits()
-            ));
+            $option->addExtension(
+                DefaultFacetExtension::KEY,
+                new DefaultFacetExtension(
+                    $facet->getName(), $element->getText(),
+                    $element->getTotalHits()
+                )
+            );
             $options->add($option);
         }
 
@@ -202,7 +210,7 @@ class FacetTransformer implements ResponseTransformerInterface
             $maxValue = $element->getAbsoluteMaxValue();
         }
 
-        if(!$minValue || !$maxValue) {
+        if (!$minValue || !$maxValue) {
             return null;
         }
 

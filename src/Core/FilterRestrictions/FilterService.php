@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Api\Request\ApiRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -56,13 +58,13 @@ use Throwable;
  */
 class FilterService
 {
-    public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
+    private const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
 
     public const LEVEL_GLOBAL = 1;
     public const LEVEL_SEARCH = 2;
     public const LEVEL_NAVIGATION = 3;
     public const LEVEL_CATEGORY = 10;
-    const MAX_DEEP_CATEGORY = 20;
+    private const MAX_DEEP_CATEGORY = 20;
 
     private EntityRepositoryInterface $propertyRepository;
     private EntityRepositoryInterface $filterRepository;
@@ -180,13 +182,13 @@ class FilterService
                 $this->filterRepository->update($dataToUpdate, $context);
             }
         } catch (Throwable $e) {
-            $this->logger->info(
+            $this->logger->error(
                 'Cannot update filters with this property ids',
                 ['$dataToUpdate' => $dataToUpdate]
             );
 
             throw new RuntimeException(
-                sprintf('Sync failed, look logs for more info')
+                'Sync failed, look logs for more info'
             );
         }
 
@@ -208,13 +210,13 @@ class FilterService
                 $this->filterRepository->delete($dataToDelete, $context);
             }
         } catch (Throwable $e) {
-            $this->logger->info(
+            $this->logger->error(
                 'Cannot delete filters with this property ids',
                 ['$dataToDelete' => $dataToDelete]
             );
 
             throw new RuntimeException(
-                sprintf('Sync failed, look logs for more info')
+                'Sync failed, look logs for more info'
             );
         }
 
@@ -235,13 +237,13 @@ class FilterService
                 $this->filterRepository->create($dataToCreate, $context);
             }
         } catch (Throwable $e) {
-            $this->logger->info(
+            $this->logger->error(
                 'Cannot create filters with this property ids and names',
                 ['$dataToCreate' => $dataToCreate]
             );
 
             throw new RuntimeException(
-                sprintf('Sync failed, look logs for more info')
+                'Sync failed, look logs for more info'
             );
         }
     }
@@ -253,10 +255,10 @@ class FilterService
      * @param string|null $categoryId
      * @return array
      */
-    public function getAllowedFilters(?string $salesChannelId, int $level, string $categoryId = null): array
+    public function getAllowedFilters(?string $salesChannelId, int $level, ApiRequest $request): array
     {
         $context = Context::createDefaultContext();
-
+        $categoryId = $request instanceof NavigationRequest ? $request->getCategoryId() : null;
         $filters = [];
 
         // Global Level
@@ -278,7 +280,7 @@ class FilterService
                 $restrictions,
                 !$this->configIsOverridingTopToDown
             );
-        } elseif ($level == self::LEVEL_CATEGORY) {
+        } elseif ($level == self::LEVEL_CATEGORY && $categoryId) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
@@ -291,12 +293,17 @@ class FilterService
                 $maxDeepLevel = 0;
                 /** @var CategoryEntity $category */
                 $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
-                while($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
-                    $categoriesTreeIds[] = $category->getId();
-                    $category = $this->categoryRepository->search(new Criteria([$category->getParentId()]), $context)->first();
-                    $maxDeepLevel++;
+                if ($category) {
+                    while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
+                        $categoriesTreeIds[] = $category->getId();
+                        $category = $this->categoryRepository->search(
+                            new Criteria([$category->getParentId()]),
+                            $context
+                        )->first();
+                        $maxDeepLevel++;
+                    }
+                    $categoriesTreeIds[] = $category->getId(); // most top category
                 }
-                $categoriesTreeIds[] = $category->getId(); // most top category
                 $categoriesTreeIds = array_reverse($categoriesTreeIds);
             } else {
                 $categoriesTreeIds[] = $categoryId;
