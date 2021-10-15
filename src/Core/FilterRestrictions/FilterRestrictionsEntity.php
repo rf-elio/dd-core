@@ -70,13 +70,14 @@ class FilterRestrictionsEntity extends Entity
      */
     protected bool $isAllowed;
     /**
-     * @var FilterCollection|null
-     */
-    protected $filters;
-    /**
+     * is all-option is checked or only selected (if false)
      * @var bool
      */
     protected bool $isAllChecked;
+    /**
+     * @var FilterCollection|null
+     */
+    protected $filters;
 
     /**
      * @return FilterCollection|null

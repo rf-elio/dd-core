@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -103,14 +104,17 @@ class FacetTransformer implements ResponseTransformerInterface
         }
 
         $allowedFiltersNames = [];
-        $allowedFilters = [];
+        $level = FilterService::LEVEL_GLOBAL;
         if ($request instanceof NavigationRequest) {
-            $allowedFilters = $this->filterService->getAllowedFilters(
-                $context->getSalesChannelId(),
-                FilterService::LEVEL_CATEGORY,
-                $request
-            );
+            $level = FilterService::LEVEL_CATEGORY;
+        } else if ($request instanceof SearchRequest) {
+            $level = FilterService::LEVEL_SEARCH;
         }
+        $allowedFilters = $this->filterService->getAllowedFilters(
+            $context->getSalesChannelId(),
+            $level,
+            $request
+        ) ?? [];
 
         foreach ($allowedFilters as $filter) {
             if ($filter['isAllowed']) {
