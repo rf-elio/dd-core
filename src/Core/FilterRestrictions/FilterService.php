@@ -252,7 +252,7 @@ class FilterService
      * Get all allowed filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
      * @param string|null $salesChannelId
      * @param int $level
-     * @param string|null $categoryId
+     * @param ApiRequest $request
      * @return array
      */
     public function getAllowedFilters(?string $salesChannelId, int $level, ApiRequest $request): array
