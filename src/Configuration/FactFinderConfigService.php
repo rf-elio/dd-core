@@ -98,6 +98,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
             $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
             $this->prepareValueList($config, 'botProtectionIpFilter'),
+            $config['restrictionsParentCategories'] ?? false,
+            $config['restrictionsOverridingTopToDown'] ?? false
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

@@ -85,11 +85,17 @@ Shopware.Component.register('ff-restriction-ruler', {
         },
 
         onDrop(dragData) {
-            if (dragData.target.classList.contains("ruler-tab-filter-list")) {
+            if (dragData.target.classList.contains("ruler-tab-filter-list") || dragData.target.classList.contains("filter")) {
                 dragData.preventDefault();
+
+                var realTarget = dragData.target;
+                if (dragData.target.classList.contains("filter")) {
+                    realTarget = dragData.target.closest('.ruler-tab-filter-list');
+                }
+
                 var operator = this;
                 var draggedId = this.currentDragItem.getAttribute("data-filter-id");
-                var targetColumnType = dragData.target.getAttribute("data-filter-column");
+                var targetColumnType = realTarget.getAttribute("data-filter-column");
                 var fromColumnType = this.currentDragItem.parentNode.getAttribute("data-filter-column");
 
                 this[fromColumnType + 'List'].forEach(function (item, i, arr) {

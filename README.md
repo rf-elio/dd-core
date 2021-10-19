@@ -1,5 +1,11 @@
 # sw6-ElioFactFinder
 
+# Installation
+## CRON task
+
+Commands:
+* `bin/console elio-ff:filters:sync`: synchronizing all filters to associated properties (Updating names for filters. Cleaning from old filters with deleted properties. Creating new filters for new properties).
+  * `propertyId` optional argument to sync only one property
 
 # Components
 ## Bot protection

@@ -32,9 +32,8 @@
 
 namespace Elio\FactFinder\Command;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterService;
+use Elio\FactFinder\Core\FilterRestrictions\FilterSyncService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,15 +50,16 @@ use Throwable;
  */
 class SynchronizePropertiesToFiltersCommand extends Command
 {
-    private FilterService $filterService;
+    private FilterSyncService $filterService;
 
     /**
      * SynchronizePropertiesToFiltersCommand constructor.
+     * @param FilterSyncService $filterSyncService
      */
-    public function __construct(FilterService $filterService)
+    public function __construct(FilterSyncService $filterSyncService)
     {
         parent::__construct();
-        $this->filterService = $filterService;
+        $this->filterService = $filterSyncService;
     }
 
     protected function configure(): void

@@ -63,6 +63,8 @@ class Configuration extends Struct
     private array $botProtectionSearchTermFilter;
     private array $botProtectionUserAgentFilter;
     private array $botProtectionIpFilter;
+    private bool $restrictionsParentCategories;
+    private bool $restrictionsOverridingTopToDown;
 
     /**
      * Configuration constructor.
@@ -100,7 +102,9 @@ class Configuration extends Struct
         bool $botProtectionUseBadBotList,
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
-        array $botProtectionIpFilter
+        array $botProtectionIpFilter,
+        bool $restrictionsParentCategories,
+        bool $restrictionsOverridingTopToDown
     )
     {
         $this->useAso = $useAso;
@@ -121,6 +125,8 @@ class Configuration extends Struct
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
         $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
         $this->botProtectionIpFilter = $botProtectionIpFilter;
+        $this->restrictionsParentCategories = $restrictionsParentCategories;
+        $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
     }
 
     /**
@@ -266,5 +272,37 @@ class Configuration extends Struct
     public function getBotProtectionIpFilter(): array
     {
         return $this->botProtectionIpFilter;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestrictionsParentCategories(): bool
+    {
+        return $this->restrictionsParentCategories;
+    }
+
+    /**
+     * @param bool $restrictionsParentCategories
+     */
+    public function setRestrictionsParentCategories(bool $restrictionsParentCategories): void
+    {
+        $this->restrictionsParentCategories = $restrictionsParentCategories;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestrictionsOverridingTopToDown(): bool
+    {
+        return $this->restrictionsOverridingTopToDown;
+    }
+
+    /**
+     * @param bool $restrictionsOverridingTopToDown
+     */
+    public function setRestrictionsOverridingTopToDown(bool $restrictionsOverridingTopToDown): void
+    {
+        $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
     }
 }
