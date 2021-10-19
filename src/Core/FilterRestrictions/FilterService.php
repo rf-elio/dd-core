@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -58,7 +59,6 @@ use Throwable;
  */
 class FilterService
 {
-    private const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
 
     public const LEVEL_GLOBAL = 1;
     public const LEVEL_SEARCH = 2;
@@ -66,186 +66,28 @@ class FilterService
     public const LEVEL_CATEGORY = 10;
     private const MAX_DEEP_CATEGORY = 20;
 
-    private EntityRepositoryInterface $propertyRepository;
     private EntityRepositoryInterface $filterRepository;
     private EntityRepositoryInterface $filterRestrictionsRepository;
     private EntityRepositoryInterface $categoryRepository;
-    private LoggerInterface $logger;
-    private SystemConfigService $systemConfigService;
-    /**
-     * @var bool|null
-     */
-    private $configParentCategories;
-    /**
-     * @var bool|null
-     */
-    private $configIsOverridingTopToDown;
+    private FactFinderConfigService $configService;
 
     /**
      * FilterService constructor.
-     * @param EntityRepositoryInterface $propertyRepository
      * @param EntityRepositoryInterface $filterRepository
      * @param EntityRepositoryInterface $filterRestrictionsRepository
      * @param EntityRepositoryInterface $categoryRepository
-     * @param SystemConfigService $systemConfigService
-     * @param LoggerInterface $logger
+     * @param FactFinderConfigService $configService
      */
     public function __construct(
-        EntityRepositoryInterface $propertyRepository,
         EntityRepositoryInterface $filterRepository,
         EntityRepositoryInterface $filterRestrictionsRepository,
         EntityRepositoryInterface $categoryRepository,
-        SystemConfigService $systemConfigService,
-        LoggerInterface $logger
+        FactFinderConfigService $configService
     ) {
-        $this->propertyRepository = $propertyRepository;
         $this->filterRepository = $filterRepository;
         $this->filterRestrictionsRepository = $filterRestrictionsRepository;
-        $this->systemConfigService = $systemConfigService;
-        $this->logger = $logger;
-
-        $this->configParentCategories = $this->systemConfigService->get(
-                self::PLUGIN_CONFIG_PREFIX . '.restrictionsParentCategories'
-            ) ?? true;
-        $this->configIsOverridingTopToDown = $this->systemConfigService->get(
-                self::PLUGIN_CONFIG_PREFIX . '.restrictionsOverridingTopToDown'
-            ) ?? true;
         $this->categoryRepository = $categoryRepository;
-    }
-
-    /**
-     * Sync filter from property for propertyId
-     * @param Context $context
-     * @param string $propertyId
-     */
-    public function syncOne(Context $context, string $propertyId)
-    {
-        /** @var PropertyGroupEntity $property */
-        $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
-
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('propertyId', $property->getId())
-        );
-        $filter = $this->filterRepository->search($criteria, $context);
-        if ($filter->getTotal() > 0) {
-            // updating
-            /** @var FilterEntity $filterEntity */
-            $filterEntity = $filter->first();
-            $this->filterRepository->update(
-                ['id' => $filterEntity->getId(), 'propertyName' => $property->getName()],
-                $context
-            );
-        } else {
-            // creating
-            $this->filterRepository->create(
-                ['propertyName' => $property->getName(), 'propertyId' => $property->getId(), 'isCustom' => false],
-                $context
-            );
-        }
-    }
-
-    /**
-     * Sync all properties to filters, sync propertyNames, creating new filters, deleting old filters
-     * @param Context $context
-     */
-    public function syncAll(Context $context)
-    {
-        /**
-         * Getting all properties
-         */
-        $properties = $this->propertyRepository->search(new Criteria(), $context);
-        $propertiesNames = [];
-        $propertiesNamesUpdated = [];
-        /** @var PropertyGroupEntity $property */
-        foreach ($properties as $property) {
-            $propertiesNames[$property->getId()] = $property->getName();
-        }
-
-        /**
-         * Updating properties names
-         */
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsAnyFilter('propertyId', array_keys($propertiesNames))
-        );
-        $filters = $this->filterRepository->search($criteria, $context);
-
-        $dataToUpdate = [];
-        /** @var FilterEntity $filter */
-        foreach ($filters as $filter) {
-            $dataToUpdate[] = ['id' => $filter->getId(), 'propertyName' => $propertiesNames[$filter->getPropertyId()]];
-            $propertiesNamesUpdated[$filter->getPropertyId()] = true;
-        }
-        try {
-            if (count($dataToUpdate) > 0) {
-                $this->filterRepository->update($dataToUpdate, $context);
-            }
-        } catch (Throwable $e) {
-            $this->logger->error(
-                'Cannot update filters with this property ids',
-                ['$dataToUpdate' => $dataToUpdate]
-            );
-
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
-            );
-        }
-
-        /**
-         * Deleting old filters
-         */
-        $criteriaToDelete = new Criteria();
-        $criteriaToDelete->addFilter(
-            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesNames))])
-
-        );
-        $filtersIdsToDelete = $this->filterRepository->searchIds($criteriaToDelete, $context)->getIds();
-        $dataToDelete = [];
-        foreach ($filtersIdsToDelete as $id) {
-            $dataToDelete[] = ['id' => $id];
-        }
-        try {
-            if (count($dataToDelete) > 0) {
-                $this->filterRepository->delete($dataToDelete, $context);
-            }
-        } catch (Throwable $e) {
-            $this->logger->error(
-                'Cannot delete filters with this property ids',
-                ['$dataToDelete' => $dataToDelete]
-            );
-
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
-            );
-        }
-
-        /**
-         * Creating filters for new properties
-         */
-        $propertyIdsToCreate = array_diff_key($propertiesNames, $propertiesNamesUpdated);
-        $dataToCreate = [];
-        foreach ($propertyIdsToCreate as $propertyId => $propertyName) {
-            $dataToCreate[] = [
-                'propertyName' => $propertyName,
-                'propertyId' => $propertyId,
-                'isCustom' => false
-            ];
-        }
-        try {
-            if (count($dataToCreate) > 0) {
-                $this->filterRepository->create($dataToCreate, $context);
-            }
-        } catch (Throwable $e) {
-            $this->logger->error(
-                'Cannot create filters with this property ids and names',
-                ['$dataToCreate' => $dataToCreate]
-            );
-
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
-            );
-        }
+        $this->configService = $configService;
     }
 
     /**
@@ -261,6 +103,10 @@ class FilterService
         $categoryId = $request instanceof NavigationRequest ? $request->getCategoryId() : null;
         $filters = [];
 
+        $config = $this->configService->get($salesChannelId);
+        $configParentCategories = $config->isRestrictionsParentCategories();
+        $configIsOverridingTopToDown = $config->isRestrictionsOverridingTopToDown();
+
         // Global Level
         $restrictions = $this->getRestrictions($salesChannelId, $context, 'global');
         $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
@@ -271,25 +117,25 @@ class FilterService
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
-                !$this->configIsOverridingTopToDown
+                !$configIsOverridingTopToDown
             );
         } elseif ($level == self::LEVEL_NAVIGATION) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
-                !$this->configIsOverridingTopToDown
+                !$configIsOverridingTopToDown
             );
         } elseif ($level == self::LEVEL_CATEGORY && $categoryId) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
-                !$this->configIsOverridingTopToDown
+                !$configIsOverridingTopToDown
             );
 
             $categoriesTreeIds = [];
-            if ($this->configParentCategories) {
+            if ($configParentCategories) {
                 $maxDeepLevel = 0;
                 /** @var CategoryEntity $category */
                 $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
@@ -314,7 +160,7 @@ class FilterService
                 $filters = $this->applyRestrictionsToFiltersArray(
                     $filters,
                     $restrictions,
-                    !$this->configIsOverridingTopToDown
+                    !$configIsOverridingTopToDown
                 );
             }
         }
@@ -480,103 +326,5 @@ class FilterService
             );
         }
         return $criteria;
-    }
-
-
-
-    /**
-     * below functions probably will be removed (not used anywhere)
-     */
-
-    /**
-     * Get info about filter by filterId, SalesChannelId and FilterService::LEVEL_% with optional CategoryId
-     * @param string $filterId
-     * @param string $salesChannelId
-     * @param int $level
-     * @param string|null $categoryId
-     * @return bool
-     */
-    public function getFilterInfo(string $filterId, string $salesChannelId, int $level, string $categoryId = null): bool
-    {
-        $context = Context::createDefaultContext();
-        $isFilterAllowed = false;
-
-        // Global Level
-        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'global');
-        $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-        [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
-        if ($isModified) {
-            $isFilterAllowed = $newFilterAllowed;
-        }
-
-        // Applying overriding restrictions
-        if ($level == self::LEVEL_SEARCH) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'search');
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-            [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
-            if ($isModified) {
-                $isFilterAllowed = $newFilterAllowed;
-            }
-        } elseif ($level == self::LEVEL_NAVIGATION) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'navigation');
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-            [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
-            if ($isModified) {
-                $isFilterAllowed = $newFilterAllowed;
-            }
-        } elseif ($level == self::LEVEL_CATEGORY) {
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, 'navigation');
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-            [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
-            if ($isModified) {
-                $isFilterAllowed = $newFilterAllowed;
-            }
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, '', $categoryId);
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-            [$newFilterAllowed, $isModified] = $this->applyFilterRestrictions($filterId, $restrictions);
-            if ($isModified) {
-                $isFilterAllowed = $newFilterAllowed;
-            }
-        }
-
-        return $isFilterAllowed;
-    }
-
-    /**
-     * Returns [ifFilterAllowed, isModified]
-     * by default ifFilterAllowed is false, and if this default was modified then isModified will be true
-     * @param string $filterId
-     * @param FilterRestrictionsCollection $restrictions
-     * @return array
-     */
-    private function applyFilterRestrictions(string $filterId, FilterRestrictionsCollection $restrictions): array
-    {
-        [$isFilterAllowed, $isModified] = [false, false];
-        foreach ($restrictions as $restriction) {
-            if ($restriction->isAllowed()) {
-                // filter in allowed column
-                if ($restriction->isAllChecked()) {
-                    $isFilterAllowed = true;
-                    $isModified = true;
-                } else {
-                    if (array_key_exists($filterId, $restriction->getFilters()->getIds())) {
-                        $isFilterAllowed = true;
-                        $isModified = true;
-                    }
-                }
-            } else {
-                // filter in blocked column
-                if ($restriction->isAllChecked()) {
-                    $isFilterAllowed = false;
-                    $isModified = true;
-                } else {
-                    if (array_key_exists($filterId, $restriction->getFilters()->getIds())) {
-                        $isFilterAllowed = false;
-                        $isModified = true;
-                    }
-                }
-            }
-        }
-        return [$isFilterAllowed, $isModified];
     }
 }
