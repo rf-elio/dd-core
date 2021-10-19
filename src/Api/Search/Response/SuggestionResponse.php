@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Api\Search\Response;
 
 use Elio\FactFinder\Api\Response\Response;
+use Elio\FactFinder\Core\Suggest\SuggestItem;
 
 /**
  * Class SuggestionResponse
@@ -47,7 +48,7 @@ class SuggestionResponse extends Response
     protected array $suggestions;
 
     /**
-     * @return array
+     * @return SuggestItem[]
      */
     public function getSuggestions(): array
     {
@@ -55,10 +56,25 @@ class SuggestionResponse extends Response
     }
 
     /**
-     * @param array $suggestions
+     * @param SuggestItem[] $suggestions
      */
     public function setSuggestions(array $suggestions): void
     {
         $this->suggestions = $suggestions;
+    }
+
+    /**
+     * Returns array [ '%type%' => SuggestItem[] ]
+     * @return array
+     */
+    public function getGrouped(): array {
+        $result = [];
+
+        /** @var SuggestItem $suggestion */
+        foreach ($this->suggestions as $suggestion) {
+            $result[$suggestion->getType()][] = $suggestion;
+        }
+
+        return $result;
     }
 }

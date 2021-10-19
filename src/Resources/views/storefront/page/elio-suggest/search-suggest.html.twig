@@ -1,19 +1,38 @@
 {% block elio_search_suggest %}
 <div class="search-suggest js-search-result">
     {% block elio_search_suggest_container %}
-{#        {{ dump(response) }}#}
-        {% for suggestion in response.suggestions %}
-            <ul>
-                <li>Name: {{ suggestion.name }}</li>
-                <li>Type: {{ suggestion.type }}</li>
-                {% if suggestion.attributes.ProductID %}
-                    <li>ProductID: {{ suggestion.attributes.ProductID }}</li>
-                {% endif %}
-                {% if suggestion.attributes.ProductURL %}
-                    <li>ProductURL: {{ suggestion.attributes.ProductURL }}</li>
-                {% endif %}
-            </ul>
+        {% for type, suggestionType in response %}
+            <div class="elio-suggest-block-{{ type }}">
+                {% for suggestion in suggestionType %}
+                    {% block elio_search_suggest_container_item %}
+                        <div>
+                            <ul>
+                                <li>Name: {{ suggestion.name }}</li>
+                                <li>Type: {{ suggestion.type }}</li>
+                                {% if suggestion.imgUrl %}
+                                    <li>ImageURL: {{ suggestion.imgUrl }}</li>
+                                {% endif %}
 
+                                {% if type == 'productName' %}
+                                    {% if suggestion.attributes.ProductID %}
+                                        <li>ProductID: {{ suggestion.attributes.ProductID }}</li>
+                                    {% endif %}
+                                    {% if suggestion.attributes.ProductURL %}
+                                        <li>ProductURL: {{ suggestion.attributes.ProductURL }}</li>
+                                    {% endif %}
+                                {% elseif type == 'category' %}
+                                    {% if suggestion.attributes.Description %}
+                                        <li>Description: {{ suggestion.attributes.Description }}</li>
+                                    {% endif %}
+                                    {% if suggestion.attributes.Path %}
+                                        <li>Category Path: {{ suggestion.attributes.Path }}</li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endblock %}
+                {% endfor %}
+            </div>
         {% endfor %}
     {% endblock %}
 </div>

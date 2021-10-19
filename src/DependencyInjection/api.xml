@@ -71,6 +71,8 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionTransformer">
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="category.repository" />
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 

@@ -36,11 +36,16 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\ResultSuggestion;
 use Swagger\Client\Model\SuggestionResult;
+use Throwable;
 
 /**
  * Class SuggestionTransformer
@@ -52,6 +57,26 @@ use Swagger\Client\Model\SuggestionResult;
  */
 class SuggestionTransformer implements ResponseTransformerInterface
 {
+    protected const TYPE_PRODUCT = 'productName';
+    protected const TYPE_CATEGORY = 'category';
+
+    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepositoryInterface $productRepository;
+    private SalesChannelContext $context;
+
+    /**
+     * SuggestionTransformer constructor.
+     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepositoryInterface $categoryRepository
+     */
+    public function __construct(
+        EntityRepositoryInterface $productRepository,
+        EntityRepositoryInterface $categoryRepository
+    ) {
+        $this->productRepository = $productRepository;
+        $this->categoryRepository = $categoryRepository;
+    }
+
     /**
      * @inheritDoc
      */
@@ -73,6 +98,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
         if (!$model instanceof SuggestionResult) {
             throw new InvalidTypeException($model, SuggestionResult::class);
         }
+        $this->context = $context;
 
         /** @var SuggestionResponse $listing */
         $listing = $responseCollection->get(SuggestionResponse::class) ?? new SuggestionResponse();
@@ -94,6 +120,12 @@ class SuggestionTransformer implements ResponseTransformerInterface
         $suggestItem = new SuggestItem();
         $suggestItem->setName($suggestion->getName());
         $suggestItem->setType($suggestion->getType());
+        if (!$suggestion->getImage() && $suggestion->getImage() !== '') {
+            $suggestItem->setImgUrl($suggestion->getImage());
+        } else {
+            $suggestItem->setImgUrl($this->getImgUrl($suggestion->getType(), $this->getId($suggestion->getType(), $suggestion)));
+        }
+
         if ($suggestion->getAttributes()) {
             $suggestItem->setAttributes($this->parseAttributes($suggestion->getAttributes()));
         }
@@ -101,6 +133,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
     }
 
     /**
+     * Parsing attributes from FactFinder attributes to ours
      * @param $attributes
      * @return array
      */
@@ -108,11 +141,65 @@ class SuggestionTransformer implements ResponseTransformerInterface
     {
         $result = [];
         foreach ($attributes as $key => $attribute) {
-            // todo: parsing for exceptions with other object as $attribute
-            $result[$key] = $attribute[0];
+            try {
+                if (gettype($attribute) === 'array') {
+                    if (count($attribute) > 0 && gettype($attribute[0]) === 'string') {
+                        $result[$key] = $attribute[0];
+                    }
+                } else {}
+            } catch (Throwable $e) {}
         }
         return $result;
     }
 
+    /**
+     * Trying to get image url from database
+     * @param string $type
+     * @param ?string $id
+     * @return string
+     */
+    private function getImgUrl(string $type, string $id): string
+    {
+        if (!$id) {
+            return '';
+        }
 
+        $criteria = new Criteria([$id]);
+        $criteria->addAssociation('media');
+
+        if ($type === self::TYPE_PRODUCT) {
+            /** @var ProductEntity $product */
+            $product = $this->productRepository->search($criteria, $this->context->getContext())->first();
+            if ($product && $product->getMedia() && $product->getMedia()->first() && $product->getMedia()->first(
+                )->getMedia()) {
+                return $product->getMedia()->first()->getMedia()->getUrl();
+            }
+        } else {
+            if ($type === self::TYPE_CATEGORY) {
+                /** @var CategoryEntity $category */
+                $category = $this->categoryRepository->search($criteria, $this->context->getContext())->first(
+                );
+                if ($category && $category->getMedia()) {
+                    return $category->getMedia()->getUrl();
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Getting Entity Id from ResultSuggestion
+     * @param string $type
+     * @param ResultSuggestion $suggestion
+     * @return string
+     */
+    private function getId(string $type, ResultSuggestion $suggestion): string
+    {
+        if ($type === self::TYPE_PRODUCT) {
+            return $suggestion->getAttributes()['ProductID'][0];
+        } else if ($type === self::TYPE_CATEGORY) {
+            return $suggestion->getAttributes()['CategoryID'][0];
+        }
+        return '';
+    }
 }

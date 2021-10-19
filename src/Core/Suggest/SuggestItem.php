@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Suggest;
 
 /**
  * Class SuggestItem
+ * @package Elio\FactFinder\Core\Suggest
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -56,6 +57,11 @@ class SuggestItem
      * @var array
      */
     protected array $attributes;
+
+    /**
+     * @var string
+     */
+    protected string $imgUrl;
 
     /**
      * @var float
@@ -124,6 +130,22 @@ class SuggestItem
     public function setScore(float $score): void
     {
         $this->score = $score;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImgUrl(): string
+    {
+        return $this->imgUrl;
+    }
+
+    /**
+     * @param string $imgUrl
+     */
+    public function setImgUrl(string $imgUrl): void
+    {
+        $this->imgUrl = $imgUrl;
     }
 
 }
