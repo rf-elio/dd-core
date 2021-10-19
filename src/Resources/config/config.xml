@@ -81,6 +81,12 @@
             <label lang="de-DE">Shopware Suche durch die FACTFinder-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
+        <input-field type="bool">
+            <name>suggestUseFactFinder</name>
+            <label>Replace shopware suggest by FACTFinder suggest</label>
+            <label lang="de-DE">Shopware Suggest durch die FACTFinder-Suggest ersetzten</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>

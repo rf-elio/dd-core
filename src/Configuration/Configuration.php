@@ -63,6 +63,7 @@ class Configuration extends Struct
     private array $botProtectionSearchTermFilter;
     private array $botProtectionUserAgentFilter;
     private array $botProtectionIpFilter;
+    private bool $suggestUseFactFinder;
 
     /**
      * Configuration constructor.
@@ -73,7 +74,10 @@ class Configuration extends Struct
      * @param bool $apiDebugActive
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
+     * @param bool $trackCart
      * @param bool $trackCheckout
+     * @param bool $trackLogin
+     * @param bool $trackProductView
      * @param bool $listingUseFactFinder
      * @param array $additionalRequestParameters
      * @param bool $botProtectionActive
@@ -81,6 +85,7 @@ class Configuration extends Struct
      * @param array $botProtectionSearchTermFilter
      * @param array $botProtectionUserAgentFilter
      * @param array $botProtectionIpFilter
+     * @param bool $suggestUseFactFinder
      */
     public function __construct(
         bool $active,
@@ -100,7 +105,8 @@ class Configuration extends Struct
         bool $botProtectionUseBadBotList,
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
-        array $botProtectionIpFilter
+        array $botProtectionIpFilter,
+        bool $suggestUseFactFinder
     )
     {
         $this->useAso = $useAso;
@@ -121,6 +127,7 @@ class Configuration extends Struct
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
         $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
         $this->botProtectionIpFilter = $botProtectionIpFilter;
+        $this->suggestUseFactFinder = $suggestUseFactFinder;
     }
 
     /**
@@ -266,5 +273,21 @@ class Configuration extends Struct
     public function getBotProtectionIpFilter(): array
     {
         return $this->botProtectionIpFilter;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuggestUseFactFinder(): bool
+    {
+        return $this->suggestUseFactFinder;
+    }
+
+    /**
+     * @param bool $suggestUseFactFinder
+     */
+    public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
+    {
+        $this->suggestUseFactFinder = $suggestUseFactFinder;
     }
 }

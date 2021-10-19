@@ -1,0 +1,20 @@
+{% block elio_search_suggest %}
+<div class="search-suggest js-search-result">
+    {% block elio_search_suggest_container %}
+{#        {{ dump(response) }}#}
+        {% for suggestion in response.suggestions %}
+            <ul>
+                <li>Name: {{ suggestion.name }}</li>
+                <li>Type: {{ suggestion.type }}</li>
+                {% if suggestion.attributes.ProductID %}
+                    <li>ProductID: {{ suggestion.attributes.ProductID }}</li>
+                {% endif %}
+                {% if suggestion.attributes.ProductURL %}
+                    <li>ProductURL: {{ suggestion.attributes.ProductURL }}</li>
+                {% endif %}
+            </ul>
+
+        {% endfor %}
+    {% endblock %}
+</div>
+{% endblock %}

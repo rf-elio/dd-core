@@ -98,6 +98,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
             $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
             $this->prepareValueList($config, 'botProtectionIpFilter'),
+            $config['suggestUseFactFinder'] ?? false // todo: language based conflict with 25-language-in-plugin-configuration branch
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

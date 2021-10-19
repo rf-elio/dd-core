@@ -29,6 +29,10 @@
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
             <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
         </service>
+        <service id="Elio\FactFinder\Api\Search\SuggestApi">
+            <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
+        </service>
         <service id="Elio\FactFinder\Api\Tracking\TrackingApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
             <argument type="service" id="Elio\FactFinder\Logger" />
@@ -64,6 +68,9 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\FacetTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionTransformer">
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 
