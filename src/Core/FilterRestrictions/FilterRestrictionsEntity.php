@@ -70,6 +70,11 @@ class FilterRestrictionsEntity extends Entity
      */
     protected bool $isAllowed;
     /**
+     * is it inherited from all-saleschannel restriction
+     * @var bool
+     */
+    protected bool $isInherited;
+    /**
      * is all-option is checked or only selected (if false)
      * @var bool
      */
@@ -109,6 +114,22 @@ class FilterRestrictionsEntity extends Entity
     public function setIsAllowed(bool $isAllowed): void
     {
         $this->isAllowed = $isAllowed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInherited(): bool
+    {
+        return $this->isInherited;
+    }
+
+    /**
+     * @param bool $isInherited
+     */
+    public function setIsInherited(bool $isInherited): void
+    {
+        $this->isInherited = $isInherited;
     }
 
     /**

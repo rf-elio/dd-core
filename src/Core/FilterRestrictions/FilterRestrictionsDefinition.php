@@ -105,6 +105,13 @@ class FilterRestrictionsDefinition extends EntityDefinition
                new ApiAware(),
                new Required()
            ),
+           /**
+            * is it inherited from all-saleschannel restriction
+            */
+           (new BoolField('is_inherited', 'isInherited'))->addFlags(
+               new ApiAware(),
+               new Required()
+           ),
            (new BoolField('is_all_checked', 'isAllChecked'))->addFlags(
                new ApiAware(),
                new Required()

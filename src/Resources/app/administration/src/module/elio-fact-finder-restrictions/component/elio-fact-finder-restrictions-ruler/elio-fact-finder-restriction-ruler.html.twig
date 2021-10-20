@@ -1,11 +1,22 @@
 {% block ff_restrictions_ruler %}
     <div class="elio-ff-restrictions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
+        <div v-if="isInheritable" class="elio-ff-restrictions-ruler-inheritance-block">
+            <sw-inheritance-switch
+                    class="sw-inherit-wrapper__inheritance-icon elio-ff-restrictions-ruler-inheritance"
+                    :isInherited="isInherited"
+                    @inheritance-restore="restoreInheritance"
+                    @inheritance-remove="removeInheritance">
+            </sw-inheritance-switch>
+            <p>{{ $tc('ff.restrictions.ruler.inheritance') }}</p>
+        </div>
         <div class="ruler">
             <div class="ruler-tab">
-                <h3 class="ruler-tab-header">{{ $tc('ff.restrictions.ruler.tabs.available.header') }}</h3>
+                <h3 class="ruler-tab-header">
+                    {{ $tc('ff.restrictions.ruler.tabs.available.header') }}
+                </h3>
                 <div id="rulerTabFilters"
-                     class="ruler-tab-filter-list ruler-tab-filter-list--main"
+                     :class="['ruler-tab-filter-list', 'ruler-tab-filter-list--main', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
                      ondragover="event.preventDefault()"
                      data-filter-column="all"
@@ -27,6 +38,7 @@
                         <input type="radio"
                                id="allowAll"
                                name="allowRule"
+                               :disabled="isInherited"
                                :checked="allowAllChecked"
                                @change="onAllowAllClicked"
                                value="allowAll">
@@ -36,6 +48,7 @@
                         <input type="radio"
                                id="allowOnly"
                                name="allowRule"
+                               :disabled="isInherited"
                                :checked="!allowAllChecked"
                                @change="onAllowSelectedClicked"
                                value="allowOnly">
@@ -43,7 +56,7 @@
                     </div>
                 </div>
                 <div id="rulerTabFiltersAllowed"
-                     class="ruler-tab-filter-list"
+                     :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
                      ondragover="event.preventDefault()"
                      data-filter-column="allow"
@@ -65,6 +78,7 @@
                         <input type="radio"
                                id="blockAll"
                                name="blockRule"
+                               :disabled="isInherited"
                                :checked="blockAllChecked"
                                @change="onBlockAllClicked"
                                value="blockAll">
@@ -74,6 +88,7 @@
                         <input type="radio"
                                id="blockOnly"
                                name="blockRule"
+                               :disabled="isInherited"
                                :checked="!blockAllChecked"
                                @change="onBlockSelectedClicked"
                                value="blockOnly">
@@ -81,7 +96,7 @@
                     </div>
                 </div>
                 <div id="rulerTabFiltersBlocked"
-                     class="ruler-tab-filter-list"
+                     :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
                      ondragover="event.preventDefault()"
                      data-filter-column="block"
