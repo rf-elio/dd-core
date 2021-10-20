@@ -29,7 +29,27 @@ Shopware.Component.register('ff-restrictions-index', {
         }
     },
 
+    beforeRouteLeave(to, from, next) {
+        this.checkLeaving(to, from, next);
+    },
+
+    beforeRouteUpdate(to, from, next) {
+        this.checkLeaving(to, from, next);
+    },
+
     methods: {
+        checkLeaving(to, from, next) {
+            var willLeave = true;
+            if (this.$refs.routerView.$refs.ruler) {
+                willLeave = this.$refs.routerView.$refs.ruler.onLeaving(to);
+            }
+            if (willLeave) {
+                next();
+            } else {
+                next(false);
+            }
+        },
+
         routerViewTabChanged() {
             if (this.$route.name === 'elio.factfinder.restrictions.index.customfilters') {
                 this.isCustomFiltersTab = true
