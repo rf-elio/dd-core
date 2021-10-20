@@ -52,12 +52,6 @@
 
         {% block ff_restrictions_index_page_body %}
             <template slot="default">
-                <div v-if="!isCustomFiltersTab" class="elio-ff-restrictions-sales-channel-picker">
-                    <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
-                                             @change-sales-channel-id="onSalesChannelChanged">
-                    </sw-sales-channel-switch>
-                </div>
-
                 <router-view ref="routerView"></router-view>
             </template>
         {% endblock %}
