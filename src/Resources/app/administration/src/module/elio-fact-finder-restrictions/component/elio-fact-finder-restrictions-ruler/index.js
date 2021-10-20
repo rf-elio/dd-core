@@ -59,7 +59,11 @@ Shopware.Component.register('ff-restriction-ruler', {
             allowAllChecked: false,
             blockAllChecked: false,
             limitForCriteria: 500,
-            salesChannelId: null
+            salesChannelId: null,
+            isModified: false,
+            isDisplayingLeavePageWarning: false,
+            forceDiscardChanges: false,
+            nextRoute: null
         }
     },
 
@@ -68,12 +72,43 @@ Shopware.Component.register('ff-restriction-ruler', {
     },
 
     watch: {
+        isModified() {
+            console.log(this.isModified);
+        },
         salesChannelId() {
             this.loadFilters();
         }
     },
 
     methods: {
+        onLeaving(to) {
+            if (this.forceDiscardChanges) {
+                this.forceDiscardChanges = false;
+                return true;
+            }
+            if (this.isModified) {
+                this.isDisplayingLeavePageWarning = true;
+                this.nextRoute = to;
+                return false;
+            } else {
+                return true;
+            }
+        },
+
+        onLeaveModalClose() {
+            this.nextRoute = null;
+            this.isDisplayingLeavePageWarning = false;
+        },
+
+        onLeaveModalConfirm(destination) {
+            this.forceDiscardChanges = true;
+            this.isDisplayingLeavePageWarning = false;
+
+            this.$nextTick(() => {
+                this.$router.push({ name: destination.name, params: destination.params });
+            });
+        },
+
         onCreated() {
             this.loadFilters();
         },
@@ -87,6 +122,7 @@ Shopware.Component.register('ff-restriction-ruler', {
         onDrop(dragData) {
             if (dragData.target.classList.contains("ruler-tab-filter-list") || dragData.target.classList.contains("filter")) {
                 dragData.preventDefault();
+                this.isModified = true;
 
                 var realTarget = dragData.target;
                 if (dragData.target.classList.contains("filter")) {
@@ -109,6 +145,7 @@ Shopware.Component.register('ff-restriction-ruler', {
 
         onAllowAllClicked() {
             if(this.allowListRestrictionId !== '') {
+                this.isModified = true;
                 this.allowAllChecked = true;
                 this.blockAllChecked = false;
             }
@@ -116,12 +153,14 @@ Shopware.Component.register('ff-restriction-ruler', {
 
         onAllowSelectedClicked() {
             if(this.allowListRestrictionId !== '') {
+                this.isModified = true;
                 this.allowAllChecked = false;
             }
         },
 
         onBlockAllClicked() {
             if(this.blockListRestrictionId !== '') {
+                this.isModified = true;
                 this.blockAllChecked = true;
                 this.allowAllChecked = false;
             }
@@ -129,18 +168,20 @@ Shopware.Component.register('ff-restriction-ruler', {
 
         onBlockSelectedClicked() {
             if(this.blockListRestrictionId !== '') {
+                this.isModified = true;
                 this.blockAllChecked = false;
             }
         },
 
         setSalesChannelId(salesChannelId) {
-            console.log(salesChannelId);
             this.salesChannelId = salesChannelId;
         },
+
 
         //todo: place below functions to seperate API/service
 
         async loadFilters() {
+            this.isModified = false;
             this.allList = [];
             this.allowList = [];
             this.blockList = [];
@@ -278,6 +319,7 @@ Shopware.Component.register('ff-restriction-ruler', {
         },
 
         async saveAll() {
+            this.isModified = false;
             this.isLoading = true;
             var operator = this;
             var entities = [];
