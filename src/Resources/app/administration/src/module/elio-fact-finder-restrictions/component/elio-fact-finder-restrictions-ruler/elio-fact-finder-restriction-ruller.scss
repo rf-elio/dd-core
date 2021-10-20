@@ -16,10 +16,16 @@
   height: 400px;
   overflow-y: scroll;
   overflow-x: hidden;
+  scrollbar-color: rgba(39,97,216,.9) rgba(255,255,255,.1);
+  scrollbar-width: thin;
   scroll-behavior: smooth;
 }
 .ruler-tab-filter-list--main {
   height: 500px;
+}
+.ruler-tab-filter-list--inactive {
+  background: rgba(0,0,0,0.1);
+  overflow-y: hidden;
 }
 .ruler-tab-permissions{
   height: 100px;
@@ -51,4 +57,10 @@
 .elio-ff-restrictions-sales-channel-picker--category {
   max-width: 800px;
 }
-
+.elio-ff-restrictions-ruler-inheritance-block {
+  display: flex;
+  margin-bottom: 25px;
+}
+.elio-ff-restrictions-ruler-inheritance {
+  width: 22px;
+}
