@@ -103,24 +103,19 @@ class FacetTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $allowedFiltersNames = [];
         $level = FilterService::LEVEL_GLOBAL;
         if ($request instanceof NavigationRequest) {
             $level = FilterService::LEVEL_CATEGORY;
-        } else if ($request instanceof SearchRequest) {
-            $level = FilterService::LEVEL_SEARCH;
-        }
-        $allowedFilters = $this->filterService->getAllowedFilters(
-            $context->getSalesChannelId(),
-            $level,
-            $request
-        ) ?? [];
-
-        foreach ($allowedFilters as $filter) {
-            if ($filter['isAllowed']) {
-                $allowedFiltersNames[] = $filter['propertyName'];
+        } else {
+            if ($request instanceof SearchRequest) {
+                $level = FilterService::LEVEL_SEARCH;
             }
         }
+        $filtersRestrictions = $this->filterService->getFilters(
+                $context->getSalesChannelId(),
+                $level,
+                $request
+            ) ?? [null, []];
 
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
@@ -132,9 +127,17 @@ class FacetTransformer implements ResponseTransformerInterface
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
-            if (!in_array($facet->getName(), $allowedFiltersNames, true)) {
+            if ($filtersRestrictions[1] === null) { // blocked all
                 continue;
+            } else {
+                if ($filtersRestrictions[0] !== null) { // isn't allowed everything
+                    if (!in_array($facet->getName(), $filtersRestrictions[0], true)) {
+                        // isn't allowed
+                        continue;
+                    }
+                }
             }
+
             $style = $facet->getFilterStyle();
             switch ($style) {
                 case 'DEFAULT':

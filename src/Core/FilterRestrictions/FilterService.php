@@ -91,7 +91,15 @@ class FilterService
     }
 
     /**
-     * Get all allowed filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
+     * Get all allowed/blocked filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
+     *
+     * Returns array [
+     *              [ array of allowed filters with keys filterId and values filterName],
+     *              [ array of blocked filters with keys filterId and values filterName]
+     * ]
+     *
+     * if array of allowed/blocked filters is null - it means allow/block everything
+     *
      * @param string|null $salesChannelId
      * @param int $level
      * @param ApiRequest $request
