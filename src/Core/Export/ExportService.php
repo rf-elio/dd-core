@@ -123,29 +123,24 @@ class ExportService
                 $export->getName()
             ));
         }
-
-        $languageIds = $salesChannel->getDomains()->map(function (SalesChannelDomainEntity $salesChannelDomain) {
-            return $salesChannelDomain->getLanguageId();
-        });
-
+        
         $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
 
-        foreach ($languageIds as $languageId) {
-            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
-            $this->logger->info(
-                sprintf('Generating export: %s', $export->getName()),
-                ['id' => $export->getId(), 'salesChannelId' => $salesChannel->getId(), 'salesChannelName' => $salesChannel->getName(), 'language' => $languageId]
-            );
+        $languageId = $export->getLanguageId();
+        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
+        $this->logger->info(
+            sprintf('Generating export: %s', $export->getName()),
+            ['id' => $export->getId(), 'salesChannelId' => $salesChannel->getId(), 'salesChannelName' => $salesChannel->getName(), 'language' => $languageId]
+        );
 
-            $stream = new OutputStream($writer, $export, $salesChannelContext);
-            $stream->open();
-            try {
-                $generator->generate($export, $stream, $salesChannelContext);
-                $stream->close();
-            } catch (Throwable $ex) {
-                $stream->abort();
-                $this->logger->error($ex->getMessage());
-            }
+        $stream = new OutputStream($writer, $export, $salesChannelContext);
+        $stream->open();
+        try {
+            $generator->generate($export, $stream, $salesChannelContext);
+            $stream->close();
+        } catch (Throwable $ex) {
+            $stream->abort();
+            $this->logger->error($ex->getMessage());
         }
 
         $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationFinishedAt' => new DateTime()]], $context);

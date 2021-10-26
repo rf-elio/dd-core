@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Core\Export;
 use DateTimeInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
@@ -59,6 +60,8 @@ class ExportEntity extends Entity
     protected ?DateTimeInterface $lastGenerationFinishedAt;
     protected string $salesChannelId;
     protected ?SalesChannelEntity $salesChannel;
+    protected string $languageId;
+    protected ?LanguageEntity $language;
 
     /**
      * @return string
@@ -202,5 +205,37 @@ class ExportEntity extends Entity
     public function setSalesChannel(?SalesChannelEntity $salesChannel): void
     {
         $this->salesChannel = $salesChannel;
+    }
+
+    /**
+     * @return LanguageEntity|null
+     */
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param LanguageEntity|null $language
+     */
+    public function setLanguage(?LanguageEntity $language): void
+    {
+        $this->language = $language;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguageId(): string
+    {
+        return $this->languageId;
+    }
+
+    /**
+     * @param string $languageId
+     */
+    public function setLanguageId(string $languageId): void
+    {
+        $this->languageId = $languageId;
     }
 }
