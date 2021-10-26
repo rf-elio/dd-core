@@ -4,5 +4,87 @@ const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Shopware.Component.register('ff-export-list', {
-    template: template
+    template: template,
+
+    inject: [
+        'repositoryFactory'
+    ],
+
+    metaInfo() {
+        return {
+            title: this.$createTitle()
+        };
+    },
+
+    data() {
+        return {
+            exports: [],
+            sortBy: 'lastGenerationStartedAt',
+            sortDirection: 'DESC',
+            isLoading: false,
+            activeFilterNumber: 0,
+            page: 1,
+            limit: 25,
+            total: 1
+        };
+    },
+
+    computed: {
+        exportRepository() {
+            return this.repositoryFactory.create('elio_ff_export');
+        },
+        exportColumns() {
+            return this.getExportColumns();
+        },
+        exportCriteria() {
+            var criteria = new Criteria();
+            criteria.setPage(this.page);
+            criteria.setLimit(this.limit);
+            criteria.setTotalCountMode(2);
+            criteria.addSorting(
+                Criteria.sort('elio_ff_export.'+this.sortBy, this.sortDirection)
+            );
+            return criteria;
+        }
+    },
+
+    created() {
+        this.getList();
+    },
+
+    methods: {
+
+        async getList() {
+            this.isLoading = true;
+            var operator = this;
+
+            try {
+                var criteria = this.exportCriteria;
+                this.activeFilterNumber = criteria.filters.length;
+                await this.exportRepository.search(criteria, Shopware.Context.api).then(exports => {
+                    operator.total = exports.total;
+                    operator.exports = exports;
+                    operator.isLoading = false;
+                });
+            } catch {
+                this.isLoading = false;
+            }
+        },
+
+        onPageChange({ page, limit }) {
+            this.page = page;
+            this.limit = limit;
+            this.getList();
+        },
+
+        getExportColumns() {
+            return [{
+                property: 'id',
+                label: 'Export ID',
+                routerLink: 'elio.factfinder.export.detail',
+                allowResize: false,
+                primary: true
+            }];
+        }
+    }
 });

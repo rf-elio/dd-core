@@ -1,0 +1,50 @@
+{% block ff_export_list_page %}
+    <sw-page class="eli-ff-export-list">
+        <template slot="content">
+            <div>
+                {% block ff_export_list_grid %}
+                    <sw-data-grid :dataSource="exports"
+                                  :columns="exportColumns"
+                                  :fullPage="true"
+                                  :showSettings="false"
+                                  :showSelection="true"
+                                  :sortBy="sortBy"
+                                  :sortDirection="sortDirection"
+                                  :isLoading="isLoading"
+                                  :allowColumnEdit="false"
+                                  identifier="ff-export-list"
+                                  @column-sort=""
+                                  @page-change="onPageChange"
+                                  @selection-change=""
+                                  :disableDataFetching="true">
+
+                        <template #column-exportId="{ item }">
+                            {% block ff_export_list_grid_order_id_link %}
+                                <router-link :to="{ name: 'elio.factfinder.export.detail', params: { exportId: item.id } }">
+                                    {{ item.id }}
+                                </router-link>
+                            {% endblock %}
+                        </template>
+                        <template #column-sessionId="{ item }">
+                            {{ item.sessionId }}
+                        </template>
+                        <template #column-orderDate="{ item }">
+                            {{ item.orderdate }}
+                        </template>
+
+                        <template #pagination>
+                            {% block ff_export_list_grid_pagination %}
+                                <sw-pagination :page="page"
+                                               :limit="limit"
+                                               :total="total"
+                                               :total-visible="7"
+                                               @page-change="onPageChange">
+                                </sw-pagination>
+                            {% endblock %}
+                        </template>
+                    </sw-data-grid>
+                {% endblock %}
+            </div>
+        </template>
+    </sw-page>
+{% endblock %}
