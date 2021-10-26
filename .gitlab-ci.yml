@@ -1,0 +1,49 @@
+stages:
+  - build
+  - test_dev
+  - build_production
+
+before_script:
+#  - bash ./ci/docker_install.sh > /dev/null
+  - ls
+
+build:
+  stage: build
+  image: php:8.0
+  artifacts:
+    paths:
+      - dev
+      - prod
+    expire_in: 1 hour
+  before_script:
+    - bash .ci/docker_install.sh > /dev/null
+  script:
+    - bash .ci/build_prepare_dir.sh > /dev/null
+    - cp -r build dev
+    - cp -r build prod
+    - cd ./dev && make dev && bash ../.ci/build_clean_dir.sh && cd ..
+    - cd ./prod && make prod && bash ../.ci/build_clean_dir.sh && cd ..
+
+test:php8.0:
+  stage: test_dev
+  needs: ['build']
+  image: dockware/dev:latest
+  variables:
+    PHP_VERSION: '8.0'
+  artifacts:
+    paths:
+      - dev
+  script:
+    - bash .ci/test_phpunit.sh
+
+test:php7.4:
+  stage: test_dev
+  needs: ['build']
+  image: dockware/dev:latest
+  variables:
+    PHP_VERSION: '7.4'
+  artifacts:
+    paths:
+      - dev
+  script:
+    - bash .ci/test_phpunit.sh
