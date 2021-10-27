@@ -140,7 +140,5 @@ Shopware.Component.register('ff-export-detail', {
         onCancel() {
             this.$router.push({ name: 'elio.factfinder.export.list' });
         }
-
     }
-
 });
