@@ -43,6 +43,9 @@ namespace Elio\FactFinder\Core\Export;
  */
 class ExportItem
 {
+    /**
+     * @var array<string>
+     */
     protected array $params = [];
 
     /**
@@ -55,7 +58,7 @@ class ExportItem
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getParams(): array
     {
@@ -65,7 +68,7 @@ class ExportItem
     /**
      * Returns the array keys of the current item
      *
-     * @return array
+     * @return array<string>
      */
     public function getKeys() : array
     {

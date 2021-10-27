@@ -41,7 +41,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -57,21 +56,33 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
  */
 class ExportDefinition extends EntityDefinition
 {
+    /**
+     * @return string
+     */
     public function getEntityName(): string
     {
         return 'elio_ff_export';
     }
 
+    /**
+     * @return string
+     */
     public function getEntityClass(): string
     {
         return ExportEntity::class;
     }
 
+    /**
+     * @return string
+     */
     public function getCollectionClass(): string
     {
         return ExportCollection::class;
     }
 
+    /**
+     * @return FieldCollection
+     */
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([

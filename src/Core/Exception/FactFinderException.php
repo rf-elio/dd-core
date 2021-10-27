@@ -50,7 +50,7 @@ class FactFinderException extends RuntimeException
     /**
      * FactFinderException constructor.
      * @param string $message
-     * @param array $parameters
+     * @param array<string> $parameters
      * @param int $code
      * @param Throwable|null $e
      */

@@ -60,8 +60,14 @@ use Throwable;
 class ExportService
 {
     private EntityRepositoryInterface $exportRepository;
+    /**
+     * @var ExportGeneratorInterface[]
+     */
     private iterable $generators;
     private LoggerInterface $logger;
+    /**
+     * @var FileWriterInterface[]
+     */
     private iterable $writers;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
@@ -92,7 +98,7 @@ class ExportService
      * Searches all due exports
      *
      * @param Context $context
-     * @return EntityCollection
+     * @return EntityCollection<ExportEntity>
      */
     public function getDueExports(Context $context) : EntityCollection
     {
