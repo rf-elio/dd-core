@@ -1,14 +1,14 @@
 parameters:
+    parallel:
+        maximumNumberOfProcesses: 2
     level: 5
     autoload_files:
-        - %rootDir%/../../../vendor/autoload.php
-        - %rootDir%/../../../../../../vendor/autoload.php
-    autoload_directories:
-    	- %rootDir%/../../../src
-    excludes_analyse:
-        - %rootDir%/../../../vendor/*
-        - %rootDir%/../../../legacy-backup/*
+        - vendor/autoload.php
+        - ../../../vendor/autoload.php
+    paths:
+        - src
+        - tests
     ignoreErrors:
-    		-
-    			message: '#expects string, null given#'
-    			path: src/Api/ApiClientFactory.php
+        -
+            message: '#expects string, null given#'
+            path: src/Api/ApiClientFactory.php
