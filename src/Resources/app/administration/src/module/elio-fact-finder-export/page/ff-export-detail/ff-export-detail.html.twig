@@ -1,0 +1,91 @@
+{% block ff_export_detail %}
+    <sw-page class="sw-property-detail">
+
+        {% block ff_export_detail_smart_bar_header %}
+            <template slot="smart-bar-header">
+                {% block ff_export_detail_smart_bar_header_title %}
+                    <h2>{{ placeholder(ff_export, 'name', $tc('ff.export.detail.textHeadline')) }}</h2>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block ff_export_detail_smart_bar_actions %}
+            <template slot="smart-bar-actions">
+                {% block ff_export_detail_smart_bar_actions_cancel %}
+                    <sw-button class="sw-property-detail__back-action"
+                               :disabled="isLoading"
+                               @click="onCancel">
+                        {{ $tc('ff.export.buttonCancel') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block ff_export_detail_smart_bar_actions_save %}
+                    <sw-button-process
+                            class="sw-property-detail__save-action"
+                            :isLoading="isLoading"
+                            :processSuccess="isSaveSuccessful"
+                            :disabled="isLoading"
+                            variant="primary"
+                            @process-finish="saveFinish"
+                            @click.prevent="onSave">
+                        {{ $tc('ff.export.buttonSave') }}
+                    </sw-button-process>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block ff_export_detail_content %}
+            <sw-card-view slot="content">
+
+                {% block ff_export_detail_content_language_info %}
+                    <sw-language-info
+                            :entityDescription="placeholder(ff_export, 'name', $tc('ff.export.detail.textHeadline'))">
+                    </sw-language-info>
+                {% endblock %}
+
+                <sw-card v-if="ff_export" :title="$tc('ff.export.detail.cardTitleBasicInfo')" :isLoading="isLoading">
+                    {% block ff_export_detail_basic_info %}
+                        <sw-field
+                                v-model="ff_export.name"
+                                type="text"
+                                required
+                                :label="$tc('ff.export.detail.labelName')"
+                                :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                        </sw-field>
+
+                        <div class="sw-container" style="grid-template-columns: 1fr 1fr 1fr; gap: 0px 30px; place-items: stretch;">
+                            <sw-field
+                                    v-model="ff_export.type"
+                                    :options="typeList"
+                                    type="select"
+                                    :label="$tc('ff.export.detail.labelType')">
+                            </sw-field>
+
+                            <sw-field
+                                    v-model="ff_export.format"
+                                    :options="formatList"
+                                    type="select"
+                                    :label="$tc('ff.export.detail.labelFormat')">
+                            </sw-field>
+
+                            <sw-field
+                                    v-model="ff_export.active"
+                                    type="switch"
+                                    :label="$tc('ff.export.detail.labelActive')"
+                                    :helpText="$tc('ff.export.detail.helpTextActive')">
+                            </sw-field>
+                        </div>
+
+                    {% endblock %}
+                </sw-card>
+
+                <sw-card v-if="ff_export" :title="$tc('ff.export.detail.cardTitleMappings')" :isLoading="isLoading">
+                    {% block ff_export_detail_mapping_info %}
+
+                    {% endblock %}
+                </sw-card>
+
+            </sw-card-view>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

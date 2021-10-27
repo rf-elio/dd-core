@@ -16,7 +16,33 @@
     },
     "export": {
       "title": "FactFinderExport",
-      "description": ""
+      "description": "",
+      "buttonSave": "Save",
+      "buttonCancel": "Cancel",
+      "detail" : {
+        "placeholderName": "New_Export_Name",
+        "messageSaveError": "Error while saving",
+        "textHeadline": "New Export",
+        "cardTitleBasicInfo" : "Basic information",
+        "labelName": "Export Name",
+        "labelActive": "Active",
+        "labelType": "Type",
+        "labelFormat": "Format",
+        "labelInterval": "Interval",
+        "labelSalesChannel": "Sales Channel",
+        "labelLanguage": "Language",
+        "labelLastGenerationStarted": "Last Generation Started",
+        "labelLastGenerationFinished": "Last Generation Finished",
+        "helpTextActive": "If export active - it will be exported",
+        "cardTitleMappings" : "Mappings"
+      },
+      "list": {
+        "contextMenuView": "Edit",
+        "contextMenuDelete": "Delete",
+        "textDeleteConfirm": "Are you sure you really want to delete the export \"{name}\"?",
+        "buttonCancel": "Cancel",
+        "buttonDelete": "Delete"
+      }
     }
   }
 }

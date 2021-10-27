@@ -1,6 +1,5 @@
 import template from './ff-export-list.html.twig';
 
-const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Shopware.Component.register('ff-export-list', {
@@ -61,12 +60,16 @@ Shopware.Component.register('ff-export-list', {
             try {
                 var criteria = this.exportCriteria;
                 this.activeFilterNumber = criteria.filters.length;
-                await this.exportRepository.search(criteria, Shopware.Context.api).then(exports => {
-                    operator.total = exports.total;
-                    operator.exports = exports;
-                    operator.isLoading = false;
-                });
-            } catch {
+                await this.exportRepository.search(criteria, Shopware.Context.api)
+                    .then((exports) => {
+                        operator.total = exports.total;
+                        operator.exports = exports;
+                        operator.isLoading = false;
+                    }).catch(() => {
+                        operator.isLoading = false;
+                    });
+            } catch (err) {
+                console.log(err);
                 this.isLoading = false;
             }
         },

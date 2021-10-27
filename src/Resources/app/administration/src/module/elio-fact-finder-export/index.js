@@ -1,5 +1,6 @@
 import './page/ff-export-list';
 import './page/ff-export-detail';
+import './page/ff-export-create';
 
 // (async function initDependencies() {
 //     await import(/* webpackMode: 'eager' */ './component/elio-factfinder-export-mapper');
@@ -26,6 +27,13 @@ Shopware.Module.register('elio-factfinder-export', {
                     return { exportId: $route.params.id };
                 }
             },
+            meta: {
+                parentPath: 'elio.factfinder.export.list'
+            }
+        },
+        create: {
+            component: 'ff-export-create',
+            path: 'create',
             meta: {
                 parentPath: 'elio.factfinder.export.list'
             }
