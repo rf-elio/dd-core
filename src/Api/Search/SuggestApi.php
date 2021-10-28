@@ -37,6 +37,9 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\SuggestRequest;
 use Elio\FactFinder\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
+use Swagger\Client\Model\SuggestParams;
+use Throwable;
 
 /**
  * Class SuggestApi
@@ -65,10 +68,17 @@ class SuggestApi
         $this->transformer = $transformer;
     }
 
+    /**
+     * @param SuggestRequest $suggestRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
     public function suggest(SuggestRequest $suggestRequest, SalesChannelContext $context): ResponseCollection
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->getSuggestionsUsingPOST(new \Swagger\Client\Model\SuggestParams([
+        $result = $apiClient->getSuggestionsUsingPOST(new SuggestParams([
             'channel' => $suggestRequest->getChannel(),
             'query' => $suggestRequest->getQuery(),
         ]));

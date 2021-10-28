@@ -126,27 +126,27 @@ class SuggestionTransformer implements ResponseTransformerInterface
             $suggestItem->setImgUrl($this->getImgUrl($suggestion->getType(), $this->getId($suggestion->getType(), $suggestion)));
         }
 
-        if ($suggestion->getAttributes()) {
-            $suggestItem->setAttributes($this->parseAttributes($suggestion->getAttributes()));
+        /** @var array $attributes */
+        $attributes = $suggestion->getAttributes();
+        if (!empty($attributes)) {
+            $suggestItem->setAttributes($this->parseAttributes($attributes));
         }
         return $suggestItem;
     }
 
     /**
      * Parsing attributes from FactFinder attributes to ours
-     * @param $attributes
+     * @param array $attributes
      * @return array
      */
-    private function parseAttributes($attributes): array
+    private function parseAttributes(array $attributes): array
     {
         $result = [];
         foreach ($attributes as $key => $attribute) {
             try {
-                if (gettype($attribute) === 'array') {
-                    if (count($attribute) > 0 && gettype($attribute[0]) === 'string') {
-                        $result[$key] = $attribute[0];
-                    }
-                } else {}
+                if (is_array($attribute) && count($attribute) > 0 && is_string($attribute[0])) {
+                    $result[$key] = $attribute[0];
+                }
             } catch (Throwable $e) {}
         }
         return $result;
@@ -155,7 +155,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
     /**
      * Trying to get image url from database
      * @param string $type
-     * @param ?string $id
+     * @param string $id
      * @return string
      */
     private function getImgUrl(string $type, string $id): string
@@ -168,22 +168,22 @@ class SuggestionTransformer implements ResponseTransformerInterface
         $criteria->addAssociation('media');
 
         if ($type === self::TYPE_PRODUCT) {
-            /** @var ProductEntity $product */
+            /** @var ProductEntity|null $product */
             $product = $this->productRepository->search($criteria, $this->context->getContext())->first();
-            if ($product && $product->getMedia() && $product->getMedia()->first() && $product->getMedia()->first(
-                )->getMedia()) {
+            if (
+                $product && $product->getMedia() && $product->getMedia()->first() &&
+                $product->getMedia()->first()->getMedia()
+            ) {
                 return $product->getMedia()->first()->getMedia()->getUrl();
             }
-        } else {
-            if ($type === self::TYPE_CATEGORY) {
-                /** @var CategoryEntity $category */
-                $category = $this->categoryRepository->search($criteria, $this->context->getContext())->first(
-                );
-                if ($category && $category->getMedia()) {
-                    return $category->getMedia()->getUrl();
-                }
+        } elseif ($type === self::TYPE_CATEGORY) {
+            /** @var CategoryEntity|null $category */
+            $category = $this->categoryRepository->search($criteria, $this->context->getContext())->first();
+            if ($category && $category->getMedia()) {
+                return $category->getMedia()->getUrl();
             }
         }
+
         return '';
     }
 
@@ -195,11 +195,17 @@ class SuggestionTransformer implements ResponseTransformerInterface
      */
     private function getId(string $type, ResultSuggestion $suggestion): string
     {
+        /** @var array $attributes */
+        $attributes = $suggestion->getAttributes();
+
         if ($type === self::TYPE_PRODUCT) {
-            return $suggestion->getAttributes()['ProductID'][0];
-        } else if ($type === self::TYPE_CATEGORY) {
-            return $suggestion->getAttributes()['CategoryID'][0];
+            return $attributes['ProductID'][0];
         }
+
+        if ($type === self::TYPE_CATEGORY) {
+            return $attributes['CategoryID'][0];
+        }
+
         return '';
     }
 }

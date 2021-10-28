@@ -42,8 +42,10 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;
 use Shopware\Storefront\Page\Search\SearchPageLoader;
 use Shopware\Storefront\Page\Suggest\SuggestPageLoader;
+use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Class SuggestController
@@ -55,10 +57,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SuggestController extends SearchController
 {
-
     private FactFinderConfigServiceInterface $configService;
     private SuggestApi $suggestApi;
 
+    /**
+     * @param FactFinderConfigServiceInterface $configService
+     * @param SuggestApi $suggestApi
+     * @param SearchPageLoader $searchPageLoader
+     * @param SuggestPageLoader $suggestPageLoader
+     * @param AbstractProductSearchRoute $productSearchRoute
+     */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
         SuggestApi $suggestApi,
@@ -75,27 +83,34 @@ class SuggestController extends SearchController
         $this->suggestApi = $suggestApi;
     }
 
+    /**
+     * @param SalesChannelContext $context
+     * @param Request $request
+     * @return Response
+     * @throws ApiException
+     * @throws Throwable
+     */
     public function suggest(SalesChannelContext $context, Request $request): Response
     {
         $config = $this->configService->get($context->getSalesChannel()->getId());
-        if ($config->isSuggestUseFactFinder()) {
-            $suggestRequest = new SuggestRequest($config->getApiChannel());
-            $suggestRequest->setQuery($request->get('search') ?? '*');
-            $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
-
-            /** @var SuggestionResponse|null $productListingResponse */
-            $suggestionResponse = $resultCollection->get(SuggestionResponse::class);
-
-            if (!$suggestionResponse) {
-                return parent::suggest($context, $request);
-            }
-
-            return $this->renderStorefront(
-                '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
-                ['response' => $suggestionResponse->getGrouped()]
-            );
-        } else {
+        if (!$config->isSuggestUseFactFinder()) {
             return parent::suggest($context, $request);
         }
+
+        $suggestRequest = new SuggestRequest($config->getApiChannel());
+        $suggestRequest->setQuery($request->get('search') ?? '*');
+        $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
+
+        /** @var SuggestionResponse|null $suggestionResponse */
+        $suggestionResponse = $resultCollection->get(SuggestionResponse::class);
+
+        if (!$suggestionResponse) {
+            return parent::suggest($context, $request);
+        }
+
+        return $this->renderStorefront(
+            '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
+            ['response' => $suggestionResponse->getGrouped()]
+        );
     }
 }

@@ -42,7 +42,6 @@ namespace Elio\FactFinder\Core\Suggest;
  */
 class SuggestItem
 {
-
     /**
      * @var string
      */
