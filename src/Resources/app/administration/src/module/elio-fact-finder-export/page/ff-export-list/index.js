@@ -52,7 +52,6 @@ Shopware.Component.register('ff-export-list', {
     },
 
     methods: {
-
         async getList() {
             this.isLoading = true;
             var operator = this;

@@ -44,42 +44,94 @@
                 {% endblock %}
 
                 <sw-card v-if="ff_export" :title="$tc('ff.export.detail.cardTitleBasicInfo')" :isLoading="isLoading">
-                    {% block ff_export_detail_basic_info %}
-                        <sw-field
-                                v-model="ff_export.name"
-                                type="text"
-                                required
-                                :label="$tc('ff.export.detail.labelName')"
-                                :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
-                        </sw-field>
+                    <sw-container slot="grid" rows="auto auto">
+                        <sw-card-section divider="bottom">
+                            {% block ff_export_detail_basic_info %}
+                                <sw-field
+                                        v-model="ff_export.name"
+                                        type="text"
+                                        required
+                                        :label="$tc('ff.export.detail.labelName')"
+                                        :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                </sw-field>
+                                <div class="sw-container" style="grid-template-columns: 1fr 1fr 1fr; gap: 0px 30px; place-items: stretch;">
+                                    <sw-field
+                                            v-model="ff_export.type"
+                                            type="select"
+                                            required
+                                            :options="typeList"
+                                            :label="$tc('ff.export.detail.labelType')">
+                                    </sw-field>
 
-                        <div class="sw-container" style="grid-template-columns: 1fr 1fr 1fr; gap: 0px 30px; place-items: stretch;">
-                            <sw-field
-                                    v-model="ff_export.type"
-                                    :options="typeList"
-                                    type="select"
-                                    :label="$tc('ff.export.detail.labelType')">
-                            </sw-field>
+                                    <sw-field
+                                            v-model="ff_export.format"
+                                            type="select"
+                                            required
+                                            :options="formatList"
+                                            :label="$tc('ff.export.detail.labelFormat')">
+                                    </sw-field>
 
-                            <sw-field
-                                    v-model="ff_export.format"
-                                    :options="formatList"
-                                    type="select"
-                                    :label="$tc('ff.export.detail.labelFormat')">
-                            </sw-field>
+                                    <sw-field
+                                            v-model="ff_export.active"
+                                            type="switch"
+                                            :label="$tc('ff.export.detail.labelActive')"
+                                            :helpText="$tc('ff.export.detail.helpTextActive')">
+                                    </sw-field>
+                                </div>
+                                <sw-field
+                                        v-model="ff_export.interval"
+                                        type="text"
+                                        required
+                                        :label="$tc('ff.export.detail.labelInterval')"
+                                        :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))"
+                                        :helpText="$tc('ff.export.detail.helpTextInterval')">
+                                </sw-field>
 
-                            <sw-field
-                                    v-model="ff_export.active"
-                                    type="switch"
-                                    :label="$tc('ff.export.detail.labelActive')"
-                                    :helpText="$tc('ff.export.detail.helpTextActive')">
-                            </sw-field>
-                        </div>
+                                {% block ff_export_detail_basic_info_saleschannel_language %}
+                                    <sw-field
+                                            v-model="ff_export.salesChannelId"
+                                            type="select"
+                                            required
+                                            :options="salesChannelIdsList"
+                                            :label="$tc('ff.export.detail.labelSalesChannel')">
+                                    </sw-field>
+                                    <sw-field
+                                            v-model="ff_export.languageId"
+                                            type="select"
+                                            required
+                                            :options="languageIdsList"
+                                            :label="$tc('ff.export.detail.labelLanguage')">
+                                    </sw-field>
+                                {% endblock %}
 
-                    {% endblock %}
+                            {% endblock %}
+                        </sw-card-section>
+
+                        {% block ff_export_detail_basic_info_secondary_section %}
+                            <sw-card-section secondary slim v-if="!isNew">
+                                <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
+                                    <sw-description-list>
+                                        <div class="headline">
+                                            Timestamps
+                                        </div>
+
+                                        {% block ff_export_detail_basic_info_lastgeneration_started %}
+                                            <dt>{{ $tc('ff.export.detail.labelLastGenerationStarted') }}</dt>
+                                            <dd>{{ ff_export.lastGenerationStartedAt }}</dd>
+                                        {% endblock %}
+
+                                        {% block ff_export_detail_basic_info_lastgeneration_finished %}
+                                            <dt>{{ $tc('ff.export.detail.labelLastGenerationFinished') }}</dt>
+                                            <dd>{{ ff_export.lastGenerationFinishedAt }}</dd>
+                                        {% endblock %}
+                                    </sw-description-list>
+                                </sw-container>
+                            </sw-card-section>
+                        {% endblock %}
+                    </sw-container>
                 </sw-card>
 
-                <sw-card v-if="ff_export" :title="$tc('ff.export.detail.cardTitleMappings')" :isLoading="isLoading">
+                <sw-card v-if="!isNew" :title="$tc('ff.export.detail.cardTitleMappings')" :isLoading="isLoading">
                     {% block ff_export_detail_mapping_info %}
 
                     {% endblock %}

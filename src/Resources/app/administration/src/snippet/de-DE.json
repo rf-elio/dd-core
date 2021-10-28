@@ -29,6 +29,7 @@
         "labelType": "Type",
         "labelFormat": "Format",
         "labelInterval": "Interval",
+        "helpTextInterval": "CRON-valid interval string example: 0 * * * *",
         "labelSalesChannel": "Sales Channel",
         "labelLanguage": "Language",
         "labelLastGenerationStarted": "Last Generation Started",

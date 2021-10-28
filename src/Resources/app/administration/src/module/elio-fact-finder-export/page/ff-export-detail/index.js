@@ -1,4 +1,5 @@
 import template from './ff-export-detail.html.twig';
+import './ff-export-detail.scss';
 
 const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -73,7 +74,9 @@ Shopware.Component.register('ff-export-detail', {
                     id: 'xml',
                     name: 'xml'
                 }
-            ]
+            ],
+            languageIdsList: [],
+            salesChannelIdsList: []
         };
     },
 
@@ -91,14 +94,41 @@ Shopware.Component.register('ff-export-detail', {
         exportMappingsRepository() {
             return this.repositoryFactory.create('elio_ff_export_mappings');
         },
-        exportMappingsCriteria() {
-
-        }
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
+        languageRepository() {
+            return this.repositoryFactory.create('language');
+        },
+        exportMappingsCriteria() {}
     },
 
     methods: {
         createdComponent() {
+            this.fillSelectors();
             this.loadEntityData();
+        },
+
+        fillSelectors() {
+            var operator = this;
+            this.salesChannelRepository.search(new Criteria, Shopware.Context.api)
+                .then((salesChannels) => {
+                    salesChannels.forEach((salesChannel) => {
+                        operator.salesChannelIdsList.push({
+                            id: salesChannel.id,
+                            name: salesChannel.name
+                        });
+                    });
+                });
+            this.languageRepository.search(new Criteria, Shopware.Context.api)
+                .then((languages) => {
+                    languages.forEach((language) => {
+                        operator.languageIdsList.push({
+                            id: language.id,
+                            name: language.name
+                        });
+                    });
+                });
         },
 
         loadEntityData() {
