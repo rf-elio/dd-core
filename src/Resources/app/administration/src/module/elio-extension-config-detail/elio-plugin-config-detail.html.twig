@@ -1,0 +1,22 @@
+<sw-page class="elio-extension-config" hideIcon>
+    <template slot="smart-bar-header">
+        {{ namespace }}
+    </template>
+    <template slot="smart-bar-actions">
+        <sw-button variant="primary" class="sw-extension-config__save-action" @click.prevent="onSave">
+            {{ $tc('global.default.save') }}
+        </sw-button>
+    </template>
+    <template slot="language-switch">
+        <elio-language-selector
+                :languages="languages"
+                @on-selected="onChangeLanguage" ></elio-language-selector>
+    </template>
+    <sw-card-view slot="content">
+        <sw-system-config :domain="domain"
+                          salesChannelSwitchable
+                          :salesChannelId="salesChannelId"
+                          ref="systemConfig">
+        </sw-system-config>
+    </sw-card-view>
+</sw-page>

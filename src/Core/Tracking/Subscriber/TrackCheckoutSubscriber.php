@@ -98,6 +98,11 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $salesChannelId = $event->getSalesChannelId();
+        if ($event->getContext()->getLanguageIdChain()) {
+            if(count($event->getContext()->getLanguageIdChain()) > 0) {
+                $this->configService->setLanguagePrefix($event->getContext()->getLanguageIdChain()[0]);
+            }
+        }
         $config = $this->configService->get($salesChannelId);
 
         if(

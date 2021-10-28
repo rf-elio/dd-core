@@ -81,7 +81,7 @@ class SearchRequestBuilder
         ?SearchRequest $searchRequest = null
     ) : SearchRequest
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $config = $this->configService->getByContext($salesChannelContext);
         $searchRequest = $searchRequest ?? new SearchRequest(
             $config->getApiChannel()
         );
