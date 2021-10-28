@@ -83,7 +83,8 @@ class RecordsGetCommand extends Command
     protected function configure(): void
     {
         $this->setName('elio-ff:record:get')
-            ->addArgument('id', InputArgument::REQUIRED, 'Record that should be fetched. The product id must be provided.');
+            ->addArgument('id', InputArgument::REQUIRED, 'Record that should be fetched. The product id must be provided.')
+            ->addArgument('languageId', InputArgument::OPTIONAL, 'LanguageId to get language-based api configuration. Optional, if not set global settings will be fetched.');
     }
 
     /**
@@ -95,16 +96,16 @@ class RecordsGetCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
+        $languageId = $input->getArgument('languageId');
         $context = Context::createDefaultContext();
         $salesChannels = $this->salesChannelRepository->search(new Criteria(), $context);
 
         $table = new Table($output);
         $table->setHeaders(['Channel', 'Record']);
 
-
         /** @var SalesChannelEntity $salesChannel */
         foreach ($salesChannels as $salesChannel) {
-            $config = $this->configService->get($salesChannel->getId());
+            $config = $this->configService->get($salesChannel->getId(), $languageId);
 
             if(!$config->isActive()) {
                 continue;

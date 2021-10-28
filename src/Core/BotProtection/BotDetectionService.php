@@ -38,6 +38,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\BotProtection\Event\BotDetectedEvent;
 use Elio\FactFinder\Core\BotProtection\Event\BotDetectionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -70,24 +71,24 @@ class BotDetectionService implements BotDetectionServiceInterface
     /**
      * Checks the given request for a possible blocked bot
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      * @param Request $request
      * @return bool
      */
-    public function detect(string $salesChannelId, Request $request) : bool
+    public function detect(SalesChannelContext $salesChannelContext, Request $request) : bool
     {
-        $config = $this->configService->get($salesChannelId);
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if (!$config->isBotProtectionActive()) {
             return false;
         }
 
-        if(!$this->performChecks($salesChannelId, $config, $request)) {
+        if(!$this->performChecks($salesChannelContext->getSalesChannelId(), $config, $request)) {
             return false;
         }
 
-        $detected = $this->performChecks($salesChannelId, $config, $request);
-        $event = new BotDetectedEvent($salesChannelId, $request, $detected);
+        $detected = $this->performChecks($salesChannelContext->getSalesChannelId(), $config, $request);
+        $event = new BotDetectedEvent($salesChannelContext->getSalesChannelId(), $request, $detected);
         $this->eventDispatcher->dispatch($event);
         return $event->isDetected();
     }

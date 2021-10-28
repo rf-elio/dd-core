@@ -92,7 +92,7 @@ class ProductDetailTrackingController extends StorefrontController
      */
     public function trackProductDetail(Request $request, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if(
             !$config->isActive() ||

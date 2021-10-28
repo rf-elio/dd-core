@@ -19,6 +19,7 @@
       "labelLanguage": "Language",
       "labelExportCommand": "Export Command",
       "labelExportCommandForce": "Force",
+      "labelDetails": "Details",
       "labelLastGenerationStarted": "Last Generation Started",
       "labelLastGenerationFinished": "Last Generation Finished",
       "labelNextGenerationDueAt": "Next Generation At",
@@ -29,7 +30,14 @@
       "columnSource": "Source Field",
       "columnTarget": "Target Field Name",
       "messageMappingsEmptyTitle": "No mappings yet",
-      "messageMappingsEmptySubline": "Manage mappings here"
+      "messageMappingsEmptySubline": "Manage mappings here",
+      "status": {
+        "title": "Status",
+        "exists": "Downloads exists",
+        "notExists": "Download does not exist",
+        "path": "Path: "
+      },
+      "download": "Download"
     },
     "list": {
       "buttonCreate": "Create Export",

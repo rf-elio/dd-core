@@ -87,7 +87,7 @@ class BotProtectionRequestSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if($this->botDetectionService->detect($context->getSalesChannelId(), $event->getRequest())) {
+        if($this->botDetectionService->detect($context, $event->getRequest())) {
             throw new AccessDeniedHttpException();
         }
     }

@@ -34,8 +34,12 @@ namespace Elio\FactFinder\Configuration;
 
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use function _PHPStan_68495e8a9\RingCentral\Psr7\parse_query;
 
 /**
  * Class ConfigurationService
@@ -51,72 +55,120 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
+    /**
+     * @var array<string>
+     */
+    private array $languagePrefixCache = [];
+    private EntityRepositoryInterface $languageRepository;
 
     /**
      * @param SystemConfigService $systemConfigService
      * @param EventDispatcherInterface $eventDispatcher
+     * @param EntityRepositoryInterface $languageRepository
      */
     public function __construct(
         SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher
-    )
-    {
+        EventDispatcherInterface $eventDispatcher,
+        EntityRepositoryInterface $languageRepository
+    ) {
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;
+        $this->languageRepository = $languageRepository;
+    }
+
+    /**
+     * Fetches the ff plugin configuration for the given SalesChannelContext
+     *
+     * @param SalesChannelContext $salesChannelContext
+     * @return Configuration
+     */
+    public function getByContext(SalesChannelContext $salesChannelContext): Configuration
+    {
+        return $this->get(
+            $salesChannelContext->getSalesChannelId(),
+            LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext)
+        );
     }
 
     /**
      * Fetches the ff plugin configuration for the given sales channel
      *
      * @param string $salesChannelId
+     * @param string|null $languageId
      * @return Configuration
      */
-    public function get(string $salesChannelId) : Configuration
+    public function get(string $salesChannelId, ?string $languageId = null): Configuration
     {
-        if(isset($this->loadedConfigurations[$salesChannelId])) {
-            return $this->loadedConfigurations[$salesChannelId];
+        $languagePrefix = $this->getLanguagePrefix($languageId);
+
+        if (isset($this->loadedConfigurations[$salesChannelId][$languagePrefix])) {
+            return $this->loadedConfigurations[$salesChannelId][$languagePrefix];
         }
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
-        parse_str($config['additionalRequestParameters'] ?? '', $additionalRequestParameters);
+        parse_str(
+            $this->getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
+            $additionalRequestParameters
+        );
+
         $configuration = new Configuration(
-            $config['active'] ?? false,
-            $config['apiChannel'] ?? '',
-            $config['apiTimeout'] ?? 0,
-            $config['useAso'] ?? false,
-            $config['apiDebugActive'] ?? false,
-            $config['searchUseFactFinder'] ?? false,
-            !empty($config['trackRequireConsent']),
-            !empty($config['trackCart']),
-            !empty($config['trackCheckout']),
-            !empty($config['trackLogin']),
-            !empty($config['trackProductView']),
-            !empty($config['listingUseFactFinder']),
+            $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiChannel', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiTimeout', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'useAso', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiDebugActive', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'searchUseFactFinder', $languagePrefix),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'listingUseFactFinder', $languagePrefix)),
             $additionalRequestParameters,
-            $config['botProtectionActive'],
-            $config['botProtectionUseBadBotList'],
-            $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
-            $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
-            $this->prepareValueList($config, 'botProtectionIpFilter'),
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix)
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
         $this->eventDispatcher->dispatch($event);
-        $this->loadedConfigurations[$salesChannelId] = $event->getConfiguration();
+        $this->loadedConfigurations[$salesChannelId][$languagePrefix] = $event->getConfiguration();
         return $event->getConfiguration();
     }
 
-    /***
+    /**
      * Prepares a pipe separated values list
      *
      * @param array $config
      * @param $value
+     * @param string $languagePrefix
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, $value)
+    protected function prepareValueList(array $config, $value, string $languagePrefix)
     {
-        $valueList = explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
+        $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
+            self::CONFIG_VALUE_SEPARATOR,
+            $config[$languagePrefix . $value] ?? ''
+        ) : explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
         return array_filter($valueList);
+    }
+
+    /**
+     * Returns plugin config for specified key with languagePrefix or default
+     * @param array $config
+     * @param string $key
+     * @param string $languagePrefix
+     * @return mixed
+     */
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
+    {
+        if (array_key_exists($languagePrefix . $key, $config)) {
+            return $config[$languagePrefix . $key];
+        }
+
+        return $config[$key] ?? null;
     }
 
     /**
@@ -133,5 +185,36 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $config['apiUsername'],
             $config['apiPassword'],
         );
+    }
+
+    /**
+     * Sets languagePrefix by languageId
+     * to fetch plugin configuration based on language
+     *
+     * @param string|null $languageId
+     * @return string
+     */
+    private function getLanguagePrefix(?string $languageId): string
+    {
+        if(!$languageId) {
+            return '';
+        }
+
+        if(isset($this->languagePrefixCache[$languageId])) {
+            return $this->languagePrefixCache[$languageId];
+        }
+
+        $criteria = new Criteria([$languageId]);
+        $criteria->addAssociation('locale');
+        /** @var LanguageEntity|null $language */
+        $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
+
+        if($language && $language->getLocale()) {
+            $languagePrefix = $language->getLocale()->getCode() . '_';
+            $this->languagePrefixCache[$languageId] = $languagePrefix;
+            return $languagePrefix;
+        }
+
+        return '';
     }
 }

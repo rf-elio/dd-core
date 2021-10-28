@@ -117,7 +117,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
      */
     protected function trackCart(SalesChannelContext $salesChannelContext, array $items, ?Cart $cart = null): void
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if(
             empty($items) ||

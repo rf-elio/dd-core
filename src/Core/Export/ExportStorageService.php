@@ -93,7 +93,7 @@ class ExportStorageService
      * Writes the content of the given resource into the export file
      *
      * @param ExportEntity $export
-     * @param $handle
+     * @param resource $handle
      * @throws FileExistsException
      * @throws \League\Flysystem\FileNotFoundException
      */
