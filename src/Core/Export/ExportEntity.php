@@ -59,6 +59,7 @@ class ExportEntity extends Entity
     protected string $mapping;
     protected ?DateTimeInterface $lastGenerationStartedAt;
     protected ?DateTimeInterface $lastGenerationFinishedAt;
+    protected ?DateTimeInterface $nextGenerationDueAt;
     protected string $salesChannelId;
     protected ?SalesChannelEntity $salesChannel;
     protected string $languageId;
@@ -254,5 +255,21 @@ class ExportEntity extends Entity
     public function setMapping(string $mapping): void
     {
         $this->mapping = $mapping;
+    }
+
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getNextGenerationDueAt(): ?DateTimeInterface
+    {
+        return $this->nextGenerationDueAt;
+    }
+
+    /**
+     * @param DateTimeInterface|null $nextGenerationDueAt
+     */
+    public function setNextGenerationDueAt(?DateTimeInterface $nextGenerationDueAt): void
+    {
+        $this->nextGenerationDueAt = $nextGenerationDueAt;
     }
 }

@@ -33,10 +33,14 @@
 namespace Elio\FactFinder\Command;
 
 use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Service\Export\ExportManagerInterface;
+use Exception;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -63,21 +67,48 @@ class ExportGenerateCommand extends Command
 
     protected function configure(): void
     {
-        // @todo: Support force refresh (elio-ff:export:generate -f)
-        // @todo: Support refresh of one export (elio-ff:export:generate 1)
-        // @todo: Support force refresh of one export (elio-ff:export:generate 1 -f)
-        $this->setName('elio-ff:export:generate');
+        $this->setName('elio-ff:export:generate')
+             ->addArgument('exportId', InputArgument::OPTIONAL, 'Id of the export that should be generated')
+             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $force = $input->getOption('force');
+        $exportId = $input->getArgument('exportId');
         $context = Context::createDefaultContext();
 
-        $output->writeln('<info>Getting due exports...</info>');
-        $dueExports = $this->exportService->getDueExports($context);
+        $consoleMessage = 'Loading all exports';
+        $criteria = new Criteria();
+        if($exportId) {
+            $criteria->addFilter(new EqualsFilter('id', $exportId));
+            $consoleMessage = 'Loading export "'.$exportId.'"';
+        }
+
+        if($force) {
+            $consoleMessage .= ' ignoring due';
+            $dueExports = $this->exportService->getExports($criteria, $context);
+        } else {
+            $consoleMessage .= ' only due';
+            $dueExports = $this->exportService->getDueExports($criteria, $context);
+        }
+
+        $output->writeln('<info>'.$consoleMessage.'</info>');
+
+        if($dueExports->count() <= 0) {
+            $output->writeln('<comment>No exports to execute found</comment>');
+        }
 
         foreach ($dueExports as $dueExport) {
-            $output->writeln(sprintf('<info>Generating export: "%s"</info>', $dueExport->getName()));
+            $output->writeln(sprintf(
+                '<info>Generating export: "%s" with id "%s"</info>', $dueExport->getName(), $dueExport->getId()
+            ));
             $this->exportService->generate($dueExport, $context);
         }
 

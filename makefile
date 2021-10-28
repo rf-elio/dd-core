@@ -21,3 +21,7 @@ test: ## Starts all Tests
 
 stan: ## Starts the PHPStan Analyser
 	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon
+
+update: ## Executes the plugin migrations
+	../../../bin/console database:migrate FactFinder --all
+

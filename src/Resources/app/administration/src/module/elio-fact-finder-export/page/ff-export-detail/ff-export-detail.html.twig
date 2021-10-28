@@ -4,7 +4,7 @@
         {% block ff_export_detail_smart_bar_header %}
             <template slot="smart-bar-header">
                 {% block ff_export_detail_smart_bar_header_title %}
-                    <h2>{{ placeholder(ff_export, 'name', $tc('ff.export.detail.textHeadline')) }}</h2>
+                    <h2>{{ placeholder(ff_export, 'name', $tc('ff-export.detail.textHeadline')) }}</h2>
                 {% endblock %}
             </template>
         {% endblock %}
@@ -15,7 +15,7 @@
                     <sw-button class="sw-property-detail__back-action"
                                :disabled="isLoading"
                                @click="onCancel">
-                        {{ $tc('ff.export.buttonCancel') }}
+                        {{ $tc('ff-export.buttonCancel') }}
                     </sw-button>
                 {% endblock %}
 
@@ -28,7 +28,7 @@
                             variant="primary"
                             @process-finish="saveFinish"
                             @click.prevent="onSave">
-                        {{ $tc('ff.export.buttonSave') }}
+                        {{ $tc('ff-export.buttonSave') }}
                     </sw-button-process>
                 {% endblock %}
             </template>
@@ -39,11 +39,11 @@
 
                 {% block ff_export_detail_content_language_info %}
                     <sw-language-info
-                            :entityDescription="placeholder(ff_export, 'name', $tc('ff.export.detail.textHeadline'))">
+                            :entityDescription="placeholder(ff_export, 'name', $tc('ff-export.detail.textHeadline'))">
                     </sw-language-info>
                 {% endblock %}
 
-                <sw-card v-if="ff_export" :title="$tc('ff.export.detail.cardTitleBasicInfo')" :isLoading="isLoading">
+                <sw-card v-if="ff_export" :title="$tc('ff-export.detail.cardTitleBasicInfo')" :isLoading="isLoading">
                     <sw-container slot="grid" rows="auto auto">
                         <sw-card-section divider="bottom">
                             {% block ff_export_detail_basic_info %}
@@ -51,8 +51,8 @@
                                         v-model="ff_export.name"
                                         type="text"
                                         required
-                                        :label="$tc('ff.export.detail.labelName')"
-                                        :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                        :label="$tc('ff-export.detail.labelName')"
+                                        :placeholder="placeholder(ff_export, 'name', $tc('ff-export.detail.placeholderName'))">
                                 </sw-field>
                                 <div class="sw-container" style="grid-template-columns: 1fr 1fr 1fr; gap: 0px 30px; place-items: stretch;">
                                     <sw-field
@@ -60,7 +60,7 @@
                                             type="select"
                                             required
                                             :options="typeList"
-                                            :label="$tc('ff.export.detail.labelType')">
+                                            :label="$tc('ff-export.detail.labelType')">
                                     </sw-field>
 
                                     <sw-field
@@ -68,23 +68,23 @@
                                             type="select"
                                             required
                                             :options="formatList"
-                                            :label="$tc('ff.export.detail.labelFormat')">
+                                            :label="$tc('ff-export.detail.labelFormat')">
                                     </sw-field>
 
                                     <sw-field
                                             v-model="ff_export.active"
                                             type="switch"
-                                            :label="$tc('ff.export.detail.labelActive')"
-                                            :helpText="$tc('ff.export.detail.helpTextActive')">
+                                            :label="$tc('ff-export.detail.labelActive')"
+                                            :helpText="$tc('ff-export.detail.helpTextActive')">
                                     </sw-field>
                                 </div>
                                 <sw-field
                                         v-model="ff_export.interval"
                                         type="text"
                                         required
-                                        :label="$tc('ff.export.detail.labelInterval')"
+                                        :label="$tc('ff-export.detail.labelInterval')"
                                         placeholder="0 * * * *"
-                                        :helpText="$tc('ff.export.detail.helpTextInterval')">
+                                        :helpText="$tc('ff-export.detail.helpTextInterval')">
                                 </sw-field>
 
                                 {% block ff_export_detail_basic_info_saleschannel_language %}
@@ -93,14 +93,14 @@
                                             type="select"
                                             required
                                             :options="salesChannelIdsList"
-                                            :label="$tc('ff.export.detail.labelSalesChannel')">
+                                            :label="$tc('ff-export.detail.labelSalesChannel')">
                                     </sw-field>
                                     <sw-field
                                             v-model="ff_export.languageId"
                                             type="select"
                                             required
                                             :options="languageIdsList"
-                                            :label="$tc('ff.export.detail.labelLanguage')">
+                                            :label="$tc('ff-export.detail.labelLanguage')">
                                     </sw-field>
                                 {% endblock %}
 
@@ -112,17 +112,63 @@
                                 <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
                                     <sw-description-list>
                                         <div class="headline">
-                                            Timestamps
+                                            {{ $tc('ff-export.detail.labelDetails') }}
                                         </div>
 
                                         {% block ff_export_detail_basic_info_lastgeneration_started %}
-                                            <dt>{{ $tc('ff.export.detail.labelLastGenerationStarted') }}</dt>
+                                            <dt>{{ $tc('ff-export.detail.labelLastGenerationStarted') }}</dt>
                                             <dd>{{ ff_export.lastGenerationStartedAt }}</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_lastgeneration_finished %}
-                                            <dt>{{ $tc('ff.export.detail.labelLastGenerationFinished') }}</dt>
+                                            <dt>{{ $tc('ff-export.detail.labelLastGenerationFinished') }}</dt>
                                             <dd>{{ ff_export.lastGenerationFinishedAt }}</dd>
+                                        {% endblock %}
+
+                                        {% block ff_export_detail_basic_info_next_generation_due_at %}
+                                            <dt>{{ $tc('ff-export.detail.labelNextGenerationDueAt') }}</dt>
+                                            <dd>{{ ff_export.nextGenerationDueAt }}</dd>
+                                        {% endblock %}
+
+                                        {% block ff_export_detail_basic_info_status %}
+                                            <dt>{{ $tc('ff-export.detail.status.title') }}</dt>
+                                            <dd>
+                                                <sw-field
+                                                        v-model="getDownloadUrl"
+                                                        type="text"
+                                                        readonly>
+                                                </sw-field>
+                                                <sw-button variant="primary"
+                                                           size="small"
+                                                           v-if="status.exists"
+                                                           :disabled="!status.exists"
+                                                           @click="onDownloadExport">
+                                                    {{ $tc('ff-export.detail.download') }}
+                                                </sw-button>
+                                                <sw-button variant="danger"
+                                                           size="small"
+                                                           v-if="!status.exists"
+                                                           :disabled="!status.exists"
+                                                           @click="onDownloadExport">
+                                                    {{ $tc('ff-export.detail.status.notExists') }}
+                                                </sw-button>
+                                            </dd>
+                                        {% endblock %}
+
+                                        {% block ff_export_detail_basic_info_export_id %}
+                                            <dt>{{ $tc('ff-export.detail.labelExportCommand') }}</dt>
+                                            <dd>
+                                                <sw-field
+                                                        v-model="command"
+                                                        type="text"
+                                                        readonly>
+                                                </sw-field>
+                                                <sw-field
+                                                        v-model="commandForce"
+                                                        type="switch"
+                                                        :label="$tc('ff-export.detail.labelExportCommandForce')">
+                                                </sw-field>
+                                            </dd>
                                         {% endblock %}
                                     </sw-description-list>
                                 </sw-container>
@@ -133,7 +179,7 @@
 
                 <sw-card :class="[{'ff-mappings--empty':isMappingsEmpty}]"
                          v-if="!isNew"
-                         :title="$tc('ff.export.detail.cardTitleMappings')"
+                         :title="$tc('ff-export.detail.cardTitleMappings')"
                          :isLoading="isLoading">
                     <div class="ff-mappings">
                     {% block ff_export_detail_mapping_info %}
@@ -141,29 +187,29 @@
                                    variant="primary"
                                    size="small"
                                    @click="onAddNewMapping">
-                            {{ $tc('ff.export.detail.buttonMappingAdd') }}
+                            {{ $tc('ff-export.detail.buttonMappingAdd') }}
                         </sw-button>
 
                         <div class="sw-container" style="grid-template-columns: 3fr 3fr 1fr; gap: 0px 30px; place-items: stretch;">
                             <div>
-                                <div class="headline">{{ $tc('ff.export.detail.columnSource') }}</div>
+                                <div class="headline">{{ $tc('ff-export.detail.columnSource') }}</div>
                                 {% block ff_export_detail_mapping_source_column %}
                                     <sw-field
                                             v-for="export_mapping in ff_export_mappings"
                                             v-model="export_mapping.source"
                                             type="text"
-                                            :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                            :placeholder="placeholder(ff_export, 'name', $tc('ff-export.detail.placeholderName'))">
                                     </sw-field>
                                 {% endblock %}
                             </div>
                             <div>
-                                <div class="headline">{{ $tc('ff.export.detail.columnTarget') }}</div>
+                                <div class="headline">{{ $tc('ff-export.detail.columnTarget') }}</div>
                                 {% block ff_export_detail_mapping_target_column %}
                                     <sw-field
                                             v-for="export_mapping in ff_export_mappings"
                                             v-model="export_mapping.target"
                                             type="text"
-                                            :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                            :placeholder="placeholder(ff_export, 'name', $tc('ff-export.detail.placeholderName'))">
                                     </sw-field>
                                 {% endblock %}
                             </div>
@@ -174,7 +220,7 @@
                                                variant="danger"
                                                size="small"
                                                @click.prevent="onDeleteMapping(export_mapping.id)">
-                                        {{ $tc('ff.export.detail.buttonMappingRemove') }}
+                                        {{ $tc('ff-export.detail.buttonMappingRemove') }}
                                     </sw-button>
                                 {% endblock %}
                             </div>
@@ -183,9 +229,9 @@
                     </div>
 
                     <sw-empty-state v-if="isMappingsEmpty"
-                                    :title="$tc('ff.export.detail.messageMappingsEmptyTitle')"
+                                    :title="$tc('ff-export.detail.messageMappingsEmptyTitle')"
                                     icon="default-documentation-file"
-                                    :subline="$tc('ff.export.detail.messageMappingsEmptySubline')"
+                                    :subline="$tc('ff-export.detail.messageMappingsEmptySubline')"
                                     :absolute="false">
                     </sw-empty-state>
                 </sw-card>

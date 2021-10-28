@@ -83,7 +83,7 @@ class ProductDetailTrackingController extends StorefrontController
     }
 
     /**
-     * @Route("/elioFactFinder/productDetailTrack", name="elio-factfinder.product-detail-track", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
+     * @Route("/widgets/ff/productDetailTrack", name="widgets.elio-ff.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param Request $request
      * @param RequestDataBag $dataBag

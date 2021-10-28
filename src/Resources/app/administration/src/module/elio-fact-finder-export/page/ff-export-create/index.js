@@ -2,7 +2,6 @@ const { Component, Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
-
     data() {
         return {
             isNew: true,
@@ -20,8 +19,10 @@ Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
             this.ff_export.name = 'New_Export_Name';
 
             // todo: fetch it another way
-            this.ff_export.interval = '0 * * * *';
+            this.ff_export.interval = '0 */4 * * *';
+            this.ff_export.type = 'product';
             this.ff_export.format = 'csv';
+            this.ff_export.active = true;
             this.ff_export.mapping = '[]';
 
             this.isLoading = false;

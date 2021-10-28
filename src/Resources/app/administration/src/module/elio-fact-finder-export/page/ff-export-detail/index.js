@@ -1,14 +1,15 @@
 import template from './ff-export-detail.html.twig';
 import './ff-export-detail.scss';
 
-const { Component, Mixin } = Shopware;
+const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Shopware.Component.register('ff-export-detail', {
     template: template,
 
     inject: [
-        'repositoryFactory'
+        'repositoryFactory',
+        'ffExport'
     ],
 
     mixins: [
@@ -49,20 +50,12 @@ Shopware.Component.register('ff-export-detail', {
             // todo: fetch somehow with ajax to server or from configs or from file
             typeList: [
                 {
-                    id: 'suggest',
-                    name: 'suggest'
-                },
-                {
                     id: 'product',
                     name: 'product'
                 },
                 {
-                    id: 'category',
-                    name: 'category'
-                },
-                {
-                    id: 'category_link',
-                    name: 'category_link'
+                    id: 'suggest',
+                    name: 'suggest'
                 }
             ],
             formatList: [
@@ -79,7 +72,12 @@ Shopware.Component.register('ff-export-detail', {
             salesChannelIdsList: [],
             ff_export_mappings: [],
             ff_export_mappings_newId: 0,
-            isMappingsEmpty: true
+            isMappingsEmpty: true,
+            commandForce: false,
+            status: {
+                exists: false,
+                location: ''
+            }
         };
     },
 
@@ -100,12 +98,23 @@ Shopware.Component.register('ff-export-detail', {
         languageRepository() {
             return this.repositoryFactory.create('language');
         },
+        command() {
+            if(!this.ff_export) {
+                return '...';
+            }
+
+            return 'bin/console elio-ff:export:generate ' + (this.commandForce ? '-f ' : '') + this.ff_export.id;
+        },
+        getDownloadUrl() {
+            return this.ffExport.getDownloadUrl(this.exportId)
+        }
     },
 
     methods: {
         createdComponent() {
             this.fillSelectors();
             this.loadEntityData();
+            this.updateStatus();
         },
 
         fillSelectors() {
@@ -151,11 +160,21 @@ Shopware.Component.register('ff-export-detail', {
                 });
         },
 
+        /**
+         * Updates the current status of this export
+         */
+        updateStatus() {
+            this.ffExport.getStatus(this.exportId).then((response) => {
+                this.status = response.data
+            })
+        },
+
         saveFinish() {
             this.isSaveSuccessful = false;
         },
 
         onSave() {
+            this.ff_export.nextGenerationDueAt = null;
             this.isSaveSuccessful = false;
             this.isLoading = true;
             var operator = this;
@@ -167,7 +186,7 @@ Shopware.Component.register('ff-export-detail', {
                 operator.isSaveSuccessful = true;
             }).catch((exception) => {
                 operator.createNotificationError({
-                    message: this.$tc('ff.export.detail.messageSaveError')
+                    message: this.$tc('ff-export.detail.messageSaveError')
                 });
                 operator.isLoading = false;
                 throw exception;
@@ -242,6 +261,13 @@ Shopware.Component.register('ff-export-detail', {
                 this.isMappingsEmpty = false;
             }
             return result;
+        },
+
+        /**
+         * Opens the download in a new window
+         */
+        onDownloadExport() {
+            window.open(this.ffExport.getDownloadUrl(this.exportId), '_blank');
         }
     }
 });
