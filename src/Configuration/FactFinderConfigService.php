@@ -80,12 +80,12 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         parse_str($config['additionalRequestParameters'] ?? '', $additionalRequestParameters);
         $configuration = new Configuration(
-            $config['active'],
-            $config['apiChannel'],
-            $config['apiTimeout'],
-            $config['useAso'],
-            $config['apiDebugActive'],
-            $config['searchUseFactFinder'],
+            $config['active'] ?? false,
+            $config['apiChannel'] ?? '',
+            $config['apiTimeout'] ?? 0,
+            $config['useAso'] ?? false,
+            $config['apiDebugActive'] ?? false,
+            $config['searchUseFactFinder'] ?? false,
             !empty($config['trackRequireConsent']),
             !empty($config['trackCart']),
             !empty($config['trackCheckout']),
