@@ -64,7 +64,7 @@ Shopware.Component.register('ff-export-list', {
         onConfirmDelete(id) {
             this.showDeleteModal = false;
 
-            return this.filtersRepository.delete(id).then(() => {
+            return this.exportRepository.delete(id).then(() => {
                 this.getList();
             });
         },
@@ -97,13 +97,40 @@ Shopware.Component.register('ff-export-list', {
         },
 
         getExportColumns() {
-            return [{
-                property: 'id',
-                label: 'Export ID',
-                routerLink: 'elio.factfinder.export.detail',
-                allowResize: false,
-                primary: true
-            }];
+            return [
+                {
+                    property: 'id',
+                    label: this.$tc('ff.export.list.columns.id'),
+                    routerLink: 'elio.factfinder.export.detail',
+                    allowResize: false,
+                    primary: true
+                },
+                {
+                    property: 'name',
+                    label: this.$tc('ff.export.list.columns.name'),
+                    allowResize: false,
+                },
+                {
+                    property: 'active',
+                    label: this.$tc('ff.export.list.columns.active'),
+                    allowResize: false,
+                },
+                {
+                    property: 'type',
+                    label: this.$tc('ff.export.list.columns.type'),
+                    allowResize: false,
+                },
+                {
+                    property: 'format',
+                    label: this.$tc('ff.export.list.columns.format'),
+                    allowResize: false,
+                },
+                {
+                    property: 'lastGenerationFinishedAt',
+                    label: this.$tc('ff.export.list.columns.lastGenerationFinishedAt'),
+                    allowResize: false,
+                }
+            ];
         }
     }
 });

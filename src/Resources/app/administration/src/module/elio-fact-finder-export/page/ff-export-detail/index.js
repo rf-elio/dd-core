@@ -78,7 +78,8 @@ Shopware.Component.register('ff-export-detail', {
             languageIdsList: [],
             salesChannelIdsList: [],
             ff_export_mappings: [],
-            ff_export_mappings_newId: 0
+            ff_export_mappings_newId: 0,
+            isMappingsEmpty: true
         };
     },
 
@@ -178,6 +179,9 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         onAddNewMapping() {
+            if (this.isMappingsEmpty) {
+                this.isMappingsEmpty = false;
+            }
             this.ff_export_mappings.push({
                 id: this.ff_export_mappings_newId,
                 source: 'new_source',
@@ -195,7 +199,12 @@ Shopware.Component.register('ff-export-detail', {
                     }
                 }
             });
-            this.ff_export_mappings.splice(position, 1);
+            if (position !== -1) {
+                this.ff_export_mappings.splice(position, 1);
+                if (this.ff_export_mappings.length === 0) {
+                    this.isMappingsEmpty = true;
+                }
+            }
         },
 
         setMappings() {
@@ -229,6 +238,9 @@ Shopware.Component.register('ff-export-detail', {
                 );
                 i++;
             });
+            if (mappings.length >= 1) {
+                this.isMappingsEmpty = false;
+            }
             return result;
         }
     }

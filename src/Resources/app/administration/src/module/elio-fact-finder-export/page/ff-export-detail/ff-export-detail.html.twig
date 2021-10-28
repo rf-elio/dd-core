@@ -131,7 +131,10 @@
                     </sw-container>
                 </sw-card>
 
-                <sw-card v-if="!isNew" :title="$tc('ff.export.detail.cardTitleMappings')" :isLoading="isLoading">
+                <sw-card :class="[{'ff-mappings--empty':isMappingsEmpty}]"
+                         v-if="!isNew"
+                         :title="$tc('ff.export.detail.cardTitleMappings')"
+                         :isLoading="isLoading">
                     <div class="ff-mappings">
                     {% block ff_export_detail_mapping_info %}
                         <sw-button class="ff-mappings-button-add"
@@ -178,6 +181,13 @@
                         </div>
                     {% endblock %}
                     </div>
+
+                    <sw-empty-state v-if="isMappingsEmpty"
+                                    :title="$tc('ff.export.detail.messageMappingsEmptyTitle')"
+                                    icon="default-documentation-file"
+                                    :subline="$tc('ff.export.detail.messageMappingsEmptySubline')"
+                                    :absolute="false">
+                    </sw-empty-state>
                 </sw-card>
 
             </sw-card-view>

@@ -18,14 +18,6 @@
                                   @selection-change=""
                                   :disableDataFetching="true">
 
-                        <template #column-exportId="{ item }">
-                            {% block ff_export_list_grid_id_link %}
-                                <router-link :to="{ name: 'elio.factfinder.export.detail', params: { exportId: item.id } }">
-                                    {{ item.id }}
-                                </router-link>
-                            {% endblock %}
-                        </template>
-
                         {% block ff_export_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
                                 {% block ff_export_list_grid_columns_actions_detail %}

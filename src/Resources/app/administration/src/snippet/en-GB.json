@@ -39,9 +39,19 @@
         "buttonMappingAdd": "Add new mapping",
         "buttonMappingRemove": "Remove",
         "columnSource": "Source Field",
-        "columnTarget": "Target Field Name"
+        "columnTarget": "Target Field Name",
+        "messageMappingsEmptyTitle": "No mappings yet",
+        "messageMappingsEmptySubline": "Manage mappings here"
       },
       "list": {
+        "columns": {
+          "id": "Export ID",
+          "name": "Name",
+          "active": "Active",
+          "type": "Type",
+          "format": "Format",
+          "lastGenerationFinishedAt": "Last Generation Time"
+        },
         "contextMenuView": "Edit",
         "contextMenuDelete": "Delete",
         "textDeleteConfirm": "Are you sure you really want to delete the export \"{name}\"?",
