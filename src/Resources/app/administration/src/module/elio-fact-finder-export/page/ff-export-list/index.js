@@ -24,7 +24,8 @@ Shopware.Component.register('ff-export-list', {
             activeFilterNumber: 0,
             page: 1,
             limit: 25,
-            total: 1
+            total: 1,
+            showDeleteModal: false
         };
     },
 
@@ -52,6 +53,22 @@ Shopware.Component.register('ff-export-list', {
     },
 
     methods: {
+        onDelete(id) {
+            this.showDeleteModal = id;
+        },
+
+        onCloseDeleteModal() {
+            this.showDeleteModal = false;
+        },
+
+        onConfirmDelete(id) {
+            this.showDeleteModal = false;
+
+            return this.filtersRepository.delete(id).then(() => {
+                this.getList();
+            });
+        },
+
         async getList() {
             this.isLoading = true;
             var operator = this;
