@@ -13,6 +13,51 @@
         "orderReferenceLabel": "Bestellreferenznummer",
         "deliveryDateLabel": "Wunschliefertermin"
       }
+    },
+    "export": {
+      "title": "FactFinderExport",
+      "description": "",
+      "buttonSave": "Save",
+      "buttonCancel": "Cancel",
+      "detail" : {
+        "placeholderName": "New_Export_Name",
+        "messageSaveError": "Error while saving",
+        "textHeadline": "New Export",
+        "cardTitleBasicInfo" : "Basic information",
+        "labelName": "Export Name",
+        "labelActive": "Active",
+        "labelType": "Type",
+        "labelFormat": "Format",
+        "labelInterval": "Interval",
+        "helpTextInterval": "CRON-valid interval string example: 0 * * * *",
+        "labelSalesChannel": "Sales Channel",
+        "labelLanguage": "Language",
+        "labelLastGenerationStarted": "Last Generation Started",
+        "labelLastGenerationFinished": "Last Generation Finished",
+        "helpTextActive": "If export active - it will be exported",
+        "cardTitleMappings": "Mappings",
+        "buttonMappingAdd": "Add new mapping",
+        "buttonMappingRemove": "Remove",
+        "columnSource": "Source Field",
+        "columnTarget": "Target Field Name",
+        "messageMappingsEmptyTitle": "No mappings yet",
+        "messageMappingsEmptySubline": "Manage mappings here"
+      },
+      "list": {
+        "columns": {
+          "id": "Export ID",
+          "name": "Name",
+          "active": "Active",
+          "type": "Type",
+          "format": "Format",
+          "lastGenerationFinishedAt": "Last Generation Time"
+        },
+        "contextMenuView": "Edit",
+        "contextMenuDelete": "Delete",
+        "textDeleteConfirm": "Are you sure you really want to delete the export \"{name}\"?",
+        "buttonCancel": "Cancel",
+        "buttonDelete": "Delete"
+      }
     }
   }
 }
