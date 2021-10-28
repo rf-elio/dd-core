@@ -11,5 +11,18 @@
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument id="request_stack" type="service"/>
         </service>
+
+        <service id="Elio\FactFinder\Storefront\Controller\SuggestController"
+                 decorates="Shopware\Storefront\Controller\SearchController"
+        >
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Api\Search\SuggestApi" />
+            <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
+            <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>

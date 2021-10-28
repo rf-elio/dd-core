@@ -129,7 +129,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix),
             $this->prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
             $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
-            $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix)
+            $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'suggestUseFactFinder', $languagePrefix),
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
@@ -142,11 +143,11 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * Prepares a pipe separated values list
      *
      * @param array $config
-     * @param $value
+     * @param string $value
      * @param string $languagePrefix
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, $value, string $languagePrefix)
+    protected function prepareValueList(array $config, string $value, string $languagePrefix)
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
