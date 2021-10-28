@@ -1,0 +1,75 @@
+{% block ff_export_list_page %}
+    <sw-page class="eli-ff-export-list">
+        <template slot="content">
+            <div>
+                {% block ff_export_list_grid %}
+                    <sw-data-grid :dataSource="exports"
+                                  :columns="exportColumns"
+                                  :fullPage="true"
+                                  :showSettings="false"
+                                  :showSelection="true"
+                                  :sortBy="sortBy"
+                                  :sortDirection="sortDirection"
+                                  :isLoading="isLoading"
+                                  :allowColumnEdit="false"
+                                  identifier="ff-export-list"
+                                  @column-sort=""
+                                  @page-change="onPageChange"
+                                  @selection-change=""
+                                  :disableDataFetching="true">
+
+                        {% block ff_export_list_grid_columns_actions %}
+                            <template slot="actions" slot-scope="{ item }">
+                                {% block ff_export_list_grid_columns_actions_detail %}
+                                    <sw-context-menu-item
+                                            :routerLink="{ name: 'elio.factfinder.export.detail', params: { id: item.id } }">
+                                        {{ $tc('ff.export.list.contextMenuView') }}
+                                    </sw-context-menu-item>
+                                {% endblock %}
+
+                                {% block ff_export_list_grid_columns_actions_delete %}
+                                    <sw-context-menu-item variant="danger"
+                                                          @click="onDelete(item.id)">
+                                        {{ $tc('ff.export.list.contextMenuDelete') }}
+                                    </sw-context-menu-item>
+                                {% endblock %}
+                            </template>
+                        {% endblock %}
+
+                        {% block ff_export_list_grid_action_modals %}
+                            <template slot="action-modals" slot-scope="{ item }">
+                                <sw-modal v-if="showDeleteModal === item.id"
+                                          variant="small"
+                                          :title="$tc('global.default.warning')"
+                                          @modal-close="onCloseDeleteModal">
+                                    <p>
+                                        {{ $tc('ff.export.list.textDeleteConfirm', 0, { name: item.name }) }}
+                                    </p>
+                                    <template slot="modal-footer">
+                                        <sw-button @click="onCloseDeleteModal" size="small">
+                                            {{ $tc('ff.export.list.buttonCancel') }}
+                                        </sw-button>
+                                        <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
+                                            {{ $tc('ff.export.list.buttonDelete') }}
+                                        </sw-button>
+                                    </template>
+                                </sw-modal>
+                            </template>
+                        {% endblock %}
+
+                        <template #pagination>
+                            {% block ff_export_list_grid_pagination %}
+                                <sw-pagination :page="page"
+                                               :limit="limit"
+                                               :total="total"
+                                               :total-visible="7"
+                                               @page-change="onPageChange">
+                                </sw-pagination>
+                            {% endblock %}
+                        </template>
+                    </sw-data-grid>
+                {% endblock %}
+            </div>
+        </template>
+    </sw-page>
+{% endblock %}

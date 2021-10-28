@@ -44,6 +44,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
@@ -92,9 +93,12 @@ class ExportDefinition extends EntityDefinition
             (new StringField('type', 'type'))->addFlags(new ApiAware(), new Required()),
             (new StringField('format', 'format'))->addFlags(new ApiAware(), new Required()),
             (new StringField('interval', 'interval'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('mapping', 'mapping'))->addFlags(new ApiAware(), new Required()),
             (new DateTimeField('last_generation_started_at', 'lastGenerationStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generation_finished_at', 'lastGenerationFinishedAt'))->addFlags(new ApiAware()),
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
+            (new FkField('language_id', 'languageId', LanguageDefinition::class))->addFlags(new Required()),
+            new ManyToOneAssociationField('language', 'language_id', LanguageDefinition::class, 'id', false),
             new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class, 'id', false)
         ]);
     }

@@ -1,4 +1,4 @@
-Shopware.Module.register('elio-fact-finder-plugin', {
+Shopware.Module.register('elio-fact-finder', {
     type: 'core',
     name: 'FACTFinder',
     title: 'ff.global.title',
@@ -33,6 +33,7 @@ Shopware.Module.register('elio-fact-finder-plugin', {
     },
 
     navigation: [{
+        id: 'elio-fact-finder',
         label: 'ff.global.title',
         color: '#014587',
         path: 'swag.example.list',
