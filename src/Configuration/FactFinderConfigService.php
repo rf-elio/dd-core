@@ -41,8 +41,6 @@ use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-use function _PHPStan_68495e8a9\RingCentral\Psr7\parse_query;
-
 /**
  * Class ConfigurationService
  * @category  Shopware
@@ -57,7 +55,10 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
-    private string $languagePrefix = '';
+    /**
+     * @var array<string>
+     */
+    private array $languagePrefixCache = [];
     private EntityRepositoryInterface $languageRepository;
 
     /**
@@ -83,70 +84,73 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      */
     public function getByContext(SalesChannelContext $salesChannelContext): Configuration
     {
-        if(count($salesChannelContext->getLanguageIdChain()) > 0) {
-            $languageId = $salesChannelContext->getLanguageIdChain()[0];
-            $this->setLanguagePrefix($languageId);
-        }
-
-        return $this->get($salesChannelContext->getSalesChannelId());
+        return $this->get(
+            $salesChannelContext->getSalesChannelId(),
+            LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext)
+        );
     }
 
     /**
      * Fetches the ff plugin configuration for the given sales channel
      *
      * @param string $salesChannelId
+     * @param string|null $languageId
      * @return Configuration
      */
-    public function get(string $salesChannelId): Configuration
+    public function get(string $salesChannelId, ?string $languageId = null): Configuration
     {
-        if (isset($this->loadedConfigurations[$salesChannelId][$this->languagePrefix])) {
-            return $this->loadedConfigurations[$salesChannelId][$this->languagePrefix];
+        $languagePrefix = $this->getLanguagePrefix($languageId);
+
+        if (isset($this->loadedConfigurations[$salesChannelId][$languagePrefix])) {
+            return $this->loadedConfigurations[$salesChannelId][$languagePrefix];
         }
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         parse_str(
-            $this->getConfigWLangPrefix($config, 'additionalRequestParameters') ?? '',
+            $this->getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
             $additionalRequestParameters
         );
+
         $configuration = new Configuration(
-            $this->getConfigWLangPrefix($config, 'active'),
-            $this->getConfigWLangPrefix($config, 'apiChannel'),
-            $this->getConfigWLangPrefix($config, 'apiTimeout'),
-            $this->getConfigWLangPrefix($config, 'useAso'),
-            $this->getConfigWLangPrefix($config, 'apiDebugActive'),
-            $this->getConfigWLangPrefix($config, 'searchUseFactFinder'),
-            !empty($this->getConfigWLangPrefix($config, 'trackRequireConsent')),
-            !empty($this->getConfigWLangPrefix($config, 'trackCart')),
-            !empty($this->getConfigWLangPrefix($config, 'trackCheckout')),
-            !empty($this->getConfigWLangPrefix($config, 'trackLogin')),
-            !empty($this->getConfigWLangPrefix($config, 'trackProductView')),
-            !empty($this->getConfigWLangPrefix($config, 'listingUseFactFinder')),
+            $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiChannel', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiTimeout', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'useAso', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'apiDebugActive', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'searchUseFactFinder', $languagePrefix),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
+            !empty($this->getConfigWithLanguagePrefix($config, 'listingUseFactFinder', $languagePrefix)),
             $additionalRequestParameters,
-            $this->getConfigWLangPrefix($config, 'botProtectionActive'),
-            $this->getConfigWLangPrefix($config, 'botProtectionUseBadBotList'),
-            $this->prepareValueList($config, 'botProtectionSearchTermFilter'),
-            $this->prepareValueList($config, 'botProtectionUserAgentFilter'),
-            $this->prepareValueList($config, 'botProtectionIpFilter')
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
+            $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix)
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
         $this->eventDispatcher->dispatch($event);
-        $this->loadedConfigurations[$salesChannelId][$this->languagePrefix] = $event->getConfiguration();
+        $this->loadedConfigurations[$salesChannelId][$languagePrefix] = $event->getConfiguration();
         return $event->getConfiguration();
     }
 
-    /***
+    /**
      * Prepares a pipe separated values list
      *
      * @param array $config
      * @param $value
+     * @param string $languagePrefix
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, $value)
+    protected function prepareValueList(array $config, $value, string $languagePrefix)
     {
-        $valueList = key_exists($this->languagePrefix . $value, $config) ? explode(
+        $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
-            $config[$this->languagePrefix . $value] ?? ''
+            $config[$languagePrefix . $value] ?? ''
         ) : explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
         return array_filter($valueList);
     }
@@ -155,19 +159,16 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * Returns plugin config for specified key with languagePrefix or default
      * @param array $config
      * @param string $key
-     * @return mixed|string
+     * @param string $languagePrefix
+     * @return mixed
      */
-    private function getConfigWLangPrefix(array $config, string $key)
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
     {
-        if (key_exists($this->languagePrefix . $key, $config)) {
-            return $config[$this->languagePrefix . $key];
-        } else {
-            if (key_exists($key, $config)) {
-                return $config[$key];
-            } else {
-                return null;
-            }
+        if (array_key_exists($languagePrefix . $key, $config)) {
+            return $config[$languagePrefix . $key];
         }
+
+        return $config[$key] ?? null;
     }
 
     /**
@@ -190,19 +191,30 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * Sets languagePrefix by languageId
      * to fetch plugin configuration based on language
      *
-     * @param string $languageId
+     * @param string|null $languageId
+     * @return string
      */
-    public function setLanguagePrefix(string $languageId): void
+    private function getLanguagePrefix(?string $languageId): string
     {
+        if(!$languageId) {
+            return '';
+        }
+
+        if(isset($this->languagePrefixCache[$languageId])) {
+            return $this->languagePrefixCache[$languageId];
+        }
+
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
+        /** @var LanguageEntity|null $language */
         $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
 
-        /** @var LanguageEntity $language */
         if($language && $language->getLocale()) {
-            $this->languagePrefix = $language->getLocale()->getCode() . '_';
-        } else {
-            $this->languagePrefix = '';
+            $languagePrefix = $language->getLocale()->getCode() . '_';
+            $this->languagePrefixCache[$languageId] = $languagePrefix;
+            return $languagePrefix;
         }
+
+        return '';
     }
 }

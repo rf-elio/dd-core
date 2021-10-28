@@ -103,13 +103,9 @@ class RecordsGetCommand extends Command
         $table = new Table($output);
         $table->setHeaders(['Channel', 'Record']);
 
-        if($languageId) {
-            $this->configService->setLanguagePrefix($languageId);
-        }
-
         /** @var SalesChannelEntity $salesChannel */
         foreach ($salesChannels as $salesChannel) {
-            $config = $this->configService->get($salesChannel->getId());
+            $config = $this->configService->get($salesChannel->getId(), $languageId);
 
             if(!$config->isActive()) {
                 continue;

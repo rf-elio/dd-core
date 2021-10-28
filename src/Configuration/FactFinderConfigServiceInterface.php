@@ -44,9 +44,10 @@ interface FactFinderConfigServiceInterface
      * Fetches the ff plugin configuration for the given sales channel
      *
      * @param string $salesChannelId
+     * @param string|null $languageId
      * @return Configuration
      */
-    public function get(string $salesChannelId) : Configuration;
+    public function get(string $salesChannelId, ?string $languageId = null) : Configuration;
 
     /**
      * Fetches the ff plugin configuration for the given SalesChannelContext
@@ -64,12 +65,4 @@ interface FactFinderConfigServiceInterface
      * @return Credentials
      */
     public function getApiCredentials(string $salesChannelId): Credentials;
-
-    /**
-     * Sets languagePrefix by languageId
-     * to fetch plugin configuration based on language
-     *
-     * @param string $languageId
-     */
-    public function setLanguagePrefix(string $languageId);
 }

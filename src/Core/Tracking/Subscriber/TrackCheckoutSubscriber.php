@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Configuration\LanguageHelper;
 use Elio\FactFinder\Core\Consent\ConsentService;
 use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
@@ -98,12 +99,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $salesChannelId = $event->getSalesChannelId();
-        if ($event->getContext()->getLanguageIdChain()) {
-            if(count($event->getContext()->getLanguageIdChain()) > 0) {
-                $this->configService->setLanguagePrefix($event->getContext()->getLanguageIdChain()[0]);
-            }
-        }
-        $config = $this->configService->get($salesChannelId);
+        $config = $this->configService->get($salesChannelId, LanguageHelper::getLanguageIdByContext($event->getContext()));
 
         if(
             !$config->isActive() ||

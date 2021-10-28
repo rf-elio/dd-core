@@ -88,7 +88,7 @@ class ConfigLanguageBased extends AbstractExtension
         $salesChannelId = $this->getSalesChannelId($context);
 
         $parts = explode('.', $key);
-        if (count($parts) === 0) {
+        if (empty($parts)) {
             return null;
         }
         $parts[count($parts) - 1] = $languagePrefix . $parts[count($parts) - 1];
@@ -152,15 +152,16 @@ class ConfigLanguageBased extends AbstractExtension
         if ($languageId === null) {
             return '';
         }
+
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
+        /** @var LanguageEntity|null $language */
         $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
 
-        /** @var LanguageEntity $language */
         if ($language && $language->getLocale()) {
             return $language->getLocale()->getCode() . '_';
-        } else {
-            return '';
         }
+
+        return '';
     }
 }
