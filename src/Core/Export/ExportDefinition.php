@@ -96,6 +96,7 @@ class ExportDefinition extends EntityDefinition
             (new StringField('mapping', 'mapping'))->addFlags(new ApiAware(), new Required()),
             (new DateTimeField('last_generation_started_at', 'lastGenerationStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generation_finished_at', 'lastGenerationFinishedAt'))->addFlags(new ApiAware()),
+            (new DateTimeField('next_generation_due_at', 'nextGenerationDueAt'))->addFlags(new ApiAware()),
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
             (new FkField('language_id', 'languageId', LanguageDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('language', 'language_id', LanguageDefinition::class, 'id', false),

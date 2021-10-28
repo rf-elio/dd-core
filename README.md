@@ -1,5 +1,9 @@
 # sw6-ElioFactFinder
 
+# Installation
+## Commands
+The following commands must be configured to execute required background tasks
+*  `bin/console elio-ff:export:generate`: Executes the exports. This should be executed every 5 Minutes.
 
 # Components
 ## Bot protection

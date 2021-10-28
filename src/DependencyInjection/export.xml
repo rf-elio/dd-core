@@ -31,14 +31,28 @@
             <tag name="elio-ff.export.generator"/>
         </service>
 
+        <!-- storage -->
+        <service id="Elio\FactFinder\Core\Export\ExportStorageService">
+            <argument type="service" id="shopware.filesystem.private" />
+        </service>
+
         <!-- writers -->
         <service id="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="shopware.filesystem.private" />
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
         </service>
         <service id="Elio\FactFinder\Core\Export\Writer\XMLFileWriter">
-            <argument type="service" id="shopware.filesystem.private" />
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
+        </service>
+
+        <!-- controller -->
+        <service id="Elio\FactFinder\Core\Export\Controller\ExportController" public="true">
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>

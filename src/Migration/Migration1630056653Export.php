@@ -25,6 +25,7 @@ CREATE TABLE `elio_ff_export` (
     `mapping` LONGTEXT NOT NULL,
     `last_generation_started_at` DATETIME(3) NULL,
     `last_generation_finished_at` DATETIME(3) NULL,
+    `next_generation_due_at` DATETIME(3) NULL,
     `sales_channel_id` BINARY(16) NOT NULL,
     `language_id` BINARY(16) NOT NULL,
     `created_at` DATETIME(3) NOT NULL,
