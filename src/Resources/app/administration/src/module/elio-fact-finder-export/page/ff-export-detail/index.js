@@ -107,11 +107,15 @@ Shopware.Component.register('ff-export-detail', {
 
             this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
                 .then((currenExport) => {
+                    if (currenExport == null) {
+                        operator.$router.push({ name: 'elio.factfinder.export.list' });
+                    }
                     operator.ff_export = currenExport;
                     operator.isLoading = false;
                 })
                 .catch(() => {
                     operator.isLoading = false;
+                    this.$router.push({ name: 'elio.factfinder.export.list' });
                 });
         },
 
