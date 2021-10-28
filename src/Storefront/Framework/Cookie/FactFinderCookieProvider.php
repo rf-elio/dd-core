@@ -77,7 +77,7 @@ class FactFinderCookieProvider implements CookieProviderInterface
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function getCookieGroups(): array
     {

@@ -56,6 +56,9 @@ class ExportSetup
     private ?EntityRepository $exportRepository;
     private ?EntityRepository $salesChannelRepository;
 
+    /**
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->exportRepository = $container->get('elio_ff_export.repository');
@@ -64,10 +67,10 @@ class ExportSetup
 
     /**
      * @param Context $context
-     * @param array|null $types
-     * @param array|null $formats
+     * @param array<string>|null $types
+     * @param array<string>|null $formats
      */
-    public function createExports(Context $context, ?array $types = null, ?array $formats = null)
+    public function createExports(Context $context, ?array $types = null, ?array $formats = null): void
     {
         $exportTypes = $types ?? [ProductExportGenerator::TYPE, SuggestExportGenerator::TYPE];
         $exportFormats = $formats ?? [CSVFileWriter::TYPE, XMLFileWriter::TYPE];

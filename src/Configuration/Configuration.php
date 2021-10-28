@@ -54,14 +54,26 @@ class Configuration extends Struct
     private bool $trackRequireConsent;
     private bool $active;
     private bool $listingUseFactFinder;
+    /**
+     * @var array<string>
+     */
     private array $additionalRequestParameters;
     private bool $trackCart;
     private bool $trackLogin;
     private bool $trackProductView;
     private bool $botProtectionActive;
     private bool $botProtectionUseBadBotList;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionSearchTermFilter;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionUserAgentFilter;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionIpFilter;
 
     /**
@@ -73,14 +85,17 @@ class Configuration extends Struct
      * @param bool $apiDebugActive
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
+     * @param bool $trackCart
      * @param bool $trackCheckout
+     * @param bool $trackLogin
+     * @param bool $trackProductView
      * @param bool $listingUseFactFinder
-     * @param array $additionalRequestParameters
+     * @param array<string> $additionalRequestParameters
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
-     * @param array $botProtectionSearchTermFilter
-     * @param array $botProtectionUserAgentFilter
-     * @param array $botProtectionIpFilter
+     * @param array<string> $botProtectionSearchTermFilter
+     * @param array<string> $botProtectionUserAgentFilter
+     * @param array<string> $botProtectionIpFilter
      */
     public function __construct(
         bool $active,
@@ -197,7 +212,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getAdditionalRequestParameters(): array
     {
@@ -245,7 +260,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionSearchTermFilter(): array
     {
@@ -253,7 +268,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionUserAgentFilter(): array
     {
@@ -261,7 +276,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionIpFilter(): array
     {

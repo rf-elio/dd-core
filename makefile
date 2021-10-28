@@ -20,4 +20,4 @@ test: ## Starts all Tests
 	php ./vendor/bin/phpunit --configuration=./phpunit.xml
 
 stan: ## Starts the PHPStan Analyser
-	php ./vendor/bin/phpstan --memory-limit=1G analyse .
+	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon

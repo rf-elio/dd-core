@@ -137,7 +137,7 @@ class BotDetectionService implements BotDetectionServiceInterface
     /**
      * Checks if one of the given entries is part of the block list. All values will be converted to lower case.
      *
-     * @param array $blockList
+     * @param array<string> $blockList
      * @param string $haystack
      * @return bool
      */
@@ -162,10 +162,10 @@ class BotDetectionService implements BotDetectionServiceInterface
      * Checks the predefined bot list
      *
      * @param Configuration $config
-     * @param $userAgent
+     * @param string $userAgent
      * @return bool
      */
-    protected function checkBotList(Configuration $config, $userAgent): bool
+    protected function checkBotList(Configuration $config, string $userAgent): bool
     {
         if(!$config->isBotProtectionUseBadBotList()) {
             return false;

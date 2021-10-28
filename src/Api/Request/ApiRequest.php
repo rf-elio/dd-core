@@ -44,7 +44,7 @@ namespace Elio\FactFinder\Api\Request;
 class ApiRequest
 {
     /**
-     * @return array
+     * @return array<string|array>
      */
     public function toArray() : array
     {

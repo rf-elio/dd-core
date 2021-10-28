@@ -75,6 +75,9 @@ class TrackingMessageHandler extends AbstractMessageHandler
         );
     }
 
+    /**
+     * @return iterable<string>
+     */
     public static function getHandledMessages(): iterable
     {
         return [TrackingMessage::class];
