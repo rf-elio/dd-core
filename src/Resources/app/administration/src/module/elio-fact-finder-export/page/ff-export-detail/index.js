@@ -76,7 +76,9 @@ Shopware.Component.register('ff-export-detail', {
                 }
             ],
             languageIdsList: [],
-            salesChannelIdsList: []
+            salesChannelIdsList: [],
+            ff_export_mappings: [],
+            ff_export_mappings_newId: 0
         };
     },
 
@@ -91,16 +93,12 @@ Shopware.Component.register('ff-export-detail', {
         exportRepository() {
             return this.repositoryFactory.create('elio_ff_export');
         },
-        exportMappingsRepository() {
-            return this.repositoryFactory.create('elio_ff_export_mappings');
-        },
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
         },
         languageRepository() {
             return this.repositoryFactory.create('language');
         },
-        exportMappingsCriteria() {}
     },
 
     methods: {
@@ -141,11 +139,14 @@ Shopware.Component.register('ff-export-detail', {
                         operator.$router.push({ name: 'elio.factfinder.export.list' });
                     }
                     operator.ff_export = currenExport;
+                    operator.ff_export_mappings = operator.getMappings();
+                    operator.ff_export_mappings_newId = operator.ff_export_mappings.length;
                     operator.isLoading = false;
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err);
                     operator.isLoading = false;
-                    this.$router.push({ name: 'elio.factfinder.export.list' });
+                    operator.$router.push({ name: 'elio.factfinder.export.list' });
                 });
         },
 
@@ -157,6 +158,7 @@ Shopware.Component.register('ff-export-detail', {
             this.isSaveSuccessful = false;
             this.isLoading = true;
             var operator = this;
+            this.setMappings();
 
             return this.exportRepository.save(this.ff_export).then(() => {
                 operator.loadEntityData();
@@ -173,6 +175,61 @@ Shopware.Component.register('ff-export-detail', {
 
         onCancel() {
             this.$router.push({ name: 'elio.factfinder.export.list' });
+        },
+
+        onAddNewMapping() {
+            this.ff_export_mappings.push({
+                id: this.ff_export_mappings_newId,
+                source: 'new_source',
+                target: 'new_target'
+            });
+            this.ff_export_mappings_newId = this.ff_export_mappings_newId + 1;
+        },
+
+        onDeleteMapping(id) {
+            var position = -1;
+            this.ff_export_mappings.forEach((mapping, key) => {
+                if (position === -1) {
+                    if (mapping.id === id) {
+                        position = key;
+                    }
+                }
+            });
+            this.ff_export_mappings.splice(position, 1);
+        },
+
+        setMappings() {
+            var mappings = [];
+            // removing ids from saving
+            this.ff_export_mappings.forEach((mapping) => {
+                mappings.push(
+                    {
+                        source: mapping.source,
+                        target: mapping.target
+                    }
+                );
+            });
+            this.ff_export.mapping = JSON.stringify(mappings);
+        },
+
+        getMappings() {
+            var result = [];
+            var mappings = [];
+            try {
+                mappings = JSON.parse(this.ff_export.mapping);
+            } catch (err) {}
+            var i = 0;
+            mappings.forEach((mapping) => {
+                result.push(
+                    {
+                        id: i,
+                        source: mapping.source,
+                        target: mapping.target
+                    }
+                );
+                i++;
+            });
+            return result;
         }
     }
 });

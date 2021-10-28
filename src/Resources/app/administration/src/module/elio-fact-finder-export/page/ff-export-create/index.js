@@ -22,6 +22,7 @@ Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
             // todo: fetch it another way
             this.ff_export.interval = '0 * * * *';
             this.ff_export.format = 'csv';
+            this.ff_export.mapping = '[]';
 
             this.isLoading = false;
         },

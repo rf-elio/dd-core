@@ -35,7 +35,11 @@
         "labelLastGenerationStarted": "Last Generation Started",
         "labelLastGenerationFinished": "Last Generation Finished",
         "helpTextActive": "If export active - it will be exported",
-        "cardTitleMappings" : "Mappings"
+        "cardTitleMappings": "Mappings",
+        "buttonMappingAdd": "Add new mapping",
+        "buttonMappingRemove": "Remove",
+        "columnSource": "Source Field",
+        "columnTarget": "Target Field Name"
       },
       "list": {
         "contextMenuView": "Edit",

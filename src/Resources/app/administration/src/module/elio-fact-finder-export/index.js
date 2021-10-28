@@ -2,10 +2,6 @@ import './page/ff-export-list';
 import './page/ff-export-detail';
 import './page/ff-export-create';
 
-// (async function initDependencies() {
-//     await import(/* webpackMode: 'eager' */ './component/elio-factfinder-export-mapper');
-// })();
-
 Shopware.Module.register('elio-factfinder-export', {
     type: 'plugin',
     name: 'FACTFinderExport',

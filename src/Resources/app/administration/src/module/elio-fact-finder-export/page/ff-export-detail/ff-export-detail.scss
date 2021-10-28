@@ -7,9 +7,21 @@
   padding: 0 0 28px 0;
 }
 
+.ff-mappings .headline,
 .sw-description-list .headline {
   margin: 0 0 20px 0;
   color: #52667a;
   font-weight: normal;
   font-size: 18px;
+}
+
+.ff-mappings-column-actions {
+  padding-top: 50px;
+}
+.ff-mappings-button-add {
+  margin-bottom: 20px;
+}
+.ff-mappings-button-delete {
+  width: 100%;
+  margin-bottom: 48px;
 }

@@ -56,6 +56,7 @@ class ExportEntity extends Entity
     protected string $type;
     protected string $format;
     protected string $interval;
+    protected string $mapping;
     protected ?DateTimeInterface $lastGenerationStartedAt;
     protected ?DateTimeInterface $lastGenerationFinishedAt;
     protected string $salesChannelId;
@@ -237,5 +238,21 @@ class ExportEntity extends Entity
     public function setLanguageId(string $languageId): void
     {
         $this->languageId = $languageId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMapping(): string
+    {
+        return $this->mapping;
+    }
+
+    /**
+     * @param string $mapping
+     */
+    public function setMapping(string $mapping): void
+    {
+        $this->mapping = $mapping;
     }
 }

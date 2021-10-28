@@ -22,6 +22,7 @@ CREATE TABLE `elio_ff_export` (
     `type` VARCHAR(255) NOT NULL,
     `format` VARCHAR(255) NOT NULL,
     `interval` VARCHAR(255) NOT NULL,
+    `mapping` LONGTEXT NOT NULL,
     `last_generation_started_at` DATETIME(3) NULL,
     `last_generation_finished_at` DATETIME(3) NULL,
     `sales_channel_id` BINARY(16) NOT NULL,

@@ -132,9 +132,52 @@
                 </sw-card>
 
                 <sw-card v-if="!isNew" :title="$tc('ff.export.detail.cardTitleMappings')" :isLoading="isLoading">
+                    <div class="ff-mappings">
                     {% block ff_export_detail_mapping_info %}
+                        <sw-button class="ff-mappings-button-add"
+                                   variant="primary"
+                                   size="small"
+                                   @click="onAddNewMapping">
+                            {{ $tc('ff.export.detail.buttonMappingAdd') }}
+                        </sw-button>
 
+                        <div class="sw-container" style="grid-template-columns: 3fr 3fr 1fr; gap: 0px 30px; place-items: stretch;">
+                            <div>
+                                <div class="headline">{{ $tc('ff.export.detail.columnSource') }}</div>
+                                {% block ff_export_detail_mapping_source_column %}
+                                    <sw-field
+                                            v-for="export_mapping in ff_export_mappings"
+                                            v-model="export_mapping.source"
+                                            type="text"
+                                            :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                    </sw-field>
+                                {% endblock %}
+                            </div>
+                            <div>
+                                <div class="headline">{{ $tc('ff.export.detail.columnTarget') }}</div>
+                                {% block ff_export_detail_mapping_target_column %}
+                                    <sw-field
+                                            v-for="export_mapping in ff_export_mappings"
+                                            v-model="export_mapping.target"
+                                            type="text"
+                                            :placeholder="placeholder(ff_export, 'name', $tc('ff.export.detail.placeholderName'))">
+                                    </sw-field>
+                                {% endblock %}
+                            </div>
+                            <div class="ff-mappings-column-actions">
+                                {% block ff_export_detail_mapping_action_column %}
+                                    <sw-button class="ff-mappings-button-delete"
+                                               v-for="export_mapping in ff_export_mappings"
+                                               variant="danger"
+                                               size="small"
+                                               @click.prevent="onDeleteMapping(export_mapping.id)">
+                                        {{ $tc('ff.export.detail.buttonMappingRemove') }}
+                                    </sw-button>
+                                {% endblock %}
+                            </div>
+                        </div>
                     {% endblock %}
+                    </div>
                 </sw-card>
 
             </sw-card-view>
