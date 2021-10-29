@@ -130,11 +130,13 @@ class FilterService
             );
         } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
-            $filters = $this->applyRestrictionsToFiltersArray(
-                $filters,
-                $restrictions,
-                !$configIsOverridingTopToDown
-            );
+            if (count($restrictions->getElements()) != 0) {
+                $filters = $this->applyRestrictionsToFiltersArray(
+                    $filters,
+                    $restrictions,
+                    !$configIsOverridingTopToDown
+                );
+            }
 
             $categoriesTreeIds = [];
             if ($configParentCategories) {
@@ -159,11 +161,13 @@ class FilterService
 
             foreach ($categoriesTreeIds as $currentCategoryId) {
                 $restrictions = $this->getRestrictions($salesChannelId, $context, '', $currentCategoryId);
-                $filters = $this->applyRestrictionsToFiltersArray(
-                    $filters,
-                    $restrictions,
-                    !$configIsOverridingTopToDown
-                );
+                if (count($restrictions->getElements()) != 0) {
+                    $filters = $this->applyRestrictionsToFiltersArray(
+                        $filters,
+                        $restrictions,
+                        !$configIsOverridingTopToDown
+                    );
+                }
             }
         }
 
@@ -225,7 +229,7 @@ class FilterService
             $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
             if ($isOverrides) { // if this restriction overrides top-level restrictions
                 // we return allowed/blocked only selected on this level
-                $result = $restrictionFilters;
+                $result = array_values($restrictionFilters);
             } else { // if this restriction doesn't override top-level restrictions
                 $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters);
             }
@@ -257,7 +261,7 @@ class FilterService
                     }
                 }
                 // we merge them together
-                $result = array_merge($result, $filters[$restriction->isAllowed() ? 0 : 1]);
+                $result = array_unique(array_merge($result, $filters[$restriction->isAllowed() ? 0 : 1]));
             }
         }
         return $result;
@@ -308,13 +312,13 @@ class FilterService
     ): EntityCollection {
         $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $layer, $categoryId);
         $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-        if (count($restrictions) == 0) {
+        if (count($restrictions->getElements()) == 0) {
             // if config for specified salesChannelId wasn't set up, then we get settings for all salesChannels
-            $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
+            $criteria = $this->getFilterRestrictionsCriteria(null, $layer, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         } else if ($restrictions->first()->isInherited()) {
             // if config for specified salesChannelId inherited from settings for all salesChannels then we push it
-            $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
+            $criteria = $this->getFilterRestrictionsCriteria(null, $layer, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         }
         return $restrictions;
