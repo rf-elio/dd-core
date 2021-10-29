@@ -76,6 +76,8 @@ class Configuration extends Struct
      */
     private array $botProtectionIpFilter;
     private bool $suggestUseFactFinder;
+    private bool $restrictionsParentCategories;
+    private bool $restrictionsOverridingTopToDown;
 
     /**
      * Configuration constructor.
@@ -98,6 +100,8 @@ class Configuration extends Struct
      * @param array<string> $botProtectionUserAgentFilter
      * @param array<string> $botProtectionIpFilter
      * @param bool $suggestUseFactFinder
+     * @param bool $restrictionsParentCategories
+     * @param bool $restrictionsOverridingTopToDown
      */
     public function __construct(
         bool $active,
@@ -118,7 +122,9 @@ class Configuration extends Struct
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
         array $botProtectionIpFilter,
-        bool $suggestUseFactFinder
+        bool $suggestUseFactFinder,
+        bool $restrictionsParentCategories,
+        bool $restrictionsOverridingTopToDown
     )
     {
         $this->useAso = $useAso;
@@ -140,6 +146,8 @@ class Configuration extends Struct
         $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
         $this->botProtectionIpFilter = $botProtectionIpFilter;
         $this->suggestUseFactFinder = $suggestUseFactFinder;
+        $this->restrictionsParentCategories = $restrictionsParentCategories;
+        $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
     }
 
     /**
@@ -301,5 +309,21 @@ class Configuration extends Struct
     public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
     {
         $this->suggestUseFactFinder = $suggestUseFactFinder;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestrictionsParentCategories(): bool
+    {
+        return $this->restrictionsParentCategories;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestrictionsOverridingTopToDown(): bool
+    {
+        return $this->restrictionsOverridingTopToDown;
     }
 }

@@ -35,19 +35,13 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Throwable;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class FilterService
@@ -59,7 +53,6 @@ use Throwable;
  */
 class FilterService
 {
-
     public const LEVEL_GLOBAL = 1;
     public const LEVEL_SEARCH = 2;
     public const LEVEL_NAVIGATION = 3;
@@ -100,41 +93,42 @@ class FilterService
      *
      * if array of allowed/blocked filters is null - it means allow/block everything
      *
-     * @param string|null $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      * @param int $level
      * @param ApiRequest $request
      * @return array
      */
-    public function getFilters(?string $salesChannelId, int $level, ApiRequest $request): array
+    public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
-        $context = Context::createDefaultContext();
+        $context = $salesChannelContext->getContext();
         $categoryId = $request instanceof NavigationRequest ? $request->getCategoryId() : null;
         $filters = [null, null];
 
-        $config = $this->configService->get($salesChannelId);
+        $config = $this->configService->getByContext($salesChannelContext);
         $configParentCategories = $config->isRestrictionsParentCategories();
         $configIsOverridingTopToDown = $config->isRestrictionsOverridingTopToDown();
 
         // Global Level
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
         $restrictions = $this->getRestrictions($salesChannelId, $context, 'global');
         $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
 
         // Applying overriding restrictions
-        if ($level == self::LEVEL_SEARCH) {
+        if ($level === self::LEVEL_SEARCH) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'search');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$configIsOverridingTopToDown
             );
-        } elseif ($level == self::LEVEL_NAVIGATION) {
+        } elseif ($level === self::LEVEL_NAVIGATION) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$configIsOverridingTopToDown
             );
-        } elseif ($level == self::LEVEL_CATEGORY && $categoryId) {
+        } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
             $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
@@ -145,7 +139,7 @@ class FilterService
             $categoriesTreeIds = [];
             if ($configParentCategories) {
                 $maxDeepLevel = 0;
-                /** @var CategoryEntity $category */
+                /** @var CategoryEntity|null $category */
                 $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
                 if ($category) {
                     while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
@@ -183,18 +177,19 @@ class FilterService
      * $filters = [ [...AllowedFiltersArray...], [...BlockedFiltersArray...] ]
      *
      * @param array $filters
-     * @param FilterRestrictionsCollection $restrictions
+     * @param EntityCollection<FilterRestrictionsEntity> $restrictions
      * @param bool $isOverrides
      * @return array
      */
     private function applyRestrictionsToFiltersArray(
         array $filters,
-        FilterRestrictionsCollection $restrictions,
+        EntityCollection $restrictions,
         bool $isOverrides
     ): array {
         $allowedFilters = null;
         $blockedFilters = null;
 
+        /** @var FilterRestrictionsEntity $restriction */
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) {
                 // allowed column
@@ -299,14 +294,14 @@ class FilterService
     }
 
     /**
-     * @param string|null $salesChannelId
+     * @param string $salesChannelId
      * @param Context $context
      * @param string $layer
      * @param string|null $categoryId
      * @return EntityCollection
      */
     private function getRestrictions(
-        ?string $salesChannelId,
+        string $salesChannelId,
         Context $context,
         string $layer,
         string $categoryId = null
@@ -317,12 +312,10 @@ class FilterService
             // if config for specified salesChannelId wasn't set up, then we get settings for all salesChannels
             $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-        } else {
-            if ($restrictions->first()->isInherited()) {
-                // if config for specified salesChannelId inherited from settings for all salesChannels then we push it
-                $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
-                $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-            }
+        } else if ($restrictions->first()->isInherited()) {
+            // if config for specified salesChannelId inherited from settings for all salesChannels then we push it
+            $criteria = $this->getFilterRestrictionsCriteria(null, '', $categoryId);
+            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         }
         return $restrictions;
     }

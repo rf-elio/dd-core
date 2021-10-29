@@ -33,7 +33,6 @@
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterEntity;
 
 /**
  * Class FilterCollection

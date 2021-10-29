@@ -75,22 +75,9 @@ class ConsentService
             return true;
         }
 
-        if ($salesChannelContext === null){
-            $request = Request::createFromGlobals();
-            $attributes = $request->attributes;
-            /** @var SalesChannelContext|null $salesChannelContext */
-            $salesChannelContext = $attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) ?
-                $attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT) : null;
-            if ($salesChannelContext === null){
-                return !empty($request->cookies->get('cookie-preference')) && !empty($request->cookies->get('elio_ff_tracking'));
-            }
-        }
         /** @var Consent|null $extension */
         $extension = $salesChannelContext->getExtension(Consent::EXTENSION_KEY);
-        if ($extension === null){
-            return false;
-        }
-        return $extension->isTrackingAllowed();
+        return !($extension === null) && $extension->isTrackingAllowed();
     }
 
     /**

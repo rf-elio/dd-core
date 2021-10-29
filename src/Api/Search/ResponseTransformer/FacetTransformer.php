@@ -106,17 +106,11 @@ class FacetTransformer implements ResponseTransformerInterface
         $level = FilterService::LEVEL_GLOBAL;
         if ($request instanceof NavigationRequest) {
             $level = FilterService::LEVEL_CATEGORY;
-        } else {
-            if ($request instanceof SearchRequest) {
-                $level = FilterService::LEVEL_SEARCH;
-            }
+        } else if ($request instanceof SearchRequest) {
+            $level = FilterService::LEVEL_SEARCH;
         }
-        $filtersRestrictions = $this->filterService->getFilters(
-                $context->getSalesChannelId(),
-                $level,
-                $request
-            ) ?? [null, []];
 
+        $filtersRestrictions = $this->filterService->getFilters($context, $level, $request) ?? [null, []];
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
@@ -129,13 +123,11 @@ class FacetTransformer implements ResponseTransformerInterface
         foreach ($model->getFacets() as $facet) {
             if ($filtersRestrictions[1] === null) { // blocked all
                 continue;
-            } else {
-                if ($filtersRestrictions[0] !== null) { // isn't allowed everything
-                    if (!in_array($facet->getName(), $filtersRestrictions[0], true)) {
-                        // isn't allowed
-                        continue;
-                    }
-                }
+            }
+
+            if (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true)) {
+                // isn't allowed
+                continue;
             }
 
             $style = $facet->getFilterStyle();
@@ -182,13 +174,10 @@ class FacetTransformer implements ResponseTransformerInterface
             $option->setUniqueIdentifier(Uuid::randomHex());
             $option->setName($elementLabel);
             $option->setTranslated(['name' => $elementLabel]);
-            $option->addExtension(
-                DefaultFacetExtension::KEY,
-                new DefaultFacetExtension(
-                    $facet->getName(), $element->getText(),
-                    $element->getTotalHits()
-                )
-            );
+            $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
+                $facet->getName(), $element->getText(),
+                $element->getTotalHits()
+            ));
             $options->add($option);
         }
 

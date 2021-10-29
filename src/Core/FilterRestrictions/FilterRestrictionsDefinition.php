@@ -44,8 +44,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationFiel
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsEntity;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
