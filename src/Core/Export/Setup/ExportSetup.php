@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
+use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\Generator\ProductExportGenerator;
 use Elio\FactFinder\Core\Export\Generator\SuggestExportGenerator;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
@@ -39,6 +40,7 @@ use Elio\FactFinder\Core\Export\Writer\XMLFileWriter;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -68,34 +70,41 @@ class ExportSetup
     /**
      * @param Context $context
      * @param array<string>|null $types
-     * @param array<string>|null $formats
+     * @param string|null $format
      */
-    public function createExports(Context $context, ?array $types = null, ?array $formats = null): void
+    public function createExports(Context $context, ?array $types = null, string $format = null): void
     {
         $exportTypes = $types ?? [ProductExportGenerator::TYPE, SuggestExportGenerator::TYPE];
-        $exportFormats = $formats ?? [CSVFileWriter::TYPE, XMLFileWriter::TYPE];
-        $salesChannels = $this->salesChannelRepository->search(new Criteria(), $context)->getEntities();
+        $exportFormat = $format ?? CSVFileWriter::TYPE;
+        $criteria = new Criteria();
+        $criteria->addAssociation('languages');
+        $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
+
         $exports = [];
         /** @var SalesChannelEntity $salesChannel */
-        foreach ($salesChannels as $salesChannel){
-            foreach ($exportTypes as $exportType){
-                foreach ($exportFormats as $exportFormat){
+        foreach ($salesChannels as $salesChannel) {
+            foreach ($salesChannel->getLanguages() as $language) {
+                foreach ($exportTypes as $exportType) {
                     $criteria = new Criteria();
                     $criteria->addFilter(new EqualsFilter('type', $exportType));
                     $criteria->addFilter(new EqualsFilter('format', $exportFormat));
                     $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
+                    $criteria->addFilter(new EqualsFilter('languageId', $language->getId()));
                     $criteria->addAssociation('salesChannel.domains');
-                    if ($this->exportRepository->searchIds($criteria, $context)->getTotal() > 0){
+
+                    if ($this->exportRepository->searchIds($criteria, $context)->getTotal() > 0) {
                         continue;
                     }
                     $exports[] = [
                         'id' => Uuid::randomHex(),
-                        'name' => $salesChannel->getName().'_'.$exportType.'_'.$exportFormat,
+                        'name' => $salesChannel->getName() . '_' . $exportType . '_' . $exportFormat,
                         'active' => true,
                         'type' => $exportType,
                         'format' => $exportFormat,
                         'interval' => '0 * * * *',
                         'salesChannelId' => $salesChannel->getId(),
+                        'languageId' => $language->getId(),
+                        'mapping' => '[]'
                     ];
                 }
             }

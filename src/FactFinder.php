@@ -65,6 +65,9 @@ class FactFinder extends Plugin
         $loader->load('services.xml');
     }
 
+    /**
+     * @param UpdateContext $updateContext
+     */
     public function postUpdate(UpdateContext $updateContext): void
     {
         if (!$this->isActive()) {
@@ -74,6 +77,9 @@ class FactFinder extends Plugin
         $setup->createExports($updateContext->getContext());
     }
 
+    /**
+     * @param ActivateContext $activateContext
+     */
     public function activate(ActivateContext $activateContext): void
     {
         $setup = new ExportSetup($this->container);
