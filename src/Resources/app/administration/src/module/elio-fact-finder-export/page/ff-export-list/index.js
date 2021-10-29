@@ -1,5 +1,6 @@
 import template from './ff-export-list.html.twig';
 
+const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Shopware.Component.register('ff-export-list', {
@@ -7,6 +8,10 @@ Shopware.Component.register('ff-export-list', {
 
     inject: [
         'repositoryFactory'
+    ],
+
+    mixins: [
+        Mixin.getByName('listing')
     ],
 
     metaInfo() {
@@ -17,7 +22,7 @@ Shopware.Component.register('ff-export-list', {
 
     data() {
         return {
-            exports: [],
+            exports: null,
             sortBy: 'lastGenerationStartedAt',
             sortDirection: 'DESC',
             isLoading: false,
@@ -100,28 +105,35 @@ Shopware.Component.register('ff-export-list', {
             return [
                 {
                     property: 'name',
+                    routerLink: 'elio.factfinder.export.detail',
+                    primary: true,
                     label: this.$tc('ff-export.list.columns.name'),
                     allowResize: false,
+                    visible: true
                 },
                 {
                     property: 'active',
                     label: this.$tc('ff-export.list.columns.active'),
                     allowResize: false,
+                    visible: true
                 },
                 {
                     property: 'type',
                     label: this.$tc('ff-export.list.columns.type'),
                     allowResize: false,
+                    visible: true
                 },
                 {
                     property: 'format',
                     label: this.$tc('ff-export.list.columns.format'),
                     allowResize: false,
+                    visible: true
                 },
                 {
                     property: 'lastGenerationFinishedAt',
                     label: this.$tc('ff-export.list.columns.lastGenerationFinishedAt'),
                     allowResize: false,
+                    visible: true
                 }
             ];
         }
