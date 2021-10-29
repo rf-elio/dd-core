@@ -6,7 +6,8 @@ Shopware.Component.register('ff-restrictions-index', {
     data() {
         return {
             isLoading: false,
-            isSaveSuccessful: false
+            isSaveSuccessful: false,
+            isCustomFiltersTab: false
         }
     },
 
@@ -16,6 +17,16 @@ Shopware.Component.register('ff-restrictions-index', {
 
     beforeRouteUpdate(to, from, next) {
         this.checkLeaving(to, from, next);
+    },
+
+    created() {
+        this.routerViewTabChanged();
+    },
+
+    watch: {
+        $route() {
+            this.routerViewTabChanged();
+        }
     },
 
     methods: {
@@ -28,6 +39,14 @@ Shopware.Component.register('ff-restrictions-index', {
                 next();
             } else {
                 next(false);
+            }
+        },
+
+        routerViewTabChanged() {
+            if (this.$route.name === 'elio.factfinder.restrictions.index.customfilters') {
+                this.isCustomFiltersTab = true
+            } else {
+                this.isCustomFiltersTab = false;
             }
         },
 

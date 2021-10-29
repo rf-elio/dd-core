@@ -32,13 +32,13 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationCollectionExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
@@ -64,8 +64,14 @@ class CampaignTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
+    public function transform(
+        ModelInterface $model,
+        ResponseCollection $responseCollection,
+        SalesChannelContext $context,
+        ApiRequest $request
+    ): void
     {
         if (!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
@@ -82,22 +88,25 @@ class CampaignTransformer implements ResponseTransformerInterface
 
         foreach ($model->getCampaigns() as $campaign) {
             $type = $campaign->getFlavour();
-            $label = $campaign->getName();
+            $name = $campaign->getName();
             $texts = [];
+
             foreach ($campaign->getFeedbackTexts() as $feedbackText){
-                if(empty($texts[$feedbackText->getLabel()])){
-                    $texts[$feedbackText->getLabel()] = [];
+                $label = $feedbackText->getLabel();
+                if(empty($texts[$label])){
+                    $texts[$label] = [];
                 }
                 $texts[$feedbackText->getLabel()][] = [
                     'html' => $feedbackText->getHtml(),
-                    'label' => $feedbackText->getLabel(),
+                    'label' => $label,
                     'position' => $feedbackText->getPosition(),
                     'text' => $feedbackText->getText(),
                 ];
             }
+
             $struct->addCampaign($type, [
                 'type' => $type,
-                'label' => $label,
+                'label' => $name,
                 'texts' => $texts,
             ]);
         }

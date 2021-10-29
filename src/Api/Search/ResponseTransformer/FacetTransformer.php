@@ -195,7 +195,7 @@ class FacetTransformer implements ResponseTransformerInterface
      * Transforms slider filters
      *
      * @param Facet $facet
-     * @return StatsResult|null
+     * @return SliderResult|null
      */
     protected function transformSlider(Facet $facet): ?SliderResult
     {

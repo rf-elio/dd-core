@@ -47,13 +47,13 @@ class SliderResult extends StatsResult
 
     /**
      * @param string $name
-     * @param $min
-     * @param $max
+     * @param float|null $min
+     * @param float|null $max
      * @param float|null $avg
      * @param float|null $sum
      * @param string|null $unit
      */
-    public function __construct(string $name, $min, $max, ?float $avg, ?float $sum, ?string $unit = null)
+    public function __construct(string $name, ?float $min, ?float $max, ?float $avg, ?float $sum, ?string $unit = null)
     {
         parent::__construct($name, $min, $max, $avg, $sum);
         $this->unit = $unit;
