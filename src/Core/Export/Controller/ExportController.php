@@ -2,16 +2,19 @@
 
 namespace Elio\FactFinder\Core\Export\Controller;
 
+use Elio\FactFinder\Core\Export\ExportGenerateMessage;
 use Elio\FactFinder\Core\Export\ExportService;
 use Elio\FactFinder\Core\Export\ExportStorageService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -21,15 +24,21 @@ class ExportController extends AbstractController
 {
     private ExportStorageService $exportStorageService;
     private ExportService $exportService;
+    private MessageBusInterface $messageBus;
 
     /**
      * @param ExportStorageService $exportStorageService
      * @param ExportService $exportService
      */
-    public function __construct(ExportStorageService $exportStorageService, ExportService $exportService)
+    public function __construct(
+        ExportStorageService $exportStorageService,
+        ExportService $exportService,
+        MessageBusInterface $messageBus
+    )
     {
         $this->exportStorageService = $exportStorageService;
         $this->exportService = $exportService;
+        $this->messageBus = $messageBus;
     }
 
     /**
@@ -80,9 +89,8 @@ class ExportController extends AbstractController
         if(!$export) {
             throw new NotFoundHttpException(sprintf('Export "%s" does not exists', $id));
         }
+        $this->messageBus->dispatch((new Envelope(new ExportGenerateMessage($export, $context)))->with(new DelayStamp(1000)));
 
-        $this->exportService->generate($export, $context);
-
-        return new JsonResponse(['id' => $id, 'status' => 'done']);
+        return new JsonResponse(['id' => $id, 'status' => 'starting']);
     }
 }

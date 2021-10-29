@@ -277,17 +277,19 @@ Shopware.Component.register('ff-export-detail', {
             var operator = this;
 
             this.updateTimer = setTimeout(function requestStatus(){
-                console.log('trying updating status');
+                console.log('trying update status for export:' + operator.exportId);
                 operator.updateStatus();
-                operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+                if (operator.status.exists === true) {
+                    clearTimeout(operator.updateTimer)
+                    operator.isGenerating = false;
+                } else {
+                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+                }
             }, operator.updateInterval||3000);
 
             this.isGenerating = true;
             this.ffExport.generate(this.exportId).then((responce) => {
                 console.log(responce);
-                operator.isGenerating = false;
-                operator.updateStatus();
-                clearTimeout(operator.updateTimer)
             }).catch((exception) => {
                 operator.createNotificationError({
                     message: this.$tc('ff-export.detail.messageGeneratingError')
