@@ -48,7 +48,9 @@
         "active": "Active",
         "type": "Type",
         "format": "Format",
-        "lastGenerationFinishedAt": "Last Generation Time"
+        "lastGenerationFinishedAt": "Last Generation Time",
+        "salesChannel": "Sales Channel",
+        "language": "language"
       },
       "contextMenuView": "Edit",
       "contextMenuDelete": "Delete",

@@ -30,6 +30,18 @@
                             :sortDirection="sortDirection"
                             @column-sort="onSortColumn">
 
+                        {% block ff_export_list_grid_columns_salesChannel %}
+                            <template #column-salesChannelId="{ item }">
+                                {{ item.salesChannel ? item.salesChannel.translated.name : '-' }}
+                            </template>
+                        {% endblock %}
+
+                        {% block ff_export_list_grid_columns_language %}
+                            <template #column-languageId="{ item }">
+                                {{ item.language ? item.language.name : '-' }}
+                            </template>
+                        {% endblock %}
+
                         {% block ff_export_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
                                 {% block ff_export_list_grid_columns_actions_detail %}

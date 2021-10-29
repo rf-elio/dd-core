@@ -43,6 +43,8 @@ Shopware.Component.register('ff-export-list', {
         },
         exportCriteria() {
             var criteria = new Criteria();
+            criteria.addAssociation('salesChannel');
+            criteria.addAssociation('language');
             criteria.setPage(this.page);
             criteria.setLimit(this.limit);
             criteria.setTotalCountMode(2);
@@ -108,6 +110,18 @@ Shopware.Component.register('ff-export-list', {
                     routerLink: 'elio.factfinder.export.detail',
                     primary: true,
                     label: this.$tc('ff-export.list.columns.name'),
+                    allowResize: false,
+                    visible: true
+                },
+                {
+                    property: 'salesChannelId',
+                    label: this.$tc('ff-export.list.columns.salesChannel'),
+                    allowResize: false,
+                    visible: true
+                },
+                {
+                    property: 'languageId',
+                    label: this.$tc('ff-export.list.columns.language'),
                     allowResize: false,
                     visible: true
                 },
