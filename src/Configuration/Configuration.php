@@ -78,6 +78,8 @@ class Configuration extends Struct
     private bool $suggestUseFactFinder;
     private bool $restrictionsParentCategories;
     private bool $restrictionsOverridingTopToDown;
+    private string $apiContentChannel;
+    private bool $searchUseContentChannel;
 
     /**
      * Configuration constructor.
@@ -102,6 +104,8 @@ class Configuration extends Struct
      * @param bool $suggestUseFactFinder
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
+     * @param string $apiContentChannel
+     * @param bool $searchUseContentChannel
      */
     public function __construct(
         bool $active,
@@ -124,7 +128,9 @@ class Configuration extends Struct
         array $botProtectionIpFilter,
         bool $suggestUseFactFinder,
         bool $restrictionsParentCategories,
-        bool $restrictionsOverridingTopToDown
+        bool $restrictionsOverridingTopToDown,
+        string $apiContentChannel,
+        bool $searchUseContentChannel
     )
     {
         $this->useAso = $useAso;
@@ -148,6 +154,8 @@ class Configuration extends Struct
         $this->suggestUseFactFinder = $suggestUseFactFinder;
         $this->restrictionsParentCategories = $restrictionsParentCategories;
         $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
+        $this->apiContentChannel = $apiContentChannel;
+        $this->searchUseContentChannel = $searchUseContentChannel;
     }
 
     /**
@@ -325,5 +333,21 @@ class Configuration extends Struct
     public function isRestrictionsOverridingTopToDown(): bool
     {
         return $this->restrictionsOverridingTopToDown;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiContentChannel(): string
+    {
+        return $this->apiContentChannel;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSearchUseContentChannel(): bool
+    {
+        return $this->searchUseContentChannel;
     }
 }

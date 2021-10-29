@@ -45,32 +45,23 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Class CategoryExportGenerator
+ * Class ContentExportGenerator
  * @package Elio\FactFinder\Core\Export\Generator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CategoryExportGenerator implements ExportGeneratorInterface
+class ContentExportGenerator implements ExportGeneratorInterface
 {
     public const CATEGORY_TYPE = 'page';
-    public const TYPE = 'category';
+    public const TYPE = 'content';
     protected const SLOT_CONFIG_MAX_LENGTH = 255;
     public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config.';
     private EntityRepositoryInterface $categoryRepository;
     private RouterInterface $router;
     private SystemConfigService $systemConfigService;
-
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export): bool
-    {
-        return $export->getType() === static::TYPE;
-    }
 
     /**
      * CategoryExportGenerator constructor.
@@ -83,6 +74,16 @@ class CategoryExportGenerator implements ExportGeneratorInterface
         $this->categoryRepository = $categoryRepository;
         $this->router = $router;
         $this->systemConfigService = $systemConfigService;
+    }
+
+    /**
+     * Checks if the generator can be used for the given export
+     * @param ExportEntity $export
+     * @return bool
+     */
+    public function supports(ExportEntity $export): bool
+    {
+        return $export->getType() === static::TYPE;
     }
 
     /**
@@ -111,6 +112,7 @@ class CategoryExportGenerator implements ExportGeneratorInterface
      */
     public function getCriteria(SalesChannelContext $context): Criteria
     {
+        // @todo: @andrey: move this into the export entity configuration
         $ids = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX.'categoriesToExport', $context->getSalesChannelId());
         $criteria = new Criteria($ids);
         $criteria->addAssociation('cmsPage');

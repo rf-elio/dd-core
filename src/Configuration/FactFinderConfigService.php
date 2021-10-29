@@ -112,12 +112,12 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
         );
 
         $configuration = new Configuration(
-            $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'apiChannel', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'apiTimeout', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'useAso', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'apiDebugActive', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'searchUseFactFinder', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'apiChannel', $languagePrefix) ?? '',
+            $this->getConfigWithLanguagePrefix($config, 'apiTimeout', $languagePrefix) ?? 0,
+            $this->getConfigWithLanguagePrefix($config, 'useAso', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'apiDebugActive', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'searchUseFactFinder', $languagePrefix) ?? false,
             !empty($this->getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
@@ -125,14 +125,16 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             !empty($this->getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'listingUseFactFinder', $languagePrefix)),
             $additionalRequestParameters,
-            $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,
             $this->prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
             $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
             $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'suggestUseFactFinder', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'suggestUseFactFinder', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'apiContentChannel', $languagePrefix) ?? '',
+            $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

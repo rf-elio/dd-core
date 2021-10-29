@@ -35,6 +35,13 @@
             <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
             <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
+        <input-field>
+            <name>apiContentChannel</name>
+            <label>API channel for contents</label>
+            <label lang="de-DE">API-Channel für Inhalte</label>
+            <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
+            <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
+        </input-field>
         <input-field type="int">
             <name>apiTimeout</name>
             <label>API request timeout</label>
@@ -79,6 +86,12 @@
             <name>searchUseFactFinder</name>
             <label>Replace shopware search by FACTFinder search</label>
             <label lang="de-DE">Shopware Suche durch die FACTFinder-Suche ersetzten</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>searchUseContentChannel</name>
+            <label>Show contents from content channel to search result page</label>
+            <label lang="de-DE">Inhalte aus dem Inhalts-Channel auf der Suchergebnisseite anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
@@ -201,60 +214,6 @@
             <name>trackProductView</name>
             <label>Tracks the view of a product (detail page)</label>
             <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-    </card>
-    <card>
-        <title>Suggest export</title>
-        <title lang="de-DE">Suggest-Export</title>
-        <input-field type="bool">
-            <name>suggestExportActive</name>
-            <label>Activates the xml suggest export</label>
-            <label lang="de-DE">Suggest XML-Export benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="text">
-            <name>suggestExportInterval</name>
-            <label>suggest export interval</label>
-            <label lang="de-DE">Suggest-Export-Intervall</label>
-            <defaultValue>0 * * * *</defaultValue>
-            <helpText>Crontab like format: 0 * * * *</helpText>
-            <helpText lang="de-DE">Im Cron-Tab-Format: 0 * * * * (Minute, Stunde, Tag, Monat, Jahr)</helpText>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportProductCategories</name>
-            <label>Export product categories</label>
-            <label lang="de-DE">Produktkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportStructureCategories</name>
-            <label>Export structure categories</label>
-            <label lang="de-DE">Strukturkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportLinkCategories</name>
-            <label>Export link categories</label>
-            <label lang="de-DE">Linkkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportFooterNavigation</name>
-            <label>Export footer categories</label>
-            <label lang="de-DE">Footerkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportServiceNavigation</name>
-            <label>Export service categories</label>
-            <label lang="de-DE">Servicekategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportManufacturers</name>
-            <label>Export manufacturers</label>
-            <label lang="de-DE">Hersteller exportieren</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>
