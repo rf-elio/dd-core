@@ -68,7 +68,7 @@
         </service>
 
         <!-- message handler -->
-        <service id="Elio\FactFinder\Core\Export\ExportGeneratingHandler">
+        <service id="Elio\FactFinder\Core\Export\ExportGenerateHandler">
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
             <tag name="messenger.message_handler" />
         </service>

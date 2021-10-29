@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Core\Export;
 
+use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Exception;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
 /**
@@ -42,22 +44,36 @@ use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratingHandler extends AbstractMessageHandler
+class ExportGenerateHandler extends AbstractMessageHandler
 {
     private ExportService $exportService;
 
-    public function __construct(
-        ExportService $exportService
-    ) {
+    /**
+     * ExportGeneratingHandler constructor.
+     * @param ExportService $exportService
+     */
+    public function __construct(ExportService $exportService) {
         $this->exportService = $exportService;
     }
 
+    /**
+     * Starts the export
+     *
+     * @param $message
+     * @throws Exception
+     */
     public function handle($message): void
     {
-        /** @var ExportGenerateMessage $message */
+        if(!$message instanceof ExportGenerateMessage) {
+            throw new InvalidTypeException($message, ExportGenerateMessage::class);
+        }
+
         $this->exportService->generate($message->getExport(), $message->getContext());
     }
 
+    /**
+     * @return iterable<string>
+     */
     public static function getHandledMessages(): iterable
     {
         return [

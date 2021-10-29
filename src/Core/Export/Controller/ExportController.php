@@ -5,6 +5,7 @@ namespace Elio\FactFinder\Core\Export\Controller;
 use Elio\FactFinder\Core\Export\ExportGenerateMessage;
 use Elio\FactFinder\Core\Export\ExportService;
 use Elio\FactFinder\Core\Export\ExportStorageService;
+use League\Flysystem\FileNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,6 +65,7 @@ class ExportController extends AbstractController
 
     /**
      * @Route("/api/_action/ff/export/download/{id}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
+     * @throws FileNotFoundException
      */
     public function download(string $id, Context $context): Response
     {
@@ -77,9 +79,10 @@ class ExportController extends AbstractController
         return $this->exportStorageService->createFileResponse($export);
     }
 
-
     /**
-     * @Route("/api/_action/ff/export/generate/{id}", name="api.action.elio-ff.export.generate", defaults={"auth_required"=false}, methods={"GET"})
+     * Generates the export in background
+     *
+     * @Route("/api/_action/ff/export/generate/{id}", name="api.action.elio-ff.export.generate", methods={"GET"})
      */
     public function generate(string $id, Context $context): Response
     {
@@ -89,8 +92,8 @@ class ExportController extends AbstractController
         if(!$export) {
             throw new NotFoundHttpException(sprintf('Export "%s" does not exists', $id));
         }
-        $this->messageBus->dispatch((new Envelope(new ExportGenerateMessage($export, $context)))->with(new DelayStamp(1000)));
 
+        $this->messageBus->dispatch((new Envelope(new ExportGenerateMessage($export, $context)))->with(new DelayStamp(1000)));
         return new JsonResponse(['id' => $id, 'status' => 'starting']);
     }
 }
