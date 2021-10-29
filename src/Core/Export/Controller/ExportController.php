@@ -67,4 +67,22 @@ class ExportController extends AbstractController
 
         return $this->exportStorageService->createFileResponse($export);
     }
+
+
+    /**
+     * @Route("/api/_action/ff/export/generate/{id}", name="api.action.elio-ff.export.generate", defaults={"auth_required"=false}, methods={"GET"})
+     */
+    public function generate(string $id, Context $context): Response
+    {
+        $criteria = new Criteria([$id]);
+        $export = $this->exportService->getExports($criteria, $context)->first();
+
+        if(!$export) {
+            throw new NotFoundHttpException(sprintf('Export "%s" does not exists', $id));
+        }
+
+        $this->exportService->generate($export, $context);
+
+        return new JsonResponse(['id' => $id, 'status' => 'done']);
+    }
 }

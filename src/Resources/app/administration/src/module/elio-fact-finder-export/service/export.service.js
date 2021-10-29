@@ -66,4 +66,13 @@ export default class ExportService {
 
         return `${url}${this.apiEndpoint}`;
     }
+
+    generate(exportId) {
+        return this.httpClient.get(
+            `/_action/ff/export/generate/${exportId}`,
+            {headers: this.getBasicHeaders()}
+        ).then((response) => {
+            return response.data;
+        });
+    }
 }

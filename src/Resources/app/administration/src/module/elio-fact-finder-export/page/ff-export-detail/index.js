@@ -271,7 +271,11 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         onGenerate() {
-
+            console.log('generting');
+            this.ffExport.generate(this.exportId).then((responce) => {
+                console.log(responce);
+                console.log('generting done');
+            });
         }
     }
 });
