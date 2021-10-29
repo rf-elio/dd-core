@@ -58,13 +58,6 @@ class FilterDefinitionTranslationCollection extends EntityCollection
         });
     }
 
-    public function filterByPropertyGroupId(string $id): self
-    {
-        return $this->filter(function (FilterDefinitionTranslationEntity $filterDefinitionTranslation) use ($id) {
-            return $filterDefinitionTranslation->getFilterId() === $id;
-        });
-    }
-
     public function getLanguageIds(): array
     {
         return $this->fmap(function (FilterDefinitionTranslationEntity $filterDefinitionTranslation) {

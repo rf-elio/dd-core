@@ -65,17 +65,24 @@ class FilterRestrictionsEntity extends Entity
      */
     protected $salesChannelId;
     /**
+     * is it collection of filters for allowed or blocked column
      * @var bool
      */
     protected bool $isAllowed;
     /**
-     * @var FilterCollection|null
+     * is it inherited from all-saleschannel restriction
+     * @var bool
      */
-    protected $filters;
+    protected bool $isInherited;
     /**
+     * is all-option is checked or only selected (if false)
      * @var bool
      */
     protected bool $isAllChecked;
+    /**
+     * @var FilterCollection|null
+     */
+    protected $filters;
 
     /**
      * @return FilterCollection|null
@@ -107,6 +114,22 @@ class FilterRestrictionsEntity extends Entity
     public function setIsAllowed(bool $isAllowed): void
     {
         $this->isAllowed = $isAllowed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInherited(): bool
+    {
+        return $this->isInherited;
+    }
+
+    /**
+     * @param bool $isInherited
+     */
+    public function setIsInherited(bool $isInherited): void
+    {
+        $this->isInherited = $isInherited;
     }
 
     /**

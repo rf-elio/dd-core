@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -73,8 +74,7 @@ class FacetTransformer implements ResponseTransformerInterface
      */
     public function __construct(
         FilterService $filterService
-    )
-    {
+    ) {
         $this->filterService = $filterService;
     }
 
@@ -92,26 +92,24 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param SalesChannelContext $context
      * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
-    {
-        if(!$model instanceof Result) {
+    public function transform(
+        ModelInterface $model,
+        ResponseCollection $responseCollection,
+        SalesChannelContext $context,
+        ApiRequest $request
+    ): void {
+        if (!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $allowedFiltersNames = [];
-        $allowedFilters = [];
-        if($request instanceof NavigationRequest) {
-            $allowedFilters = $this->filterService->getAllowedFilters(
-                $context->getSalesChannelId(), FilterService::LEVEL_CATEGORY, $request->getCategoryId()
-            );
+        $level = FilterService::LEVEL_GLOBAL;
+        if ($request instanceof NavigationRequest) {
+            $level = FilterService::LEVEL_CATEGORY;
+        } else if ($request instanceof SearchRequest) {
+            $level = FilterService::LEVEL_SEARCH;
         }
 
-        foreach ($allowedFilters as $filter) {
-            if ($filter['isAllowed']) {
-                $allowedFiltersNames[] = $filter['propertyName'];
-            }
-        }
-
+        $filtersRestrictions = $this->filterService->getFilters($context, $level, $request) ?? [null, []];
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
@@ -122,9 +120,15 @@ class FacetTransformer implements ResponseTransformerInterface
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
-            if (!in_array($facet->getName(), $allowedFiltersNames, true)) {
+            if ($filtersRestrictions[1] === null) { // blocked all
                 continue;
             }
+
+            if (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true)) {
+                // isn't allowed
+                continue;
+            }
+
             $style = $facet->getFilterStyle();
             switch ($style) {
                 case 'DEFAULT':
@@ -147,7 +151,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
-        foreach ($facetCollection->getAggregations() as $aggregation){
+        foreach ($facetCollection->getAggregations() as $aggregation) {
             $aggregationResultCollection->add($aggregation);
         }
     }
@@ -158,7 +162,7 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param Facet $facet
      * @return PropertyGroupEntity
      */
-    protected function transformDefault(Facet $facet) : PropertyGroupEntity
+    protected function transformDefault(Facet $facet): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
@@ -202,7 +206,7 @@ class FacetTransformer implements ResponseTransformerInterface
             $maxValue = $element->getAbsoluteMaxValue();
         }
 
-        if(!$minValue || !$maxValue) {
+        if (!$minValue || !$maxValue) {
             return null;
         }
 

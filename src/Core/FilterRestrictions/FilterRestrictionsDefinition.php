@@ -44,8 +44,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationFiel
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsEntity;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
@@ -102,6 +100,13 @@ class FilterRestrictionsDefinition extends EntityDefinition
             * is it collection of filters for allowed or blocked column
             */
            (new BoolField('is_allowed', 'isAllowed'))->addFlags(
+               new ApiAware(),
+               new Required()
+           ),
+           /**
+            * is it inherited from all-saleschannel restriction
+            */
+           (new BoolField('is_inherited', 'isInherited'))->addFlags(
                new ApiAware(),
                new Required()
            ),

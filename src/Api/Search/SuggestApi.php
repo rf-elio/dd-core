@@ -82,6 +82,6 @@ class SuggestApi
             'channel' => $suggestRequest->getChannel(),
             'query' => $suggestRequest->getQuery(),
         ]));
-        return $this->transformer->transformResponse($result, $context);
+        return $this->transformer->transformResponse($result, $context, $suggestRequest);
     }
 }

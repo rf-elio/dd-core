@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `elio_ff_filter_restrictions` (
     `is_category` TINYINT(1) NULL DEFAULT '0',
     `layer` VARCHAR(255) NULL,
     `is_allowed` TINYINT(1) NULL DEFAULT '0',
+    `is_inherited` TINYINT(1) NULL DEFAULT '0',
     `category_id` BINARY(16) NULL DEFAULT NULL,
     `sales_channel_id` BINARY(16) NULL DEFAULT NULL,
     `is_all_checked` TINYINT(1) NULL DEFAULT '0',

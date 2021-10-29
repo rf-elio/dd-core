@@ -59,7 +59,7 @@ class FilterEntity extends Entity
     protected bool $isCustom;
 
     /**
-     * @param FilterRestrictionsCollection|null
+     * @var FilterRestrictionsCollection|null
      */
     protected $filterRestrictions;
 
