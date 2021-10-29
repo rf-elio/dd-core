@@ -101,17 +101,6 @@ class CategoryExportGenerator implements ExportGeneratorInterface
         foreach ($categories as $category) {
             $item = new ExportItem();
             $item = $this->setExportItem($item, $category, $context);
-
-            // @todo: rewrite url
-            $item->set(
-                'LinkURL',
-                $this->router->generate(
-                    'frontend.navigation.page',
-                    ['navigationId' => $category->getId()],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                )
-            );
-
             $output->write($item);
         }
     }
@@ -127,6 +116,7 @@ class CategoryExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
+        $criteria->addAssociation('media');
         //$criteria->addAssociation('cmsPage.sections');
         //$criteria->addAssociation('cmsPage.sections.blocks');
         //$criteria->addAssociation('cmsPage.sections.blocks.slots');
@@ -183,12 +173,28 @@ class CategoryExportGenerator implements ExportGeneratorInterface
                 static::SLOT_CONFIG_MAX_LENGTH - 3
             ) . '...' : $slotConfig;
 
-        $item->set('CategoryID', $category->getId());
-        $item->set('Name', $this->cleanValue($category->getName()));
-        $item->set('Description', $this->cleanValue($category->getDescription()));
-        $item->set('Path', $this->cleanValue($category->getPath()));
+        $item->set('Id', $category->getId());
+        $item->set('Type', self::TYPE);
+        $item->set('Title', $this->cleanValue($category->getName()));
+        $item->set('SeoText', $this->cleanValue($category->getMetaDescription()));
+        $item->set(
+            'Url',
+            $this->router->generate(
+                'frontend.navigation.page',
+                ['navigationId' => $category->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
+        );
         $item->set('Keywords', $this->cleanValue($category->getKeywords()));
-        $item->set('PageContent', $this->cleanValue($slotConfig));
+        $item->set('Description', $this->cleanValue($category->getDescription()));
+        if($category->getMedia()){
+            $item->set('ImageUrl', $this->cleanValue($category->getMedia()->getUrl()));
+        }
+        $item->set('PublicationDate', $this->cleanValue($category->getCreatedAt()->format('Y-m-d H:i:s')));
+        $item->set('Priority', 0);
+        $item->set('ContentStructure', $this->cleanValue(join('/', array_slice($category->getBreadcrumb(), 1))));
+        //cms layout content not yet needed
+//        $item->set('PageContent', $this->cleanValue($slotConfig));
         return $item;
     }
 
