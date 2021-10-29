@@ -44,6 +44,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class ProductExportGenerator
@@ -98,27 +99,52 @@ class ProductExportGenerator implements ExportGeneratorInterface
         // @todo: don't fetch all products (memory) use some pagination stuff
         $products = $this->productRepository->search($criteria, $context->getContext());
 
+        $mappings = json_decode($export->getMapping(), true);
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
         // @todo: translations
         // @todo: attributes or products fields by configuration
         // @todo: extensibility
         /** @var ProductEntity $product */
         foreach ($products as $product) {
             $item = new ExportItem();
-            $item->set('ProductID', $product->getId());
-            $item->set('MasterProductNumber', $product->getProductNumber());
-            $item->set('ManufacturerNumber', $product->getManufacturerNumber());
-            $item->set('Name', $product->getName());
-            $item->set('Description', $product->getDescription());
-            $item->set('ProductURL', $product->getId());
-            $item->set('Price', $product->getPrice()->first()->getGross());
-            $item->set('Manufacturer', $product->getManufacturer()->getName());
+
+            foreach ($mappings as $mapping) {
+                // supports different levels and Collection::first()
+                // examples: manufacturer.name, price.first.gross
+                // can be extended to provide more options for mapping language
+                if (str_contains($mapping['source'], '.')) {
+                    $parts = explode('.',$mapping['source']);
+                    $previousObj = $product;
+                    foreach ($parts as $part) {
+                        if ($part === 'first') {
+                            $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
+                        } else {
+                            $previousObj = $propertyAccessor->getValue($previousObj, $part);
+                        }
+                    }
+                    $item->set($mapping['target'], $previousObj);
+                } else {
+                    $item->set($mapping['target'], $propertyAccessor->getValue($product, $mapping['source']));
+                }
+            }
+
+            // todo: mapping extension - properties from other sub-objects of product to propertyAccessor
+            //$item->set('ProductID', $product->getId());
+            //$item->set('MasterProductNumber', $product->getProductNumber());
+            //$item->set('ManufacturerNumber', $product->getManufacturerNumber());
+            //$item->set('Name', $product->getName());
+            //$item->set('Description', $product->getDescription());
+            //$item->set('ProductURL', $product->getId());
+            //$item->set('Price', $product->getPrice()->first()->getGross()); // can be mapped as price.first.gross
+            //$item->set('Manufacturer', $product->getManufacturer()->getName()); // can be mapped as manufacturer.name
             $item->set('CategoryPath', $this->getCategoryPath($product));
-            $item->set('EAN', $product->getId());
-            $item->set('Keywords', $product->getKeywords());
-            $item->set('SearchKeywords', $product->getSearchKeywords());
-            $item->set('Stock', $product->getStock());
-            $item->set('RatingAverage', $product->getRatingAverage());
-            $item->set('ShippingFree', $product->getShippingFree());
+            //$item->set('EAN', $product->getId());
+            //$item->set('Keywords', $product->getKeywords());
+            //$item->set('SearchKeywords', $product->getSearchKeywords());
+            //$item->set('Stock', $product->getStock());
+            //$item->set('RatingAverage', $product->getRatingAverage());
+            //$item->set('ShippingFree', $product->getShippingFree());
             $item->set('Attribute', $this->getProductAttribute($product));
 
             // @todo: check if this is the main image

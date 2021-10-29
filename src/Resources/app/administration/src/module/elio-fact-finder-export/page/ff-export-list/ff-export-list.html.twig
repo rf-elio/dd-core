@@ -12,20 +12,35 @@
         <template slot="content">
             <div>
                 {% block ff_export_list_grid %}
-                    <sw-data-grid :dataSource="exports"
-                                  :columns="exportColumns"
-                                  :fullPage="true"
-                                  :showSettings="false"
-                                  :showSelection="true"
-                                  :sortBy="sortBy"
-                                  :sortDirection="sortDirection"
-                                  :isLoading="isLoading"
-                                  :allowColumnEdit="false"
-                                  identifier="ff-export-list"
-                                  @column-sort=""
-                                  @page-change="onPageChange"
-                                  @selection-change=""
-                                  :disableDataFetching="true">
+                    <sw-entity-listing
+                            v-if="exports"
+                            class="ff-exports-list-grid"
+                            identifier="ff-exports-list"
+                            :items="exports"
+                            :columns="exportColumns"
+                            :repository="exportRepository"
+                            detailRoute="elio.factfinder.export.detail"
+                            :disableDataFetching="true"
+                            :isLoading="isLoading"
+                            :showSelection="true"
+                            @selection-change="updateSelection"
+                            :allowInlineEdit="false"
+                            @page-change="onPageChange"
+                            :sortBy="sortBy"
+                            :sortDirection="sortDirection"
+                            @column-sort="onSortColumn">
+
+                        {% block ff_export_list_grid_columns_salesChannel %}
+                            <template #column-salesChannelId="{ item }">
+                                {{ item.salesChannel ? item.salesChannel.translated.name : '-' }}
+                            </template>
+                        {% endblock %}
+
+                        {% block ff_export_list_grid_columns_language %}
+                            <template #column-languageId="{ item }">
+                                {{ item.language ? item.language.name : '-' }}
+                            </template>
+                        {% endblock %}
 
                         {% block ff_export_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
@@ -76,7 +91,7 @@
                                 </sw-pagination>
                             {% endblock %}
                         </template>
-                    </sw-data-grid>
+                    </sw-entity-listing>
                 {% endblock %}
             </div>
         </template>

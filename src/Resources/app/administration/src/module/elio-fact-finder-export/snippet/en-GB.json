@@ -6,7 +6,7 @@
     "buttonCancel": "Cancel",
     "detail": {
       "placeholderName": "New_Export_Name",
-      "messageSaveError": "Error while saving",
+      "messageSaveError": "Error while saving: \"{error}\"",
       "textHeadline": "New Export",
       "cardTitleBasicInfo" : "Basic information",
       "labelName": "Export Name",
@@ -37,7 +37,10 @@
         "notExists": "Download does not exist",
         "path": "Path: "
       },
-      "download": "Download"
+      "download": "Download",
+      "buttonGenerate": "Generate",
+      "buttonGenerateInProgress": "Generating",
+      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\""
     },
     "list": {
       "buttonCreate": "Create Export",
@@ -47,7 +50,9 @@
         "active": "Active",
         "type": "Type",
         "format": "Format",
-        "lastGenerationFinishedAt": "Last Generation Time"
+        "lastGenerationFinishedAt": "Last Generation Time",
+        "salesChannel": "Sales Channel",
+        "language": "language"
       },
       "contextMenuView": "Edit",
       "contextMenuDelete": "Delete",

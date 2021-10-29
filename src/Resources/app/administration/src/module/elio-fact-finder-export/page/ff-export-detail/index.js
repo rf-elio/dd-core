@@ -77,7 +77,10 @@ Shopware.Component.register('ff-export-detail', {
             status: {
                 exists: false,
                 location: ''
-            }
+            },
+            isGenerating: false,
+            updateTimer: null,
+            updateInterval: 3000
         };
     },
 
@@ -186,7 +189,9 @@ Shopware.Component.register('ff-export-detail', {
                 operator.isSaveSuccessful = true;
             }).catch((exception) => {
                 operator.createNotificationError({
-                    message: this.$tc('ff-export.detail.messageSaveError')
+                    message: this.$tc('ff-export.detail.messageSaveError', 0, {
+                        error: exception.message, // todo: add proper error message
+                    })
                 });
                 operator.isLoading = false;
                 throw exception;
@@ -268,6 +273,33 @@ Shopware.Component.register('ff-export-detail', {
          */
         onDownloadExport() {
             window.open(this.ffExport.getDownloadUrl(this.exportId), '_blank');
+        },
+
+        onGenerate() {
+            var operator = this;
+
+            this.updateTimer = setTimeout(function requestStatus(){
+                console.log('trying update status for export:' + operator.exportId);
+                operator.updateStatus();
+                if (operator.status.exists === true) {
+                    clearTimeout(operator.updateTimer)
+                    operator.isGenerating = false;
+                } else {
+                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+                }
+            }, operator.updateInterval||3000);
+
+            this.isGenerating = true;
+            this.ffExport.generate(this.exportId).then((responce) => {
+                console.log(responce);
+            }).catch((exception) => {
+                operator.createNotificationError({
+                    message: this.$tc('ff-export.detail.messageGeneratingError', 0, {
+                        error: exception.message, // todo: add proper error message
+                    })
+                });
+                operator.isGenerating = false;
+            });
         }
     }
 });

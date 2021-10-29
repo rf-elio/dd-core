@@ -61,9 +61,16 @@
         <service id="Elio\FactFinder\Core\Export\Controller\ExportController" public="true">
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+
+        <!-- message handler -->
+        <service id="Elio\FactFinder\Core\Export\ExportGeneratingHandler">
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>
