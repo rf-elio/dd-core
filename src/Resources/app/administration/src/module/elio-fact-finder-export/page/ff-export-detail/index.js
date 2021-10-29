@@ -268,6 +268,10 @@ Shopware.Component.register('ff-export-detail', {
          */
         onDownloadExport() {
             window.open(this.ffExport.getDownloadUrl(this.exportId), '_blank');
+        },
+
+        onGenerate() {
+
         }
     }
 });

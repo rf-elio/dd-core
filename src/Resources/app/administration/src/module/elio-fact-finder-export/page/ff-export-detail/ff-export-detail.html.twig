@@ -117,17 +117,20 @@
 
                                         {% block ff_export_detail_basic_info_lastgeneration_started %}
                                             <dt>{{ $tc('ff-export.detail.labelLastGenerationStarted') }}</dt>
-                                            <dd>{{ ff_export.lastGenerationStartedAt }}</dd>
+                                            <dd v-if="ff_export.lastGenerationStartedAt">{{ ff_export.lastGenerationStartedAt }}</dd>
+                                            <dd v-else>-</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_lastgeneration_finished %}
                                             <dt>{{ $tc('ff-export.detail.labelLastGenerationFinished') }}</dt>
-                                            <dd>{{ ff_export.lastGenerationFinishedAt }}</dd>
+                                            <dd v-if="ff_export.lastGenerationFinishedAt">{{ ff_export.lastGenerationFinishedAt }}</dd>
+                                            <dd v-else>-</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_next_generation_due_at %}
                                             <dt>{{ $tc('ff-export.detail.labelNextGenerationDueAt') }}</dt>
-                                            <dd>{{ ff_export.nextGenerationDueAt }}</dd>
+                                            <dd v-if="ff_export.nextGenerationDueAt">{{ ff_export.nextGenerationDueAt }}</dd>
+                                            <dd v-else>-</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_status %}
@@ -168,6 +171,12 @@
                                                         type="switch"
                                                         :label="$tc('ff-export.detail.labelExportCommandForce')">
                                                 </sw-field>
+                                                <sw-button class="ff-export-button-generate"
+                                                           variant="primary"
+                                                           size="small"
+                                                           @click="onGenerate">
+                                                    {{ $tc('ff-export.detail.buttonGenerate') }}
+                                                </sw-button>
                                             </dd>
                                         {% endblock %}
                                     </sw-description-list>

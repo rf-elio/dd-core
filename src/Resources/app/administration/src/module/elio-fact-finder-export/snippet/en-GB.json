@@ -37,7 +37,8 @@
         "notExists": "Download does not exist",
         "path": "Path: "
       },
-      "download": "Download"
+      "download": "Download",
+      "buttonGenerate": "Generate"
     },
     "list": {
       "buttonCreate": "Create Export",
