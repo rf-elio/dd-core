@@ -56,7 +56,7 @@ export default class ExportService {
     getApiBasePath(id, prefix = '') {
         let url = '';
 
-        if (prefix?.length) {
+        if (prefix && prefix.length) {
             url += `${prefix}/`;
         }
 
