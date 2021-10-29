@@ -21,6 +21,7 @@ Shopware.Component.override('sw-extension-config', {
     data() {
         return {
             salesChannelId: null,
+            isLanguageDivided: false,
             languageId: null,
             languageNameSpace: '',
             languages: [{'id': 'null', 'value': 'All', 'active': true}]
@@ -50,10 +51,11 @@ Shopware.Component.override('sw-extension-config', {
 
     methods: {
         async onCreated() {
-            await this.loadLanguages();
-            this.updateLanguage();
-
-
+            if (this.namespace === 'FactFinder') {
+                this.isLanguageDivided = true;
+                await this.loadLanguages();
+                this.updateLanguage();
+            }
         },
 
         /**

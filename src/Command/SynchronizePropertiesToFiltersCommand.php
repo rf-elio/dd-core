@@ -32,9 +32,8 @@
 
 namespace Elio\FactFinder\Command;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterService;
+use Elio\FactFinder\Core\FilterRestrictions\FilterSyncService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,15 +50,16 @@ use Throwable;
  */
 class SynchronizePropertiesToFiltersCommand extends Command
 {
-    private FilterService $filterService;
+    private FilterSyncService $filterService;
 
     /**
      * SynchronizePropertiesToFiltersCommand constructor.
+     * @param FilterSyncService $filterSyncService
      */
-    public function __construct(FilterService $filterService)
+    public function __construct(FilterSyncService $filterSyncService)
     {
         parent::__construct();
-        $this->filterService = $filterService;
+        $this->filterService = $filterSyncService;
     }
 
     protected function configure(): void
@@ -85,9 +85,9 @@ class SynchronizePropertiesToFiltersCommand extends Command
         $context = Context::createDefaultContext();
         try {
             if ($propertyId) {
-                $this->syncOne( $context, $output, $propertyId);
+                $this->syncOne($context, $output, $propertyId);
             } else {
-                $this->syncAll( $context, $output);
+                $this->syncAll($context, $output);
             }
         } catch (Throwable $e) {
             return Command::FAILURE;
@@ -96,13 +96,26 @@ class SynchronizePropertiesToFiltersCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function syncOne(Context $context, OutputInterface $output, string $propertyId)
+    /**
+     * Synchronizing property name to filter name by provided propertyId
+     *
+     * @param Context $context
+     * @param OutputInterface $output
+     * @param string $propertyId
+     */
+    private function syncOne(Context $context, OutputInterface $output, string $propertyId): void
     {
         $output->writeln(sprintf('<info>Sync property with id : "%s"</info>', $propertyId));
         $this->filterService->syncOne($context, $propertyId);
     }
 
-    private function syncAll(Context $context, OutputInterface $output)
+    /**
+     * Synchronizing properties name to filter names for all properties
+     *
+     * @param Context $context
+     * @param OutputInterface $output
+     */
+    private function syncAll(Context $context, OutputInterface $output): void
     {
         $output->writeln('<info>PropertyId is not defined, sync all...</info>');
         $this->filterService->syncAll($context);

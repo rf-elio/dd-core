@@ -30,56 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\FactFinder\Core\FilterRestrictions\Exception;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
+
+use Elio\FactFinder\Core\Exception\FactFinderException;
 
 /**
- * Class FilterRestrictionsFilterMapping
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * Class FilterSyncUpdateFailedException
+ * @package Elio\FactFinder\Core\FilterRestrictions\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Andrey Baev <anb@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FilterRestrictionsFilterMapping extends MappingEntityDefinition
+class FilterSyncUpdateFailedException extends FactFinderException
 {
-    public const ENTITY_NAME = 'elio_ff_filter_restrictions_filters';
 
-    public function getEntityName(): string
-    {
-        return self::ENTITY_NAME;
-    }
-
-    protected function defineFields(): FieldCollection
-    {
-        return new FieldCollection([
-           (new FkField(
-               'filter_restriction_id',
-               'filterRestrictionId',
-               FilterRestrictionsDefinition::class
-           ))->addFlags(new PrimaryKey(), new Required()),
-           (new FkField('filter_id', 'filterId', FilterDefinition::class))->addFlags(
-               new PrimaryKey(),
-               new Required()
-           ),
-           new ManyToOneAssociationField(
-               'filterRestriction',
-               'filter_restriction_id',
-               FilterRestrictionsDefinition::class,
-               'id'
-           ),
-           new ManyToOneAssociationField(
-               'filter',
-               'filter_id',
-               FilterDefinition::class,
-               'id'
-           )
-       ]);
-    }
 }

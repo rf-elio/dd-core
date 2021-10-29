@@ -6,40 +6,29 @@ Shopware.Component.register('ff-restrictions-index', {
     data() {
         return {
             isLoading: false,
-            isSaveSuccessful: false,
-            isCustomFiltersTab: false,
-            salesChannelId: null
+            isSaveSuccessful: false
         }
     },
 
-    created() {
-        this.routerViewTabChanged();
+    beforeRouteLeave(to, from, next) {
+        this.checkLeaving(to, from, next);
     },
 
-    watch: {
-        $route() {
-            this.routerViewTabChanged();
-        },
-        salesChannelId() {
-            if(this.$refs.routerView) {
-                if (this.$refs.routerView.$refs.ruler) {
-                    this.$refs.routerView.$refs.ruler.setSalesChannelId(this.salesChannelId);
-                }
-            }
-        }
+    beforeRouteUpdate(to, from, next) {
+        this.checkLeaving(to, from, next);
     },
 
     methods: {
-        routerViewTabChanged() {
-            if (this.$route.name === 'elio.factfinder.restrictions.index.customfilters') {
-                this.isCustomFiltersTab = true
-            } else {
-                this.isCustomFiltersTab = false;
+        checkLeaving(to, from, next) {
+            var willLeave = true;
+            if (this.$refs.routerView.$refs.ruler) {
+                willLeave = this.$refs.routerView.$refs.ruler.onLeaving(to);
             }
-        },
-
-        onSalesChannelChanged(salesChannelId) {
-            this.salesChannelId = salesChannelId;
+            if (willLeave) {
+                next();
+            } else {
+                next(false);
+            }
         },
 
         async onSave() {

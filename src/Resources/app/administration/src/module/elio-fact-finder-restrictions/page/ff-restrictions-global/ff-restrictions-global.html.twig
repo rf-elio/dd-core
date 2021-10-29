@@ -1,5 +1,10 @@
 {% block ff_restrictions_global_page %}
     <sw-meteor-card>
+        <div class="elio-ff-restrictions-sales-channel-picker">
+            <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                     @change-sales-channel-id="onSalesChannelChanged">
+            </sw-sales-channel-switch>
+        </div>
         <h1>{{ $tc('ff.restrictions.tabs.global') }}</h1>
         <ff-restriction-ruler :isCategory="false"
                               :layer="type"

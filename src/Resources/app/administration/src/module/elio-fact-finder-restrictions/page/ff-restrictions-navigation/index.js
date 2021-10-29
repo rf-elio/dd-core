@@ -13,5 +13,25 @@ Shopware.Component.register('ff-restrictions-navigation', {
         type() {
             return 'navigation';
         }
+    },
+
+    watch: {
+        salesChannelId() {
+            if (this.$refs.ruler) {
+                this.$refs.ruler.setSalesChannelId(this.salesChannelId);
+            }
+        }
+    },
+
+    data() {
+        return {
+            salesChannelId: null
+        }
+    },
+
+    methods: {
+        onSalesChannelChanged(salesChannelId) {
+            this.salesChannelId = salesChannelId;
+        }
     }
 });

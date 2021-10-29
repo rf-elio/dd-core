@@ -131,6 +131,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
             $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
             $this->getConfigWithLanguagePrefix($config, 'suggestUseFactFinder', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

@@ -43,6 +43,7 @@
         "buttonDelete": "Löschen"
       },
       "ruler": {
+        "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
         "tabs": {
           "permissions": "permissions",
           "available": {

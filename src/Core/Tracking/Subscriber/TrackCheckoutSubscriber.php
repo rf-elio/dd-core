@@ -35,7 +35,6 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Configuration\LanguageHelper;
 use Elio\FactFinder\Core\Consent\ConsentService;
 use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;

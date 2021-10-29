@@ -43,6 +43,7 @@
         "buttonDelete": "Delete"
       },
       "ruler": {
+        "inheritance": "Inherited from all-saleschannel settings",
         "tabs": {
           "permissions": "Permissions",
           "available": {
