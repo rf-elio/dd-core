@@ -56,7 +56,7 @@ export default class ExportService {
     getApiBasePath(id, prefix = '') {
         let url = '';
 
-        if (prefix?.length) {
+        if (prefix && prefix.length) {
             url += `${prefix}/`;
         }
 
@@ -65,5 +65,14 @@ export default class ExportService {
         }
 
         return `${url}${this.apiEndpoint}`;
+    }
+
+    generate(exportId) {
+        return this.httpClient.get(
+            `/_action/ff/export/generate/${exportId}`,
+            {headers: this.getBasicHeaders()}
+        ).then((response) => {
+            return response.data;
+        });
     }
 }

@@ -30,54 +30,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\FactFinder\Core\Export\Generator\Util;
 
 
 /**
- * Class ExportItem
- * @package Elio\FactFinder\Core\Export
+ * Class ValueUtil
+ * @package Elio\FactFinder\Core\Export\Generator\Util
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportItem
+class ValueUtil
 {
-    private CONST MAX_VALUE_LENGTH = 49000;
-
     /**
-     * @var array<string>
+     * Cleans the value for the export
+     * - null to string
+     * - trim
+     * - no xml tags
+     *
+     * @param string|null $value
+     * @return string
      */
-    protected array $params = [];
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set(string $key, $value): void
+    public static function cleanValue(?string $value): string
     {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
-            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
+        $value = empty($value) ? "" : $value;
+        $value = trim(strip_tags($value));
+        $value = self::replaceCharReferences($value);
+        return $value;
+    }
+
+    /**
+     * Removes duplicate words
+     *
+     * @param string|null $value
+     * @return string
+     */
+    public static function removeDuplicateWords(?string $value) : string
+    {
+        if(!$value) {
+            return '';
         }
 
-        $this->params[$key] = $value;
+        return implode(',', array_unique(explode(',', $value)));
     }
 
     /**
-     * @return array<string>
-     */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-    /**
-     * Returns the array keys of the current item
+     * Replaces html references with the actual char
      *
-     * @return array<string>
+     * @param string $subject
+     * @return string
      */
-    public function getKeys() : array
+    protected static function replaceCharReferences(string $subject) : string
     {
-        return array_keys($this->params);
+        $pattern = '/&[a-z]+;|&|_{2, }/';
+        $replacement = '';
+        return preg_replace($pattern, $replacement, $subject, -1 );
     }
 }

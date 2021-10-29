@@ -71,14 +71,14 @@ class ExportStorageService
         $headers = [
             'Content-Disposition' => HeaderUtils::makeDisposition(
                 'attachment',
-                $export->getName(),
+                $export->getName().'.'.$export->getFormat(),
                 // only printable ascii
-                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $export->getName())
+                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $export->getName().'.'.$export->getFormat())
             ),
             'Content-Length' => $this->fileSystem->getSize($fileName),
             'Content-Type' => 'application/octet-stream',
         ];
-die($this->fileSystem->read());
+
         $stream = $this->fileSystem->readStream($fileName);
         if (!is_resource($stream)) {
             throw new FileNotFoundException($export->getId());

@@ -32,52 +32,52 @@
 
 namespace Elio\FactFinder\Core\Export;
 
+use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Exception;
+use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 
 /**
- * Class ExportItem
+ * Class ExportGeneratingHandler
  * @package Elio\FactFinder\Core\Export
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportItem
+class ExportGenerateHandler extends AbstractMessageHandler
 {
-    private CONST MAX_VALUE_LENGTH = 49000;
+    private ExportService $exportService;
 
     /**
-     * @var array<string>
+     * ExportGeneratingHandler constructor.
+     * @param ExportService $exportService
      */
-    protected array $params = [];
+    public function __construct(ExportService $exportService) {
+        $this->exportService = $exportService;
+    }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * Starts the export
+     *
+     * @param $message
+     * @throws Exception
      */
-    public function set(string $key, $value): void
+    public function handle($message): void
     {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
-            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
+        if(!$message instanceof ExportGenerateMessage) {
+            throw new InvalidTypeException($message, ExportGenerateMessage::class);
         }
 
-        $this->params[$key] = $value;
+        $this->exportService->generate($message->getExport(), $message->getContext());
     }
 
     /**
-     * @return array<string>
+     * @return iterable<string>
      */
-    public function getParams(): array
+    public static function getHandledMessages(): iterable
     {
-        return $this->params;
-    }
-
-    /**
-     * Returns the array keys of the current item
-     *
-     * @return array<string>
-     */
-    public function getKeys() : array
-    {
-        return array_keys($this->params);
+        return [
+            ExportGenerateMessage::class
+        ];
     }
 }

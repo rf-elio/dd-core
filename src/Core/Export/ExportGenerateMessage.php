@@ -32,52 +32,62 @@
 
 namespace Elio\FactFinder\Core\Export;
 
+use Shopware\Core\Framework\Context;
 
 /**
- * Class ExportItem
+ * Class ExportGenerateMessage
  * @package Elio\FactFinder\Core\Export
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportItem
+class ExportGenerateMessage
 {
-    private CONST MAX_VALUE_LENGTH = 49000;
+    private ExportEntity $export;
+    private Context $context;
 
     /**
-     * @var array<string>
+     * @param ExportEntity $export
+     * @param Context $context
      */
-    protected array $params = [];
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set(string $key, $value): void
-    {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
-            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
-        }
-
-        $this->params[$key] = $value;
+    public function __construct(
+        ExportEntity $export,
+        Context $context
+    ) {
+        $this->export = $export;
+        $this->context = $context;
     }
 
     /**
-     * @return array<string>
+     * @return Context
      */
-    public function getParams(): array
+    public function getContext(): Context
     {
-        return $this->params;
+        return $this->context;
     }
 
     /**
-     * Returns the array keys of the current item
-     *
-     * @return array<string>
+     * @param Context $context
      */
-    public function getKeys() : array
+    public function setContext(Context $context): void
     {
-        return array_keys($this->params);
+        $this->context = $context;
+    }
+
+    /**
+     * @return ExportEntity
+     */
+    public function getExport(): ExportEntity
+    {
+        return $this->export;
+    }
+
+    /**
+     * @param ExportEntity $export
+     */
+    public function setExport(ExportEntity $export): void
+    {
+        $this->export = $export;
     }
 }

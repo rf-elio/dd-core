@@ -22,17 +22,25 @@
         </service>
 
         <!-- generators -->
-        <service id="Elio\FactFinder\Core\Export\Generator\ProductExportGenerator">
+        <!-- generators / product -->
+        <service id="Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator">
             <argument type="service" id="product.repository" />
             <argument type="service" id="router"/>
             <tag name="elio-ff.export.generator" />
         </service>
-        <service id="Elio\FactFinder\Core\Export\Generator\ContentExportGenerator">
+        <!-- generators / content -->
+        <service id="Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator">
             <argument type="service" id="category.repository" />
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="elio-ff.export.generator" />
         </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\Content\LandingPagePartialGenerator">
+            <argument type="service" id="landing_page.repository" />
+            <argument type="service" id="router"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
+
 
         <!-- storage -->
         <service id="Elio\FactFinder\Core\Export\ExportStorageService">
@@ -53,9 +61,16 @@
         <service id="Elio\FactFinder\Core\Export\Controller\ExportController" public="true">
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+
+        <!-- message handler -->
+        <service id="Elio\FactFinder\Core\Export\ExportGenerateHandler">
+            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>
