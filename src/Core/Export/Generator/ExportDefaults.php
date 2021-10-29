@@ -30,54 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\FactFinder\Core\Export\Generator;
 
 
 /**
- * Class ExportItem
- * @package Elio\FactFinder\Core\Export
+ * Class ExportDefaults
+ * @package Elio\FactFinder\Core\Export\Generator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportItem
+abstract class ExportDefaults
 {
-    private CONST MAX_VALUE_LENGTH = 49000;
-
-    /**
-     * @var array<string>
-     */
-    protected array $params = [];
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set(string $key, $value): void
-    {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
-            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
-        }
-
-        $this->params[$key] = $value;
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-    /**
-     * Returns the array keys of the current item
-     *
-     * @return array<string>
-     */
-    public function getKeys() : array
-    {
-        return array_keys($this->params);
-    }
+    public const KEYWORD_SEPARATOR = ',';
 }

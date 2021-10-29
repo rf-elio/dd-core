@@ -335,12 +335,12 @@
             <label>Api debugging active</label>
             <label lang="de-DE">API debugging aktiv</label>
             <defaultValue>false</defaultValue>
-            <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
+            <helpText>Activates the swagger api client debugging. Symfony's default log location (/var/log) will be used.</helpText>
         </input-field>
     </card>
     <card>
-        <title>CMS Export</title>
-        <title lang="de-DE">CMS Export</title>
+        <title>Content Export</title>
+        <title lang="de-DE">Content Export</title>
         <component name="sw-entity-multi-id-select">
             <name>categoriesToExport</name>
             <entity>category</entity>

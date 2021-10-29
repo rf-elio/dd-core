@@ -22,17 +22,25 @@
         </service>
 
         <!-- generators -->
-        <service id="Elio\FactFinder\Core\Export\Generator\ProductExportGenerator">
+        <!-- generators / product -->
+        <service id="Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator">
             <argument type="service" id="product.repository" />
             <argument type="service" id="router"/>
             <tag name="elio-ff.export.generator" />
         </service>
-        <service id="Elio\FactFinder\Core\Export\Generator\ContentExportGenerator">
+        <!-- generators / content -->
+        <service id="Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator">
             <argument type="service" id="category.repository" />
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="elio-ff.export.generator" />
         </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\Content\LandingPagePartialGenerator">
+            <argument type="service" id="landing_page.repository" />
+            <argument type="service" id="router"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
+
 
         <!-- storage -->
         <service id="Elio\FactFinder\Core\Export\ExportStorageService">

@@ -149,7 +149,7 @@ class ExportService
      */
     public function generate(ExportEntity $export, Context $context) : void
     {
-        $generator = $this->getGenerator($export);
+        $generators = $this->getGenerators($export);
         $writer = $this->getWriter($export);
         $salesChannel = $export->getSalesChannel();
 
@@ -177,7 +177,9 @@ class ExportService
         $stream = new OutputStream($writer, $export, $salesChannelContext);
         $stream->open();
         try {
-            $generator->generate($export, $stream, $salesChannelContext);
+            foreach ($generators as $generator) {
+                $generator->generate($export, $stream, $salesChannelContext);
+            }
             $stream->close();
         } catch (Throwable $ex) {
             $stream->abort();
@@ -193,18 +195,23 @@ class ExportService
     }
 
     /**
-     * Gets the matching generator for the given export
+     * Gets the matching generators for the given export
      *
      * @param ExportEntity $export
-     * @return ExportGeneratorInterface
+     * @return array<ExportGeneratorInterface>
      * @throw ExportNotSupportedException Will be thrown if no matching genereator is present
      */
-    protected function getGenerator(ExportEntity $export) : ExportGeneratorInterface
+    protected function getGenerators(ExportEntity $export) : array
     {
+        $generators = [];
         foreach ($this->generators as $generator) {
             if($generator->supports($export)) {
-                return $generator;
+                $generators[] = $generator;
             }
+        }
+
+        if(!empty($generators)) {
+            return $generators;
         }
 
         throw new ExportNotSupportedException(sprintf(

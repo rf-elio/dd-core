@@ -30,54 +30,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\FactFinder\Core\Export\Generator\Content;
 
 
 /**
- * Class ExportItem
- * @package Elio\FactFinder\Core\Export
+ * Class ContentExportDefaults
+ * @package Elio\FactFinder\Core\Export\Generator\Content
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportItem
+abstract class ContentExportDefaults
 {
-    private CONST MAX_VALUE_LENGTH = 49000;
+    public const FIELD_ID = 'Id';
+    public const FIELD_TYPE = 'Type';
+    public const FIELD_TITLE = 'Title';
+    public const FIELD_SEO_TEXT = 'SeoText';
+    public const FIELD_URL = 'Url';
+    public const FIELD_KEYWORDS = 'Keywords';
+    public const FIELD_DESCRIPTION = 'Description';
+    public const FIELD_IMAGE_URL = 'ImageUrl';
+    public const FIELD_PUBLICATION_DATE = 'PublicationDate';
+    public const FIELD_PRIORITY = 'Priority';
+    public const FIELD_CONTENT_STRUCTURE = 'ContentStructure';
 
-    /**
-     * @var array<string>
-     */
-    protected array $params = [];
-
-    /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set(string $key, $value): void
-    {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
-            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
-        }
-
-        $this->params[$key] = $value;
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-    /**
-     * Returns the array keys of the current item
-     *
-     * @return array<string>
-     */
-    public function getKeys() : array
-    {
-        return array_keys($this->params);
-    }
+    public const DEFAULT_PRIORITY = 50;
 }
