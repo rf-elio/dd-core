@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Api\Search;
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\NavigationRequest;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -89,7 +90,32 @@ class SearchApi
             'customParameters' => $this->getCustomParameters($searchRequest),
             'filters' => $this->getFilters($searchRequest)
         ]]));
-        return $this->transformer->transformResponse($result, $context);
+        return $this->transformer->transformResponse($result, $context, $searchRequest);
+    }
+
+    /**
+     * Executes the ff navigation request
+     *
+     * @param NavigationRequest $searchRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function navigation(NavigationRequest $searchRequest, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createSearchApi($context);
+        $filters = $this->getNavigationFilters($searchRequest);
+        $result = $apiClient->navigationUsingPOST(new \Swagger\Client\Model\NavigationRequest([
+            'params' => [
+                'channel' => $searchRequest->getChannel(),
+                'sortItems' => $this->getSorting($searchRequest),
+                'page' => $searchRequest->getPage(),
+                'customParameters' => $this->getCustomParameters($searchRequest),
+                'filters' => $filters
+            ]
+        ]));
+        return $this->transformer->transformResponse($result, $context, $searchRequest);
     }
 
     /**
@@ -140,6 +166,22 @@ class SearchApi
         }
 
         return $preparedFilters;
+    }
+
+    protected function getNavigationFilters(NavigationRequest $navigationRequest): array
+    {
+        $filters = $this->getFilters($navigationRequest);
+        $preparedFilter = [
+            'name' => 'CategoryPath',
+            'substring' => false,
+            'values' => [[
+                'exclude' => false,
+                'type' => 'or',
+                'value' => explode('/', $navigationRequest->getCategoryPath())
+            ]],
+        ];
+        $filters[] = $preparedFilter;
+        return $filters;
     }
 
     /**

@@ -1,0 +1,100 @@
+{% block ff_restrictions_ruler %}
+    <div class="elio-ff-restrictions-ruler">
+        <sw-loader v-if="isLoading"></sw-loader>
+        <div class="ruler">
+            <div class="ruler-tab">
+                <h3 class="ruler-tab-header">{{ $tc('ff.restrictions.ruler.tabs.available.header') }}</h3>
+                <div id="rulerTabFilters"
+                     class="ruler-tab-filter-list ruler-tab-filter-list--main"
+                     @drop="onDrop"
+                     ondragover="event.preventDefault()"
+                     data-filter-column="all"
+                >
+                    <div class="filter"
+                         style="order: 1;"
+                         draggable="true"
+                         @dragstart="onDragStart"
+                         v-for="filter in allList"
+                         :data-filter-id="filter.id"
+                    >{{ filter.translated.propertyName }}</div>
+                </div>
+            </div>
+            <div class="ruler-tab">
+                <h3 class="ruler-tab-header">{{ $tc('ff.restrictions.ruler.tabs.allowed.header') }}</h3>
+                <div class="ruler-tab-permissions">
+                    <p class="ruler-tab-permissions-header">{{ $tc('ff.restrictions.ruler.tabs.permissions') }}:</p>
+                    <div class="ruler-tab-permission-inputgroup">
+                        <input type="radio"
+                               id="allowAll"
+                               name="allowRule"
+                               :checked="allowAllChecked"
+                               @change="onAllowAllClicked"
+                               value="allowAll">
+                        <label for="allowAll">{{ $tc('ff.restrictions.ruler.tabs.allowed.permissions.allowAll') }}</label>
+                    </div>
+                    <div class="ruler-tab-permission-inputgroup">
+                        <input type="radio"
+                               id="allowOnly"
+                               name="allowRule"
+                               :checked="!allowAllChecked"
+                               @change="onAllowSelectedClicked"
+                               value="allowOnly">
+                        <label for="allowOnly">{{ $tc('ff.restrictions.ruler.tabs.allowed.permissions.allowOnlySelected') }}</label>
+                    </div>
+                </div>
+                <div id="rulerTabFiltersAllowed"
+                     class="ruler-tab-filter-list"
+                     @drop="onDrop"
+                     ondragover="event.preventDefault()"
+                     data-filter-column="allow"
+                >
+                    <div class="filter"
+                         style="order: 1;"
+                         draggable="true"
+                         @dragstart="onDragStart"
+                         v-for="filter in allowList"
+                         :data-filter-id="filter.id"
+                    >{{ filter.propertyName }}</div>
+                </div>
+            </div>
+            <div class="ruler-tab">
+                <h3 class="ruler-tab-header">{{ $tc('ff.restrictions.ruler.tabs.blocked.header') }}</h3>
+                <div class="ruler-tab-permissions">
+                    <p class="ruler-tab-permissions-header">{{ $tc('ff.restrictions.ruler.tabs.permissions') }}:</p>
+                    <div class="ruler-tab-permission-inputgroup">
+                        <input type="radio"
+                               id="blockAll"
+                               name="blockRule"
+                               :checked="blockAllChecked"
+                               @change="onBlockAllClicked"
+                               value="blockAll">
+                        <label for="blockAll">{{ $tc('ff.restrictions.ruler.tabs.blocked.permissions.blockAll') }}</label>
+                    </div>
+                    <div class="ruler-tab-permission-inputgroup">
+                        <input type="radio"
+                               id="blockOnly"
+                               name="blockRule"
+                               :checked="!blockAllChecked"
+                               @change="onBlockSelectedClicked"
+                               value="blockOnly">
+                        <label for="blockOnly">{{ $tc('ff.restrictions.ruler.tabs.blocked.permissions.blockOnlySelected') }}</label>
+                    </div>
+                </div>
+                <div id="rulerTabFiltersBlocked"
+                     class="ruler-tab-filter-list"
+                     @drop="onDrop"
+                     ondragover="event.preventDefault()"
+                     data-filter-column="block"
+                >
+                    <div class="filter"
+                         style="order: 1;"
+                         draggable="true"
+                         @dragstart="onDragStart"
+                         v-for="filter in blockList"
+                         :data-filter-id="filter.id"
+                    >{{ filter.propertyName }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

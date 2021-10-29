@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
 use Elio\FactFinder\Api\Exception\FactFinderTimeoutException;
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -66,8 +67,9 @@ class TimeoutTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
     {
         if(!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);

@@ -1,0 +1,13 @@
+{% block sw_category_smart_bar_save_category %}
+    <sw-button-process v-if="category"
+                       class="sw-category-detail__save-action"
+                       :isLoading="isLoading"
+                       :processSuccess="isSaveSuccessful"
+                       :disabled="isLoading || !acl.can('category.editor')"
+                       variant="primary"
+                       v-tooltip.bottom="tooltipSave"
+                       @process-finish="saveFinish"
+                       @click.prevent="onSaveChanges">
+        {{ $tc('sw-category.general.buttonSafeCategory') }}
+    </sw-button-process>
+{% endblock %}

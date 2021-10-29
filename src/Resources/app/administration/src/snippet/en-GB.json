@@ -13,6 +13,57 @@
         "orderReferenceLabel": "Bestellreferenznummer",
         "deliveryDateLabel": "Wunschliefertermin"
       }
+    },
+    "restrictions": {
+      "title": "Filter restrictions",
+      "description": "",
+      "tabs": {
+        "global": "Global",
+        "search": "Search",
+        "navigation": "Navigation",
+        "customfilters": "Custom Filters",
+        "category": "Filter Restrictions"
+      },
+      "filters": {
+        "messageSaveError": "Error while saving",
+        "buttonSave": "Save",
+        "buttonCancel": "Cancel",
+        "detail": {
+          "cardTitleGroupInfo" : "Basic information",
+          "labelName": "Property Name",
+          "textHeadline": "New Property"
+        },
+        "placeholderPropertyName": "Property Name"
+      },
+      "customFilters": {
+        "contextMenuView": "Edit",
+        "contextMenuDelete": "Delete",
+        "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+        "buttonCancel": "Cancel",
+        "buttonDelete": "Delete"
+      },
+      "ruler": {
+        "tabs": {
+          "permissions": "Permissions",
+          "available": {
+            "header": "Available filters"
+          },
+          "allowed": {
+            "header": "Allowed filters",
+            "permissions": {
+              "allowAll": "Allow all",
+              "allowOnlySelected": "Allow only selected"
+            }
+          },
+          "blocked": {
+            "header": "Blocked filters",
+            "permissions": {
+              "blockAll": "Exclude all",
+              "blockOnlySelected": "Exclude only selected"
+            }
+          }
+        }
+      }
     }
   }
 }

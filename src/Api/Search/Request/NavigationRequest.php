@@ -44,6 +44,7 @@ namespace Elio\FactFinder\Api\Search\Request;
 class NavigationRequest extends SearchRequest
 {
     protected string $categoryPath = '';
+    protected string $categoryId = '';
 
     /**
      * @return string
@@ -60,4 +61,22 @@ class NavigationRequest extends SearchRequest
     {
         $this->categoryPath = $categoryPath;
     }
+
+    /**
+     * @return string
+     */
+    public function getCategoryId(): string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string $categoryId
+     */
+    public function setCategoryId(string $categoryId): void
+    {
+        $this->categoryId = $categoryId;
+    }
+
+
 }
