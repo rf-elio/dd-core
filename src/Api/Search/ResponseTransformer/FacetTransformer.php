@@ -33,7 +33,10 @@
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -51,6 +54,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
+use Elio\FactFinder\Core\FilterRestrictions\FilterService;
 
 /**
  * Class FacetTransformer
@@ -62,6 +66,18 @@ use Swagger\Client\Model\Result;
  */
 class FacetTransformer implements ResponseTransformerInterface
 {
+    private FilterService $filterService;
+
+    /**
+     * ProductHandler constructor.
+     * @param FilterService $filterService
+     */
+    public function __construct(
+        FilterService $filterService
+    ) {
+        $this->filterService = $filterService;
+    }
+
     /**
      * @inheritDoc
      */
@@ -74,28 +90,51 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
-    {
-        if(!$model instanceof Result) {
+    public function transform(
+        ModelInterface $model,
+        ResponseCollection $responseCollection,
+        SalesChannelContext $context,
+        ApiRequest $request
+    ): void {
+        if (!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
 
+        $level = FilterService::LEVEL_GLOBAL;
+        if ($request instanceof NavigationRequest) {
+            $level = FilterService::LEVEL_CATEGORY;
+        } else if ($request instanceof SearchRequest) {
+            $level = FilterService::LEVEL_SEARCH;
+        }
+
+        $filtersRestrictions = $this->filterService->getFilters($context, $level, $request) ?? [null, []];
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
-        $aggregationResultCollection = new AggregationResultCollection();
+        $aggregationResultCollection = $listing->getAggregations() ?? new AggregationResultCollection();
         $listing->setAggregations($aggregationResultCollection);
 
-        $facetCollection = new FacetCollection('ff');
+        $facetCollection = new FacetCollection('ff-default');
         $aggregationResultCollection->add($facetCollection);
 
         foreach ($model->getFacets() as $facet) {
+            if ($filtersRestrictions[1] === null) { // blocked all
+                continue;
+            }
+
+            if (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true)) {
+                // isn't allowed
+                continue;
+            }
+
             $style = $facet->getFilterStyle();
             switch ($style) {
                 case 'DEFAULT':
                     $defaultCollection = new PropertyGroupCollection();
-                    $defaultCollection->add($this->transformDefault($facet));
+                    $entity = $this->transformDefault($facet);
+                    $defaultCollection->add($entity);
                     $facetCollection->addAggregation(
                         new EntityResult($facet->getName(), $defaultCollection),
                         $style
@@ -112,6 +151,9 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
+        foreach ($facetCollection->getAggregations() as $aggregation) {
+            $aggregationResultCollection->add($aggregation);
+        }
     }
 
     /**
@@ -120,7 +162,7 @@ class FacetTransformer implements ResponseTransformerInterface
      * @param Facet $facet
      * @return PropertyGroupEntity
      */
-    protected function transformDefault(Facet $facet) : PropertyGroupEntity
+    protected function transformDefault(Facet $facet): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
@@ -158,12 +200,13 @@ class FacetTransformer implements ResponseTransformerInterface
     {
         $minValue = null;
         $maxValue = null;
-        foreach ($facet->getElements() as $element) {
+        $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
+        foreach ($elements as $element) {
             $minValue = $element->getAbsoluteMinValue();
             $maxValue = $element->getAbsoluteMaxValue();
         }
 
-        if(!$minValue || !$maxValue) {
+        if (!$minValue || !$maxValue) {
             return null;
         }
 

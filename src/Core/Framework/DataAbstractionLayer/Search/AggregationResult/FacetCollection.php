@@ -33,8 +33,10 @@
 namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
 
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 
 /**
  * Class FacetCollection
@@ -44,13 +46,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FacetCollection extends AggregationResult
+class FacetCollection extends EntityResult
 {
-    private AggregationResultCollection $aggregations;
+    protected AggregationResultCollection $aggregations;
 
     public function __construct(string $name)
     {
-        parent::__construct($name);
+        parent::__construct($name, new EntityCollection());
         $this->aggregations = new AggregationResultCollection();
     }
 
@@ -61,7 +63,7 @@ class FacetCollection extends AggregationResult
     public function addAggregation(AggregationResult $aggregation, string $type): void
     {
         $aggregation->addExtension(AggregationExtension::KEY, new AggregationExtension(
-            $type, $type
+            $type, $aggregation->getName()
         ));
         $this->aggregations->add($aggregation);
     }

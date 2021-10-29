@@ -15,7 +15,7 @@ class Migration1630056653Export extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-CREATE TABLE `elio_ff_export` (
+CREATE TABLE IF NOT EXISTS `elio_ff_export` (
     `id` BINARY(16) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `active` TINYINT(1) NOT NULL DEFAULT '0',

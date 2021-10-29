@@ -90,7 +90,6 @@ class SearchRequestBuilder
         if(!empty($request->get('search'))) {
             $searchRequest->setQuery($request->get('search'));
         }
-        $searchRequest->setQuery('*');
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
@@ -144,11 +143,24 @@ class SearchRequestBuilder
     protected function addFilters(array $payload, SearchRequest $searchRequest) : void
     {
          foreach ($payload as $key => $filterValues) {
-             if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) === 0) {
+             if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) !== 0) {
+                 continue;
+             }
+
+             // default filter parameter handling
+             if(strpos($key, 'default') !== false){
                  $filterValues = explode('|', $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, $value);
+                 }
+             }
+             // slider filter parameter handling
+             elseif (strpos($key, 'slider') !== false){
+                 $filterValues = explode('|', $filterValues);
+                 foreach ($filterValues as $filterValue) {
+                     [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
+                     $searchRequest->addFilter($name, json_encode([(float)$min, (float)$max]));
                  }
              }
          }

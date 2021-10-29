@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\FilterDefinition">
+            <tag name="shopware.entity.definition" entity="elio_ff_filter"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition">
+            <tag name="shopware.entity.definition" entity="elio_ff_filter_restrictions"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\CategoryExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\PropertyGroupExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\SalesChannelExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\FilterRestrictions\FilterService">
+            <argument type="service" id="elio_ff_filter.repository" />
+            <argument type="service" id="elio_ff_filter_restrictions.repository" />
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+        </service>
+        <service id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService">
+            <argument type="service" id="property_group.repository" />
+            <argument type="service" id="elio_ff_filter.repository" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="Elio\FactFinder\Command\SynchronizePropertiesToFiltersCommand">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService" />
+            <tag name="console.command"/>
+        </service>
+
+    </services>
+</container>

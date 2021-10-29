@@ -31,6 +31,8 @@
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
             <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
         </service>
     </services>
 </container>
