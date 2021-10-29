@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Search;
 
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
@@ -115,6 +116,19 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             $productListingResponse, $criteria, $context
         );
         $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
+
+
+        if($config->isSearchUseContentChannel()) {
+            $contentSearchRequest = new SearchRequest($config->getApiContentChannel());
+            $contentSearchRequest = $this->searchRequestBuilder->build(
+                $request, $criteria, $context, $contentSearchRequest
+            );
+            $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);
+
+            echo '<pre>'; var_dump($resultCollection); die();
+        }
+
+
         return new ProductSearchRouteResponse($shopwareProductListingResult);
     }
 }

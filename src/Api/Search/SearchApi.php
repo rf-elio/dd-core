@@ -94,6 +94,27 @@ class SearchApi
     }
 
     /**
+     * @param SearchRequest $searchRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function searchContent(SearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createSearchApi($context);
+        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
+            'query' => $searchRequest->getQuery(),
+            'channel' => $searchRequest->getChannel(),
+            'sortItems' => $this->getSorting($searchRequest),
+            'page' => $searchRequest->getPage(),
+            'customParameters' => $this->getCustomParameters($searchRequest),
+            'filters' => $this->getFilters($searchRequest)
+        ]]));
+        return $this->transformer->transformResponse($result, $context, $searchRequest);
+    }
+
+    /**
      * Executes the ff navigation request
      *
      * @param NavigationRequest $searchRequest
