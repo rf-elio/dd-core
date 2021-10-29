@@ -174,8 +174,9 @@
                                                 <sw-button class="ff-export-button-generate"
                                                            variant="primary"
                                                            size="small"
+                                                           :disabled="isGenerating"
                                                            @click="onGenerate">
-                                                    {{ $tc('ff-export.detail.buttonGenerate') }}
+                                                        {{ isGenerating?$tc('ff-export.detail.buttonGenerateInProgress'):$tc('ff-export.detail.buttonGenerate') }}
                                                 </sw-button>
                                             </dd>
                                         {% endblock %}

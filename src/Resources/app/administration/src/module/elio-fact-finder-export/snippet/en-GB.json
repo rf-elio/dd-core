@@ -6,7 +6,7 @@
     "buttonCancel": "Cancel",
     "detail": {
       "placeholderName": "New_Export_Name",
-      "messageSaveError": "Error while saving",
+      "messageSaveError": "Error while saving: \"{error}\"",
       "textHeadline": "New Export",
       "cardTitleBasicInfo" : "Basic information",
       "labelName": "Export Name",
@@ -38,7 +38,9 @@
         "path": "Path: "
       },
       "download": "Download",
-      "buttonGenerate": "Generate"
+      "buttonGenerate": "Generate",
+      "buttonGenerateInProgress": "Generating",
+      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\""
     },
     "list": {
       "buttonCreate": "Create Export",

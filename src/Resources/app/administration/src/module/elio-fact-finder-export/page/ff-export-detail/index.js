@@ -77,7 +77,10 @@ Shopware.Component.register('ff-export-detail', {
             status: {
                 exists: false,
                 location: ''
-            }
+            },
+            isGenerating: false,
+            updateTimer: null,
+            updateInterval: 3000
         };
     },
 
@@ -271,10 +274,25 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         onGenerate() {
-            console.log('generting');
+            var operator = this;
+
+            this.updateTimer = setTimeout(function requestStatus(){
+                console.log('trying updating status');
+                operator.updateStatus();
+                operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+            }, operator.updateInterval||3000);
+
+            this.isGenerating = true;
             this.ffExport.generate(this.exportId).then((responce) => {
                 console.log(responce);
-                console.log('generting done');
+                operator.isGenerating = false;
+                operator.updateStatus();
+                clearTimeout(operator.updateTimer)
+            }).catch((exception) => {
+                operator.createNotificationError({
+                    message: this.$tc('ff-export.detail.messageGeneratingError')
+                });
+                operator.isGenerating = false;
             });
         }
     }
