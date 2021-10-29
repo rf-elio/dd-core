@@ -189,7 +189,9 @@ Shopware.Component.register('ff-export-detail', {
                 operator.isSaveSuccessful = true;
             }).catch((exception) => {
                 operator.createNotificationError({
-                    message: this.$tc('ff-export.detail.messageSaveError')
+                    message: this.$tc('ff-export.detail.messageSaveError', 0, {
+                        error: exception.message, // todo: add proper error message
+                    })
                 });
                 operator.isLoading = false;
                 throw exception;
@@ -292,7 +294,9 @@ Shopware.Component.register('ff-export-detail', {
                 console.log(responce);
             }).catch((exception) => {
                 operator.createNotificationError({
-                    message: this.$tc('ff-export.detail.messageGeneratingError')
+                    message: this.$tc('ff-export.detail.messageGeneratingError', 0, {
+                        error: exception.message, // todo: add proper error message
+                    })
                 });
                 operator.isGenerating = false;
             });
