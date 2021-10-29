@@ -32,6 +32,7 @@
                         minKey: 'min-' ~ ffAggregation.name,
                         maxKey: 'max-' ~ ffAggregation.name,
                         displayName: ffAggregation.name,
+                        rangeUnit: ffAggregation.unit
                     } %}
                 {% endif %}
             {% elseif style == 'TREE' %}

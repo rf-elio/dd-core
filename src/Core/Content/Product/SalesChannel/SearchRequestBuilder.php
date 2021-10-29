@@ -147,16 +147,13 @@ class SearchRequestBuilder
                  continue;
              }
 
-             // default filter parameter handling
-             if(strpos($key, 'default') !== false){
+             if (strpos($key, 'default') !== false) {
                  $filterValues = explode('|', $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, $value);
                  }
-             }
-             // slider filter parameter handling
-             elseif (strpos($key, 'slider') !== false){
+             } elseif (strpos($key, 'slider') !== false) {
                  $filterValues = explode('|', $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);

@@ -1,0 +1,23 @@
+{% block elio_factfinder_campaign_feedback %}
+    {% if feedback is defined %}
+        <div class="elio-ff-campaign-feedback-{{ location }}">
+        {% for feedbacktext in feedback.texts %}
+            {% for feedback in feedbacktext %}
+                {% if feedback.label == location %}
+                    {% block elio_factfinder_campaign_feedback_text %}
+                        {% if feedback.html %}
+                            {% block elio_factfinder_campaign_feedback_text_html %}
+                                {{ feedback.text|raw }}
+                            {% endblock %}
+                        {% else %}
+                            {% block elio_factfinder_campaign_feedback_text_plain %}
+                                {{ feedback.text }}
+                            {% endblock %}
+                        {% endif %}
+                    {% endblock %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

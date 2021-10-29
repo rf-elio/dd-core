@@ -42,6 +42,7 @@ use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\SliderResult;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
@@ -151,7 +152,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
-        foreach ($facetCollection->getAggregations() as $aggregation) {
+        foreach ($facetCollection->getAggregations() as $aggregation){
             $aggregationResultCollection->add($aggregation);
         }
     }
@@ -194,9 +195,9 @@ class FacetTransformer implements ResponseTransformerInterface
      * Transforms slider filters
      *
      * @param Facet $facet
-     * @return StatsResult|null
+     * @return SliderResult|null
      */
-    protected function transformSlider(Facet $facet): ?StatsResult
+    protected function transformSlider(Facet $facet): ?SliderResult
     {
         $minValue = null;
         $maxValue = null;
@@ -210,10 +211,11 @@ class FacetTransformer implements ResponseTransformerInterface
             return null;
         }
 
-        return new StatsResult(
+        return new SliderResult(
             $facet->getName(),
             $minValue, $maxValue,
-            null, null
+            null, null,
+            $facet->getUnit()
         );
     }
 }

@@ -177,16 +177,18 @@ class SearchApi
     protected function getNavigationFilters(NavigationRequest $navigationRequest): array
     {
         $filters = $this->getFilters($navigationRequest);
-        $preparedFilter = [
-            'name' => 'CategoryPath',
-            'substring' => false,
-            'values' => [[
-                'exclude' => false,
-                'type' => 'or',
-                'value' => explode('/', $navigationRequest->getCategoryPath())
-            ]],
-        ];
-        $filters[] = $preparedFilter;
+        if(!empty($navigationRequest->getCategoryPath())){
+            $preparedFilter = [
+                'name' => 'CategoryPath',
+                'substring' => false,
+                'values' => [[
+                    'exclude' => false,
+                    'type' => 'or',
+                    'value' => explode('/', $navigationRequest->getCategoryPath())
+                ]],
+            ];
+            $filters[] = $preparedFilter;
+        }
         return $filters;
     }
 
