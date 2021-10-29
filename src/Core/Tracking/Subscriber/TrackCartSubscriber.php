@@ -123,7 +123,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
             empty($items) ||
             !$config->isActive() ||
             !$config->isTrackCart() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            !$this->consentService->isTrackingAllowed($salesChannelContext)
         ) {
             return;
         }

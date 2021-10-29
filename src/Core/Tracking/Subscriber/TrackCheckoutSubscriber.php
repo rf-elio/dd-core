@@ -42,6 +42,9 @@ use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -59,6 +62,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
     private ConsentService $consentService;
+    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
     /**
      * TrackCheckoutSubscriber constructor.
@@ -66,18 +70,21 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
      * @param ConsentService $consentService
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
+     * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
         ConsentService $consentService,
         MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        AbstractSalesChannelContextFactory $salesChannelContextFactory
     )
     {
         $this->configService = $configService;
         $this->bus = $bus;
         $this->eventDispatcher = $eventDispatcher;
         $this->consentService = $consentService;
+        $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
     /**
@@ -99,12 +106,16 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     {
         $order = $event->getOrder();
         $salesChannelId = $event->getSalesChannelId();
-        $config = $this->configService->get($salesChannelId, LanguageHelper::getLanguageIdByContext($event->getContext()));
+        $salesChannelContext = $this->salesChannelContextFactory->create(
+            Uuid::randomHex(), $salesChannelId, [SalesChannelContextService::LANGUAGE_ID => $order->getLanguageId()]
+        );
+
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if(
             !$config->isActive() ||
             !$config->isTrackCheckout() ||
-            !$this->consentService->isTrackingAllowed($salesChannelId) ||
+            !$this->consentService->isTrackingAllowed($salesChannelContext) ||
             !$order->getLineItems()
         ) {
             return;
