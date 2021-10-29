@@ -32,6 +32,9 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
+use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
+use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -77,7 +80,7 @@ class FilterSyncService
      * @param Context $context
      * @param string $propertyId
      */
-    public function syncOne(Context $context, string $propertyId)
+    public function syncOne(Context $context, string $propertyId): void
     {
         /** @var PropertyGroupEntity $property */
         $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
@@ -108,7 +111,7 @@ class FilterSyncService
      * Sync all properties to filters, sync propertyNames, creating new filters, deleting old filters
      * @param Context $context
      */
-    public function syncAll(Context $context)
+    public function syncAll(Context $context): void
     {
         /**
          * Getting all properties
@@ -146,8 +149,9 @@ class FilterSyncService
                 ['$dataToUpdate' => $dataToUpdate]
             );
 
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
+            throw new FilterSyncUpdateFailedException(
+                'FilterSync: Update failed - {{ message }}',
+                ['message' => $e->getMessage()]
             );
         }
 
@@ -174,8 +178,9 @@ class FilterSyncService
                 ['$dataToDelete' => $dataToDelete]
             );
 
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
+            throw new FilterSyncDeleteException(
+                'FilterSync: Delete failed - {{ message }}',
+                ['message' => $e->getMessage()]
             );
         }
 
@@ -201,8 +206,9 @@ class FilterSyncService
                 ['$dataToCreate' => $dataToCreate]
             );
 
-            throw new RuntimeException(
-                'Sync failed, look logs for more info'
+            throw new FilterSyncCreateException(
+                'FilterSync: Create failed - {{ message }}',
+                ['message' => $e->getMessage()]
             );
         }
     }

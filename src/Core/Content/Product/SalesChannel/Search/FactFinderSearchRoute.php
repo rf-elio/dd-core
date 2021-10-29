@@ -97,7 +97,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
      */
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSearchRouteResponse
     {
-        $config = $this->configService->get($context->getSalesChannelId());
+        $config = $this->configService->getByContext($context);
         if(!$config->isActive() || !$config->isSearchUseFactFinder()) {
             return $this->getDecorated()->load($request, $context, $criteria);
         }

@@ -108,15 +108,22 @@ class TrackCartSubscriber implements EventSubscriberInterface
         $this->trackCart($event->getSalesChannelContext(), $event->getItems(), $event->getCart());
     }
 
+    /**
+     * Tracks the shopware cart
+     *
+     * @param SalesChannelContext $salesChannelContext
+     * @param array $items
+     * @param Cart|null $cart
+     */
     protected function trackCart(SalesChannelContext $salesChannelContext, array $items, ?Cart $cart = null): void
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if(
+            empty($items) ||
             !$config->isActive() ||
             !$config->isTrackCart() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext) ||
-            empty($items)
+            !$this->consentService->isTrackingAllowed($salesChannelContext)
         ) {
             return;
         }
@@ -129,7 +136,8 @@ class TrackCartSubscriber implements EventSubscriberInterface
             }elseif ($cart !== null && $cart->getLineItems()->has($item['id'])){
                 $lineItem = $cart->getLineItems()->get($item['id']);
             }
-            if ($lineItem !== null && $lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE) {
+
+            if ($lineItem !== null && $lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE && $lineItem->getPrice()) {
                 $request->addEvent(
                     $lineItem->getReferencedId(),
                     $salesChannelContext->getToken(),

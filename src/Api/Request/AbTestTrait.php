@@ -47,12 +47,12 @@ trait AbTestTrait
      *    "additionalProp2": "string",
      *    "additionalProp3": "string"
      * },
-     * @var array|null
+     * @var array<string>|null
      */
     protected ?array $activeAbTests = null;
 
     /**
-     * @return array|null
+     * @return array<string>|null
      */
     public function getActiveAbTests(): ?array
     {
@@ -60,7 +60,7 @@ trait AbTestTrait
     }
 
     /**
-     * @param array|null $activeAbTests
+     * @param array<string>|null $activeAbTests
      */
     public function setActiveAbTests(?array $activeAbTests): void
     {

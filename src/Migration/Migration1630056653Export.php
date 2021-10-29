@@ -22,14 +22,19 @@ CREATE TABLE IF NOT EXISTS `elio_ff_export` (
     `type` VARCHAR(255) NOT NULL,
     `format` VARCHAR(255) NOT NULL,
     `interval` VARCHAR(255) NOT NULL,
+    `mapping` LONGTEXT NOT NULL,
     `last_generation_started_at` DATETIME(3) NULL,
     `last_generation_finished_at` DATETIME(3) NULL,
+    `next_generation_due_at` DATETIME(3) NULL,
     `sales_channel_id` BINARY(16) NOT NULL,
+    `language_id` BINARY(16) NOT NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`),
     KEY `fk.elio_ff_export.sales_channel_id` (`sales_channel_id`),
-    CONSTRAINT `fk.elio_ff_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.elio_ff_export.language_id` (`language_id`),
+    CONSTRAINT `fk.elio_ff_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk.elio_ff_export.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 

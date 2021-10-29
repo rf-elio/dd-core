@@ -117,7 +117,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
     {
-        $config = $this->configService->get($context->getSalesChannelId());
+        $config = $this->configService->getByContext($context);
         if(!$config->isActive() || !$config->isListingUseFactFinder()) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }

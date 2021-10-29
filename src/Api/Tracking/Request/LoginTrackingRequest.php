@@ -43,7 +43,7 @@ class LoginTrackingRequest extends TrackingRequest
 {
     /**
      * @param string $sid
-     * @param string|null $customerId
+     * @param string $customerId
      */
     public function addEvent(
         string $sid,

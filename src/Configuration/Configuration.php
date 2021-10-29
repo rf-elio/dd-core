@@ -54,15 +54,28 @@ class Configuration extends Struct
     private bool $trackRequireConsent;
     private bool $active;
     private bool $listingUseFactFinder;
+    /**
+     * @var array<string>
+     */
     private array $additionalRequestParameters;
     private bool $trackCart;
     private bool $trackLogin;
     private bool $trackProductView;
     private bool $botProtectionActive;
     private bool $botProtectionUseBadBotList;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionSearchTermFilter;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionUserAgentFilter;
+    /**
+     * @var array<string>
+     */
     private array $botProtectionIpFilter;
+    private bool $suggestUseFactFinder;
     private bool $restrictionsParentCategories;
     private bool $restrictionsOverridingTopToDown;
 
@@ -75,14 +88,20 @@ class Configuration extends Struct
      * @param bool $apiDebugActive
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
+     * @param bool $trackCart
      * @param bool $trackCheckout
+     * @param bool $trackLogin
+     * @param bool $trackProductView
      * @param bool $listingUseFactFinder
-     * @param array $additionalRequestParameters
+     * @param array<string> $additionalRequestParameters
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
-     * @param array $botProtectionSearchTermFilter
-     * @param array $botProtectionUserAgentFilter
-     * @param array $botProtectionIpFilter
+     * @param array<string> $botProtectionSearchTermFilter
+     * @param array<string> $botProtectionUserAgentFilter
+     * @param array<string> $botProtectionIpFilter
+     * @param bool $suggestUseFactFinder
+     * @param bool $restrictionsParentCategories
+     * @param bool $restrictionsOverridingTopToDown
      */
     public function __construct(
         bool $active,
@@ -103,6 +122,7 @@ class Configuration extends Struct
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
         array $botProtectionIpFilter,
+        bool $suggestUseFactFinder,
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown
     )
@@ -125,6 +145,7 @@ class Configuration extends Struct
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
         $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
         $this->botProtectionIpFilter = $botProtectionIpFilter;
+        $this->suggestUseFactFinder = $suggestUseFactFinder;
         $this->restrictionsParentCategories = $restrictionsParentCategories;
         $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
     }
@@ -203,7 +224,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getAdditionalRequestParameters(): array
     {
@@ -251,7 +272,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionSearchTermFilter(): array
     {
@@ -259,7 +280,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionUserAgentFilter(): array
     {
@@ -267,11 +288,27 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     public function getBotProtectionIpFilter(): array
     {
         return $this->botProtectionIpFilter;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuggestUseFactFinder(): bool
+    {
+        return $this->suggestUseFactFinder;
+    }
+
+    /**
+     * @param bool $suggestUseFactFinder
+     */
+    public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
+    {
+        $this->suggestUseFactFinder = $suggestUseFactFinder;
     }
 
     /**
@@ -283,26 +320,10 @@ class Configuration extends Struct
     }
 
     /**
-     * @param bool $restrictionsParentCategories
-     */
-    public function setRestrictionsParentCategories(bool $restrictionsParentCategories): void
-    {
-        $this->restrictionsParentCategories = $restrictionsParentCategories;
-    }
-
-    /**
      * @return bool
      */
     public function isRestrictionsOverridingTopToDown(): bool
     {
         return $this->restrictionsOverridingTopToDown;
-    }
-
-    /**
-     * @param bool $restrictionsOverridingTopToDown
-     */
-    public function setRestrictionsOverridingTopToDown(bool $restrictionsOverridingTopToDown): void
-    {
-        $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
     }
 }

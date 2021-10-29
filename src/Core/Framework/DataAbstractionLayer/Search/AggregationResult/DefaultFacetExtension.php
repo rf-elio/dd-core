@@ -99,7 +99,7 @@ class DefaultFacetExtension extends Struct
      * [$name, $value] = DefaultFacetExtension::parseKey(...);
      *
      * @param string $combinedKey
-     * @return array
+     * @return array<string>
      */
     public static function parseKey(string $combinedKey): array
     {

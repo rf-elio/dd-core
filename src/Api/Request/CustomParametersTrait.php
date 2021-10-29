@@ -47,13 +47,13 @@ trait CustomParametersTrait
      *       "string"
      *    ]
      * }
-     * @var array
+     * @var array<array>
      */
     protected array $customParameters = [];
 
     /**
      * @param string $name
-     * @param array $values
+     * @param array<string> $values
      * @param bool $cacheIrrelevant
      */
     public function addCustomParameters(string $name, array $values, bool $cacheIrrelevant = true): void
@@ -66,7 +66,7 @@ trait CustomParametersTrait
     }
 
     /**
-     * @param array $customParameters
+     * @param array<array> $customParameters
      */
     public function setCustomParameters(array $customParameters): void
     {
@@ -74,7 +74,7 @@ trait CustomParametersTrait
     }
 
     /**
-     * @return array
+     * @return array<array>
      */
     public function getCustomParameters(): array
     {

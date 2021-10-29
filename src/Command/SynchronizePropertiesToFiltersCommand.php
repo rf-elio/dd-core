@@ -103,7 +103,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
      * @param OutputInterface $output
      * @param string $propertyId
      */
-    private function syncOne(Context $context, OutputInterface $output, string $propertyId)
+    private function syncOne(Context $context, OutputInterface $output, string $propertyId): void
     {
         $output->writeln(sprintf('<info>Sync property with id : "%s"</info>', $propertyId));
         $this->filterService->syncOne($context, $propertyId);
@@ -115,7 +115,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
      * @param Context $context
      * @param OutputInterface $output
      */
-    private function syncAll(Context $context, OutputInterface $output)
+    private function syncAll(Context $context, OutputInterface $output): void
     {
         $output->writeln('<info>PropertyId is not defined, sync all...</info>');
         $this->filterService->syncAll($context);

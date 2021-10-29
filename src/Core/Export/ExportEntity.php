@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Core\Export;
 use DateTimeInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
@@ -55,10 +56,24 @@ class ExportEntity extends Entity
     protected string $type;
     protected string $format;
     protected string $interval;
+    protected string $mapping;
     protected ?DateTimeInterface $lastGenerationStartedAt;
     protected ?DateTimeInterface $lastGenerationFinishedAt;
+    protected ?DateTimeInterface $nextGenerationDueAt;
     protected string $salesChannelId;
     protected ?SalesChannelEntity $salesChannel;
+    protected string $languageId;
+    protected ?LanguageEntity $language;
+
+    /**
+     * Returns an identifier that is unique for every channel and language
+     *
+     * @return string
+     */
+    private function getIdentifier() : string
+    {
+        return $this->salesChannelId.'-'.$this->languageId;
+    }
 
     /**
      * @return string
@@ -202,5 +217,69 @@ class ExportEntity extends Entity
     public function setSalesChannel(?SalesChannelEntity $salesChannel): void
     {
         $this->salesChannel = $salesChannel;
+    }
+
+    /**
+     * @return LanguageEntity|null
+     */
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param LanguageEntity|null $language
+     */
+    public function setLanguage(?LanguageEntity $language): void
+    {
+        $this->language = $language;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguageId(): string
+    {
+        return $this->languageId;
+    }
+
+    /**
+     * @param string $languageId
+     */
+    public function setLanguageId(string $languageId): void
+    {
+        $this->languageId = $languageId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMapping(): string
+    {
+        return $this->mapping;
+    }
+
+    /**
+     * @param string $mapping
+     */
+    public function setMapping(string $mapping): void
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getNextGenerationDueAt(): ?DateTimeInterface
+    {
+        return $this->nextGenerationDueAt;
+    }
+
+    /**
+     * @param DateTimeInterface|null $nextGenerationDueAt
+     */
+    public function setNextGenerationDueAt(?DateTimeInterface $nextGenerationDueAt): void
+    {
+        $this->nextGenerationDueAt = $nextGenerationDueAt;
     }
 }

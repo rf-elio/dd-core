@@ -83,7 +83,7 @@ class ProductDetailTrackingController extends StorefrontController
     }
 
     /**
-     * @Route("/elioFactFinder/productDetailTrack", name="elio-factfinder.product-detail-track", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
+     * @Route("/widgets/ff/productDetailTrack", name="widgets.elio-ff.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param Request $request
      * @param RequestDataBag $dataBag
@@ -92,23 +92,22 @@ class ProductDetailTrackingController extends StorefrontController
      */
     public function trackProductDetail(Request $request, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
     {
-        $config = $this->configService->get($salesChannelContext->getSalesChannelId());
+        $config = $this->configService->getByContext($salesChannelContext);
 
         if(
             !$config->isActive() ||
             !$config->isTrackProductView() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            !$dataBag->has('ffProductTrackingData') ||
+            !$this->consentService->isTrackingAllowed($salesChannelContext)
         ) {
             return new SuccessResponse();
         }
-        if(!$dataBag->has('ffProductTrackingData')){
-            return new SuccessResponse();
-        }
+
         /** @var RequestDataBag $trackingData */
         $trackingData = $dataBag->get('ffProductTrackingData');
         $customerId = $salesChannelContext->getCustomer() ? $salesChannelContext->getCustomer()->getId() : null;
-        $request = new ProductDetailTrackingRequest($config->getApiChannel());
-        $request->addEvent(
+        $trackingRequest = new ProductDetailTrackingRequest($config->getApiChannel());
+        $trackingRequest->addEvent(
             $trackingData->get('id'),
             $salesChannelContext->getToken(),
             $trackingData->get('productNumber'),
@@ -121,7 +120,7 @@ class ProductDetailTrackingController extends StorefrontController
             $customerId
         );
 
-        $requestCreatedEvent = new ProductDetailTrackingRequestCreatedEvent($request);
+        $requestCreatedEvent = new ProductDetailTrackingRequestCreatedEvent($trackingRequest);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),

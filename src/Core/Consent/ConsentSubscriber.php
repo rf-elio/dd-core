@@ -64,7 +64,7 @@ class ConsentSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @return array[]
+     * @return array
      */
     public static function getSubscribedEvents() : array
     {

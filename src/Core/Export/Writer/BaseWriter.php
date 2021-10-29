@@ -34,9 +34,9 @@ namespace Elio\FactFinder\Core\Export\Writer;
 
 
 use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\ExportStorageService;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -49,16 +49,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 abstract class BaseWriter
 {
-    private const BASE_DIR = 'ff-export';
-    protected FilesystemInterface $fileSystem;
+    private ExportStorageService $exportStorageService;
 
     /**
      * CSVFileWriter constructor.
-     * @param FilesystemInterface $fileSystem
+     * @param ExportStorageService $exportStorageService
      */
-    public function __construct(FilesystemInterface $fileSystem)
+    public function __construct(ExportStorageService $exportStorageService)
     {
-        $this->fileSystem = $fileSystem;
+        $this->exportStorageService = $exportStorageService;
     }
 
     /**
@@ -90,30 +89,7 @@ abstract class BaseWriter
      */
     public function close(ExportEntity $export, SalesChannelContext $context, $handle): void
     {
-        $this->fileSystem->createDir(self::BASE_DIR);
-        $fileName = $this->createFileName($export, $context);
-
-        if($this->fileSystem->has($fileName)) {
-            $this->fileSystem->delete($fileName);
-        }
-
-        $this->fileSystem->writeStream($fileName, $handle);
+        $this->exportStorageService->write($export, $handle);
         fclose($handle);
-    }
-
-    /**
-     * Creates the file name based on the export and sales channel
-     *
-     * @param ExportEntity $export
-     * @param SalesChannelContext $context
-     * @return string
-     */
-    protected function createFileName(ExportEntity $export, SalesChannelContext $context) : string
-    {
-        return sprintf(
-            '%s/e%s-s%s-l%s.%s',
-            self::BASE_DIR, $export->getId(), $context->getSalesChannelId(),
-            $context->getSalesChannel()->getLanguageId(), $export->getFormat()
-        );
     }
 }

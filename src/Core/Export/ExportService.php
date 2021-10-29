@@ -32,11 +32,14 @@
 
 namespace Elio\FactFinder\Core\Export;
 
+require_once __DIR__.'/../../../vendor/autoload.php';
 
+use Cron\CronExpression;
 use DateTime;
 use Elio\FactFinder\Core\Export\Exception\ExportNotSupportedException;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Writer\FileWriterInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Framework\Context;
@@ -44,7 +47,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Throwable;
@@ -59,10 +61,25 @@ use Throwable;
  */
 class ExportService
 {
+    /**
+     * @var EntityRepositoryInterface
+     */
     private EntityRepositoryInterface $exportRepository;
+    /**
+     * @var ExportGeneratorInterface[]
+     */
     private iterable $generators;
+    /**
+     * @var LoggerInterface
+     */
     private LoggerInterface $logger;
+    /**
+     * @var FileWriterInterface[]
+     */
     private iterable $writers;
+    /**
+     * @var AbstractSalesChannelContextFactory
+     */
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
     /**
@@ -89,22 +106,46 @@ class ExportService
     }
 
     /**
-     * Searches all due exports
+     * Searches for exports based in the given criteria. Only active exports included.
      *
+     * @param Criteria $criteria
      * @param Context $context
-     * @return EntityCollection
+     * @return EntityCollection<ExportEntity>
      */
-    public function getDueExports(Context $context) : EntityCollection
+    public function getExports(Criteria $criteria, Context $context): EntityCollection
     {
-        // @todo: implement due feature
-        $criteria = new Criteria();
         $criteria->addAssociation('salesChannel.domains');
         $criteria->addFilter(new EqualsFilter('active', true));
         return $this->exportRepository->search($criteria, $context)->getEntities();
     }
 
     /**
+     * Searches all due exports
+     *
+     * @param Criteria $criteria
+     * @param Context $context
+     * @return EntityCollection<ExportEntity>
+     * @throws Exception
+     */
+    public function getDueExports(Criteria $criteria, Context $context) : EntityCollection
+    {
+        $now = new DateTime('now');
+
+        /** @var ExportEntity[] $exports */
+        $exports = $this->getExports($criteria, $context);
+        $dueExports = new EntityCollection();
+        foreach ($exports as $export) {
+            if (!$export->getNextGenerationDueAt() || $export->getNextGenerationDueAt() <= $now) {
+                $dueExports->add($export);
+            }
+        }
+
+        return $dueExports;
+    }
+
+    /**
      * Generates the export
+     * @throws Exception
      */
     public function generate(ExportEntity $export, Context $context) : void
     {
@@ -123,32 +164,32 @@ class ExportService
                 $export->getName()
             ));
         }
-
-        $languageIds = $salesChannel->getDomains()->map(function (SalesChannelDomainEntity $salesChannelDomain) {
-            return $salesChannelDomain->getLanguageId();
-        });
-
+        
         $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
 
-        foreach ($languageIds as $languageId) {
-            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
-            $this->logger->info(
-                sprintf('Generating export: %s', $export->getName()),
-                ['id' => $export->getId(), 'salesChannelId' => $salesChannel->getId(), 'salesChannelName' => $salesChannel->getName(), 'language' => $languageId]
-            );
+        $languageId = $export->getLanguageId();
+        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
+        $this->logger->info(
+            sprintf('Generating export: %s', $export->getName()),
+            ['id' => $export->getId(), 'salesChannelId' => $salesChannel->getId(), 'salesChannelName' => $salesChannel->getName(), 'language' => $languageId]
+        );
 
-            $stream = new OutputStream($writer, $export, $salesChannelContext);
-            $stream->open();
-            try {
-                $generator->generate($export, $stream, $salesChannelContext);
-                $stream->close();
-            } catch (Throwable $ex) {
-                $stream->abort();
-                $this->logger->error($ex->getMessage());
-            }
+        $stream = new OutputStream($writer, $export, $salesChannelContext);
+        $stream->open();
+        try {
+            $generator->generate($export, $stream, $salesChannelContext);
+            $stream->close();
+        } catch (Throwable $ex) {
+            $stream->abort();
+            $this->logger->error($ex->getMessage());
         }
 
-        $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationFinishedAt' => new DateTime()]], $context);
+        $cron = new CronExpression($export->getInterval());
+        $this->exportRepository->update([[
+            'id' => $export->getId(),
+            'lastGenerationFinishedAt' => new DateTime(),
+            'nextGenerationDueAt' => $cron->getNextRunDate()->format('Y-m-d H:i:s')
+        ]], $context);
     }
 
     /**

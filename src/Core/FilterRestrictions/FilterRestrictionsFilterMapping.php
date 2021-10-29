@@ -38,8 +38,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
 
 /**
  * Class FilterRestrictionsFilterMapping
