@@ -97,7 +97,7 @@ class TrackLoginSubscriber implements EventSubscriberInterface
         if(
             !$config->isActive() ||
             !$config->isTrackLogin() ||
-            !$this->consentService->isTrackingAllowed($salesChannelId, $salesChannelContext) ||
+            !$this->consentService->isTrackingAllowed($salesChannelContext) ||
             !$customer->getId()
         ) {
             return;

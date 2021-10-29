@@ -34,6 +34,7 @@
             <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackLoginSubscriber">
