@@ -47,9 +47,10 @@ class DefaultFacetExtension extends Struct
 {
     public const KEY = 'ff_facet_extension';
     protected const COMBINATION_CHAR = '~';
-    private string $name;
-    private string $value;
-    private int $totalHits;
+    protected string $name;
+    protected string $value;
+    protected string $key;
+    protected int $totalHits;
 
     /**
      * FactFinderDefaultFacetExtension constructor.
@@ -65,6 +66,7 @@ class DefaultFacetExtension extends Struct
     {
         $this->name = $name;
         $this->value = $value;
+        $this->key = $this->name . self::COMBINATION_CHAR . $this->value;
         $this->totalHits = $totalHits;
     }
 
@@ -87,9 +89,9 @@ class DefaultFacetExtension extends Struct
     /**
      * @return string
      */
-    public function getKey() : string
+    public function getKey(): string
     {
-        return $this->name . self::COMBINATION_CHAR . $this->value;
+        return $this->key;
     }
 
     /**
@@ -99,7 +101,7 @@ class DefaultFacetExtension extends Struct
      * @param string $combinedKey
      * @return array<string>
      */
-    public static function parseKey(string $combinedKey) : array
+    public static function parseKey(string $combinedKey): array
     {
         return explode(self::COMBINATION_CHAR, $combinedKey);
     }

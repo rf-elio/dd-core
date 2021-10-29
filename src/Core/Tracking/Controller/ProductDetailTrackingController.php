@@ -98,7 +98,7 @@ class ProductDetailTrackingController extends StorefrontController
             !$config->isActive() ||
             !$config->isTrackProductView() ||
             !$dataBag->has('ffProductTrackingData') ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            !$this->consentService->isTrackingAllowed($salesChannelContext)
         ) {
             return new SuccessResponse();
         }

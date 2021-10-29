@@ -54,8 +54,8 @@ Shopware.Component.register('ff-export-detail', {
                     name: 'product'
                 },
                 {
-                    id: 'suggest',
-                    name: 'suggest'
+                    id: 'content',
+                    name: 'content'
                 }
             ],
             formatList: [

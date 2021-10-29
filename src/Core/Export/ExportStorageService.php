@@ -78,7 +78,7 @@ class ExportStorageService
             'Content-Length' => $this->fileSystem->getSize($fileName),
             'Content-Type' => 'application/octet-stream',
         ];
-
+die($this->fileSystem->read());
         $stream = $this->fileSystem->readStream($fileName);
         if (!is_resource($stream)) {
             throw new FileNotFoundException($export->getId());

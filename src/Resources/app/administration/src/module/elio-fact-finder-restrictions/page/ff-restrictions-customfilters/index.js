@@ -1,0 +1,96 @@
+import template from './ff-restrictions-customfilters.html.twig';
+
+const { Mixin } = Shopware;
+const { Criteria } = Shopware.Data;
+
+Shopware.Component.register('ff-restrictions-customfilters', {
+    template: template,
+
+    inject: [
+        'repositoryFactory',
+    ],
+
+    mixins: [
+        Mixin.getByName('listing')
+    ],
+
+    metaInfo() {
+        return {
+            title: this.$createTitle()
+        };
+    },
+
+    data() {
+        return {
+            filtersGroup: null,
+            sortBy: 'propertyName',
+            sortDirection: 'ASC',
+            isLoading: false,
+            showDeleteModal: false
+        };
+    },
+
+    computed: {
+        filtersRepository() {
+            return this.repositoryFactory.create('elio_ff_filter');
+        },
+
+        defaultCriteria() {
+            const criteria = new Criteria(this.page, this.limit);
+            criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection, this.useNaturalSorting));
+            criteria.addFilter(Criteria.equals('elio_ff_filter.isCustom', true));
+            return criteria;
+        },
+
+        useNaturalSorting() {
+            return this.sortBy === 'elio_ff_filter.propertyName';
+        },
+
+        filtersColumns() {
+            return this.getFiltersColumns();
+        },
+    },
+
+    methods: {
+        onDelete(id) {
+            this.showDeleteModal = id;
+        },
+
+        onCloseDeleteModal() {
+            this.showDeleteModal = false;
+        },
+
+        onConfirmDelete(id) {
+            this.showDeleteModal = false;
+
+            return this.filtersRepository.delete(id).then(() => {
+                this.getList();
+            });
+        },
+
+        getList() {
+            this.isLoading = true;
+
+            return this.filtersRepository.search(this.defaultCriteria).then((items) => {
+                this.total = items.total;
+                this.filtersGroup = items;
+                this.isLoading = false;
+
+                return items;
+            }).catch(() => {
+                this.isLoading = false;
+            });
+        },
+
+        getFiltersColumns() {
+            return [{
+                property: 'propertyName',
+                label: 'Name',
+                routerLink: 'elio.factfinder.restrictions.customFiltersDetail',
+                inlineEdit: 'string',
+                allowResize: false,
+                primary: true
+            }];
+        }
+    }
+});

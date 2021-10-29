@@ -1,8 +1,12 @@
 # sw6-ElioFactFinder
 
 # Installation
-## Commands
+## Cron
 The following commands must be configured to execute required background tasks
+
+Commands:
+* `bin/console elio-ff:filters:sync`: synchronizing all filters to associated properties (Updating names for filters. Cleaning from old filters with deleted properties. Creating new filters for new properties).
+  * `propertyId` optional argument to sync only one property
 *  `bin/console elio-ff:export:generate`: Executes the exports. This should be executed every 5 Minutes.
 
 # Components

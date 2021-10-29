@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
@@ -89,11 +90,13 @@ class SuggestionTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
     public function transform(
         ModelInterface $model,
         ResponseCollection $responseCollection,
-        SalesChannelContext $context
+        SalesChannelContext $context,
+        ApiRequest $request
     ): void {
         if (!$model instanceof SuggestionResult) {
             throw new InvalidTypeException($model, SuggestionResult::class);

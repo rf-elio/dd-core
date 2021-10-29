@@ -14,6 +14,7 @@
 
         <service id="Elio\FactFinder\Storefront\Controller\SuggestController"
                  decorates="Shopware\Storefront\Controller\SearchController"
+                 public="true"
         >
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SuggestApi" />

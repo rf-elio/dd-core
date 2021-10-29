@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
+use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
@@ -83,10 +84,11 @@ class TranslationSortTransformer implements ResponseTransformerInterface
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context): void
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
     {
-        $this->decorated->transform($model, $responseCollection, $context);
+        $this->decorated->transform($model, $responseCollection, $context, $request);
 
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         if($sortingCollection = $listing->getAvailableSortings()) {

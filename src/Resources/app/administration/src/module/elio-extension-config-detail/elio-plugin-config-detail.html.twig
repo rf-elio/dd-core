@@ -7,7 +7,7 @@
             {{ $tc('global.default.save') }}
         </sw-button>
     </template>
-    <template slot="language-switch">
+    <template slot="language-switch" v-if="isLanguageDivided">
         <elio-language-selector
                 :languages="languages"
                 @on-selected="onChangeLanguage" ></elio-language-selector>

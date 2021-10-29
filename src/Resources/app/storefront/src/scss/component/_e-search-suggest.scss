@@ -1,0 +1,41 @@
+.e-search-suggest {
+	.search-suggest-container {
+		padding: 0 0 .625rem 0;
+	}
+
+	.e-search-suggest-container {
+		list-style: none;
+		touch-action: manipulation;
+		margin-bottom: 0;
+	}
+
+	.elio-suggest-block-header {
+		margin-top: 1.375rem;
+		margin-bottom: .625rem;
+		font-size: 1.25rem;
+		font-weight: 500;
+		border-bottom: 1px solid $sw-text-color;
+	}
+}
+
+@include media-breakpoint-up(sm) {
+	.e-search-suggest {
+		.search-suggest-container {
+			width: 28.125rem;
+		}
+	}
+}
+@include media-breakpoint-up(md) {
+	.e-search-suggest {
+		.search-suggest-container {
+			width: 40rem;
+		}
+	}
+}
+@include media-breakpoint-up(lg) {
+	.e-search-suggest {
+		.search-suggest-container {
+			width: 55rem;
+		}
+	}
+}

@@ -35,6 +35,13 @@
             <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
             <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
+        <input-field>
+            <name>apiContentChannel</name>
+            <label>API channel for contents</label>
+            <label lang="de-DE">API-Channel für Inhalte</label>
+            <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
+            <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
+        </input-field>
         <input-field type="int">
             <name>apiTimeout</name>
             <label>API request timeout</label>
@@ -82,6 +89,12 @@
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
+            <name>searchUseContentChannel</name>
+            <label>Show contents from content channel to search result page</label>
+            <label lang="de-DE">Inhalte aus dem Inhalts-Channel auf der Suchergebnisseite anzeigen</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>suggestUseFactFinder</name>
             <label>Replace shopware suggest by FACTFinder suggest</label>
             <label lang="de-DE">Shopware Suggest durch den FACTFinder-Suggest ersetzten</label>
@@ -116,6 +129,24 @@
             <label>Apply lists of blocked and allowed filter lists in categories</label>
             <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
             <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Filter Restrictions</title>
+        <title lang="de-DE">Filter Restrictions</title>
+        <input-field type="bool">
+            <name>restrictionsParentCategories</name>
+            <label>Parent Categories giving impacts</label>
+            <label lang="de-DE">Übergeordnete Kategorien, die Auswirkungen haben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>restrictionsOverridingTopToDown</name>
+            <label>Restriction rules overriding from top to down</label>
+            <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
         </input-field>
     </card>
     <card>
@@ -183,60 +214,6 @@
             <name>trackProductView</name>
             <label>Tracks the view of a product (detail page)</label>
             <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-    </card>
-    <card>
-        <title>Suggest export</title>
-        <title lang="de-DE">Suggest-Export</title>
-        <input-field type="bool">
-            <name>suggestExportActive</name>
-            <label>Activates the xml suggest export</label>
-            <label lang="de-DE">Suggest XML-Export benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="text">
-            <name>suggestExportInterval</name>
-            <label>suggest export interval</label>
-            <label lang="de-DE">Suggest-Export-Intervall</label>
-            <defaultValue>0 * * * *</defaultValue>
-            <helpText>Crontab like format: 0 * * * *</helpText>
-            <helpText lang="de-DE">Im Cron-Tab-Format: 0 * * * * (Minute, Stunde, Tag, Monat, Jahr)</helpText>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportProductCategories</name>
-            <label>Export product categories</label>
-            <label lang="de-DE">Produktkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportStructureCategories</name>
-            <label>Export structure categories</label>
-            <label lang="de-DE">Strukturkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportLinkCategories</name>
-            <label>Export link categories</label>
-            <label lang="de-DE">Linkkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportFooterNavigation</name>
-            <label>Export footer categories</label>
-            <label lang="de-DE">Footerkategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportServiceNavigation</name>
-            <label>Export service categories</label>
-            <label lang="de-DE">Servicekategorien exportieren</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>suggestExportManufacturers</name>
-            <label>Export manufacturers</label>
-            <label lang="de-DE">Hersteller exportieren</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>
@@ -360,5 +337,14 @@
             <defaultValue>false</defaultValue>
             <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
         </input-field>
+    </card>
+    <card>
+        <title>CMS Export</title>
+        <title lang="de-DE">CMS Export</title>
+        <component name="sw-entity-multi-id-select">
+            <name>categoriesToExport</name>
+            <entity>category</entity>
+            <label>Choose categories to Export</label>
+        </component>
     </card>
 </config>

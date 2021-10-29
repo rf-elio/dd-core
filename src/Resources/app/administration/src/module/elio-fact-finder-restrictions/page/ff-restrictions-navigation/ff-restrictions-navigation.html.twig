@@ -1,0 +1,13 @@
+{% block ff_restrictions_navigation_page %}
+    <sw-meteor-card>
+        <div class="elio-ff-restrictions-sales-channel-picker">
+            <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                     @change-sales-channel-id="onSalesChannelChanged">
+            </sw-sales-channel-switch>
+        </div>
+        <h1>{{ $tc('ff.restrictions.tabs.navigation') }}</h1>
+        <ff-restriction-ruler :isCategory="false"
+                              :layer="type"
+                              ref="ruler"></ff-restriction-ruler>
+    </sw-meteor-card>
+{% endblock %}

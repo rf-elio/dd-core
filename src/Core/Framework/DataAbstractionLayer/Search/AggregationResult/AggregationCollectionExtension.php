@@ -30,44 +30,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
-
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class SuggestExportGenerator
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class AggregationCollectionExtension
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SuggestExportGenerator implements ExportGeneratorInterface
+class AggregationCollectionExtension extends Struct
 {
-    public const TYPE = 'suggest';
+    private array $campaigns;
 
     /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
+     * @param array $campaigns
      */
-    public function supports(ExportEntity $export): bool
+    public function __construct(array $campaigns = [])
     {
-        return $export->getType() === self::TYPE;
+        $this->campaigns = $campaigns;
     }
 
     /**
-     * Generates the suggest export
-     *
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
+     * @return array
      */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
+    public function getCampaigns(): array
     {
-        // TODO: Implement generate() method.
+        return $this->campaigns;
+    }
+
+    /**
+     * @param array $campaigns
+     */
+    public function setCampaigns(array $campaigns): void
+    {
+        $this->campaigns = $campaigns;
+    }
+
+    /**
+     * @param array $campaign
+     */
+    public function addCampaign(string $label, array $campaign): void
+    {
+        $this->campaigns[$label] = $campaign;
     }
 }

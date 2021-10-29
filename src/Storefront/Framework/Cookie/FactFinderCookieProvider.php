@@ -82,6 +82,7 @@ class FactFinderCookieProvider implements CookieProviderInterface
     public function getCookieGroups(): array
     {
         $cookieGroups = $this->cookieProvider->getCookieGroups();
+        $masterRequest = $this->requestStack->getMasterRequest();
 
         $masterRequest = $this->requestStack->getMasterRequest();
         if($masterRequest !== null){
@@ -98,8 +99,20 @@ class FactFinderCookieProvider implements CookieProviderInterface
                         [self::TRACKING_COOKIE]
                     );
 
-                    break;
+        $salesChannelContext = $masterRequest->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        $config = $this->configService->getByContext($salesChannelContext);
+        if($config->isTrackRequireConsent()) {
+            foreach ($cookieGroups as &$cookieGroup) {
+                if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
+                    continue;
                 }
+
+                $cookieGroup['entries'] = array_merge(
+                    $cookieGroup['entries'],
+                    [self::TRACKING_COOKIE]
+                );
+
+                break;
             }
         }
 
