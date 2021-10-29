@@ -47,7 +47,7 @@ use Elio\FactFinder\Core\Export\ExportItem;
 class CSVFileWriter extends BaseWriter implements FileWriterInterface
 {
     public const TYPE = 'csv';
-    private const SEPARATOR = '|';
+    private const SEPARATOR = ';';
     private bool $headerWritten = false;
 
     /**

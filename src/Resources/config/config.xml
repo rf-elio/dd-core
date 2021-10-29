@@ -379,4 +379,13 @@
             <helpText>Activates the swagger api client debugging. Symfonys default log location (/var/log) will be used.</helpText>
         </input-field>
     </card>
+    <card>
+        <title>CMS Export</title>
+        <title lang="de-DE">CMS Export</title>
+        <component name="sw-entity-multi-id-select">
+            <name>categoriesToExport</name>
+            <entity>category</entity>
+            <label>Choose categories to Export</label>
+        </component>
+    </card>
 </config>

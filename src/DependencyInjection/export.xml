@@ -30,6 +30,18 @@
         <service id="Elio\FactFinder\Core\Export\Generator\SuggestExportGenerator">
             <tag name="elio-ff.export.generator"/>
         </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\CategoryExportGenerator">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
+        <service id="Elio\FactFinder\Core\Export\Generator\CategoryLinkExportGenerator">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="elio-ff.export.generator" />
+        </service>
 
         <!-- storage -->
         <service id="Elio\FactFinder\Core\Export\ExportStorageService">
