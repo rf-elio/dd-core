@@ -33,6 +33,8 @@
 namespace Elio\FactFinder\Core\Export\Generator\Util;
 
 
+use DateTimeInterface;
+
 /**
  * Class ValueUtil
  * @package Elio\FactFinder\Core\Export\Generator\Util
@@ -56,8 +58,7 @@ class ValueUtil
     {
         $value = empty($value) ? "" : $value;
         $value = trim(strip_tags($value));
-        $value = self::replaceCharReferences($value);
-        return $value;
+        return self::replaceCharReferences($value);
     }
 
     /**
@@ -86,5 +87,34 @@ class ValueUtil
         $pattern = '/&[a-z]+;|&|_{2, }/';
         $replacement = '';
         return preg_replace($pattern, $replacement, $subject, -1 );
+    }
+
+    /**
+     * Formats the given date for the ff export
+     *
+     * @param DateTimeInterface $date
+     * @return string
+     */
+    public static function formatDate(DateTimeInterface $date) : string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * Returns the custom field value stored in the given key. If the custom fields are missing or the key is not
+     * present null will be returned. If the value is empty, null will be returned.
+     *
+     * @param array|null $customFields
+     * @param string $key
+     * @return mixed|null
+     */
+    public static function getCustomFieldValue(?array $customFields, string $key)
+    {
+        if(!$customFields) {
+            return null;
+        }
+
+        $value = $customFields[$key] ?? null;
+        return empty($value) ? null : $value;
     }
 }

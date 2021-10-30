@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\Export\Writer;
 
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class CSVFileWriter
@@ -49,6 +50,7 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
     public const TYPE = 'csv';
     private const SEPARATOR = ';';
     private bool $headerWritten = false;
+    private array $header = [];
 
     /**
      * Checks if the writer can be used for the given export
@@ -61,25 +63,33 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
     }
 
     /**
-     * @return false|resource
+     * @return resource
      */
-    public function open()
+    public function open(SalesChannelContext $context)
     {
         $this->headerWritten = false;
-        return parent::open();
+        return parent::open($context);
     }
 
     /**
      * @param resource $handle
      * @param ExportItem $item
      */
-    public function write($handle, ExportItem $item): void
+    protected function write($handle, ExportItem $item): void
     {
         if(!$this->headerWritten) {
+            $this->header = $item->getKeys();
             fputcsv($handle, $item->getKeys(), self::SEPARATOR);
             $this->headerWritten = true;
         }
 
-        fputcsv($handle, array_values($item->getParams()), self::SEPARATOR);
+        $output = $item->getParams();
+        $orderedOutput = [];
+
+        foreach ($this->header as $key) {
+            $orderedOutput[] = $output[$key] ?? '';
+        }
+
+        fputcsv($handle, $orderedOutput, self::SEPARATOR);
     }
 }

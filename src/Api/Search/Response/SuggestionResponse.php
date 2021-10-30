@@ -77,4 +77,14 @@ class SuggestionResponse extends Response
 
         return $result;
     }
+
+    /**
+     * Checks if the suggest is empty
+     *
+     * @return bool
+     */
+    public function isEmpty() : bool
+    {
+        return empty($this->suggestions);
+    }
 }

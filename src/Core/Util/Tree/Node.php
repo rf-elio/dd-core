@@ -1,0 +1,153 @@
+<?php
+
+namespace Elio\FactFinder\Core\Util\Tree;
+
+/**
+ * Class Node
+ * @package Elio\FactFinder\Core\Util\Tree
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ */
+class Node
+{
+    /**
+     * @var string
+     */
+    protected $id;
+    /**
+     * @var string[]
+     */
+    protected array $parentIDs = array();
+    /**
+     * @var Node[]
+     */
+    protected array $parentNodes = array();
+    /**
+     * @var Node[]
+     */
+    protected array $childNodes = array();
+    /**
+     * @var mixed
+     */
+    private $value;
+
+    /**
+     * Node constructor.
+     * @param mixed       $id
+     * @param null|mixed $parentID
+     * @param mixed       $value
+     */
+    public function __construct($id, $parentID = null, $value = null)
+    {
+        $this->id = $id;
+        $this->value = $value;
+
+        if($parentID !== null)
+        {
+            $this->addParentID($parentID);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getParentIDs(): array
+    {
+        return $this->parentIDs;
+    }
+
+    /**
+     * @param Node $parent
+     */
+    public function addParent(Node $parent): void
+    {
+        $this->parentNodes[$parent->getId()] = $parent;
+        $parent->addChild($this);
+    }
+
+    /**
+     * @param Node $child
+     */
+    public function addChild(Node $child): void
+    {
+        $this->childNodes[$child->getId()] = $child;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasParents() : bool
+    {
+        return count($this->parentNodes) > 0;
+    }
+
+    /**
+     * Adds a parent id
+     *
+     * @param string|null $parentID
+     */
+    public function addParentID($parentID): void
+    {
+        if($parentID !== null)
+        {
+            $this->parentIDs[] = $parentID;
+        }
+
+        $this->parentIDs = array_unique($this->parentIDs);
+    }
+
+    /**
+     * @return Node[]
+     */
+    public function getChildNodes(): array
+    {
+        return $this->childNodes;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return Node[]
+     */
+    public function getParentNodes(): array
+    {
+        return $this->parentNodes;
+    }
+
+    /**
+     * Converts the tree into an array
+     *
+     * @return array
+     */
+    public function toArray() : array
+    {
+        $children = [];
+
+        foreach ($this->childNodes as $childNode)
+        {
+            $children[] = $childNode->toArray();
+        }
+
+        return [
+            'id' => $this->id,
+            'value' => $this->value,
+            'children' => $children
+        ];
+    }
+}

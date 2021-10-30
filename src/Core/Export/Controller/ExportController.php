@@ -30,6 +30,7 @@ class ExportController extends AbstractController
     /**
      * @param ExportStorageService $exportStorageService
      * @param ExportService $exportService
+     * @param MessageBusInterface $messageBus
      */
     public function __construct(
         ExportStorageService $exportStorageService,

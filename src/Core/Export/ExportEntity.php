@@ -34,10 +34,12 @@ namespace Elio\FactFinder\Core\Export;
 
 
 use DateTimeInterface;
+use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\Tag\TagCollection;
 
 /**
  * Class ExportEntity
@@ -64,6 +66,7 @@ class ExportEntity extends Entity
     protected ?SalesChannelEntity $salesChannel;
     protected string $languageId;
     protected ?LanguageEntity $language;
+    protected $baseCategoryIds;
 
     /**
      * Returns an identifier that is unique for every channel and language
@@ -281,5 +284,21 @@ class ExportEntity extends Entity
     public function setNextGenerationDueAt(?DateTimeInterface $nextGenerationDueAt): void
     {
         $this->nextGenerationDueAt = $nextGenerationDueAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBaseCategoryIds()
+    {
+        return $this->baseCategoryIds;
+    }
+
+    /**
+     * @param mixed $baseCategoryIds
+     */
+    public function setBaseCategoryIds($baseCategoryIds): void
+    {
+        $this->baseCategoryIds = $baseCategoryIds;
     }
 }

@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Api\Response;
 
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class Response
@@ -41,7 +42,7 @@ namespace Elio\FactFinder\Api\Response;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class Response
+abstract class Response extends Struct
 {
 
 }

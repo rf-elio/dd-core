@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
+use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationCollectionExtension;
@@ -52,6 +53,8 @@ use Swagger\Client\Model\Result;
  */
 class CampaignTransformer implements ResponseTransformerInterface
 {
+    private CONST FLAVOR_REDIRECT = 'REDIRECT';
+
     /**
      * @inheritDoc
      */
@@ -90,6 +93,13 @@ class CampaignTransformer implements ResponseTransformerInterface
             $type = $campaign->getFlavour();
             $name = $campaign->getName();
             $texts = [];
+
+            if ($campaign->getFlavour() === self::FLAVOR_REDIRECT) {
+                $responseCollection->set(CampaignRedirectionResponse::class, new CampaignRedirectionResponse(
+                    $campaign->getTarget()->getName(),
+                    $campaign->getTarget()->getDestination(),
+                ));
+            }
 
             foreach ($campaign->getFeedbackTexts() as $feedbackText){
                 $label = $feedbackText->getLabel();

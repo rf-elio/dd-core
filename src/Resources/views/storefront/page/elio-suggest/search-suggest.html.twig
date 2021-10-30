@@ -2,6 +2,15 @@
     <div class="search-suggest e-search-suggest js-search-result">
         {% block elio_search_suggest_container %}
             <div class="d-flex flex-md-row flex-wrap search-suggest-container">
+                {% if response is empty %}
+                <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+                    {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                        type: "warning",
+                        content: "Zu Ihrer Suche wurden leider keine Suchergebnisse gefunden"
+                    } %}
+                </ul>
+                {% endif %}
+
                 {% for type, suggestionType in response %}
                     {% set suggestionUrlPath = '' %}
                     {% if type == 'productName' %}

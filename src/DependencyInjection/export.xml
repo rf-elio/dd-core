@@ -21,23 +21,19 @@
             <argument type="tagged" tag="elio-ff.export.writer" />
         </service>
 
-        <!-- generators -->
         <!-- generators / product -->
         <service id="Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator">
             <argument type="service" id="product.repository" />
-            <argument type="service" id="router"/>
             <tag name="elio-ff.export.generator" />
         </service>
         <!-- generators / content -->
         <service id="Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator">
             <argument type="service" id="category.repository" />
             <argument type="service" id="router"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="elio-ff.export.generator" />
         </service>
         <service id="Elio\FactFinder\Core\Export\Generator\Content\LandingPagePartialGenerator">
             <argument type="service" id="landing_page.repository" />
-            <argument type="service" id="router"/>
             <tag name="elio-ff.export.generator" />
         </service>
 
@@ -51,6 +47,13 @@
         <service id="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
+        </service>
+        <service id="elio.fact_finder.core.export.writer.seo_url_writer.csv"
+                 class="Elio\FactFinder\Core\Export\Writer\SeoUrlWriter"
+                 decorates="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
+            <argument type="service" id="elio.fact_finder.core.export.writer.seo_url_writer.csv.inner" />
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="router"/>
         </service>
         <service id="Elio\FactFinder\Core\Export\Writer\XMLFileWriter">
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />

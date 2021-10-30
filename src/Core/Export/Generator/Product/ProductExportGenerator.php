@@ -37,13 +37,13 @@ use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\Core\Export\SeoRoute;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -58,17 +58,14 @@ class ProductExportGenerator implements ExportGeneratorInterface
 {
     public const TYPE = 'product';
     private EntityRepositoryInterface $productRepository;
-    private RouterInterface $router;
 
     /**
      * ProductExportGenerator constructor.
      * @param EntityRepositoryInterface $productRepository
-     * @param RouterInterface $router
      */
-    public function __construct(EntityRepositoryInterface $productRepository, RouterInterface $router)
+    public function __construct(EntityRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
-        $this->router = $router;
     }
 
     /**
@@ -92,6 +89,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('manufacturer');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
+        $criteria->addAssociation('cover');
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $export->getSalesChannelId()));
@@ -130,33 +128,31 @@ class ProductExportGenerator implements ExportGeneratorInterface
             }
 
             // todo: mapping extension - properties from other sub-objects of product to propertyAccessor
-            //$item->set('ProductID', $product->getId());
-            //$item->set('MasterProductNumber', $product->getProductNumber());
-            //$item->set('ManufacturerNumber', $product->getManufacturerNumber());
-            //$item->set('Name', $product->getName());
-            //$item->set('Description', $product->getDescription());
-            //$item->set('ProductURL', $product->getId());
-            //$item->set('Price', $product->getPrice()->first()->getGross()); // can be mapped as price.first.gross
-            //$item->set('Manufacturer', $product->getManufacturer()->getName()); // can be mapped as manufacturer.name
+            $translated = $product->getTranslated();
+            $item->set('ProductID', $product->getId());
+            $item->set('MasterProductNumber', $product->getProductNumber());
+            $item->set('ManufacturerNumber', $product->getManufacturerNumber());
+            $item->set('Name', $product->getName() ?? $translated['name'] ?? '');
+            $item->set('Description', $product->getDescription() ?? $translated['description'] ?? '');
+            $item->set('ProductURL', $product->getId());
+            $item->set('Price', $product->getPrice()->first()->getGross()); // can be mapped as price.first.gross
+            $item->set('Manufacturer', $product->getManufacturer()->getName()); // can be mapped as manufacturer.name
             $item->set('CategoryPath', $this->getCategoryPath($product));
-            //$item->set('EAN', $product->getId());
-            //$item->set('Keywords', $product->getKeywords());
-            //$item->set('SearchKeywords', $product->getSearchKeywords());
-            //$item->set('Stock', $product->getStock());
-            //$item->set('RatingAverage', $product->getRatingAverage());
-            //$item->set('ShippingFree', $product->getShippingFree());
+            $item->set('EAN', $product->getId());
+            $item->set('Keywords', $product->getKeywords() ?? $translated['keywords'] ?? '');
+            $item->set('SearchKeywords', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? '');
+            $item->set('Stock', $product->getStock());
+            $item->set('RatingAverage', $product->getRatingAverage());
+            $item->set('ShippingFree', $product->getShippingFree());
             $item->set('Attribute', $this->getProductAttribute($product));
 
-            // @todo: check if this is the main image
-            if($product->getMedia() && $product->getMedia()->first() && $product->getMedia()->first()->getMedia()) {
-                $item->set('ImageURL', $product->getMedia()->first()->getMedia()->getUrl());
+            if($product->getCover() && $product->getCover()->getMedia()) {
+                $item->set('ImageURL', $product->getCover()->getMedia()->getUrl());
             }
 
-            // @todo: rewrite url
-            $item->set(
-                'ProductURL',
-                $this->router->generate('frontend.detail.page', ['productId' => $product->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            );
+            $item->set('ProductURL', new SeoRoute(
+                ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
+            ));
 
             $output->write($item);
         }

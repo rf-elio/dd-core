@@ -164,18 +164,18 @@ class ExportService
                 $export->getName()
             ));
         }
-        
-        $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
 
         $languageId = $export->getLanguageId();
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
+        
+        $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
         $this->logger->info(
             sprintf('Generating export: %s', $export->getName()),
             ['id' => $export->getId(), 'salesChannelId' => $salesChannel->getId(), 'salesChannelName' => $salesChannel->getName(), 'language' => $languageId]
         );
 
         $stream = new OutputStream($writer, $export, $salesChannelContext);
-        $stream->open();
+        $stream->open($salesChannelContext);
         try {
             foreach ($generators as $generator) {
                 $generator->generate($export, $stream, $salesChannelContext);

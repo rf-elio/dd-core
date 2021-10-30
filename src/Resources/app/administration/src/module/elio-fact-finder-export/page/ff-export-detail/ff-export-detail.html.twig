@@ -102,6 +102,13 @@
                                             :options="languageIdsList"
                                             :label="$tc('ff-export.detail.labelLanguage')">
                                     </sw-field>
+                                    <sw-entity-multi-select
+                                            v-model="baseCategories"
+                                            required
+                                            entity-name="category"
+                                            :label="$tc('ff-export.detail.baseCategoryLabel')"
+                                            @change="changeBaseCategory"
+                                    />
                                 {% endblock %}
 
                             {% endblock %}

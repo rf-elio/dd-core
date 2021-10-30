@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Export\Writer;
 
 
 use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\ExportStorageService;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\FileNotFoundException;
@@ -63,12 +64,31 @@ abstract class BaseWriter
     /**
      * Opens a temporary file handle
      *
-     * @return false|resource
+     * @return resource
      */
-    public function open()
+    public function open(SalesChannelContext $context)
     {
         return tmpfile();
     }
+
+    /**
+     * @param resource $handle
+     * @param array $items
+     */
+    public function writeList($handle, array $items): void
+    {
+        foreach ($items as $item) {
+            $this->write($handle, $item);
+        }
+    }
+
+    /**
+     * Writes a single item
+     *
+     * @param resource $handle
+     * @param ExportItem $item
+     */
+    abstract protected function write($handle, ExportItem $item) : void;
 
     /**
      * Closes the file handle

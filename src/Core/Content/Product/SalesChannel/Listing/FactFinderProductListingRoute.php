@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
 
 
 use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
@@ -139,6 +140,11 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
             $productListingResponse, $criteria, $context
         );
         $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
+
+        /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
+        $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
+        $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+
         return new ProductListingRouteResponse($shopwareProductListingResult);
     }
 

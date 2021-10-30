@@ -32,15 +32,12 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\Generator\ProductExportGenerator;
-use Elio\FactFinder\Core\Export\Generator\SuggestExportGenerator;
+use Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator;
+use Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
-use Elio\FactFinder\Core\Export\Writer\XMLFileWriter;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -74,7 +71,7 @@ class ExportSetup
      */
     public function createExports(Context $context, ?array $types = null, string $format = null): void
     {
-        $exportTypes = $types ?? [ProductExportGenerator::TYPE, SuggestExportGenerator::TYPE];
+        $exportTypes = $types ?? [ProductExportGenerator::TYPE, CategoryExportGenerator::TYPE];
         $exportFormat = $format ?? CSVFileWriter::TYPE;
         $criteria = new Criteria();
         $criteria->addAssociation('languages');
@@ -95,6 +92,7 @@ class ExportSetup
                     if ($this->exportRepository->searchIds($criteria, $context)->getTotal() > 0) {
                         continue;
                     }
+
                     $exports[] = [
                         'id' => Uuid::randomHex(),
                         'name' => $salesChannel->getName() . '_' . $exportType . '_' . $exportFormat,
@@ -104,7 +102,8 @@ class ExportSetup
                         'interval' => '0 * * * *',
                         'salesChannelId' => $salesChannel->getId(),
                         'languageId' => $language->getId(),
-                        'mapping' => '[]'
+                        'mapping' => '[]',
+                        'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
                     ];
                 }
             }

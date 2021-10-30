@@ -33,6 +33,7 @@
 namespace Elio\FactFinder;
 
 use Elio\FactFinder\Core\Export\Setup\ExportSetup;
+use Elio\FactFinder\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -52,6 +53,35 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 class FactFinder extends Plugin
 {
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
+    public const CUSTOM_FIELDS = [
+        'FactFinderContentExportCategory' => [
+            'label' => [
+                'en-GB' => 'FactFinder content export',
+                'de-DE' => 'FactFinder Content Export'
+            ],
+            'fields' => [
+                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
+                    'type' => 'text',
+                    'componentName' => 'sw-field',
+                    'label' => [
+                        'en-GB' => 'Type'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
+                    'type' => 'bool',
+                    'componentName' => 'sw-field',
+                    'label' => [
+                        'en-GB' => 'Exclude in content export',
+                        'de-DE' => 'Aus dem Content Export ausschließen'
+                    ]
+                ]
+            ],
+            'relations' => ['category', 'landing_page']
+        ]
+    ];
+
     /**
      * Adds the additional service definitions
      *
@@ -73,8 +103,12 @@ class FactFinder extends Plugin
         if (!$this->isActive()) {
             return;
         }
+
         $setup = new ExportSetup($this->container);
         $setup->createExports($updateContext->getContext());
+
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install(self::CUSTOM_FIELDS);
     }
 
     /**
@@ -84,5 +118,8 @@ class FactFinder extends Plugin
     {
         $setup = new ExportSetup($this->container);
         $setup->createExports($activateContext->getContext());
+
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install(self::CUSTOM_FIELDS);
     }
 }

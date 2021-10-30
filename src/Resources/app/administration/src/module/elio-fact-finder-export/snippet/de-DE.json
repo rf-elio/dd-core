@@ -1,6 +1,6 @@
 {
   "ff-export": {
-    "title": "FactFinderExport",
+    "title": "Export",
     "description": "",
     "buttonSave": "Save",
     "buttonCancel": "Cancel",
@@ -17,6 +17,7 @@
       "helpTextInterval": "CRON-valid interval string example: 0 * * * *",
       "labelSalesChannel": "Sales Channel",
       "labelLanguage": "Language",
+      "baseCategoryLabel": "Base category",
       "labelExportCommand": "Export Command",
       "labelExportCommandForce": "Force",
       "labelDetails": "Details",

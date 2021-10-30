@@ -32,20 +32,23 @@
 
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
+use Elio\FactFinder\Core\Exception\FactFinderException;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\Core\Export\SeoRoute;
+use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class LandingPagePartialGenerator
@@ -60,20 +63,14 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
     public const TYPE = 'content';
     protected const EXPORT_TYPE = 'landingpage';
     private EntityRepositoryInterface $landingPageRepository;
-    private RouterInterface $router;
 
     /**
      * LandingPageGenerator constructor.
      * @param EntityRepositoryInterface $landingPageRepository
-     * @param RouterInterface $router
      */
-    public function __construct(
-        EntityRepositoryInterface $landingPageRepository,
-        RouterInterface $router
-    )
+    public function __construct(EntityRepositoryInterface $landingPageRepository)
     {
         $this->landingPageRepository = $landingPageRepository;
-        $this->router = $router;
     }
 
     public function supports(ExportEntity $export): bool
@@ -92,28 +89,32 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
     {
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannels');
+        $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('salesChannels.id', $context->getSalesChannelId()));
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.'.FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.'.FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+        ]));
         $landingPages = $this->landingPageRepository->search($criteria, $context->getContext());
 
         /** @var LandingPageEntity $landingPage */
         foreach ($landingPages as $landingPage) {
+            $type = ValueUtil::getCustomFieldValue(
+                $landingPage->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
+            ) ?? self::EXPORT_TYPE;
+
             $item = new ExportItem();
             $item->set(Defaults::FIELD_ID, $landingPage->getId());
-            $item->set(Defaults::FIELD_TYPE, self::EXPORT_TYPE);
+            $item->set(Defaults::FIELD_TYPE, $type);
             $item->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($landingPage->getName()));
             $item->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($landingPage->getMetaDescription()));
-            $item->set(
-                Defaults::FIELD_URL,
-                $this->router->generate(
-                    LandingPageSeoUrlRoute::ROUTE_NAME,
-                    ['landingPageId' => $landingPage->getId()],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                )
-            );
+            $item->set(Defaults::FIELD_URL, new SeoRoute(
+                LandingPageSeoUrlRoute::ROUTE_NAME, $landingPage->getId(), ['landingPageId' => $landingPage->getId()]
+            ));
             $item->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($landingPage->getKeywords()));
             $item->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($landingPage->getMetaDescription()));
             $item->set(Defaults::FIELD_IMAGE_URL, '');
-            $item->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($landingPage->getCreatedAt()->format('Y-m-d H:i:s')));
+            $item->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::formatDate($landingPage->getCreatedAt()));
             $item->set(Defaults::FIELD_PRIORITY, Defaults::DEFAULT_PRIORITY);
             $item->set(Defaults::FIELD_CONTENT_STRUCTURE, '');
             $output->write($item);

@@ -69,6 +69,7 @@ Shopware.Component.register('ff-export-detail', {
                 }
             ],
             languageIdsList: [],
+            categoryIdsList: [],
             salesChannelIdsList: [],
             ff_export_mappings: [],
             ff_export_mappings_newId: 0,
@@ -80,7 +81,8 @@ Shopware.Component.register('ff-export-detail', {
             },
             isGenerating: false,
             updateTimer: null,
-            updateInterval: 3000
+            updateInterval: 3000,
+            baseCategories: null
         };
     },
 
@@ -100,6 +102,9 @@ Shopware.Component.register('ff-export-detail', {
         },
         languageRepository() {
             return this.repositoryFactory.create('language');
+        },
+        categoryRepository() {
+            return this.repositoryFactory.create('category');
         },
         command() {
             if(!this.ff_export) {
@@ -151,10 +156,21 @@ Shopware.Component.register('ff-export-detail', {
                     if (currenExport == null) {
                         operator.$router.push({ name: 'elio.factfinder.export.list' });
                     }
+
                     operator.ff_export = currenExport;
                     operator.ff_export_mappings = operator.getMappings();
                     operator.ff_export_mappings_newId = operator.ff_export_mappings.length;
                     operator.isLoading = false;
+
+                    this.baseCategories = [];
+                    if(currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
+                        const criteria = new Criteria();
+                        criteria.setIds(currenExport.baseCategoryIds);
+
+                        return this.categoryRepository.search(criteria, Shopware.Context.api).then((categories) => {
+                            this.baseCategories = categories;
+                        });
+                    }
                 })
                 .catch((err) => {
                     console.log(err);
@@ -174,6 +190,15 @@ Shopware.Component.register('ff-export-detail', {
 
         saveFinish() {
             this.isSaveSuccessful = false;
+        },
+
+        /**
+         * Updates the base categories assigned to the export
+         * @param categories
+         */
+        changeBaseCategory(categories) {
+            this.ff_export.baseCategoryIds = categories.getIds();
+            this.baseCategories = categories;
         },
 
         onSave() {

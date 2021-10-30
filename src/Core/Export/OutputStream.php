@@ -53,6 +53,10 @@ class OutputStream
      * @var resource
      */
     private $fileHandle;
+    /**
+     * @var array<ExportItem>
+     */
+    private array $buffer = [];
 
     /**
      * OutputStream constructor.
@@ -70,9 +74,9 @@ class OutputStream
     /**
      * Initializes the output
      */
-    public function open() : void
+    public function open(SalesChannelContext $context) : void
     {
-        $this->fileHandle = $this->writer->open();
+        $this->fileHandle = $this->writer->open($context);
     }
 
     /**
@@ -82,7 +86,22 @@ class OutputStream
      */
     public function write(ExportItem $item) : void
     {
-        $this->writer->write($this->fileHandle, $item);
+        $this->buffer[] = $item;
+
+        if(count($this->buffer) > 100) {
+            $this->writeBuffer();
+        }
+    }
+
+    /**
+     * Submits the buffer
+     */
+    private function writeBuffer() : void
+    {
+        if(!empty($this->buffer)) {
+            $this->writer->writeList($this->fileHandle, $this->buffer);
+            $this->buffer = [];
+        }
     }
 
     /**
@@ -98,6 +117,7 @@ class OutputStream
      */
     public function close() : void
     {
+        $this->writeBuffer();
         $this->writer->close($this->export, $this->context, $this->fileHandle);
     }
 }
