@@ -1,0 +1,27 @@
+.elio-content-listing-entry
+{
+  margin-bottom: 30px;
+}
+.elio-content-listing-content
+{
+  padding-top:10px;
+  padding-bottom:20px;
+  .cart-item-img {
+    margin-bottom:15px;
+  }
+  .elio-content-listing-teaser-text
+  {
+    margin-bottom:20px;
+  }
+}
+@include media-breakpoint-up(md){
+  .elio-content-listing-content
+  {
+    padding-top:20px;
+    padding-bottom:30px;
+    .cart-item-img {
+      max-height: 200px;
+      margin-bottom:0;
+    }
+  }
+}

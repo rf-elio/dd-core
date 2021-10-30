@@ -135,6 +135,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'apiContentChannel', $languagePrefix) ?? '',
             $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
+            $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
@@ -158,6 +159,36 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $config[$languagePrefix . $value] ?? ''
         ) : explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
         return array_filter($valueList);
+    }
+
+    /**
+     * Converts a key value pair string into an associative array
+     * key:value|hello:world
+     * ->
+     * [
+     *      "key" => "value",
+     *      "hello" => "world"
+     * ]
+     *
+     * @param array $config
+     * @param string $value
+     * @param string $languagePrefix
+     * @return array
+     */
+    protected function prepareValueListWithKeyValuePair(array $config, string $value, string $languagePrefix) : array
+    {
+        $valueList = $this->prepareValueList($config, $value, $languagePrefix);
+        $keyValuePairs = [];
+
+        foreach ($valueList as $keyValuePair) {
+            $split = explode(':', $keyValuePair);
+
+            if(count($split) === 2) {
+                $keyValuePairs[$split[0]] = $split[1];
+            }
+        }
+
+        return $keyValuePairs;
     }
 
     /**

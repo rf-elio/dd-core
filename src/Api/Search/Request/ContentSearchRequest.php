@@ -30,55 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
-
-
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\Model\ModelInterface;
-use Swagger\Client\Model\Result;
+namespace Elio\FactFinder\Api\Search\Request;
 
 /**
- * Adds the pagination
- *
- * Class PagingTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * Class ContentSearchRequest
+ * @package Elio\FactFinder\Api\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class PagingTransformer implements ResponseTransformerInterface
+class ContentSearchRequest extends SearchRequest
 {
-    /**
-     * @inheritDoc
-     */
-    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
-    {
-        return $model instanceof Result;
-    }
 
-    /**
-     * @param ModelInterface $model
-     * @param ResponseCollection $responseCollection
-     * @param SalesChannelContext $context
-     * @param ApiRequest $request
-     */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
-    {
-        if(!$model instanceof Result) {
-            throw new InvalidTypeException($model, Result::class);
-        }
-
-        $paging = $model->getPaging();
-        $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
-        $responseCollection->set(ProductListingResponse::class, $listing);
-        $listing->setCurrentPage($paging->getCurrentPage());
-        $listing->setHitsPerPage($paging->getHitsPerPage());
-        $listing->setPageCount($paging->getPageCount());
-    }
 }

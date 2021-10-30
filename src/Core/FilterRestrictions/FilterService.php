@@ -33,7 +33,7 @@
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
@@ -101,7 +101,7 @@ class FilterService
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
         $context = $salesChannelContext->getContext();
-        $categoryId = $request instanceof NavigationRequest ? $request->getCategoryId() : null;
+        $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
         $filters = [null, null];
 
         $config = $this->configService->getByContext($salesChannelContext);

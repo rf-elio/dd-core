@@ -43,6 +43,8 @@ use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
 /**
+ * Throws an exception in case FactFinder timed out
+ *
  * Class TimeoutTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
@@ -55,7 +57,7 @@ class TimeoutTransformer implements ResponseTransformerInterface
     /**
      * @inheritDoc
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
         return $model instanceof Result;
     }

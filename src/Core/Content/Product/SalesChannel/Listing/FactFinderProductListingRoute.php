@@ -33,13 +33,13 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
 
 
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
@@ -63,7 +63,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private AbstractProductListingRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
-    private SearchRequestBuilder $searchRequestBuilder;
+    private ProductSearchRequestBuilder $searchRequestBuilder;
     private ProductListingResultTransformer $productListingResultTransformer;
     private EntityRepositoryInterface $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
@@ -71,7 +71,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     /**
      * FactFinderProductListingRoute constructor.
      * @param AbstractProductListingRoute $decorated
-     * @param SearchRequestBuilder $searchRequestBuilder
+     * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformer $productListingResultTransformer
@@ -79,13 +79,13 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
      */
     public function __construct(
-        AbstractProductListingRoute $decorated,
-        SearchRequestBuilder $searchRequestBuilder,
+        AbstractProductListingRoute      $decorated,
+        ProductSearchRequestBuilder      $searchRequestBuilder,
         FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi,
-        ProductListingResultTransformer $productListingResultTransformer,
-        EntityRepositoryInterface $categoryRepository,
-        CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
+        SearchApi                        $searchApi,
+        ProductListingResultTransformer  $productListingResultTransformer,
+        EntityRepositoryInterface        $categoryRepository,
+        CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder
     )
     {
         $this->decorated = $decorated;
@@ -122,9 +122,9 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         if(!$config->isActive() || !$config->isListingUseFactFinder()) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
-        /** @var NavigationRequest $navigationRequest */
+        /** @var NavigationRequestProduct $navigationRequest */
         $navigationRequest = $this->searchRequestBuilder->build(
-            $request, $criteria, $context, new NavigationRequest($config->getApiChannel())
+            $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
         );
         $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
 
@@ -151,11 +151,11 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     /**
      * Adds the path to the current category and the id to the ff api request to filter for that category.
      *
-     * @param NavigationRequest $navigationRequest
+     * @param NavigationRequestProduct $navigationRequest
      * @param string $categoryId
      * @param SalesChannelContext $context
      */
-    protected function addCurrentCategoryToNavigationRequest(NavigationRequest $navigationRequest, string $categoryId, SalesChannelContext $context): void
+    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, string $categoryId, SalesChannelContext $context): void
     {
         $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());

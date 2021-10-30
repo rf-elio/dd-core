@@ -89,7 +89,7 @@ class Transformer
 
         foreach ($this->responseTransformer as $responseTransformer) {
             try {
-                if ($responseTransformer->supports($model, $context)) {
+                if ($responseTransformer->supports($model, $request, $context)) {
                     $responseTransformer->transform($model, $collection, $context, $request);
                 }
             }

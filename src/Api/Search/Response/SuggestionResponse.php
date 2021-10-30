@@ -45,10 +45,17 @@ use Elio\FactFinder\Core\Suggest\SuggestItem;
  */
 class SuggestionResponse extends Response
 {
-    protected array $suggestions;
+    /**
+     * @var SuggestItem[][]
+     */
+    protected array $suggestions = [];
+    /**
+     * @var array<string>
+     */
+    protected array $typeLabels = [];
 
     /**
-     * @return SuggestItem[]
+     * @return SuggestItem[][]
      */
     public function getSuggestions(): array
     {
@@ -56,26 +63,17 @@ class SuggestionResponse extends Response
     }
 
     /**
-     * @param SuggestItem[] $suggestions
+     * @param SuggestItem $suggestion
      */
-    public function setSuggestions(array $suggestions): void
+    public function addSuggestions(SuggestItem $suggestion): void
     {
-        $this->suggestions = $suggestions;
-    }
+        $type = $suggestion->getType();
 
-    /**
-     * Returns array [ '%type%' => SuggestItem[] ]
-     * @return array
-     */
-    public function getGrouped(): array {
-        $result = [];
-
-        /** @var SuggestItem $suggestion */
-        foreach ($this->suggestions as $suggestion) {
-            $result[$suggestion->getType()][] = $suggestion;
+        if (!isset($this->suggestions[$type])) {
+            $this->suggestions[$type] = [];
         }
 
-        return $result;
+        $this->suggestions[$type][] = $suggestion;
     }
 
     /**
@@ -86,5 +84,24 @@ class SuggestionResponse extends Response
     public function isEmpty() : bool
     {
         return empty($this->suggestions);
+    }
+
+    /**
+     * @param string[] $typeLabels
+     */
+    public function setTypeLabels(array $typeLabels): void
+    {
+        $this->typeLabels = $typeLabels;
+    }
+
+    /**
+     * Returns the label for the given type or as fallback the label itself
+     *
+     * @param string $type
+     * @return string
+     */
+    public function getTypeLabel(string $type) : string
+    {
+        return $this->typeLabels[$type] ?? $type;
     }
 }

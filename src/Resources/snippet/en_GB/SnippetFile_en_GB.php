@@ -58,6 +58,6 @@ class SnippetFile_en_GB implements SnippetFileInterface
 
     public function isBase(): bool
     {
-        return false;
+        return true;
     }
 }

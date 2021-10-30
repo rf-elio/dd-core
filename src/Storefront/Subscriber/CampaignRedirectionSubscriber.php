@@ -5,6 +5,7 @@ namespace Elio\FactFinder\Storefront\Subscriber;
 
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Storefront\Exception\CampaignRedirectionException;
+use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
@@ -60,7 +61,28 @@ class CampaignRedirectionSubscriber implements EventSubscriberInterface
      */
     public function onNavigationPageLoadedEvent(NavigationPageLoadedEvent $event) : void
     {
+        $page = $event->getPage();
+        if(!$page->getCmsPage()) {
+            return;
+        }
 
+        foreach ($page->getCmsPage()->getSections() as $section) {
+            foreach ($section->getBlocks() as $block) {
+                foreach ($block->getSlots() as $slot) {
+                    $data = $slot->getData();
+                    if (!$data instanceof ProductListingStruct || !$data->getListing()) {
+                        continue;
+                    }
+
+                    /** @var CampaignRedirectionResponse|null $campaignRedirection */
+                    $campaignRedirection = $data->getListing()->getExtension(CampaignRedirectionResponse::class);
+
+                    if ($campaignRedirection) {
+                        throw new CampaignRedirectionException($campaignRedirection);
+                    }
+                }
+            }
+        }
     }
 
     /**

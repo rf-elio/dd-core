@@ -1,12 +1,8 @@
 # sw6-ElioFactFinder
 
 # Installation
-## Cron
+## Commands
 The following commands must be configured to execute required background tasks
-
-Commands:
-* `bin/console elio-ff:filters:sync`: synchronizing all filters to associated properties (Updating names for filters. Cleaning from old filters with deleted properties. Creating new filters for new properties).
-  * `propertyId` optional argument to sync only one property
 *  `bin/console elio-ff:export:generate`: Executes the exports. This should be executed every 5 Minutes.
 
 # Components
@@ -34,21 +30,63 @@ function onBotDetectionEvent(BotDetectionEvent $event) {
 change the detection state.
 
 ## Exports
-### Profiles
-todo
-
-### Extensions
-todo
-
 ### Usage
 Exports can be generated using the following console command. The command offers a way to automatically
-generate due exports or to enforce the generation of a specific or all exports.
+generate due exports or to enforce the generation of a specific or all exports. 
+
+Admin:
+New Export profiles can be configured in the shopware administration. To execute these exports the following commands
+must be used.
 
 Commands:
 *  `bin/console elio-ff:export:generate`: Generates all due exports
 *  `bin/console elio-ff:export:generate {id}`: Generates a specific export on due
 *  `bin/console elio-ff:export:generate -f`: Refreshes all exports (interval ignored)
 *  `bin/console elio-ff:export:generate {id} -f`: Refreshes a specific export (interval ignored)
+
+### Events
+@todo
+
+### Extensions
+#### Generator
+To add contents for suggest and content search provided by an additional plugin the generator must be registered with
+the tag "elio-ff.export.generator" to be executed during the export generation.
+
+The generator must implement the **ExportGeneratorInterface**. The suggested structure can be found below.
+
+```php
+
+class MyGenerator implements ExportGeneratorInterface
+{
+    public const TYPE = 'product';
+    public function supports(ExportEntity $export): bool
+    {
+        return $export->getType() === self::TYPE;
+    }
+    ...
+```
+
+Export generators will create for each item that should be added to the export a new **ExportItem** instance. 
+The **OutputStream** must be used to write the **ExportItem** to the export file.
+
+```php
+public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
+{
+    $item = new ExportItem();
+    $item->set('MyExportField', ...);
+    $output->write($item);
+}
+```
+
+To resolve rewrite urls **SeoRoute** can be used. A seo resolver is present in the writer chain. Don't resolve the paths
+in your own generator, the OutputStream is buffered and will resolve 100 path at once.
+
+```php
+$item->set('ProductURL', new SeoRoute(
+    ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
+));
+```
+
 
 ## Configuration Service
 The ff configuration service **FactFinderConfigService** should be used to access the ff plugin configuration at all

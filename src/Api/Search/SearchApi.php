@@ -35,7 +35,9 @@ namespace Elio\FactFinder\Api\Search;
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\ContentSearchRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
+use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -73,13 +75,13 @@ class SearchApi
     /**
      * Executes the ff search request
      *
-     * @param SearchRequest $searchRequest
+     * @param ProductSearchRequest $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function search(SearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
+    public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
         $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
@@ -94,13 +96,13 @@ class SearchApi
     }
 
     /**
-     * @param SearchRequest $searchRequest
+     * @param ContentSearchRequest $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function searchContent(SearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
+    public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
         $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
@@ -117,13 +119,13 @@ class SearchApi
     /**
      * Executes the ff navigation request
      *
-     * @param NavigationRequest $searchRequest
+     * @param NavigationRequestProduct $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function navigation(NavigationRequest $searchRequest, SalesChannelContext $context): ResponseCollection
+    public function navigation(NavigationRequestProduct $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
         $filters = $this->getNavigationFilters($searchRequest);
@@ -192,10 +194,10 @@ class SearchApi
     /**
      * Fetching filters from NavigationRequest
      *
-     * @param NavigationRequest $navigationRequest
+     * @param NavigationRequestProduct $navigationRequest
      * @return array
      */
-    protected function getNavigationFilters(NavigationRequest $navigationRequest): array
+    protected function getNavigationFilters(NavigationRequestProduct $navigationRequest): array
     {
         $filters = $this->getFilters($navigationRequest);
         if(!empty($navigationRequest->getCategoryPath())){

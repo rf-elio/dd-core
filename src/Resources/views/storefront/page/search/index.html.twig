@@ -1,0 +1,63 @@
+{% sw_extends '@Storefront/storefront/page/search/index.html.twig' %}
+
+{% block base_content %}
+    {% block page_search %}
+        <div class="cms-page search-page">
+            {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
+            {% if contentListingResponse is null or contentListingResponse.empty %}
+                {% block page_search_headline %}
+                    <h1 class="search-headline">
+                        {% block page_search_headline_text %}
+                            {{ "search.headline"|trans({
+                                '%count%': page.listing.total,
+                                '%searchTerm%': page.searchTerm,
+                            }) }}
+                        {% endblock %}
+                    </h1>
+                {% endblock %}
+                {% sw_include '@Storefront/storefront/page/search/search-pagelet.html.twig' with { page: page } %}
+            {% else %}
+                {% set hasProducts = page.listing.total > 0 %}
+
+                <div class="card card-tabs">
+                    <ul class="nav nav-tabs">
+                        {% if hasProducts %}
+                            <li class="nav-item active">
+                                <a data-toggle="pill"
+                                   class="nav-link product-detail-tab-navigation-link active"
+                                   href="#products">
+                                    {{ 'elioFactFinder.content-listing.tab-products-label'|trans|sw_sanitize }}
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for contentGroup in contentListingResponse.contentGroups %}
+                            <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
+                                <a data-toggle="pill"
+                                   class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
+                                   href="#{{ contentGroup.type }}">
+                                    {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="tab-content">
+                        {% if hasProducts %}
+                            <div id="products" class="tab-pane fade show active">
+                                {% sw_include '@Storefront/storefront/page/search/search-pagelet.html.twig' with { page: page } %}
+                            </div>
+                        {% endif %}
+
+                        {% for contentGroup in contentListingResponse.contentGroups %}
+                            <div id="{{ contentGroup.type }}" class="tab-pane fade {% if not hasProducts and loop.first %} show active{% endif %}">
+                                {% sw_include '@Storefront/storefront/component/content/listing.html.twig' with {
+                                    listing: contentGroup
+                                } %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+    {% endblock %}
+{% endblock %}

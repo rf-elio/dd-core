@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Export\Generator\Util;
 
 
 use DateTimeInterface;
+use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 
 /**
  * Class ValueUtil
@@ -97,7 +98,7 @@ class ValueUtil
      */
     public static function formatDate(DateTimeInterface $date) : string
     {
-        return $date->format('Y-m-d H:i:s');
+        return $date->format(ExportDefaults::DATE_TIME_FORMAT);
     }
 
     /**

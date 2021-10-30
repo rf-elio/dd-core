@@ -47,10 +47,11 @@ interface ResponseTransformerInterface
      * Checks if the given model is supported by the transformer
      *
      * @param ModelInterface $model
+     * @param ApiRequest $request
      * @param SalesChannelContext $context
      * @return bool
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context) : bool;
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context) : bool;
 
     /**
      * Transforms the model to an response that can used by ff plugin components

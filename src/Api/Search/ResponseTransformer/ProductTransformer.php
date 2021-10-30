@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -49,14 +50,14 @@ use Swagger\Client\Model\Result;
 use Swagger\Client\Model\SearchRecord;
 
 /**
- * Class ProductHandler
+ * Class ProductTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ProductHandler implements ResponseTransformerInterface
+class ProductTransformer implements ResponseTransformerInterface
 {
     private ProductListingLoader $listingLoader;
 
@@ -64,9 +65,7 @@ class ProductHandler implements ResponseTransformerInterface
      * ProductHandler constructor.
      * @param ProductListingLoader $listingLoader
      */
-    public function __construct(
-        ProductListingLoader $listingLoader
-    )
+    public function __construct(ProductListingLoader $listingLoader)
     {
         $this->listingLoader = $listingLoader;
     }
@@ -74,9 +73,9 @@ class ProductHandler implements ResponseTransformerInterface
     /**
      * @inheritDoc
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
-        return $model instanceof Result;
+        return $model instanceof Result && $request instanceof ProductSearchRequest;
     }
 
     /**
@@ -116,5 +115,11 @@ class ProductHandler implements ResponseTransformerInterface
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
         $listing->setProducts($products);
+
+        // total count must be corrected by the difference we have for the found products
+        $shouldCount = count($productNumbers);
+        $isCount = $products->count();
+        $difference = $shouldCount - $isCount;
+        $listing->setTotalHits($listing->getTotalHits() - $difference);
     }
 }

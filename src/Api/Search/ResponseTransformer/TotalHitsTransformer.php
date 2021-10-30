@@ -43,6 +43,8 @@ use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
 /**
+ * Adds the number of total hits to the result
+ *
  * Class TotalHitsTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
@@ -55,7 +57,7 @@ class TotalHitsTransformer implements ResponseTransformerInterface
     /**
      * @inheritDoc
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
         return $model instanceof Result;
     }
