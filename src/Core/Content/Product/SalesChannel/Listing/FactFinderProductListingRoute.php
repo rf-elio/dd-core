@@ -40,6 +40,7 @@ use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
@@ -67,6 +68,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private ProductListingResultTransformer $productListingResultTransformer;
     private EntityRepositoryInterface $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
+    private LoggerInterface $logger;
 
     /**
      * FactFinderProductListingRoute constructor.
@@ -77,6 +79,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param ProductListingResultTransformer $productListingResultTransformer
      * @param EntityRepositoryInterface $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
+     * @param LoggerInterface $logger
      */
     public function __construct(
         AbstractProductListingRoute      $decorated,
@@ -85,7 +88,8 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         SearchApi                        $searchApi,
         ProductListingResultTransformer  $productListingResultTransformer,
         EntityRepositoryInterface        $categoryRepository,
-        CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder
+        CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
+        LoggerInterface                  $logger
     )
     {
         $this->decorated = $decorated;
@@ -95,6 +99,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $this->productListingResultTransformer = $productListingResultTransformer;
         $this->categoryRepository = $categoryRepository;
         $this->categoryBreadcrumbBuilder = $categoryBreadcrumbBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -122,30 +127,36 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         if(!$config->isActive() || !$config->isListingUseFactFinder()) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
-        /** @var NavigationRequestProduct $navigationRequest */
-        $navigationRequest = $this->searchRequestBuilder->build(
-            $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
-        );
-        $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
 
-        $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
-        /** @var ProductListingResponse|null $productListingResponse */
-        $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+        try {
+            /** @var NavigationRequestProduct $navigationRequest */
+            $navigationRequest = $this->searchRequestBuilder->build(
+                $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
+            );
+            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
 
-        if(!$productListingResponse) {
+            $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
+            /** @var ProductListingResponse|null $productListingResponse */
+            $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+
+            if(!$productListingResponse) {
+                return $this->decorated->load($categoryId, $request, $context, $criteria);
+            }
+
+            $shopwareProductListingResult = $this->productListingResultTransformer->transform(
+                $productListingResponse, $criteria, $context
+            );
+            $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
+
+            /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
+            $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
+            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+
+            return new ProductListingRouteResponse($shopwareProductListingResult);
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage());
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
-
-        $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-            $productListingResponse, $criteria, $context
-        );
-        $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
-
-        /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
-        $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-        $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
-
-        return new ProductListingRouteResponse($shopwareProductListingResult);
     }
 
     /**

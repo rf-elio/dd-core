@@ -43,13 +43,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Plugin base. It create product export during plugin installation.
- *
  * Class FactFinder
  * @category  Bootstrap
  * @package   Shopware\Plugins\FactFinder
  * @author    Raoul Yemetio <ry@elio-systems.com>
- * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @author    Simon Greiner <sg@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
 class FactFinder extends Plugin
 {

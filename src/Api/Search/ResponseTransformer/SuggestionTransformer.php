@@ -35,9 +35,11 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
+use Elio\FactFinder\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -61,27 +63,31 @@ use Throwable;
  */
 class SuggestionTransformer implements ResponseTransformerInterface
 {
-    protected const TYPE_PRODUCT = 'productName';
-    protected const TYPE_CATEGORY = 'category';
+    public const TYPE_PRODUCT = 'productName';
+    public const TYPE_CATEGORY = 'category';
 
     private EntityRepositoryInterface $categoryRepository;
     private EntityRepositoryInterface $productRepository;
     private FactFinderConfigServiceInterface $configService;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * SuggestionTransformer constructor.
      * @param EntityRepositoryInterface $productRepository
      * @param EntityRepositoryInterface $categoryRepository
      * @param FactFinderConfigServiceInterface $configService
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         EntityRepositoryInterface $productRepository,
         EntityRepositoryInterface $categoryRepository,
-        FactFinderConfigServiceInterface $configService
+        FactFinderConfigServiceInterface $configService,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
         $this->configService = $configService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -114,7 +120,13 @@ class SuggestionTransformer implements ResponseTransformerInterface
 
         foreach ($model->getSuggestions() as $suggestion) {
             $suggestion = $this->transformSuggestion($suggestion, $context);
-            $suggestionResponse->addSuggestions($suggestion);
+
+            $event = new SuggestItemTransformEvent($suggestion, $model, $responseCollection, $request, $context);
+            $this->eventDispatcher->dispatch($event);
+
+            if(!$event->isRemoveSuggestItemFromResult()) {
+                $suggestionResponse->addSuggestions($suggestion);
+            }
         }
 
         $config = $this->configService->getByContext($context);
@@ -135,7 +147,9 @@ class SuggestionTransformer implements ResponseTransformerInterface
             $suggestItem->setImgUrl($suggestion->getImage());
         } else {
             $suggestItem->setImgUrl($this->getImgUrl(
-                $suggestion->getType(), $this->getId($suggestion->getType(), $suggestion), $context
+                $suggestion->getType(),
+                $this->getId($suggestion->getType(), $suggestion),
+                $context
             ));
         }
 
@@ -212,11 +226,11 @@ class SuggestionTransformer implements ResponseTransformerInterface
         /** @var array $attributes */
         $attributes = $suggestion->getAttributes();
 
-        if ($type === self::TYPE_PRODUCT) {
+        if ($type === self::TYPE_PRODUCT && isset($attributes['ProductID'][0])) {
             return $attributes['ProductID'][0];
         }
 
-        if ($type === self::TYPE_CATEGORY) {
+        if ($type === self::TYPE_CATEGORY && isset($attributes['CategoryID'][0])) {
             return $attributes['CategoryID'][0];
         }
 

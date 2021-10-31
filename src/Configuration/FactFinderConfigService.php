@@ -152,7 +152,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, string $value, string $languagePrefix)
+    protected function prepareValueList(array $config, string $value, string $languagePrefix): array|bool
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
@@ -198,7 +198,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return mixed
      */
-    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix): mixed
     {
         if (array_key_exists($languagePrefix . $key, $config)) {
             return $config[$languagePrefix . $key];
@@ -217,9 +217,9 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     {
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         return new Credentials(
-            $config['apiUrl'],
-            $config['apiUsername'],
-            $config['apiPassword'],
+            $config['apiUrl'] ?? '',
+            $config['apiUsername'] ?? '',
+            $config['apiPassword'] ?? '',
         );
     }
 

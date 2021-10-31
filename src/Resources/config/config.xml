@@ -58,7 +58,7 @@
             <name>active</name>
             <label>FACT-Finder active</label>
             <label lang="de-DE">FACT-Finder benutzen</label>
-            <defaultValue>true</defaultValue>
+            <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useAso</name>

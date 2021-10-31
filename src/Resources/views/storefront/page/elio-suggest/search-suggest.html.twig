@@ -27,7 +27,7 @@
                         {% for suggestion in suggestionType %}
                             <li class="search-suggest-product js-result">
                                 {% block layout_search_suggest_result_link %}
-                                    <a href="{{ suggestion.attributes[suggestionUrlPath] }}"
+                                    <a href="{{ suggestion.url }}"
                                        title="{{ suggestion.name }}"
                                        class="search-suggest-product-link">
                                         <div class="row align-items-center no-gutters">
