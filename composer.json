@@ -9,8 +9,7 @@
         }
     ],
     "require": {
-        "php": ">= 7.4",
-        "ext-json": "*",
+        "php": ">= 8.0",
         "elio/fact-finder-api-client": "dev-master",
         "dragonmantank/cron-expression": "^3.1"
     },

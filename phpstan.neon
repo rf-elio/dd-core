@@ -12,3 +12,6 @@ parameters:
         -
             message: '#expects string, null given#'
             path: src/Api/ApiClientFactory.php
+        -
+            message: '#expects array, Swagger\\Client\\Model\\map given#'
+            path: src/Api/Search/ResponseTransformer/ContentTransformer.php
