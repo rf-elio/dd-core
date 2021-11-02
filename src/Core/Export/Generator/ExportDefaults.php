@@ -44,4 +44,5 @@ namespace Elio\FactFinder\Core\Export\Generator;
 abstract class ExportDefaults
 {
     public const KEYWORD_SEPARATOR = ',';
+    public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 }

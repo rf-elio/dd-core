@@ -8,6 +8,15 @@
         },
         "listing": {
             "sorting": {}
+        },
+        "content-listing": {
+            "tab-products-label": "Produkte",
+            "content-item-open-label": "Öffnen",
+            "tabs": {
+                "landingpage": "Landingpages",
+                "category": "Kategorien",
+                "page": "Inhalte"
+            }
         }
     }
 }

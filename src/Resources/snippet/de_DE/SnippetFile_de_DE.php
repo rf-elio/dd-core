@@ -58,6 +58,6 @@ class SnippetFile_de_DE implements SnippetFileInterface
 
     public function isBase(): bool
     {
-        return false;
+        return true;
     }
 }

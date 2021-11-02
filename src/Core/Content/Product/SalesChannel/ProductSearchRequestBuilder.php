@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
 
+use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
@@ -43,14 +44,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class SearchRequestBuilder
+ * Class ProductSearchRequestBuilder
  * @package Elio\FactFinder\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SearchRequestBuilder
+class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
@@ -71,18 +72,18 @@ class SearchRequestBuilder
      * @param Request $request
      * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
-     * @param SearchRequest|null $searchRequest
-     * @return SearchRequest
+     * @param ProductSearchRequest|null $searchRequest
+     * @return ProductSearchRequest
      */
     public function build(
-        Request $request,
-        Criteria $criteria,
-        SalesChannelContext $salesChannelContext,
-        ?SearchRequest $searchRequest = null
-    ) : SearchRequest
+        Request               $request,
+        Criteria              $criteria,
+        SalesChannelContext   $salesChannelContext,
+        ?ProductSearchRequest $searchRequest = null
+    ) : ProductSearchRequest
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        $searchRequest = $searchRequest ?? new SearchRequest(
+        $searchRequest = $searchRequest ?? new ProductSearchRequest(
             $config->getApiChannel()
         );
 
@@ -102,9 +103,9 @@ class SearchRequestBuilder
      * Adds the current page to the search request
      *
      * @param array $payload
-     * @param SearchRequest $searchRequest
+     * @param ProductSearchRequest $searchRequest
      */
-    protected function addPage(array $payload, SearchRequest $searchRequest) : void
+    protected function addPage(array $payload, ProductSearchRequest $searchRequest) : void
     {
         if(!isset($payload[self::PARAM_PAGE]) || empty($payload[self::PARAM_PAGE])) {
             return;
@@ -118,9 +119,9 @@ class SearchRequestBuilder
     /**
      * Adds the applied sorting to the ff request
      * @param array $payload
-     * @param SearchRequest $searchRequest
+     * @param ProductSearchRequest $searchRequest
      */
-    protected function addSorting(array $payload, SearchRequest $searchRequest) : void
+    protected function addSorting(array $payload, ProductSearchRequest $searchRequest) : void
     {
         if(
             !isset($payload[self::PARAM_SORT]) ||
@@ -138,9 +139,9 @@ class SearchRequestBuilder
      * Adds the ff filter to the search request
      *
      * @param array $payload
-     * @param SearchRequest $searchRequest
+     * @param ProductSearchRequest $searchRequest
      */
-    protected function addFilters(array $payload, SearchRequest $searchRequest) : void
+    protected function addFilters(array $payload, ProductSearchRequest $searchRequest) : void
     {
          foreach ($payload as $key => $filterValues) {
              if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) !== 0) {

@@ -135,6 +135,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'apiContentChannel', $languagePrefix) ?? '',
             $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
+            $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
@@ -151,7 +152,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return false|string[]
      */
-    protected function prepareValueList(array $config, string $value, string $languagePrefix)
+    protected function prepareValueList(array $config, string $value, string $languagePrefix): array|bool
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
@@ -161,13 +162,43 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     }
 
     /**
+     * Converts a key value pair string into an associative array
+     * key:value|hello:world
+     * ->
+     * [
+     *      "key" => "value",
+     *      "hello" => "world"
+     * ]
+     *
+     * @param array $config
+     * @param string $value
+     * @param string $languagePrefix
+     * @return array
+     */
+    protected function prepareValueListWithKeyValuePair(array $config, string $value, string $languagePrefix) : array
+    {
+        $valueList = $this->prepareValueList($config, $value, $languagePrefix);
+        $keyValuePairs = [];
+
+        foreach ($valueList as $keyValuePair) {
+            $split = explode(':', $keyValuePair);
+
+            if(count($split) === 2) {
+                $keyValuePairs[$split[0]] = $split[1];
+            }
+        }
+
+        return $keyValuePairs;
+    }
+
+    /**
      * Returns plugin config for specified key with languagePrefix or default
      * @param array $config
      * @param string $key
      * @param string $languagePrefix
      * @return mixed
      */
-    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix): mixed
     {
         if (array_key_exists($languagePrefix . $key, $config)) {
             return $config[$languagePrefix . $key];
@@ -186,9 +217,9 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
     {
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         return new Credentials(
-            $config['apiUrl'],
-            $config['apiUsername'],
-            $config['apiPassword'],
+            $config['apiUrl'] ?? '',
+            $config['apiUsername'] ?? '',
+            $config['apiPassword'] ?? '',
         );
     }
 

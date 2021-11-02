@@ -35,20 +35,22 @@ namespace Elio\FactFinder\Core\Export\Generator\Content;
 
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\Core\Export\SeoRoute;
+use Elio\FactFinder\Core\Util\Tree\Node;
+use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
+use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
 
 /**
@@ -62,26 +64,65 @@ use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defau
 abstract class BaseCategoryExportGenerator
 {
     protected EntityRepositoryInterface $categoryRepository;
-    protected RouterInterface $router;
+    protected array $customFields = [];
 
     /**
      * CategoryExportGenerator constructor.
      * @param EntityRepositoryInterface $categoryRepository
-     * @param RouterInterface $router
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router)
+    public function __construct(EntityRepositoryInterface $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
-        $this->router = $router;
+    }
+
+    /**
+     * Creates a tree by all categories. The tree will be looped over to generate the custom field inheritance
+     *
+     * @param Context $context
+     */
+    protected function buildCustomFieldInheritance(Context $context): void
+    {
+        $criteria = new Criteria();
+        $categories = $this->categoryRepository->search($criteria, $context);
+        $tree = new RandomAddTree();
+
+        /** @var CategoryEntity $category */
+        foreach ($categories as $category) {
+            $tree->add($category->getId(), $category->getParentId(), $category);
+        }
+
+        $this->buildCustomFieldInheritanceByNodes($tree->create());
+    }
+
+    /**
+     * Loops over each category leven and inherits the custom fields to child categories
+     *
+     * @param Node[] $nodes
+     */
+    private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []) : void
+    {
+        foreach ($nodes as $node) {
+            /** @var CategoryEntity $category */
+            $category = $node->getValue();
+            $categoryCustomFields = $category->getCustomFields() ?? [];
+            $categoryCustomFields = array_filter($categoryCustomFields);
+            $categoryCustomFields = array_replace($inheritedCustomFields, $categoryCustomFields);
+            $this->customFields[$category->getId()] = $categoryCustomFields;
+            $this->buildCustomFieldInheritanceByNodes($node->getChildNodes(), $categoryCustomFields);
+        }
     }
 
     /**
      * @param array $categoryIds
      * @param SalesChannelContext $context
-     * @return EntitySearchResult<CategoryEntity>
+     * @return EntityCollection<CategoryEntity>
      */
-    protected function getCategories(array $categoryIds, SalesChannelContext $context): EntitySearchResult
+    protected function getCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
     {
+        if(empty($categoryIds)) {
+            return new EntityCollection([]);
+        }
+
         $criteria = $this->getCriteria($categoryIds);
         return $this->categoryRepository->search($criteria, $context->getContext());
     }
@@ -97,14 +138,10 @@ abstract class BaseCategoryExportGenerator
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
         $criteria->addAssociation('media');
-        //$criteria->addAssociation('cmsPage.sections');
-        //$criteria->addAssociation('cmsPage.sections.blocks');
-        //$criteria->addAssociation('cmsPage.sections.blocks.slots');
-        $criteria->addAssociation('cmsPage.sections.blocks.slots.translations');
 
         $categoryFilters = [];
         foreach ($categoryIds as $categoryId) {
-            $categoryFilters[] = new ContainsFilter('path', $categoryId);
+            $categoryFilters[] = new EqualsFilter('parentId', $categoryId);
         }
 
         $criteria->addFilter(new OrFilter($categoryFilters));
@@ -117,18 +154,37 @@ abstract class BaseCategoryExportGenerator
      * Loops over all given categories and calls the processCategory method. Child categories will be processed
      * recursively.
      *
-     * @param EntitySearchResult $categories
+     * @param EntityCollection $categories
      * @param ExportEntity $export
      * @param OutputStream $output
      * @param SalesChannelContext $context
      */
-    protected function processCategories(EntitySearchResult $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
+    protected function processCategories(EntityCollection $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
+        $categoryIds = [];
+
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
+            if(isset($this->customFields[$category->getId()])) {
+                $category->setCustomFields($this->customFields[$category->getId()]);
+            }
+
+            if(
+                isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+            ) {
+                continue;
+            }
+
+            $categoryIds[] = $category->getId();
             if($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
                 $output->write($item);
             }
+        }
+
+        $childCategories = $this->getCategories($categoryIds, $context);
+        if($childCategories->count() > 0) {
+            $this->processCategories($childCategories, $export, $output, $context);
         }
     }
 
@@ -156,25 +212,22 @@ abstract class BaseCategoryExportGenerator
      */
     protected function prepareExportItem(CategoryEntity $category, ExportItem $exportItem, string $type) : void
     {
+        $translated = $category->getTranslated();
         $exportItem->set(Defaults::FIELD_ID, $category->getId());
         $exportItem->set(Defaults::FIELD_TYPE, $type);
-        $exportItem->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName()));
-        $exportItem->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription()));
-        $exportItem->set(
-            Defaults::FIELD_URL,
-            $this->router->generate(
-                NavigationPageSeoUrlRoute::ROUTE_NAME,
-                ['navigationId' => $category->getId()],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            )
-        );
-        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords()));
-        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription()));
+        $exportItem->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName() ?? $translated['name']));
+        $exportItem->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription() ?? $translated['metaDescription']));
+        $exportItem->set(Defaults::FIELD_URL, new SeoRoute(
+            NavigationPageSeoUrlRoute::ROUTE_NAME, $category->getId(), ['navigationId' => $category->getId()]
+        ));
+        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords() ?? $translated['keywords']));
+        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription() ?? $translated['description']));
+        $exportItem->set(Defaults::FIELD_IMAGE_URL, '');
         if($category->getMedia()){
-            $exportItem->set('ImageUrl', ValueUtil::cleanValue($category->getMedia()->getUrl()));
+            $exportItem->set(Defaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
         }
-        $exportItem->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format('Y-m-d H:i:s')));
+        $exportItem->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
         $exportItem->set(Defaults::FIELD_PRIORITY, Defaults::DEFAULT_PRIORITY);
-        $exportItem->set(Defaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(join('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(Defaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
     }
 }

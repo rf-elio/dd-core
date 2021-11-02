@@ -58,11 +58,7 @@ class XMLFileWriter extends BaseWriter implements FileWriterInterface
         return $export->getFormat() === self::TYPE;
     }
 
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    public function write($handle, ExportItem $item): void
+    protected function write($handle, ExportItem $item): void
     {
         // TODO: Implement write() method.
     }

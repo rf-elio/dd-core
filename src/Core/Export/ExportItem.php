@@ -56,7 +56,7 @@ class ExportItem
      */
     public function set(string $key, $value): void
     {
-        if(strlen($value) > self::MAX_VALUE_LENGTH) {
+        if(is_string($value) && strlen($value) > self::MAX_VALUE_LENGTH) {
             $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
         }
 

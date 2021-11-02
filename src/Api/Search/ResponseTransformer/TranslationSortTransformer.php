@@ -46,6 +46,8 @@ use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
 /**
+ * Adds shopware's sorting translations
+ *
  * Class TranslationSortTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
@@ -75,7 +77,7 @@ class TranslationSortTransformer implements ResponseTransformerInterface
     /**
      * @inheritDoc
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
         return $model instanceof Result;
     }

@@ -33,12 +33,14 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
 
 
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
+use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
@@ -62,29 +64,32 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private AbstractProductListingRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
-    private SearchRequestBuilder $searchRequestBuilder;
+    private ProductSearchRequestBuilder $searchRequestBuilder;
     private ProductListingResultTransformer $productListingResultTransformer;
     private EntityRepositoryInterface $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
+    private LoggerInterface $logger;
 
     /**
      * FactFinderProductListingRoute constructor.
      * @param AbstractProductListingRoute $decorated
-     * @param SearchRequestBuilder $searchRequestBuilder
+     * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformer $productListingResultTransformer
      * @param EntityRepositoryInterface $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractProductListingRoute $decorated,
-        SearchRequestBuilder $searchRequestBuilder,
+        AbstractProductListingRoute      $decorated,
+        ProductSearchRequestBuilder      $searchRequestBuilder,
         FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi,
-        ProductListingResultTransformer $productListingResultTransformer,
-        EntityRepositoryInterface $categoryRepository,
-        CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
+        SearchApi                        $searchApi,
+        ProductListingResultTransformer  $productListingResultTransformer,
+        EntityRepositoryInterface        $categoryRepository,
+        CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
+        LoggerInterface                  $logger
     )
     {
         $this->decorated = $decorated;
@@ -94,6 +99,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $this->productListingResultTransformer = $productListingResultTransformer;
         $this->categoryRepository = $categoryRepository;
         $this->categoryBreadcrumbBuilder = $categoryBreadcrumbBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -121,35 +127,46 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         if(!$config->isActive() || !$config->isListingUseFactFinder()) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
-        /** @var NavigationRequest $navigationRequest */
-        $navigationRequest = $this->searchRequestBuilder->build(
-            $request, $criteria, $context, new NavigationRequest($config->getApiChannel())
-        );
-        $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
 
-        $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
-        /** @var ProductListingResponse|null $productListingResponse */
-        $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+        try {
+            /** @var NavigationRequestProduct $navigationRequest */
+            $navigationRequest = $this->searchRequestBuilder->build(
+                $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
+            );
+            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
 
-        if(!$productListingResponse) {
+            $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
+            /** @var ProductListingResponse|null $productListingResponse */
+            $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+
+            if(!$productListingResponse) {
+                return $this->decorated->load($categoryId, $request, $context, $criteria);
+            }
+
+            $shopwareProductListingResult = $this->productListingResultTransformer->transform(
+                $productListingResponse, $criteria, $context
+            );
+            $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
+
+            /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
+            $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
+            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+
+            return new ProductListingRouteResponse($shopwareProductListingResult);
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage());
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
-
-        $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-            $productListingResponse, $criteria, $context
-        );
-        $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
-        return new ProductListingRouteResponse($shopwareProductListingResult);
     }
 
     /**
      * Adds the path to the current category and the id to the ff api request to filter for that category.
      *
-     * @param NavigationRequest $navigationRequest
+     * @param NavigationRequestProduct $navigationRequest
      * @param string $categoryId
      * @param SalesChannelContext $context
      */
-    protected function addCurrentCategoryToNavigationRequest(NavigationRequest $navigationRequest, string $categoryId, SalesChannelContext $context): void
+    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, string $categoryId, SalesChannelContext $context): void
     {
         $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());

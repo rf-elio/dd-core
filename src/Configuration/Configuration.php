@@ -80,6 +80,7 @@ class Configuration extends Struct
     private bool $restrictionsOverridingTopToDown;
     private string $apiContentChannel;
     private bool $searchUseContentChannel;
+    private array $suggestTypeLabels;
 
     /**
      * Configuration constructor.
@@ -106,6 +107,7 @@ class Configuration extends Struct
      * @param bool $restrictionsOverridingTopToDown
      * @param string $apiContentChannel
      * @param bool $searchUseContentChannel
+     * @param array $suggestTypeLabels
      */
     public function __construct(
         bool $active,
@@ -130,7 +132,8 @@ class Configuration extends Struct
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown,
         string $apiContentChannel,
-        bool $searchUseContentChannel
+        bool $searchUseContentChannel,
+        array $suggestTypeLabels
     )
     {
         $this->useAso = $useAso;
@@ -156,6 +159,7 @@ class Configuration extends Struct
         $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
         $this->apiContentChannel = $apiContentChannel;
         $this->searchUseContentChannel = $searchUseContentChannel;
+        $this->suggestTypeLabels = $suggestTypeLabels;
     }
 
     /**
@@ -349,5 +353,13 @@ class Configuration extends Struct
     public function isSearchUseContentChannel(): bool
     {
         return $this->searchUseContentChannel;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSuggestTypeLabels(): array
+    {
+        return $this->suggestTypeLabels;
     }
 }

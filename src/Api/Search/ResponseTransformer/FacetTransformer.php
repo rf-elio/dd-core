@@ -35,8 +35,8 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\NavigationRequest;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
+use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
@@ -49,7 +49,6 @@ use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\Facet;
@@ -58,6 +57,8 @@ use Swagger\Client\Model\Result;
 use Elio\FactFinder\Core\FilterRestrictions\FilterService;
 
 /**
+ * Converts the facets to shopware facets
+ *
  * Class FacetTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
@@ -82,7 +83,7 @@ class FacetTransformer implements ResponseTransformerInterface
     /**
      * @inheritDoc
      */
-    public function supports(ModelInterface $model, SalesChannelContext $context): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
         return $model instanceof Result;
     }
@@ -104,9 +105,9 @@ class FacetTransformer implements ResponseTransformerInterface
         }
 
         $level = FilterService::LEVEL_GLOBAL;
-        if ($request instanceof NavigationRequest) {
+        if ($request instanceof NavigationRequestProduct) {
             $level = FilterService::LEVEL_CATEGORY;
-        } else if ($request instanceof SearchRequest) {
+        } else if ($request instanceof ProductSearchRequest) {
             $level = FilterService::LEVEL_SEARCH;
         }
 

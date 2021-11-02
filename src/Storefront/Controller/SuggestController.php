@@ -36,7 +36,6 @@ use Elio\FactFinder\Api\Search\Request\SuggestRequest;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Search\SuggestApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Configuration\LanguageHelper;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -85,6 +84,8 @@ class SuggestController extends SearchController
     }
 
     /**
+     * Replaces the shopware suggestions with ff suggestions in the case this feature is activated
+     *
      * @param SalesChannelContext $context
      * @param Request $request
      * @return Response
@@ -94,7 +95,7 @@ class SuggestController extends SearchController
     public function suggest(SalesChannelContext $context, Request $request): Response
     {
         $config = $this->configService->getByContext($context);
-        if (!$config->isSuggestUseFactFinder()) {
+        if (!$config->isActive() || !$config->isSuggestUseFactFinder()) {
             return parent::suggest($context, $request);
         }
 
@@ -111,7 +112,7 @@ class SuggestController extends SearchController
 
         return $this->renderStorefront(
             '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
-            ['response' => $suggestionResponse->getGrouped()]
+            ['response' => $suggestionResponse]
         );
     }
 }

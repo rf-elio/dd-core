@@ -41,7 +41,7 @@ namespace Elio\FactFinder\Api\Search\Request;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class NavigationRequest extends SearchRequest
+class NavigationRequestProduct extends ProductSearchRequest
 {
     protected string $categoryPath = '';
     protected string $categoryId = '';

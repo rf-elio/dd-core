@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `elio_ff_export` (
     `language_id` BINARY(16) NOT NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
+    `base_category_ids` json NULL,
     PRIMARY KEY (`id`),
     KEY `fk.elio_ff_export.sales_channel_id` (`sales_channel_id`),
     KEY `fk.elio_ff_export.language_id` (`language_id`),

@@ -32,17 +32,19 @@
 
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Search;
 
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\FactFinder\Api\Search\Response\ContentListingResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\SearchRequestBuilder;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -57,32 +59,40 @@ use Throwable;
 class FactFinderSearchRoute extends AbstractProductSearchRoute
 {
     private AbstractProductSearchRoute $decorated;
-    private SearchRequestBuilder $searchRequestBuilder;
+    private ProductSearchRequestBuilder $productSearchRequestBuilder;
+    private ContentSearchRequestBuilder $contentSearchRequestBuilder;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
     private ProductListingResultTransformer $productListingResultTransformer;
+    private LoggerInterface $logger;
 
     /**
      * FactFinderSearchRoute constructor.
      * @param AbstractProductSearchRoute $decorated
-     * @param SearchRequestBuilder $searchRequestBuilder
+     * @param ProductSearchRequestBuilder $productSearchRequestBuilder
+     * @param ContentSearchRequestBuilder $contentSearchRequestBuilder
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformer $productListingResultTransformer
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractProductSearchRoute $decorated,
-        SearchRequestBuilder $searchRequestBuilder,
+        AbstractProductSearchRoute       $decorated,
+        ProductSearchRequestBuilder      $productSearchRequestBuilder,
+        ContentSearchRequestBuilder      $contentSearchRequestBuilder,
         FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi,
-        ProductListingResultTransformer $productListingResultTransformer
+        SearchApi                        $searchApi,
+        ProductListingResultTransformer  $productListingResultTransformer,
+        LoggerInterface                  $logger
     )
     {
         $this->decorated = $decorated;
-        $this->searchRequestBuilder = $searchRequestBuilder;
+        $this->productSearchRequestBuilder = $productSearchRequestBuilder;
+        $this->contentSearchRequestBuilder = $contentSearchRequestBuilder;
         $this->configService = $configService;
         $this->searchApi = $searchApi;
         $this->productListingResultTransformer = $productListingResultTransformer;
+        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractProductSearchRoute
@@ -94,7 +104,6 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
      * Replaces the shopware search by ff search
      *
      * @throws Throwable
-     * @throws ApiException
      */
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSearchRouteResponse
     {
@@ -103,32 +112,43 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             return $this->getDecorated()->load($request, $context, $criteria);
         }
 
-        $searchRequest = $this->searchRequestBuilder->build($request, $criteria, $context);
-        $resultCollection = $this->searchApi->search($searchRequest, $context);
-        /** @var ProductListingResponse|null $productListingResponse */
-        $productListingResponse = $resultCollection->get(ProductListingResponse::class);
+        try {
+            $searchRequest = $this->productSearchRequestBuilder->build($request, $criteria, $context);
+            $resultCollection = $this->searchApi->search($searchRequest, $context);
+            /** @var ProductListingResponse|null $productListingResponse */
+            $productListingResponse = $resultCollection->get(ProductListingResponse::class);
 
-        if(!$productListingResponse) {
+            if (!$productListingResponse) {
+                return $this->getDecorated()->load($request, $context, $criteria);
+            }
+
+            $shopwareProductListingResult = $this->productListingResultTransformer->transform(
+                $productListingResponse, $criteria, $context
+            );
+            $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
+
+            /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
+            $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
+            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+
+            try {
+                if ($config->isSearchUseContentChannel()) {
+                    $contentSearchRequest = $this->contentSearchRequestBuilder->build($request, $context);
+                    $contentSearchRequest->setQuery('*');
+                    $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);
+                    /** @var ContentListingResponse|null $contentListingResponse */
+                    $contentListingResponse = $resultCollection->get(ContentListingResponse::class);
+                    $shopwareProductListingResult->addExtension(ContentListingResponse::class, $contentListingResponse);
+                }
+            } catch (Throwable $e) {
+                $this->logger->error($e->getMessage());
+            }
+
+            return new ProductSearchRouteResponse($shopwareProductListingResult);
+        }
+        catch (Throwable $e) {
+            $this->logger->error($e->getMessage());
             return $this->getDecorated()->load($request, $context, $criteria);
         }
-
-        $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-            $productListingResponse, $criteria, $context
-        );
-        $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
-
-
-        if($config->isSearchUseContentChannel()) {
-            $contentSearchRequest = new SearchRequest($config->getApiContentChannel());
-            $contentSearchRequest = $this->searchRequestBuilder->build(
-                $request, $criteria, $context, $contentSearchRequest
-            );
-            $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);
-
-            echo '<pre>'; var_dump($resultCollection); die();
-        }
-
-
-        return new ProductSearchRouteResponse($shopwareProductListingResult);
     }
 }

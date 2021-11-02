@@ -54,13 +54,13 @@ interface FileWriterInterface
      * Opens a new file handle that is used to write the export in
      * @return resource
      */
-    public function open();
+    public function open(SalesChannelContext $context);
 
     /**
      * @param resource $handle
-     * @param ExportItem $item
+     * @param ExportItem[] $items
      */
-    public function write($handle, ExportItem $item) : void;
+    public function writeList($handle, array $items) : void;
 
     /**
      * Closes the export and finalizes the file
@@ -74,8 +74,8 @@ interface FileWriterInterface
 
     /**
      * Abort the write process because of an error
-     * @param resource $fileHandle
+     * @param resource $handle
      * @return void
      */
-    public function abort($fileHandle) : void;
+    public function abort($handle) : void;
 }

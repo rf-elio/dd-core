@@ -32,7 +32,6 @@
 
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
-use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
@@ -40,13 +39,11 @@ use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class CategoryExportGenerator
@@ -62,20 +59,6 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator implements Exp
     public const TYPE = 'content';
     protected const EXPORT_TYPE_CATEGORY = 'category';
     protected const EXPORT_TYPE_PAGE = 'page';
-    protected const SLOT_CONFIG_MAX_LENGTH = 255;
-    private SystemConfigService $systemConfigService;
-
-    /**
-     * CategoryExportGenerator constructor.
-     * @param EntityRepositoryInterface $categoryRepository
-     * @param RouterInterface $router
-     * @param SystemConfigService $systemConfigService
-     */
-    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router, SystemConfigService $systemConfigService)
-    {
-        parent::__construct($categoryRepository, $router);
-        $this->systemConfigService = $systemConfigService;
-    }
 
     /**
      * Checks if the generator can be used for the given export
@@ -96,9 +79,8 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator implements Exp
      */
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
-        // @todo: move this in export configuration
-        $ids = $this->systemConfigService->get(FactFinderConfigService::PLUGIN_CONFIG_PREFIX.'.categoriesToExport', $context->getSalesChannelId());
-        $categories = $this->getCategories($ids, $context);
+        $this->buildCustomFieldInheritance($context->getContext());
+        $categories = $this->getCategories($export->getBaseCategoryIds(), $context);
         $this->processCategories($categories, $export, $output, $context);
     }
 
@@ -129,13 +111,18 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator implements Exp
             $productInformation = $this->assembleProductInformation($category->getProducts());
         }
 
-        $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_CMS;
-        $description = $category->getDescription();
+        $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_PAGE;
+        $description = $category->getDescription() ?? $category->getTranslated()['description'];
 
         if($type === 'product_list' || !empty($productInformation)) {
             $type = self::EXPORT_TYPE_CATEGORY;
-            $description = $category->getDescription() . ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+            $description .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+            $description = ltrim($description, ExportDefaults::KEYWORD_SEPARATOR);
         }
+
+        $type = ValueUtil::getCustomFieldValue(
+            $category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
+        ) ?? $type;
 
         $this->prepareExportItem($category, $exportItem, $type);
         $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($description));

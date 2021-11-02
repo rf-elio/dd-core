@@ -2,7 +2,16 @@
     <div class="search-suggest e-search-suggest js-search-result">
         {% block elio_search_suggest_container %}
             <div class="d-flex flex-md-row flex-wrap search-suggest-container">
-                {% for type, suggestionType in response %}
+                {% if response.empty %}
+                <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+                    {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                        type: "warning",
+                        content: "Zu Ihrer Suche wurden leider keine Suchergebnisse gefunden"
+                    } %}
+                </ul>
+                {% endif %}
+
+                {% for type, suggestionType in response.suggestions %}
                     {% set suggestionUrlPath = '' %}
                     {% if type == 'productName' %}
                         {% set suggestionUrlPath = 'ProductURL' %}
@@ -11,11 +20,14 @@
                     {% endif %}
 
                     <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
-                        <div class="elio-suggest-block-header text-capitalize">{{ type }}</div>
+                        <div class="elio-suggest-block-header text-capitalize">
+                           {{ response.getTypeLabel(type) }}
+                        </div>
+
                         {% for suggestion in suggestionType %}
                             <li class="search-suggest-product js-result">
                                 {% block layout_search_suggest_result_link %}
-                                    <a href="{{ suggestion.attributes[suggestionUrlPath] }}"
+                                    <a href="{{ suggestion.url }}"
                                        title="{{ suggestion.name }}"
                                        class="search-suggest-product-link">
                                         <div class="row align-items-center no-gutters">

@@ -59,7 +59,7 @@ class ExportGenerateHandler extends AbstractMessageHandler
     /**
      * Starts the export
      *
-     * @param $message
+     * @param object $message
      * @throws Exception
      */
     public function handle($message): void

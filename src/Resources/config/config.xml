@@ -58,7 +58,7 @@
             <name>active</name>
             <label>FACT-Finder active</label>
             <label lang="de-DE">FACT-Finder benutzen</label>
-            <defaultValue>true</defaultValue>
+            <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useAso</name>
@@ -94,11 +94,24 @@
             <label lang="de-DE">Inhalte aus dem Inhalts-Channel auf der Suchergebnisseite anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+    </card>
+    <card>
+        <title>Suggest configuration</title>
+        <title lang="de-DE">Suggest-Einstellungen</title>
         <input-field type="bool">
             <name>suggestUseFactFinder</name>
             <label>Replace shopware suggest by FACTFinder suggest</label>
             <label lang="de-DE">Shopware Suggest durch den FACTFinder-Suggest ersetzten</label>
             <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="text">
+            <name>suggestTypeLabels</name>
+            <label>Labels for Suggest types</label>
+            <label lang="de-DE">Label für die Suggest-Typen</label>
+            <placeholder>type:Label|product:Product</placeholder>
+            <helpText>Labels for suggest type labels: type:Label|product:Product</helpText>
+            <helpText lang="de-DE">Label für Suggest-Typ Label: typ:Label|product:Produkt</helpText>
         </input-field>
     </card>
     <card>
@@ -337,14 +350,5 @@
             <defaultValue>false</defaultValue>
             <helpText>Activates the swagger api client debugging. Symfony's default log location (/var/log) will be used.</helpText>
         </input-field>
-    </card>
-    <card>
-        <title>Content Export</title>
-        <title lang="de-DE">Content Export</title>
-        <component name="sw-entity-multi-id-select">
-            <name>categoriesToExport</name>
-            <entity>category</entity>
-            <label>Choose categories to Export</label>
-        </component>
     </card>
 </config>

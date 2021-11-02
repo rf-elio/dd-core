@@ -1,0 +1,49 @@
+{% block component_content_item_box %}
+<div class="elio-content-listing-entry col-12">
+    <div class="row border justify-content-md-center">
+        <div class="col-12 elio-content-listing-content">
+            <div class="row">
+                <div class="col-12">
+                    {% block component_content_item_box_name %}
+                        <h3>{{ item.title }}</h3>
+                    {% endblock %}
+                    {% block component_content_item_box_date %}
+                        <div class="col-12 col-md-5 ">
+                            {% block component_elio_blog_box_datetime %}
+                                {{ item.publicationDate|format_datetime('medium', 'none',
+                                    locale=page.header.activeLanguage.translationCode.code) }}
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+            <hr>
+            <div class="row mt-3">
+                {% if item.hasImageUrl %}
+                <div class="col-12 col-sm-6 col-md-4">
+                    {% block component_content_item_box_image %}
+                        <img src="{{ item.imageUrl }}"  alt="{{ item.title|striptags }}"/>
+                    {% endblock %}
+                </div>
+                {% endif %}
+                <div class="col-12 col-md">
+                    <div class="row h-100">
+                        <div class="col-12 ">
+                            {% block component_content_item_box_description %}
+                                <div class="elio-content-listing-teaser-text">{{ item.description }}</div>
+                            {% endblock %}
+                        </div>
+                        <div class="col align-self-end">
+                            {% block component_content_item_box_url %}
+                                <a class="btn btn-success" href="{{ item.url }}">
+                                    {{ 'elioFactFinder.content-listing.content-item-open-label'|trans|sw_sanitize }}
+                                </a>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

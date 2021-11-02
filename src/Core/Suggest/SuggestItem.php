@@ -68,6 +68,11 @@ class SuggestItem
     protected float $score;
 
     /**
+     * @var string
+     */
+    protected string $url = '';
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -145,6 +150,22 @@ class SuggestItem
     public function setImgUrl(string $imgUrl): void
     {
         $this->imgUrl = $imgUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
     }
 
 }
