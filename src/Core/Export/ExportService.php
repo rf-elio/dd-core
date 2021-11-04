@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\Export;
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 use Cron\CronExpression;
+use Cron\FieldFactory;
 use DateTime;
 use Elio\FactFinder\Core\Export\Exception\ExportNotSupportedException;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
@@ -186,7 +187,7 @@ class ExportService
             $this->logger->error($ex->getMessage());
         }
 
-        $cron = new CronExpression($export->getInterval());
+        $cron = new CronExpression($export->getInterval(), new FieldFactory());
         $this->exportRepository->update([[
             'id' => $export->getId(),
             'lastGenerationFinishedAt' => new DateTime(),

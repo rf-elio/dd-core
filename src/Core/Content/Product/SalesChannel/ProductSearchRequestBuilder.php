@@ -160,6 +160,19 @@ class ProductSearchRequestBuilder
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, json_encode([(float)$min, (float)$max]));
                  }
+             }elseif (strpos($key, 'tree') !== false){
+                 $filterValues = explode('|', $filterValues);
+                 $filters = [];
+                 foreach ($filterValues as $filterValue) {
+                     [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
+                     if(!array_key_exists($name, $filters)){
+                         $filters[$name] = [];
+                     }
+                     $filters[$name][] = $value;
+                 }
+                 foreach ($filters as $filtername => $filter){
+                     $searchRequest->addFilter($filtername, $filter);
+                 }
              }
          }
     }
