@@ -14,7 +14,6 @@ export default class TrackingPlugin extends Plugin {
         updatePathAttribute: 'data-elio-ff-path'
     };
     init() {
-        console.log('TrackingPlugin initializes')
         this._client = new HttpClient()
         this._path = this.el.getAttribute(this.options.updatePathAttribute);
         if(this._path.length > 0) {
@@ -27,7 +26,6 @@ export default class TrackingPlugin extends Plugin {
             this._trackingPage = this.el.getAttribute(this.options.pagePathAttribute);
             this._trackingPageSize = this.el.getAttribute(this.options.pageSizePathAttribute);
             this._trackingCampaign = this.el.getAttribute(this.options.campaignPathAttribute);
-            console.log(this._path)
             this._registerEvents()
         }
     }

@@ -1,0 +1,38 @@
+{% block layout_navigation_categories %}
+    {% set navigationMaxDepth = 10 %}
+
+    {% if not level %}
+        {% set level = 0 %}
+    {% endif %}
+    {% if not activeParent %}
+        {% set activeParent = 0 %}
+    {% endif %}
+
+    {% block layout_navigation_categories_list %}
+        <ul class="category-navigation level-{{ level }}">
+            {% for item in navigationTree %}
+                {% block layout_navigation_categories_list_entry %}
+                    {% set hidden = (item.category.id not in activeResult.id) and (item.category.id not in activeResult.path) %}
+                    {% block layout_navigation_categories_link_children %}
+                        <li class="filter-multi-select-list-item filter-property-select-list-item" {% if hidden and not activeParent %}hidden{% endif %}>
+                            {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select-list-item.html.twig' with {
+                                element: item
+                            } %}
+                        </li>
+                    {% endblock %}
+
+                    {% block layout_navigation_categories_recoursion %}
+                        {% if level < navigationMaxDepth %}
+                            {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-navigation.html.twig' with {
+                                navigationTree: item.children,
+                                activeResult: activeResult,
+                                level: level + 1,
+                                activeParent: not hidden
+                            } only %}
+                        {% endif %}
+                    {% endblock %}
+                {% endblock %}
+            {% endfor %}
+        </ul>
+    {% endblock %}
+{% endblock %}
