@@ -1,8 +1,8 @@
 import template from './ff-export-detail.html.twig';
 import './ff-export-detail.scss';
 
-const { Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
+const {Mixin} = Shopware;
+const {Criteria} = Shopware.Data;
 
 Shopware.Component.register('ff-export-detail', {
     template: template,
@@ -107,7 +107,7 @@ Shopware.Component.register('ff-export-detail', {
             return this.repositoryFactory.create('category');
         },
         command() {
-            if(!this.ff_export) {
+            if (!this.ff_export) {
                 return '...';
             }
 
@@ -154,7 +154,7 @@ Shopware.Component.register('ff-export-detail', {
             this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
                 .then((currenExport) => {
                     if (currenExport == null) {
-                        operator.$router.push({ name: 'elio.factfinder.export.list' });
+                        operator.$router.push({name: 'elio.factfinder.export.list'});
                     }
 
                     operator.ff_export = currenExport;
@@ -163,7 +163,7 @@ Shopware.Component.register('ff-export-detail', {
                     operator.isLoading = false;
 
                     this.baseCategories = [];
-                    if(currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
+                    if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
                         const criteria = new Criteria();
                         criteria.setIds(currenExport.baseCategoryIds);
 
@@ -175,7 +175,7 @@ Shopware.Component.register('ff-export-detail', {
                 .catch((err) => {
                     console.log(err);
                     operator.isLoading = false;
-                    operator.$router.push({ name: 'elio.factfinder.export.list' });
+                    operator.$router.push({name: 'elio.factfinder.export.list'});
                 });
         },
 
@@ -224,7 +224,7 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         onCancel() {
-            this.$router.push({ name: 'elio.factfinder.export.list' });
+            this.$router.push({name: 'elio.factfinder.export.list'});
         },
 
         onAddNewMapping() {
@@ -275,7 +275,8 @@ Shopware.Component.register('ff-export-detail', {
             var mappings = [];
             try {
                 mappings = JSON.parse(this.ff_export.mapping);
-            } catch (err) {}
+            } catch (err) {
+            }
             var i = 0;
             mappings.forEach((mapping) => {
                 result.push(
@@ -303,20 +304,25 @@ Shopware.Component.register('ff-export-detail', {
         onGenerate() {
             var operator = this;
 
-            this.updateTimer = setTimeout(function requestStatus(){
-                console.log('trying update status for export:' + operator.exportId);
+            this.updateTimer = setTimeout(function requestStatus() {
                 operator.updateStatus();
                 if (operator.status.exists === true) {
-                    clearTimeout(operator.updateTimer)
+                    clearTimeout(operator.updateTimer);
                     operator.isGenerating = false;
+                    operator.createNotificationSuccess({
+                        title: operator.$tc('global.default.success'),
+                        message: operator.$tc('ff-export.detail.messageGeneratingSuccess')
+                    });
+                    operator.loadEntityData();
                 } else {
-                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval || 3000);
                 }
-            }, operator.updateInterval||3000);
+            }, operator.updateInterval || 3000);
 
             this.isGenerating = true;
             this.ffExport.generate(this.exportId).then((responce) => {
                 console.log(responce);
+                operator.ff_export.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
                 operator.createNotificationError({
                     message: this.$tc('ff-export.detail.messageGeneratingError', 0, {
@@ -325,6 +331,16 @@ Shopware.Component.register('ff-export-detail', {
                 });
                 operator.isGenerating = false;
             });
+        },
+
+        formatDate(dateToFormat) {
+            var dt = new Date(dateToFormat);
+
+            var result = ('0' + dt.getUTCDate()).slice(-2) + '-' + ('0' + dt.getUTCMonth() + 1).slice(-2) + '-' + dt.getUTCFullYear() + ' '
+                + ('0' + dt.getUTCHours()).slice(-2) + ':' + ('0' + dt.getUTCMinutes()).slice(-2)
+                + ':' + ('0' + dt.getUTCSeconds()).slice(-2) + '.' + ('00' + dt.getUTCMilliseconds()).slice(-3) + ' (UTC)';
+
+            return result;
         }
     }
 });

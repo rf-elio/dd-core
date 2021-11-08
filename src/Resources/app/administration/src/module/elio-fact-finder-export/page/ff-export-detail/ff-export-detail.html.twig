@@ -124,19 +124,19 @@
 
                                         {% block ff_export_detail_basic_info_lastgeneration_started %}
                                             <dt>{{ $tc('ff-export.detail.labelLastGenerationStarted') }}</dt>
-                                            <dd v-if="ff_export.lastGenerationStartedAt">{{ ff_export.lastGenerationStartedAt }}</dd>
+                                            <dd v-if="ff_export.lastGenerationStartedAt">{{ formatDate(ff_export.lastGenerationStartedAt) }}</dd>
                                             <dd v-else>-</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_lastgeneration_finished %}
                                             <dt>{{ $tc('ff-export.detail.labelLastGenerationFinished') }}</dt>
-                                            <dd v-if="ff_export.lastGenerationFinishedAt">{{ ff_export.lastGenerationFinishedAt }}</dd>
+                                            <dd v-if="ff_export.lastGenerationFinishedAt">{{ formatDate(ff_export.lastGenerationFinishedAt) }}</dd>
                                             <dd v-else>-</dd>
                                         {% endblock %}
 
                                         {% block ff_export_detail_basic_info_next_generation_due_at %}
                                             <dt>{{ $tc('ff-export.detail.labelNextGenerationDueAt') }}</dt>
-                                            <dd v-if="ff_export.nextGenerationDueAt">{{ ff_export.nextGenerationDueAt }}</dd>
+                                            <dd v-if="ff_export.nextGenerationDueAt">{{ formatDate(ff_export.nextGenerationDueAt) }}</dd>
                                             <dd v-else>-</dd>
                                         {% endblock %}
 

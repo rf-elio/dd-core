@@ -41,7 +41,8 @@
       "download": "Download",
       "buttonGenerate": "Generate",
       "buttonGenerateInProgress": "Generating",
-      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\""
+      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\"",
+      "messageGeneratingSuccess": "Export generated successfully"
     },
     "list": {
       "buttonCreate": "Create Export",

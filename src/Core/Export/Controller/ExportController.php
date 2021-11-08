@@ -94,7 +94,9 @@ class ExportController extends AbstractController
             throw new NotFoundHttpException(sprintf('Export "%s" does not exists', $id));
         }
 
+        $startedDate = new \DateTime();
+
         $this->messageBus->dispatch((new Envelope(new ExportGenerateMessage($export, $context)))->with(new DelayStamp(1000)));
-        return new JsonResponse(['id' => $id, 'status' => 'starting']);
+        return new JsonResponse(['id' => $id, 'status' => 'starting', 'started' => $startedDate]);
     }
 }

@@ -6,6 +6,10 @@
     "authors": [
         {
             "name": "ry/elio GmbH"
+        },
+        {
+            "name": "Andrey Baev",
+            "email": "anb@elio-systems.com"
         }
     ],
     "require": {
