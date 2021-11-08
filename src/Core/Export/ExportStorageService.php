@@ -33,11 +33,12 @@ class ExportStorageService
     public function createFileName(ExportEntity $export): string
     {
         return sprintf(
-            '%s/e%s-s%s-l%s.%s',
+            '%s/e%s-s%s-l%s-n%s.%s',
             self::BASE_DIR,
             $export->getId(),
             $export->getSalesChannelId(),
             $export->getLanguageId(),
+            $export->getName(),
             $export->getFormat()
         );
     }

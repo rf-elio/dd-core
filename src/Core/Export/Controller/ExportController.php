@@ -65,10 +65,10 @@ class ExportController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/ff/export/download/{id}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
+     * @Route("/api/_action/ff/export/download/{id}/{salesChannel}_{languageCode}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
      */
-    public function download(string $id, Context $context): Response
+    public function download(string $id, string $salesChannel, string $languageCode, Context $context): Response
     {
         $criteria = new Criteria([$id]);
         $export = $this->exportService->getExports($criteria, $context)->first();

@@ -114,7 +114,7 @@ Shopware.Component.register('ff-export-detail', {
             return 'bin/console elio-ff:export:generate ' + (this.commandForce ? '-f ' : '') + this.ff_export.id;
         },
         getDownloadUrl() {
-            return this.ffExport.getDownloadUrl(this.exportId)
+            return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
         }
     },
 
@@ -151,7 +151,10 @@ Shopware.Component.register('ff-export-detail', {
             this.isLoading = true;
             var operator = this;
 
-            this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
+            var criteria = new Criteria();
+            criteria.addAssociation('salesChannel');
+            criteria.addAssociation('language.locale');
+            this.exportRepository.get(this.exportId, Shopware.Context.api, criteria)
                 .then((currenExport) => {
                     if (currenExport == null) {
                         operator.$router.push({name: 'elio.factfinder.export.list'});
@@ -298,7 +301,7 @@ Shopware.Component.register('ff-export-detail', {
          * Opens the download in a new window
          */
         onDownloadExport() {
-            window.open(this.ffExport.getDownloadUrl(this.exportId), '_blank');
+            window.open(this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code), '_blank');
         },
 
         onGenerate() {
