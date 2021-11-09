@@ -183,6 +183,24 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         /**
+         * safety loading only timings data and not cleaning the unsaved changes for entity
+         */
+        loadTimingsData() {
+            var operator = this;
+            this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
+                .then((currenExport) => {
+                    if (currenExport != null) {
+                        operator.ff_export.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
+                        operator.ff_export.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
+                        operator.ff_export.nextGenerationDueAt = currenExport.nextGenerationDueAt;
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        },
+
+        /**
          * Updates the current status of this export
          */
         updateStatus() {
@@ -316,7 +334,7 @@ Shopware.Component.register('ff-export-detail', {
                         title: operator.$tc('global.default.success'),
                         message: operator.$tc('ff-export.detail.messageGeneratingSuccess')
                     });
-                    operator.loadEntityData();
+                    operator.loadTimingsData();
                 } else {
                     operator.updateTimer = setTimeout(requestStatus, operator.updateInterval || 3000);
                 }

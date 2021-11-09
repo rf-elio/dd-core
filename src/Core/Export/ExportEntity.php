@@ -59,6 +59,7 @@ class ExportEntity extends Entity
     protected string $format;
     protected string $interval;
     protected string $mapping;
+    protected string $config;
     protected ?DateTimeInterface $lastGenerationStartedAt;
     protected ?DateTimeInterface $lastGenerationFinishedAt;
     protected ?DateTimeInterface $nextGenerationDueAt;
@@ -67,6 +68,22 @@ class ExportEntity extends Entity
     protected string $languageId;
     protected ?LanguageEntity $language;
     protected $baseCategoryIds;
+
+    /**
+     * @return string
+     */
+    public function getConfig(): string
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param string $config
+     */
+    public function setConfig(string $config): void
+    {
+        $this->config = $config;
+    }
 
     /**
      * Returns an identifier that is unique for every channel and language

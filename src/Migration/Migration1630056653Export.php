@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `elio_ff_export` (
     `format` VARCHAR(255) NOT NULL,
     `interval` VARCHAR(255) NOT NULL,
     `mapping` LONGTEXT NOT NULL,
+    `config` LONGTEXT NOT NULL,
     `last_generation_started_at` DATETIME(3) NULL,
     `last_generation_finished_at` DATETIME(3) NULL,
     `next_generation_due_at` DATETIME(3) NULL,
