@@ -4,6 +4,9 @@
     "description": "",
     "buttonSave": "Save",
     "buttonCancel": "Cancel",
+    "create": {
+      "new-export-name": "Neuer Export"
+    },
     "detail": {
       "placeholderName": "New_Export_Name",
       "messageSaveError": "Error while saving: \"{error}\"",
@@ -25,9 +28,12 @@
       "labelLastGenerationFinished": "Last Generation Finished",
       "labelNextGenerationDueAt": "Next Generation At",
       "helpTextActive": "If export active - it will be exported",
+      "cardTitleConfig": "Additional configuration",
+      "noConfigAvailable": "No additional configuration available for this type",
       "cardTitleMappings": "Mappings",
       "buttonMappingAdd": "Add new mapping",
       "buttonMappingRemove": "Remove",
+      "mappingSourcePlaceholder": "customFields[custom_...]",
       "columnSource": "Source Field",
       "columnTarget": "Target Field Name",
       "messageMappingsEmptyTitle": "No mappings yet",
@@ -38,10 +44,18 @@
         "notExists": "Download does not exist",
         "path": "Path: "
       },
+      "config": {
+        "export_product_categories": "Export product categories",
+        "export_structure_categories": "Export structure categories",
+        "export_link_categories": "Export link categories",
+        "export_footer_categories": "Export footer categories",
+        "export_service_categories": "Export service categories"
+      },
       "download": "Download",
       "buttonGenerate": "Generate",
       "buttonGenerateInProgress": "Generating",
-      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\""
+      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\"",
+      "messageGeneratingSuccess": "Export generated successfully"
     },
     "list": {
       "buttonCreate": "Create Export",

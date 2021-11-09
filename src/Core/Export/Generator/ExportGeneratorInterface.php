@@ -35,7 +35,6 @@ namespace Elio\FactFinder\Core\Export\Generator;
 
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -50,6 +49,14 @@ interface ExportGeneratorInterface
      * @return bool
      */
     public function supports(ExportEntity $export) : bool;
+
+    /**
+     * Returns a definition about all fields that are added to the export
+     *
+     * @param ExportEntity $export
+     * @return array
+     */
+    public function getModel(ExportEntity $export) : array;
 
     /**
      * @param ExportEntity $export

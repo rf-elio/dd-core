@@ -1,0 +1,18 @@
+{% sw_extends '@FactFinder/storefront/component/listing/filter/ff-filter-default-select.html.twig' %}
+
+{% block component_filter_property_select_preview_list_item %}
+    {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select-list-item.html.twig' %}
+{% endblock %}
+
+{% block component_filter_multi_select_list %}
+    {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-navigation.html.twig' with {
+        navigationTree: fftree.tree,
+        activeResult: fftree.active,
+        activeParent: fftree.active.path is null
+    } only %}
+{% endblock %}
+
+{% block component_filter_multi_select %}
+    {% set filterItemId = 'filter-' ~ 'fftree' ~ '-' ~ random() %}
+    {{ parent() }}
+{% endblock %}

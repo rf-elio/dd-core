@@ -25,9 +25,11 @@ export default class ExportService {
     /**
      * Creates the url that can be used to download the export
      * @param exportId {string}
+     * @param salesChannelId {string}
+     * @param languageId {string}
      */
-    getDownloadUrl(exportId) {
-        return `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}`;
+    getDownloadUrl(exportId, salesChannel, language) {
+        return `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}/${salesChannel}_${language}`;
     }
 
     /**

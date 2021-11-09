@@ -55,6 +55,8 @@ class FactFinder extends Plugin
 {
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
+    public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
+
     public const CUSTOM_FIELDS = [
         'FactFinderContentExportCategory' => [
             'label' => [
@@ -65,6 +67,7 @@ class FactFinder extends Plugin
                 self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
                     'type' => 'text',
                     'componentName' => 'sw-field',
+                    'placeholder' => 'category',
                     'label' => [
                         'en-GB' => 'Type'
                     ]
@@ -75,6 +78,15 @@ class FactFinder extends Plugin
                     'label' => [
                         'en-GB' => 'Exclude in content export',
                         'de-DE' => 'Aus dem Content Export ausschließen'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
+                    'type' => 'text',
+                    'componentName' => 'sw-field',
+                    'placeholder' => '50',
+                    'label' => [
+                        'en-GB' => 'Priority',
+                        'de-DE' => 'Priorität'
                     ]
                 ]
             ],

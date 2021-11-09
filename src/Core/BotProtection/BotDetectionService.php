@@ -111,7 +111,7 @@ class BotDetectionService implements BotDetectionServiceInterface
         }
 
         // check ip addresses
-        $serverVariables = implode('|', $request->server->all());
+        $serverVariables = json_encode($request->server->all());
         if($this->checkList($config->getBotProtectionIpFilter(), $serverVariables)) {
             return true;
         }

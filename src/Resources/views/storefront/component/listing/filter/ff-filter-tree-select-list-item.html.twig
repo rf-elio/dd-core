@@ -1,0 +1,11 @@
+{% sw_extends '@FactFinder/storefront/component/listing/filter/ff-filter-multi-select-list-item.html.twig' %}
+
+{% block component_filter_multi_select_list_item_checkbox_input %}
+    {% set name = element.category.translated.name %}
+    {{ parent() }}
+{% endblock %}
+
+{% block component_filter_multi_select_list_item_label_element %}
+    {% set name = element.category.translated.name %}
+    {{ parent() }}
+{% endblock %}

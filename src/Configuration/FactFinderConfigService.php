@@ -150,9 +150,9 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param array $config
      * @param string $value
      * @param string $languagePrefix
-     * @return false|string[]
+     * @return string[]
      */
-    protected function prepareValueList(array $config, string $value, string $languagePrefix): array|bool
+    protected function prepareValueList(array $config, string $value, string $languagePrefix)
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
@@ -198,7 +198,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return mixed
      */
-    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix): mixed
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
     {
         if (array_key_exists($languagePrefix . $key, $config)) {
             return $config[$languagePrefix . $key];
