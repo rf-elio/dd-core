@@ -1,8 +1,8 @@
 import template from './ff-export-detail.html.twig';
 import './ff-export-detail.scss';
 
-const { Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
+const {Mixin} = Shopware;
+const {Criteria} = Shopware.Data;
 
 Shopware.Component.register('ff-export-detail', {
     template: template,
@@ -74,6 +74,8 @@ Shopware.Component.register('ff-export-detail', {
             ff_export_mappings: [],
             ff_export_mappings_newId: 0,
             isMappingsEmpty: true,
+            isContent: false,
+            ff_export_config: {},
             commandForce: false,
             status: {
                 exists: false,
@@ -107,15 +109,35 @@ Shopware.Component.register('ff-export-detail', {
             return this.repositoryFactory.create('category');
         },
         command() {
-            if(!this.ff_export) {
+            if (!this.ff_export) {
                 return '...';
             }
 
             return 'bin/console elio-ff:export:generate ' + (this.commandForce ? '-f ' : '') + this.ff_export.id;
         },
         getDownloadUrl() {
-            return this.ffExport.getDownloadUrl(this.exportId)
-        }
+            return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
+        },
+        /**
+         * Keys which will be configured there for config column of export entity
+         */
+        getConfigKeys() {
+            // todo: fetch somehow with ajax to server or from configs or from file
+            if (this.isContent) {
+                return [
+                    'export_link_categories'
+                ]
+            } else {
+                return [
+                    'export_product_categories',
+                    'export_structure_categories',
+                    'export_link_categories',
+                    'export_footer_categories',
+                    'export_service_categories',
+                    'export_manufactures'
+                ]
+            }
+        },
     },
 
     methods: {
@@ -125,6 +147,9 @@ Shopware.Component.register('ff-export-detail', {
             this.updateStatus();
         },
 
+        /**
+         * filling selectors for saleschannels and languages
+         */
         fillSelectors() {
             var operator = this;
             this.salesChannelRepository.search(new Criteria, Shopware.Context.api)
@@ -147,23 +172,33 @@ Shopware.Component.register('ff-export-detail', {
                 });
         },
 
+        /**
+         * Reloading entity data => cleaning unsaved changes
+         */
         loadEntityData() {
             this.isLoading = true;
             var operator = this;
 
-            this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
+            var criteria = new Criteria();
+            criteria.addAssociation('salesChannel');
+            criteria.addAssociation('language.locale');
+            this.exportRepository.get(this.exportId, Shopware.Context.api, criteria)
                 .then((currenExport) => {
                     if (currenExport == null) {
-                        operator.$router.push({ name: 'elio.factfinder.export.list' });
+                        operator.$router.push({name: 'elio.factfinder.export.list'});
                     }
 
                     operator.ff_export = currenExport;
+                    if (operator.ff_export.type === 'content') {
+                        operator.isContent = true;
+                    }
                     operator.ff_export_mappings = operator.getMappings();
+                    operator.ff_export_config = operator.getConfig();
                     operator.ff_export_mappings_newId = operator.ff_export_mappings.length;
                     operator.isLoading = false;
 
                     this.baseCategories = [];
-                    if(currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
+                    if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
                         const criteria = new Criteria();
                         criteria.setIds(currenExport.baseCategoryIds);
 
@@ -175,7 +210,25 @@ Shopware.Component.register('ff-export-detail', {
                 .catch((err) => {
                     console.log(err);
                     operator.isLoading = false;
-                    operator.$router.push({ name: 'elio.factfinder.export.list' });
+                    operator.$router.push({name: 'elio.factfinder.export.list'});
+                });
+        },
+
+        /**
+         * safety loading only timings data and not cleaning the unsaved changes for entity
+         */
+        loadTimingsData() {
+            var operator = this;
+            this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
+                .then((currenExport) => {
+                    if (currenExport != null) {
+                        operator.ff_export.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
+                        operator.ff_export.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
+                        operator.ff_export.nextGenerationDueAt = currenExport.nextGenerationDueAt;
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
                 });
         },
 
@@ -186,10 +239,6 @@ Shopware.Component.register('ff-export-detail', {
             this.ffExport.getStatus(this.exportId).then((response) => {
                 this.status = response.data
             })
-        },
-
-        saveFinish() {
-            this.isSaveSuccessful = false;
         },
 
         /**
@@ -207,6 +256,7 @@ Shopware.Component.register('ff-export-detail', {
             this.isLoading = true;
             var operator = this;
             this.setMappings();
+            this.setConfig();
 
             return this.exportRepository.save(this.ff_export).then(() => {
                 operator.loadEntityData();
@@ -223,10 +273,17 @@ Shopware.Component.register('ff-export-detail', {
             });
         },
 
-        onCancel() {
-            this.$router.push({ name: 'elio.factfinder.export.list' });
+        saveFinish() {
+            this.isSaveSuccessful = false;
         },
 
+        onCancel() {
+            this.$router.push({name: 'elio.factfinder.export.list'});
+        },
+
+        /**
+         * On click on add new mapping button
+         */
         onAddNewMapping() {
             if (this.isMappingsEmpty) {
                 this.isMappingsEmpty = false;
@@ -239,6 +296,9 @@ Shopware.Component.register('ff-export-detail', {
             this.ff_export_mappings_newId = this.ff_export_mappings_newId + 1;
         },
 
+        /**
+         * On button delete mapping click
+         */
         onDeleteMapping(id) {
             var position = -1;
             this.ff_export_mappings.forEach((mapping, key) => {
@@ -256,6 +316,9 @@ Shopware.Component.register('ff-export-detail', {
             }
         },
 
+        /**
+         * sets mappings to save in database
+         */
         setMappings() {
             var mappings = [];
             // removing ids from saving
@@ -270,12 +333,16 @@ Shopware.Component.register('ff-export-detail', {
             this.ff_export.mapping = JSON.stringify(mappings);
         },
 
+        /**
+         * fetches the mappings from export-entity
+         */
         getMappings() {
             var result = [];
             var mappings = [];
             try {
                 mappings = JSON.parse(this.ff_export.mapping);
-            } catch (err) {}
+            } catch (err) {
+            }
             var i = 0;
             mappings.forEach((mapping) => {
                 result.push(
@@ -294,29 +361,62 @@ Shopware.Component.register('ff-export-detail', {
         },
 
         /**
+         * fetches the config from export-entity
+         */
+        getConfig() {
+            var result = {};
+            try {
+                result = JSON.parse(this.ff_export.config);
+                result = Object.fromEntries(result);
+            } catch (err) {}
+
+            this.getConfigKeys.forEach((key) => {
+                if(!(key in result)) {
+                    result[key] = false;
+                }
+            });
+            return result;
+        },
+
+        /**
+         * sets config to save in database
+         */
+        setConfig() {
+            this.ff_export.config = JSON.stringify(this.ff_export_config);
+        },
+
+        /**
          * Opens the download in a new window
          */
         onDownloadExport() {
-            window.open(this.ffExport.getDownloadUrl(this.exportId), '_blank');
+            window.open(this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code), '_blank');
         },
 
+        /**
+         * On click on generate button
+         */
         onGenerate() {
             var operator = this;
 
-            this.updateTimer = setTimeout(function requestStatus(){
-                console.log('trying update status for export:' + operator.exportId);
+            this.updateTimer = setTimeout(function requestStatus() {
                 operator.updateStatus();
                 if (operator.status.exists === true) {
-                    clearTimeout(operator.updateTimer)
+                    clearTimeout(operator.updateTimer);
                     operator.isGenerating = false;
+                    operator.createNotificationSuccess({
+                        title: operator.$tc('global.default.success'),
+                        message: operator.$tc('ff-export.detail.messageGeneratingSuccess')
+                    });
+                    operator.loadTimingsData();
                 } else {
-                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval||3000);
+                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval || 3000);
                 }
-            }, operator.updateInterval||3000);
+            }, operator.updateInterval || 3000);
 
             this.isGenerating = true;
             this.ffExport.generate(this.exportId).then((responce) => {
                 console.log(responce);
+                operator.ff_export.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
                 operator.createNotificationError({
                     message: this.$tc('ff-export.detail.messageGeneratingError', 0, {
@@ -325,6 +425,19 @@ Shopware.Component.register('ff-export-detail', {
                 });
                 operator.isGenerating = false;
             });
+        },
+
+        /**
+         * Format date in twig
+         */
+        formatDate(dateToFormat) {
+            var dt = new Date(dateToFormat);
+
+            var result = ('0' + dt.getUTCDate()).slice(-2) + '-' + ('0' + dt.getUTCMonth() + 1).slice(-2) + '-' + dt.getUTCFullYear() + ' '
+                + ('0' + dt.getUTCHours()).slice(-2) + ':' + ('0' + dt.getUTCMinutes()).slice(-2)
+                + ':' + ('0' + dt.getUTCSeconds()).slice(-2) + '.' + ('00' + dt.getUTCMilliseconds()).slice(-3) + ' (UTC)';
+
+            return result;
         }
     }
 });

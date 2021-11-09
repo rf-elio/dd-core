@@ -162,11 +162,19 @@ abstract class BaseCategoryExportGenerator
     protected function processCategories(EntityCollection $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         $categoryIds = [];
+        $exportConfig = json_decode($export->getConfig(), true);
+        $isExportLink = $exportConfig['export_link_categories'] ?? false;
 
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
             if(isset($this->customFields[$category->getId()])) {
                 $category->setCustomFields($this->customFields[$category->getId()]);
+            }
+
+            if(
+                !$isExportLink && $category->getType() === 'link'
+            ) {
+                continue;
             }
 
             if(
@@ -227,7 +235,7 @@ abstract class BaseCategoryExportGenerator
             $exportItem->set(Defaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
         }
         $exportItem->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
-        $exportItem->set(Defaults::FIELD_PRIORITY, Defaults::DEFAULT_PRIORITY);
+        $exportItem->set(Defaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? Defaults::DEFAULT_PRIORITY);
         $exportItem->set(Defaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
     }
 }

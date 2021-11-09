@@ -102,6 +102,7 @@ class ExportDefinition extends EntityDefinition
             (new StringField('format', 'format'))->addFlags(new ApiAware(), new Required()),
             (new StringField('interval', 'interval'))->addFlags(new ApiAware(), new Required()),
             (new StringField('mapping', 'mapping'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('config', 'config'))->addFlags(new ApiAware(), new Required()),
             (new DateTimeField('last_generation_started_at', 'lastGenerationStartedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('last_generation_finished_at', 'lastGenerationFinishedAt'))->addFlags(new ApiAware()),
             (new DateTimeField('next_generation_due_at', 'nextGenerationDueAt'))->addFlags(new ApiAware()),

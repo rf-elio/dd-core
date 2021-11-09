@@ -75,6 +75,7 @@ class ExportSetup
         $exportFormat = $format ?? CSVFileWriter::TYPE;
         $criteria = new Criteria();
         $criteria->addAssociation('languages');
+        $criteria->addAssociation('languages.locale');
         $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         $exports = [];
@@ -95,7 +96,7 @@ class ExportSetup
 
                     $exports[] = [
                         'id' => Uuid::randomHex(),
-                        'name' => $salesChannel->getName() . '_' . $exportType . '_' . $exportFormat,
+                        'name' => $salesChannel->getName() . '_' . $language->getLocale()->getCode() . '_' . $exportType . '_' . $exportFormat,
                         'active' => true,
                         'type' => $exportType,
                         'format' => $exportFormat,

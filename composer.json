@@ -6,10 +6,14 @@
     "authors": [
         {
             "name": "ry/elio GmbH"
+        },
+        {
+            "name": "Andrey Baev",
+            "email": "anb@elio-systems.com"
         }
     ],
     "require": {
-        "php": ">= 8.0",
+        "php": ">= 7.4",
         "elio/fact-finder-api-client": "dev-master",
         "dragonmantank/cron-expression": "^3.1"
     },
