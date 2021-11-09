@@ -80,6 +80,16 @@ class OutputStream
     }
 
     /**
+     * Registers the structure of the export that is processed
+     *
+     * @param array $model
+     */
+    public function registerModel(array $model): void
+    {
+        $this->writer->registerModel($model);
+    }
+
+    /**
      * Writes new content to the output
      *
      * @param ExportItem $item

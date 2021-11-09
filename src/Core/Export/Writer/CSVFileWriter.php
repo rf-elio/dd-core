@@ -78,15 +78,14 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
     protected function write($handle, ExportItem $item): void
     {
         if(!$this->headerWritten) {
-            $this->header = $item->getKeys();
-            fputcsv($handle, $item->getKeys(), self::SEPARATOR);
+            fputcsv($handle, $this->model, self::SEPARATOR);
             $this->headerWritten = true;
         }
 
         $output = $item->getParams();
         $orderedOutput = [];
 
-        foreach ($this->header as $key) {
+        foreach ($this->model as $key) {
             $orderedOutput[] = $output[$key] ?? '';
         }
 

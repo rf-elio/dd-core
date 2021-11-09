@@ -26,7 +26,7 @@
                             :processSuccess="isSaveSuccessful"
                             :disabled="isLoading"
                             variant="primary"
-                            @process-finish="saveFinish"
+                            @process-finish="onSaveFinish"
                             @click.prevent="onSave">
                         {{ $tc('ff-export.buttonSave') }}
                     </sw-button-process>
@@ -103,11 +103,12 @@
                                             :label="$tc('ff-export.detail.labelLanguage')">
                                     </sw-field>
                                     <sw-entity-multi-select
+                                            v-if="baseCategories"
                                             v-model="baseCategories"
                                             required
                                             entity-name="category"
                                             :label="$tc('ff-export.detail.baseCategoryLabel')"
-                                            @change="changeBaseCategory"
+                                            @change="onChangeBaseCategory"
                                     />
                                 {% endblock %}
 
@@ -195,12 +196,26 @@
                 </sw-card>
 
                 <sw-card v-if="ff_export" :title="$tc('ff-export.detail.cardTitleConfig')" :isLoading="isLoading">
-                    <sw-field
-                            v-for="config_key in getConfigKeys"
-                            v-model="ff_export_config[config_key]"
+                    <div v-if="ff_export.type === 'content'">
+                        <sw-field
+                            v-model="ff_export.config.export_product_categories"
                             type="switch"
-                            :label="$tc('ff-export.detail.config.' + config_key)">
-                    </sw-field>
+                            :label="$tc('ff-export.detail.config.export_product_categories')">
+                        </sw-field>
+                        <sw-field
+                                v-model="ff_export.config.export_structure_categories"
+                                type="switch"
+                                :label="$tc('ff-export.detail.config.export_structure_categories')">
+                        </sw-field>
+                        <sw-field
+                                v-model="ff_export.config.export_link_categories"
+                                type="switch"
+                                :label="$tc('ff-export.detail.config.export_link_categories')">
+                        </sw-field>
+                    </div>
+                    <div v-else>
+                        {{ $tc('ff-export.detail.noConfigAvailable') }}
+                    </div>
                 </sw-card>
 
                 <sw-card :class="[{'ff-mappings--empty':isMappingsEmpty}]"
@@ -216,7 +231,7 @@
                             {{ $tc('ff-export.detail.buttonMappingAdd') }}
                         </sw-button>
 
-                        <div class="sw-container" style="grid-template-columns: 3fr 3fr 1fr; gap: 0px 30px; place-items: stretch;">
+                        <div class="sw-container" style="grid-template-columns: 3fr 3fr 1fr; gap: 0 30px; place-items: stretch;">
                             <div>
                                 <div class="headline">{{ $tc('ff-export.detail.columnSource') }}</div>
                                 {% block ff_export_detail_mapping_source_column %}
@@ -224,7 +239,7 @@
                                             v-for="export_mapping in ff_export_mappings"
                                             v-model="export_mapping.source"
                                             type="text"
-                                            :placeholder="placeholder(ff_export, 'name', $tc('ff-export.detail.placeholderName'))">
+                                            :placeholder="$tc('ff-export.detail.mappingSourcePlaceholder')">
                                     </sw-field>
                                 {% endblock %}
                             </div>

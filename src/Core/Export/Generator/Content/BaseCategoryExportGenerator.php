@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Core\Export\Generator\Content;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
+use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
@@ -61,7 +62,7 @@ use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defau
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class BaseCategoryExportGenerator
+abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 {
     protected EntityRepositoryInterface $categoryRepository;
     protected array $customFields = [];
@@ -73,6 +74,29 @@ abstract class BaseCategoryExportGenerator
     public function __construct(EntityRepositoryInterface $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
+    }
+
+    /**
+     * Returns a definition about all fields that are added to the export
+     *
+     * @param ExportEntity $entity
+     * @return array
+     */
+    public function getModel(ExportEntity $entity) : array
+    {
+        return [
+            Defaults::FIELD_ID,
+            Defaults::FIELD_TYPE,
+            Defaults::FIELD_TITLE,
+            Defaults::FIELD_SEO_TEXT,
+            Defaults::FIELD_URL,
+            Defaults::FIELD_KEYWORDS,
+            Defaults::FIELD_DESCRIPTION,
+            Defaults::FIELD_IMAGE_URL,
+            Defaults::FIELD_PUBLICATION_DATE,
+            Defaults::FIELD_PRIORITY,
+            Defaults::FIELD_CONTENT_STRUCTURE
+        ];
     }
 
     /**
@@ -162,8 +186,6 @@ abstract class BaseCategoryExportGenerator
     protected function processCategories(EntityCollection $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         $categoryIds = [];
-        $exportConfig = json_decode($export->getConfig(), true);
-        $isExportLink = $exportConfig['export_link_categories'] ?? false;
 
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
@@ -172,14 +194,11 @@ abstract class BaseCategoryExportGenerator
             }
 
             if(
-                !$isExportLink && $category->getType() === 'link'
-            ) {
-                continue;
-            }
-
-            if(
-                isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
-                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                !$this->isCategoryAllowed($category, $export) ||
+                (
+                    isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                    $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                )
             ) {
                 continue;
             }
@@ -210,6 +229,29 @@ abstract class BaseCategoryExportGenerator
         ExportEntity $export,
         SalesChannelContext $context
     ) : ?ExportItem;
+
+    /**
+     * Checks if the given category is allowed to be exported
+     *
+     * @param CategoryEntity $category
+     * @param ExportEntity $export
+     * @return bool
+     */
+    protected function isCategoryAllowed(CategoryEntity $category, ExportEntity $export): bool
+    {
+        $exportConfig = $export->getConfig();
+        $categoryType = $category->getType();
+
+        if ($categoryType === 'link' && !($exportConfig['export_link_categories'] ?? true)) {
+            return false;
+        }
+
+        if ($categoryType === 'folder' && !($exportConfig['export_structure_categories'] ?? true)) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * Creates a default category export item that can later be modified by the specific generator
