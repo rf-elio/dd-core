@@ -33,7 +33,6 @@
 namespace Elio\FactFinder\Api\Import;
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Import\Request\ImportRequest;
 use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
 use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

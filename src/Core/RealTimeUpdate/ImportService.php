@@ -54,6 +54,12 @@ class ImportService
     private ImportApi $importApi;
     private LoggerInterface $logger;
 
+    /**
+     * ImportService constructor.
+     * @param FactFinderConfigService $configService
+     * @param ImportApi $importApi
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         FactFinderConfigService $configService,
         ImportApi $importApi,
@@ -64,7 +70,14 @@ class ImportService
         $this->logger = $logger;
     }
 
-    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext) {
+    /**
+     * Starts the import at ff via the ff api
+     *
+     * @param ExportEntity $export
+     * @param SalesChannelContext $salesChannelContext
+     */
+    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext): void
+    {
         $config = $this->configService->getByContext($salesChannelContext);
 
         try {

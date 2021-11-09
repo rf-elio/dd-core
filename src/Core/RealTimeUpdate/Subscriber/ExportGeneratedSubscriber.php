@@ -47,19 +47,32 @@ class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
     private ImportService $importService;
 
+    /**
+     * ExportGeneratedSubscriber constructor.
+     * @param ImportService $importService
+     */
     public function __construct(ImportService $importService)
     {
         $this->importService = $importService;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents(): array
     {
-        return[
+        return [
             ExportGeneratedEvent::class => 'onExportGenerated',
         ];
     }
 
-    public function onExportGenerated(ExportGeneratedEvent $event) {
+    /**
+     * Triggers the ff api after every successful export generation
+     *
+     * @param ExportGeneratedEvent $event
+     */
+    public function onExportGenerated(ExportGeneratedEvent $event): void
+    {
         $this->importService->import($event->getExport(), $event->getContext());
     }
 }
