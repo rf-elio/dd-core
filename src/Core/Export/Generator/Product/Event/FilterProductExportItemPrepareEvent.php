@@ -30,38 +30,67 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Core\Export\Generator\Product\Event;
 
 
 use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\Core\Export\ExportItem;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class FilterProductExportItemPrepareEvent
+ * @package Elio\FactFinder\Core\Export\Generator\Product\Event
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+class FilterProductExportItemPrepareEvent extends Event
 {
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private ProductEntity $product;
+    private ExportItem $item;
+    private ExportEntity $export;
+    private SalesChannelContext $context;
+
+    public function __construct(ProductEntity $product, ExportItem $item, ExportEntity $export, SalesChannelContext $context)
+    {
+        $this->product = $product;
+        $this->item = $item;
+        $this->export = $export;
+        $this->context = $context;
+    }
 
     /**
-     * Returns a definition about all fields that are added to the export
-     *
-     * @param ExportEntity $export
-     * @return array
+     * @return ProductEntity
      */
-    public function getModel(ExportEntity $export) : array;
+    public function getProduct(): ProductEntity
+    {
+        return $this->product;
+    }
 
     /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
+     * @return ExportItem
      */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function getItem(): ExportItem
+    {
+        return $this->item;
+    }
+
+    /**
+     * @return ExportEntity
+     */
+    public function getExport(): ExportEntity
+    {
+        return $this->export;
+    }
+
+    /**
+     * @return SalesChannelContext
+     */
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
 }

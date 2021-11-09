@@ -30,38 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Core\Export\Generator\Product;
 
-
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class ProductExportDefaults
+ * @package Elio\FactFinder\Core\Export\Generator\Product
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+abstract class ProductExportDefaults
 {
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
-
-    /**
-     * Returns a definition about all fields that are added to the export
-     *
-     * @param ExportEntity $export
-     * @return array
-     */
-    public function getModel(ExportEntity $export) : array;
-
-    /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
-     */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public const FIELD_PRODUCT_ID = 'ProductID';
+    public const FIELD_MASTER_PRODUCT_NUMBER = 'MasterProductNumber';
+    public const FIELD_MANUFACTURER_NUMBER = 'ManufacturerNumber';
+    public const FIELD_NAME = 'Name';
+    public const FIELD_DESCRIPTION = 'Description';
+    public const FIELD_PRODUCT_URL = 'ProductURL';
+    public const FIELD_PRICE = 'Price';
+    public const FIELD_MANUFACTURER = 'Manufacturer';
+    public const FIELD_CATEGORY_PATH = 'CategoryPath';
+    public const FIELD_EAN = 'EAN';
+    public const FIELD_KEYWORDS = 'Keywords';
+    public const FIELD_SEARCH_KEYWORDS = 'SearchKeywords';
+    public const FIELD_STOCK = 'Stock';
+    public const FIELD_RATING_AVERAGE = 'RatingAverage';
+    public const FIELD_SHIPPING_FREE = 'ShippingFree';
+    public const FIELD_ATTRIBUTE = 'Attribute';
+    public const FIELD_IMAGE_URL = 'ImageURL';
 }

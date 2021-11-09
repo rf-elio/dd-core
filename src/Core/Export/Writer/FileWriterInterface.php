@@ -57,6 +57,13 @@ interface FileWriterInterface
     public function open(SalesChannelContext $context);
 
     /**
+     * Registers the model of the item that are written
+     *
+     * @param array $model
+     */
+    public function registerModel(array $model) : void;
+
+    /**
      * @param resource $handle
      * @param ExportItem[] $items
      */

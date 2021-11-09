@@ -36,15 +36,21 @@ namespace Elio\FactFinder\Core\Export\Generator\Product;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
+use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductExportItemPrepareEvent;
+use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductModelEvent;
+use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * Class ProductExportGenerator
@@ -56,16 +62,20 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class ProductExportGenerator implements ExportGeneratorInterface
 {
+    private const PRODUCT_CHUNK_SIZE = 500;
     public const TYPE = 'product';
     private EntityRepositoryInterface $productRepository;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * ProductExportGenerator constructor.
      * @param EntityRepositoryInterface $productRepository
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EntityRepositoryInterface $productRepository)
+    public function __construct(EntityRepositoryInterface $productRepository, EventDispatcherInterface $eventDispatcher)
     {
         $this->productRepository = $productRepository;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -76,6 +86,43 @@ class ProductExportGenerator implements ExportGeneratorInterface
     public function supports(ExportEntity $export): bool
     {
         return $export->getType() === self::TYPE;
+    }
+
+    /**
+     * Defines all fields that should be available in the product export
+     *
+     * @param ExportEntity $export
+     * @return array
+     */
+    public function getModel(ExportEntity $export): array
+    {
+        $model = [
+            ProductExportDefaults::FIELD_PRODUCT_ID,
+            ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER,
+            ProductExportDefaults::FIELD_MANUFACTURER_NUMBER,
+            ProductExportDefaults::FIELD_NAME,
+            ProductExportDefaults::FIELD_DESCRIPTION,
+            ProductExportDefaults::FIELD_PRODUCT_URL,
+            ProductExportDefaults::FIELD_PRICE,
+            ProductExportDefaults::FIELD_MANUFACTURER,
+            ProductExportDefaults::FIELD_CATEGORY_PATH,
+            ProductExportDefaults::FIELD_EAN,
+            ProductExportDefaults::FIELD_KEYWORDS,
+            ProductExportDefaults::FIELD_SEARCH_KEYWORDS,
+            ProductExportDefaults::FIELD_STOCK,
+            ProductExportDefaults::FIELD_RATING_AVERAGE,
+            ProductExportDefaults::FIELD_SHIPPING_FREE,
+            ProductExportDefaults::FIELD_ATTRIBUTE,
+            ProductExportDefaults::FIELD_IMAGE_URL
+        ];
+
+        foreach ($export->getMapping() as $mapping) {
+            $model[] = $mapping['target'];
+        }
+
+        $event = new FilterProductModelEvent($export, $model);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getModel();
     }
 
     /**
@@ -93,76 +140,101 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $export->getSalesChannelId()));
+        $criteria->setLimit(self::PRODUCT_CHUNK_SIZE);
 
-        // @todo: don't fetch all products (memory) use some pagination stuff
-        $products = $this->productRepository->search($criteria, $context->getContext());
-
-        $mappings = json_decode($export->getMapping(), true);
+        $mappings = $export->getMapping();
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-
-        // @todo: translations
-        // @todo: attributes or products fields by configuration
-        // @todo: extensibility
-        /** @var ProductEntity $product */
-        foreach ($products as $product) {
-            $item = new ExportItem();
-
-            foreach ($mappings as $mapping) {
-                // supports different levels and Collection::first()
-                // examples: manufacturer.name, price.first.gross
-                // can be extended to provide more options for mapping language
-                if (str_contains($mapping['source'], '.')) {
-                    $parts = explode('.',$mapping['source']);
-                    $previousObj = $product;
-                    foreach ($parts as $part) {
-                        if ($part === 'first') {
-                            $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
-                        } else {
-                            $previousObj = $propertyAccessor->getValue($previousObj, $part);
-                        }
-                    }
-                    $item->set($mapping['target'], $previousObj);
-                } else {
-                    $item->set($mapping['target'], $propertyAccessor->getValue($product, $mapping['source']));
-                }
+        $iterator = new RepositoryIterator($this->productRepository, $context->getContext(), $criteria);
+        while ($products = $iterator->fetch()) {
+            foreach ($products as $product) {
+                $item = new ExportItem();
+                $this->prepareExportItem($product, $item);
+                $this->addMappedPropertiesToExportItem($product, $item, $mappings, $propertyAccessor);
+                $this->eventDispatcher->dispatch(new FilterProductExportItemPrepareEvent($product, $item, $export, $context));
+                $output->write($item);
             }
-
-            // todo: mapping extension - properties from other sub-objects of product to propertyAccessor
-            $translated = $product->getTranslated();
-            $item->set('ProductID', $product->getId());
-            $item->set('MasterProductNumber', $product->getProductNumber());
-            $item->set('ManufacturerNumber', $product->getManufacturerNumber());
-            $item->set('Name', $product->getName() ?? $translated['name'] ?? '');
-            $item->set('Description', $product->getDescription() ?? $translated['description'] ?? '');
-            $item->set('ProductURL', $product->getId());
-            $item->set('Price', $product->getPrice()->first()->getGross()); // can be mapped as price.first.gross
-            $item->set('Manufacturer', $product->getManufacturer()->getName()); // can be mapped as manufacturer.name
-            $item->set('CategoryPath', $this->getCategoryPath($product));
-            $item->set('EAN', $product->getId());
-            $item->set('Keywords', $product->getKeywords() ?? $translated['keywords'] ?? '');
-            $item->set('SearchKeywords', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? '');
-            $item->set('Stock', $product->getStock());
-            $item->set('RatingAverage', $product->getRatingAverage());
-            $item->set('ShippingFree', $product->getShippingFree());
-            $item->set('Attribute', $this->getProductAttribute($product));
-
-            if($product->getCover() && $product->getCover()->getMedia()) {
-                $item->set('ImageURL', $product->getCover()->getMedia()->getUrl());
-            }
-
-            $item->set('ProductURL', new SeoRoute(
-                ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
-            ));
-
-            $output->write($item);
         }
     }
 
     /**
+     * Maps the product data into the export item
+     *
+     * @param ProductEntity $product
+     * @param ExportItem $item
+     */
+    private function prepareExportItem(ProductEntity $product, ExportItem $item): void
+    {
+        $translated = $product->getTranslated();
+        $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getId());
+        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $product->getProductNumber());
+        $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
+        $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
+        $item->set(ProductExportDefaults::FIELD_DESCRIPTION, $product->getDescription() ?? $translated['description'] ?? '');
+        $item->set(ProductExportDefaults::FIELD_PRICE, $product->getPrice()->first()->getGross());
+
+        $manufacturer = $product->getManufacturer();
+        if($manufacturer) {
+            $item->set(ProductExportDefaults::FIELD_MANUFACTURER, $manufacturer->getTranslation('name') ?? $manufacturer->getName());
+        }
+
+        $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH, $this->getCategoryPath($product));
+        $item->set(ProductExportDefaults::FIELD_EAN, $product->getEan());
+        $item->set(ProductExportDefaults::FIELD_KEYWORDS, $product->getKeywords() ?? $translated['keywords'] ?? '');
+        $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
+        $item->set(ProductExportDefaults::FIELD_STOCK, $product->getStock());
+        $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
+        $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
+        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($product));
+
+        if($product->getCover() && $product->getCover()->getMedia()) {
+            $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()->getMedia()->getUrl());
+        }
+
+        $item->set(ProductExportDefaults::FIELD_PRODUCT_URL, new SeoRoute(
+            ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
+        ));
+    }
+
+    /**
+     * Adds the fields that are defined in the dynamic mapping
+     *
+     * - supports different levels and Collection::first()
+     * - examples: manufacturer.name, price.first.gross
+     * - can be extended to provide more options for mapping language
+     * @param ProductEntity $product
+     * @param ExportItem $item
+     * @param array $mappings
+     * @param PropertyAccessorInterface $propertyAccessor
+     */
+    private function addMappedPropertiesToExportItem(
+        ProductEntity $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
+    ): void
+    {
+        foreach ($mappings as $mapping) {
+            if (str_contains($mapping['source'], '.')) {
+                $parts = explode('.',$mapping['source']);
+                $previousObj = $product;
+                foreach ($parts as $part) {
+                    if ($part === 'first') {
+                        $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
+                    } else {
+                        $previousObj = $propertyAccessor->getValue($previousObj, $part);
+                    }
+                }
+                $item->set($mapping['target'], $previousObj);
+            } else {
+                $item->set($mapping['target'], $propertyAccessor->getValue($product, $mapping['source']));
+            }
+        }
+    }
+
+    /**
+     * Builds the category path for ff
+     *
      * @param ProductEntity $product
      * @return string
      */
-    private function getCategoryPath(ProductEntity $product): string
+    protected function getCategoryPath(ProductEntity $product): string
     {
         if(!$product->getCategories()) {
             return '';
@@ -174,7 +246,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $index = 0;
         $numCategories = count($categories);
         foreach ($categories as $category) {
-            $path .= join('/', array_slice($category->getBreadcrumb(), 1));
+            $path .= implode('/', array_slice($category->getBreadcrumb(), 1));
             if (++$index < $numCategories) {
                 $path .= '|';
             }
@@ -184,10 +256,12 @@ class ProductExportGenerator implements ExportGeneratorInterface
     }
 
     /**
+     * Appends the product attributes
+     *
      * @param ProductEntity $product
      * @return string
      */
-    private function getProductAttribute(ProductEntity $product): string
+    protected function getProductAttribute(ProductEntity $product): string
     {
         if(!$product->getProperties()) {
             return '';
@@ -196,19 +270,14 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $resultAttribute = '|';
         $attributes = $product->getProperties()->getElements();
         foreach ($attributes as $attribute) {
-            $resultAttribute .= $attribute->getGroup()->getName() . '=' . $attribute->getName() . '|';
+            $group = $attribute->getGroup();
+            if($group) {
+                $name = $group->getTranslation('name') ?? $group->getName();
+                $value = $attribute->getTranslation('name') ?? $attribute->getName();
+                $resultAttribute .= $name . '=' . $value . '|';
+            }
         }
 
-        return $this->cleanValue($resultAttribute);
-    }
-
-    /**
-     * @param string|null $value
-     * @return string
-     */
-    private function cleanValue(?string $value): string
-    {
-        $value = empty($value) ? "" : $value;
-        return trim(strip_tags($value));
+        return ValueUtil::cleanValue($resultAttribute);
     }
 }

@@ -58,8 +58,8 @@ class ExportEntity extends Entity
     protected string $type;
     protected string $format;
     protected string $interval;
-    protected string $mapping;
-    protected string $config;
+    protected $mapping;
+    protected $config;
     protected ?DateTimeInterface $lastGenerationStartedAt;
     protected ?DateTimeInterface $lastGenerationFinishedAt;
     protected ?DateTimeInterface $nextGenerationDueAt;
@@ -68,22 +68,6 @@ class ExportEntity extends Entity
     protected string $languageId;
     protected ?LanguageEntity $language;
     protected $baseCategoryIds;
-
-    /**
-     * @return string
-     */
-    public function getConfig(): string
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param string $config
-     */
-    public function setConfig(string $config): void
-    {
-        $this->config = $config;
-    }
 
     /**
      * Returns an identifier that is unique for every channel and language
@@ -272,22 +256,6 @@ class ExportEntity extends Entity
     }
 
     /**
-     * @return string
-     */
-    public function getMapping(): string
-    {
-        return $this->mapping;
-    }
-
-    /**
-     * @param string $mapping
-     */
-    public function setMapping(string $mapping): void
-    {
-        $this->mapping = $mapping;
-    }
-
-    /**
      * @return DateTimeInterface|null
      */
     public function getNextGenerationDueAt(): ?DateTimeInterface
@@ -317,5 +285,37 @@ class ExportEntity extends Entity
     public function setBaseCategoryIds($baseCategoryIds): void
     {
         $this->baseCategoryIds = $baseCategoryIds;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
+
+    /**
+     * @param mixed $mapping
+     */
+    public function setMapping($mapping): void
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param mixed $config
+     */
+    public function setConfig($config): void
+    {
+        $this->config = $config;
     }
 }

@@ -100,10 +100,11 @@ class ExportSetup
                         'active' => true,
                         'type' => $exportType,
                         'format' => $exportFormat,
-                        'interval' => '0 * * * *',
+                        'interval' => '0 */4 * * *',
                         'salesChannelId' => $salesChannel->getId(),
                         'languageId' => $language->getId(),
-                        'mapping' => '[]',
+                        'mapping' => [],
+                        'config' => [],
                         'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
                     ];
                 }

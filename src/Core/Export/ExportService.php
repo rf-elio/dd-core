@@ -186,6 +186,11 @@ class ExportService
 
         $stream = new OutputStream($writer, $export, $salesChannelContext);
         $stream->open($salesChannelContext);
+
+        foreach ($generators as $generator) {
+            $stream->registerModel($generator->getModel($export));
+        }
+
         try {
             foreach ($generators as $generator) {
                 $generator->generate($export, $stream, $salesChannelContext);

@@ -51,6 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 abstract class BaseWriter
 {
     private ExportStorageService $exportStorageService;
+    protected array $model = [];
 
     /**
      * CSVFileWriter constructor.
@@ -69,6 +70,16 @@ abstract class BaseWriter
     public function open(SalesChannelContext $context)
     {
         return tmpfile();
+    }
+
+    /**
+     * Registers the model of the item that are written
+     *
+     * @param array $model
+     */
+    public function registerModel(array $model) : void
+    {
+        $this->model = array_unique(array_merge($this->model, $model));
     }
 
     /**
@@ -97,6 +108,7 @@ abstract class BaseWriter
      */
     public function abort($handle) : void
     {
+        $this->model = [];
         fclose($handle);
     }
 
@@ -110,6 +122,7 @@ abstract class BaseWriter
     public function close(ExportEntity $export, SalesChannelContext $context, $handle): void
     {
         $this->exportStorageService->write($export, $handle);
+        $this->model = [];
         fclose($handle);
     }
 }

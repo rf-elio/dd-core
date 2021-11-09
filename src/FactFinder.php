@@ -67,6 +67,7 @@ class FactFinder extends Plugin
                 self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
                     'type' => 'text',
                     'componentName' => 'sw-field',
+                    'placeholder' => 'category',
                     'label' => [
                         'en-GB' => 'Type'
                     ]
@@ -82,6 +83,7 @@ class FactFinder extends Plugin
                 self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
                     'type' => 'text',
                     'componentName' => 'sw-field',
+                    'placeholder' => '50',
                     'label' => [
                         'en-GB' => 'Priority',
                         'de-DE' => 'Priorität'
