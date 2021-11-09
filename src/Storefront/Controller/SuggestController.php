@@ -100,7 +100,8 @@ class SuggestController extends SearchController
         }
 
         $suggestRequest = new SuggestRequest($config->getApiChannel());
-        $suggestRequest->setQuery($request->get('search') ?? '*');
+        $searchTerm = $request->get('search') ?? '*';
+        $suggestRequest->setQuery($searchTerm);
         $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
 
         /** @var SuggestionResponse|null $suggestionResponse */
@@ -112,7 +113,9 @@ class SuggestController extends SearchController
 
         return $this->renderStorefront(
             '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
-            ['response' => $suggestionResponse]
+            ['response' => $suggestionResponse,
+                'searchTerm' => $searchTerm,
+                ]
         );
     }
 }
