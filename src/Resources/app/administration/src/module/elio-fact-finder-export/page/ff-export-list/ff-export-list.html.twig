@@ -42,6 +42,12 @@
                             </template>
                         {% endblock %}
 
+                        {% block ff_export_list_grid_columns_last_generation_time %}
+                            <template #column-lastGenerationFinishedAt="{ item }">
+                                {{ item.lastGenerationFinishedAt ? formatDate(item.lastGenerationFinishedAt) : '-' }}
+                            </template>
+                        {% endblock %}
+
                         {% block ff_export_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
                                 {% block ff_export_list_grid_columns_actions_detail %}
