@@ -60,6 +60,6 @@ class ExportGeneratedSubscriber implements EventSubscriberInterface
     }
 
     private function onExportGenerated(ExportGeneratedEvent $event) {
-        $this->importService->import($event->getContext());
+        $this->importService->import($event->getExport(), $event->getContext());
     }
 }

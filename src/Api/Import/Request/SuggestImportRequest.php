@@ -30,53 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate;
-
-use Elio\FactFinder\Api\Import\ImportApi;
-use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
-use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
-use Elio\FactFinder\Configuration\FactFinderConfigService;
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
+namespace Elio\FactFinder\Api\Import\Request;
 
 /**
- * Class ImportService
+ * Class SuggestImportRequest
+ * @package Elio\FactFinder\Api\Import\Request
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportService
+class SuggestImportRequest extends ImportRequest
 {
-    private FactFinderConfigService $configService;
-    private ImportApi $importApi;
-    private LoggerInterface $logger;
 
-    public function __construct(
-        FactFinderConfigService $configService,
-        ImportApi $importApi,
-        LoggerInterface $logger
-    ) {
-        $this->configService = $configService;
-        $this->importApi = $importApi;
-        $this->logger = $logger;
-    }
-
-    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext) {
-        $config = $this->configService->getByContext($salesChannelContext);
-
-        try {
-            if ($export->getType() === 'product') {
-                $importRequest = new SearchImportRequest($config->getApiChannel());
-                $this->importApi->searchImport($importRequest, $salesChannelContext);
-            } else if ($export->getType() === 'content') {
-                $importRequest = new SuggestImportRequest($config->getApiChannel());
-                $this->importApi->suggestImport($importRequest, $salesChannelContext);
-            }
-        } catch (ApiException $exception) {
-            $this->logger->error($exception->getMessage());
-        }
-    }
 }

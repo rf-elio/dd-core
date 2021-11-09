@@ -32,9 +32,10 @@
 
 namespace Elio\FactFinder\Api\Import;
 
-
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
 use Elio\FactFinder\Api\Import\Request\ImportRequest;
+use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
+use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\ImportChannelResult;
@@ -61,15 +62,38 @@ class ImportApi
     }
 
     /**
-     * Executes the ff import request
-     * @param ImportRequest $importRequest
+     * Executes the ff search import request
+     * @param SearchImportRequest $importRequest
      * @param SalesChannelContext $context
      * @return ImportChannelResult[]
      * @throws ApiException
      */
-    public function import(ImportRequest $importRequest, SalesChannelContext $context): array
+    public function searchImport(SearchImportRequest $importRequest, SalesChannelContext $context): array
     {
         $apiClient = $this->apiFactory->createImportApi($context);
-        return $apiClient->startSuggestImportUsingPOST($importRequest->getChannel());
+        return $apiClient->startSearchImportUsingPOST(
+            $importRequest->getChannel(),
+            $importRequest->isDownload(),
+            $importRequest->isCacheFlush(),
+            $importRequest->isQuiet(),
+            $importRequest->getImportStage(),
+            $importRequest->isIncludeCustomerPrices()
+        );
+    }
+
+    /**
+     * Executes the ff suggest import request
+     * @param SuggestImportRequest $importRequest
+     * @param SalesChannelContext $context
+     * @return ImportChannelResult[]
+     * @throws ApiException
+     */
+    public function suggestImport(SuggestImportRequest $importRequest, SalesChannelContext $context): array
+    {
+        $apiClient = $this->apiFactory->createImportApi($context);
+        return $apiClient->startSuggestImportUsingPOST(
+            $importRequest->getChannel(),
+            $importRequest->isQuiet()
+        );
     }
 }

@@ -12,6 +12,7 @@
         <service id="Elio\FactFinder\Core\RealTimeUpdate\ImportService">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
             <argument type="service" id="Elio\FactFinder\Api\Import\ImportApi" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

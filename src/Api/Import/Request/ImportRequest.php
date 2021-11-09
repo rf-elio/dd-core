@@ -41,7 +41,23 @@ use Elio\FactFinder\Api\Request\ChannelRequest;
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportRequest extends ChannelRequest
+abstract class ImportRequest extends ChannelRequest
 {
+    protected bool $quiet = false;
 
+    /**
+     * @return bool
+     */
+    public function isQuiet(): bool
+    {
+        return $this->quiet;
+    }
+
+    /**
+     * @param bool $quiet
+     */
+    public function setQuiet(bool $quiet): void
+    {
+        $this->quiet = $quiet;
+    }
 }
