@@ -194,6 +194,15 @@
                     </sw-container>
                 </sw-card>
 
+                <sw-card v-if="ff_export" :title="$tc('ff-export.detail.cardTitleConfig')" :isLoading="isLoading">
+                    <sw-field
+                            v-for="config_key in getConfigKeys"
+                            v-model="ff_export_config[config_key]"
+                            type="switch"
+                            :label="$tc('ff-export.detail.config.' + config_key)">
+                    </sw-field>
+                </sw-card>
+
                 <sw-card :class="[{'ff-mappings--empty':isMappingsEmpty}]"
                          v-if="!isNew"
                          :title="$tc('ff-export.detail.cardTitleMappings')"

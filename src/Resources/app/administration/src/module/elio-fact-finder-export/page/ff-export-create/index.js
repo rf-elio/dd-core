@@ -24,6 +24,7 @@ Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
             this.ff_export.format = 'csv';
             this.ff_export.active = true;
             this.ff_export.mapping = '[]';
+            this.ff_export.config = '{}';
 
             this.isLoading = false;
         },

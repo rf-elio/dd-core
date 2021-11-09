@@ -25,6 +25,7 @@
       "labelLastGenerationFinished": "Last Generation Finished",
       "labelNextGenerationDueAt": "Next Generation At",
       "helpTextActive": "If export active - it will be exported",
+      "cardTitleConfig": "Additional configuration",
       "cardTitleMappings": "Mappings",
       "buttonMappingAdd": "Add new mapping",
       "buttonMappingRemove": "Remove",
@@ -37,6 +38,14 @@
         "exists": "Downloads exists",
         "notExists": "Download does not exist",
         "path": "Path: "
+      },
+      "config": {
+        "export_product_categories": "Export product categories",
+        "export_structure_categories": "Export structure categories",
+        "export_link_categories": "Export link categories",
+        "export_footer_categories": "Export footer categories",
+        "export_service_categories": "Export service categories",
+        "export_manufactures": "Export manufactures"
       },
       "download": "Download",
       "buttonGenerate": "Generate",

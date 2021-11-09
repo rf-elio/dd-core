@@ -74,6 +74,8 @@ Shopware.Component.register('ff-export-detail', {
             ff_export_mappings: [],
             ff_export_mappings_newId: 0,
             isMappingsEmpty: true,
+            isContent: false,
+            ff_export_config: {},
             commandForce: false,
             status: {
                 exists: false,
@@ -115,7 +117,25 @@ Shopware.Component.register('ff-export-detail', {
         },
         getDownloadUrl() {
             return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
-        }
+        },
+
+        getConfigKeys() {
+            // todo: fetch somehow with ajax to server or from configs or from file
+            if (this.isContent) {
+                return [
+                    'export_link_categories'
+                ]
+            } else {
+                return [
+                    'export_product_categories',
+                    'export_structure_categories',
+                    'export_link_categories',
+                    'export_footer_categories',
+                    'export_service_categories',
+                    'export_manufactures'
+                ]
+            }
+        },
     },
 
     methods: {
@@ -161,7 +181,11 @@ Shopware.Component.register('ff-export-detail', {
                     }
 
                     operator.ff_export = currenExport;
+                    if (operator.ff_export.type === 'content') {
+                        operator.isContent = true;
+                    }
                     operator.ff_export_mappings = operator.getMappings();
+                    operator.ff_export_config = operator.getConfig();
                     operator.ff_export_mappings_newId = operator.ff_export_mappings.length;
                     operator.isLoading = false;
 
@@ -209,10 +233,6 @@ Shopware.Component.register('ff-export-detail', {
             })
         },
 
-        saveFinish() {
-            this.isSaveSuccessful = false;
-        },
-
         /**
          * Updates the base categories assigned to the export
          * @param categories
@@ -228,6 +248,7 @@ Shopware.Component.register('ff-export-detail', {
             this.isLoading = true;
             var operator = this;
             this.setMappings();
+            this.setConfig();
 
             return this.exportRepository.save(this.ff_export).then(() => {
                 operator.loadEntityData();
@@ -242,6 +263,10 @@ Shopware.Component.register('ff-export-detail', {
                 operator.isLoading = false;
                 throw exception;
             });
+        },
+
+        saveFinish() {
+            this.isSaveSuccessful = false;
         },
 
         onCancel() {
@@ -315,6 +340,25 @@ Shopware.Component.register('ff-export-detail', {
             return result;
         },
 
+        getConfig() {
+            var result = {};
+            try {
+                result = JSON.parse(this.ff_export.config);
+                result = Object.fromEntries(result);
+            } catch (err) {}
+
+            this.getConfigKeys.forEach((key) => {
+                if(!(key in result)) {
+                    result[key] = false;
+                }
+            });
+            return result;
+        },
+
+        setConfig() {
+            this.ff_export.config = JSON.stringify(this.ff_export_config);
+        },
+
         /**
          * Opens the download in a new window
          */
@@ -322,6 +366,9 @@ Shopware.Component.register('ff-export-detail', {
             window.open(this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code), '_blank');
         },
 
+        /**
+         * On click on generate button
+         */
         onGenerate() {
             var operator = this;
 
