@@ -63,7 +63,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class ProductExportGenerator implements ExportGeneratorInterface
 {
     private const PRODUCT_CHUNK_SIZE = 500;
-    public const TYPE = 'product';
     private EntityRepositoryInterface $productRepository;
     private EventDispatcherInterface $eventDispatcher;
 
@@ -85,7 +84,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      */
     public function supports(ExportEntity $export): bool
     {
-        return $export->getType() === self::TYPE;
+        return $export->getType() === ProductExportDefaults::TYPE;
     }
 
     /**

@@ -15,6 +15,7 @@
         </service>
         <service id="Elio\FactFinder\Api\Import\ImportApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Management\ManagementApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
@@ -84,6 +85,11 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\ContentTransformer">
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+
+        <!-- transformer / response / import -->
+        <service id="Elio\FactFinder\Api\Import\ResponseTransformer\ImportTransformer">
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 

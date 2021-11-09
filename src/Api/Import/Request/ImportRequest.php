@@ -30,35 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Product;
+namespace Elio\FactFinder\Api\Import\Request;
 
+use Elio\FactFinder\Api\Request\ChannelRequest;
 
 /**
- * Class ProductExportDefaults
- * @package Elio\FactFinder\Core\Export\Generator\Product
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class ImportRequest
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class ProductExportDefaults
+abstract class ImportRequest extends ChannelRequest
 {
-    public const TYPE = 'product';
-    public const FIELD_PRODUCT_ID = 'ProductID';
-    public const FIELD_MASTER_PRODUCT_NUMBER = 'MasterProductNumber';
-    public const FIELD_MANUFACTURER_NUMBER = 'ManufacturerNumber';
-    public const FIELD_NAME = 'Name';
-    public const FIELD_DESCRIPTION = 'Description';
-    public const FIELD_PRODUCT_URL = 'ProductURL';
-    public const FIELD_PRICE = 'Price';
-    public const FIELD_MANUFACTURER = 'Manufacturer';
-    public const FIELD_CATEGORY_PATH = 'CategoryPath';
-    public const FIELD_EAN = 'EAN';
-    public const FIELD_KEYWORDS = 'Keywords';
-    public const FIELD_SEARCH_KEYWORDS = 'SearchKeywords';
-    public const FIELD_STOCK = 'Stock';
-    public const FIELD_RATING_AVERAGE = 'RatingAverage';
-    public const FIELD_SHIPPING_FREE = 'ShippingFree';
-    public const FIELD_ATTRIBUTE = 'Attribute';
-    public const FIELD_IMAGE_URL = 'ImageURL';
+    protected bool $quiet = false;
+
+    /**
+     * @return bool
+     */
+    public function isQuiet(): bool
+    {
+        return $this->quiet;
+    }
+
+    /**
+     * @param bool $quiet
+     */
+    public function setQuiet(bool $quiet): void
+    {
+        $this->quiet = $quiet;
+    }
 }

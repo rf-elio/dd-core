@@ -16,6 +16,7 @@
         <service id="Elio\FactFinder\Core\Export\ExportService">
             <argument type="service" id="elio_ff_export.repository" />
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="logger" />
             <argument type="tagged" tag="elio-ff.export.generator" />
             <argument type="tagged" tag="elio-ff.export.writer" />
@@ -37,7 +38,6 @@
             <argument type="service" id="landing_page.repository" />
             <tag name="elio-ff.export.generator" />
         </service>
-
 
         <!-- storage -->
         <service id="Elio\FactFinder\Core\Export\ExportStorageService">

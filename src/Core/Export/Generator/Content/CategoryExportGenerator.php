@@ -55,7 +55,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class CategoryExportGenerator extends BaseCategoryExportGenerator
 {
-    public const TYPE = 'content';
     protected const EXPORT_TYPE_CATEGORY = 'category';
     protected const EXPORT_TYPE_PAGE = 'page';
 
@@ -66,7 +65,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
      */
     public function supports(ExportEntity $export): bool
     {
-        return $export->getType() === static::TYPE;
+        return $export->getType() === ContentExportDefaults::TYPE;
     }
 
     /**

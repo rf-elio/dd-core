@@ -43,6 +43,7 @@ namespace Elio\FactFinder\Core\Export\Generator\Content;
  */
 abstract class ContentExportDefaults
 {
+    public const TYPE = 'content';
     public const FIELD_ID = 'Id';
     public const FIELD_TYPE = 'Type';
     public const FIELD_TITLE = 'Title';

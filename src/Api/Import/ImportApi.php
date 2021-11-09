@@ -32,8 +32,14 @@
 
 namespace Elio\FactFinder\Api\Import;
 
-
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
+use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Transform\Transformer;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
+use Throwable;
 
 /**
  * Class ImportApi
@@ -46,13 +52,60 @@ use Elio\FactFinder\Api\ApiClientFactoryInterface;
 class ImportApi
 {
     private ApiClientFactoryInterface $apiFactory;
+    private Transformer $transformer;
 
     /**
-     * SearchApi constructor.
+     * ImportApi constructor.
      * @param ApiClientFactoryInterface $apiFactory
+     * @param Transformer $transformer
      */
-    public function __construct(ApiClientFactoryInterface $apiFactory)
+    public function __construct(ApiClientFactoryInterface $apiFactory, Transformer $transformer)
     {
         $this->apiFactory = $apiFactory;
+        $this->transformer = $transformer;
+    }
+
+    /**
+     * Executes the ff search import request
+     * @param SearchImportRequest $importRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function searchImport(SearchImportRequest $importRequest, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createImportApi($context);
+        $results = $apiClient->startSearchImportUsingPOST(
+            [$importRequest->getChannel()],
+            $importRequest->isDownload(),
+            $importRequest->isCacheFlush(),
+            $importRequest->isQuiet(),
+            $importRequest->getImportStage(),
+            $importRequest->isIncludeCustomerPrices()
+        );
+
+        $result = array_shift($results);
+        return $this->transformer->transformResponse($result, $context, $importRequest);
+    }
+
+    /**
+     * Executes the ff suggest import request
+     * @param SuggestImportRequest $importRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function suggestImport(SuggestImportRequest $importRequest, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createImportApi($context);
+        $results = $apiClient->startSuggestImportUsingPOST(
+            [$importRequest->getChannel()],
+            $importRequest->isQuiet()
+        );
+
+        $result = array_shift($results);
+        return $this->transformer->transformResponse($result, $context, $importRequest);
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\FactFinder\Core\RealTimeUpdate\Subscriber\ExportGeneratedSubscriber">
+            <argument type="service" id="Elio\FactFinder\Core\RealTimeUpdate\ImportService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\RealTimeUpdate\ImportService">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\FactFinder\Api\Import\ImportApi" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>

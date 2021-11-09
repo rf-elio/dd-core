@@ -30,35 +30,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Product;
+namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
 
+use Elio\FactFinder\Core\RealTimeUpdate\ImportService;
+use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
+use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class ProductExportDefaults
- * @package Elio\FactFinder\Core\Export\Generator\Product
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class ExportGeneratedSubscriber
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class ProductExportDefaults
+class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
-    public const TYPE = 'product';
-    public const FIELD_PRODUCT_ID = 'ProductID';
-    public const FIELD_MASTER_PRODUCT_NUMBER = 'MasterProductNumber';
-    public const FIELD_MANUFACTURER_NUMBER = 'ManufacturerNumber';
-    public const FIELD_NAME = 'Name';
-    public const FIELD_DESCRIPTION = 'Description';
-    public const FIELD_PRODUCT_URL = 'ProductURL';
-    public const FIELD_PRICE = 'Price';
-    public const FIELD_MANUFACTURER = 'Manufacturer';
-    public const FIELD_CATEGORY_PATH = 'CategoryPath';
-    public const FIELD_EAN = 'EAN';
-    public const FIELD_KEYWORDS = 'Keywords';
-    public const FIELD_SEARCH_KEYWORDS = 'SearchKeywords';
-    public const FIELD_STOCK = 'Stock';
-    public const FIELD_RATING_AVERAGE = 'RatingAverage';
-    public const FIELD_SHIPPING_FREE = 'ShippingFree';
-    public const FIELD_ATTRIBUTE = 'Attribute';
-    public const FIELD_IMAGE_URL = 'ImageURL';
+    private ImportService $importService;
+
+    /**
+     * ExportGeneratedSubscriber constructor.
+     * @param ImportServiceInterface $importService
+     */
+    public function __construct(ImportServiceInterface $importService)
+    {
+        $this->importService = $importService;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            ExportGeneratedEvent::class => 'onExportGenerated',
+        ];
+    }
+
+    /**
+     * Triggers the ff api after every successful export generation
+     *
+     * @param ExportGeneratedEvent $event
+     */
+    public function onExportGenerated(ExportGeneratedEvent $event): void
+    {
+        $this->importService->import($event->getExport(), $event->getContext());
+    }
 }
