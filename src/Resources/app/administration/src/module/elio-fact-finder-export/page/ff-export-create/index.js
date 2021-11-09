@@ -1,37 +1,33 @@
-const { Component, Mixin } = Shopware;
-const { Criteria } = Shopware.Data;
-
 Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
     data() {
         return {
-            isNew: true,
-            newId: null
+            isNew: true
         };
     },
 
     methods: {
         createdComponent() {
-            this.fillSelectors();
-
+            this._fillSelectors();
             this.ff_export = this.exportRepository.create();
-            this.newId = this.ff_export.id;
             this.ff_export.active = false;
-            this.ff_export.name = 'New_Export_Name';
-
-            // todo: fetch it another way
+            this.ff_export.name = this.$tc('ff-export.create.new-export-name');
+            this.ff_export.baseCategories = new Shopware.Data.EntityCollection('collection', 'collection', {}, null, []);
+            this.ff_export.config = {
+                export_product_categories: true,
+                export_structure_categories: true,
+                export_link_categories: true
+            }
             this.ff_export.interval = '0 */4 * * *';
             this.ff_export.type = 'product';
             this.ff_export.format = 'csv';
             this.ff_export.active = true;
-            this.ff_export.mapping = '[]';
-            this.ff_export.config = '{}';
-
+            this.ff_export.mapping = {};
             this.isLoading = false;
         },
 
-        saveFinish() {
+        onSaveFinish() {
             this.isSaveSuccessful = false;
-            this.$router.push({ name: 'elio.factfinder.export.detail', params: { id: this.newId } });
+            this.$router.push({ name: 'elio.factfinder.export.detail', params: { id: this.ff_export.id } });
         },
 
         onSave() {

@@ -24,6 +24,7 @@
         <!-- generators / product -->
         <service id="Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator">
             <argument type="service" id="product.repository" />
+            <argument type="service" id="event_dispatcher" />
             <tag name="elio-ff.export.generator" />
         </service>
         <!-- generators / content -->

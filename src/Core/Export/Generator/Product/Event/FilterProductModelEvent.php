@@ -30,38 +30,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
-
+namespace Elio\FactFinder\Core\Export\Generator\Product\Event;
 
 use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class FilterProductModelEvent
+ * @package Elio\FactFinder\Core\Export\Generator\Product\Event
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+class FilterProductModelEvent extends Event
 {
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private ExportEntity $export;
+    private array $model;
 
     /**
-     * Returns a definition about all fields that are added to the export
-     *
+     * FilterProductModelEvent constructor.
      * @param ExportEntity $export
+     * @param array $model
+     */
+    public function __construct(ExportEntity $export, array $model)
+    {
+        $this->export = $export;
+        $this->model = $model;
+    }
+
+    /**
      * @return array
      */
-    public function getModel(ExportEntity $export) : array;
+    public function getModel(): array
+    {
+        return $this->model;
+    }
 
     /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
+     * @param array $model
      */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function setModel(array $model): void
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * @return ExportEntity
+     */
+    public function getExport(): ExportEntity
+    {
+        return $this->export;
+    }
 }

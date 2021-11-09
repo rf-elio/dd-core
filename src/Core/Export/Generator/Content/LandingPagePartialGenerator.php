@@ -79,6 +79,29 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
     }
 
     /**
+     * Returns a definition about all fields that are added to the export
+     *
+     * @param ExportEntity $entity
+     * @return array
+     */
+    public function getModel(ExportEntity $entity) : array
+    {
+        return [
+            Defaults::FIELD_ID,
+            Defaults::FIELD_TYPE,
+            Defaults::FIELD_TITLE,
+            Defaults::FIELD_SEO_TEXT,
+            Defaults::FIELD_URL,
+            Defaults::FIELD_KEYWORDS,
+            Defaults::FIELD_DESCRIPTION,
+            Defaults::FIELD_IMAGE_URL,
+            Defaults::FIELD_PUBLICATION_DATE,
+            Defaults::FIELD_PRIORITY,
+            Defaults::FIELD_CONTENT_STRUCTURE
+        ];
+    }
+
+    /**
      * Exports all landing pages assigned to this sales channel
      *
      * @param ExportEntity $export
