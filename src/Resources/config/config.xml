@@ -113,6 +113,16 @@
             <helpText>Labels for suggest type labels: type:Label|product:Product</helpText>
             <helpText lang="de-DE">Label für Suggest-Typ Label: typ:Label|product:Produkt</helpText>
         </input-field>
+
+        <input-field type="text">
+            <name>suggestAutocompleteType</name>
+            <label>Autocomplete type</label>
+            <label lang="de-DE">Autovervollständigungs-Typ</label>
+            <placeholder>searchTerm</placeholder>
+            <defaultValue>searchTerm</defaultValue>
+            <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
+            <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>
