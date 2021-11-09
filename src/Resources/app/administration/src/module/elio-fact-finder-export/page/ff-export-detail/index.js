@@ -118,7 +118,9 @@ Shopware.Component.register('ff-export-detail', {
         getDownloadUrl() {
             return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
         },
-
+        /**
+         * Keys which will be configured there for config column of export entity
+         */
         getConfigKeys() {
             // todo: fetch somehow with ajax to server or from configs or from file
             if (this.isContent) {
@@ -145,6 +147,9 @@ Shopware.Component.register('ff-export-detail', {
             this.updateStatus();
         },
 
+        /**
+         * filling selectors for saleschannels and languages
+         */
         fillSelectors() {
             var operator = this;
             this.salesChannelRepository.search(new Criteria, Shopware.Context.api)
@@ -167,6 +172,9 @@ Shopware.Component.register('ff-export-detail', {
                 });
         },
 
+        /**
+         * Reloading entity data => cleaning unsaved changes
+         */
         loadEntityData() {
             this.isLoading = true;
             var operator = this;
@@ -273,6 +281,9 @@ Shopware.Component.register('ff-export-detail', {
             this.$router.push({name: 'elio.factfinder.export.list'});
         },
 
+        /**
+         * On click on add new mapping button
+         */
         onAddNewMapping() {
             if (this.isMappingsEmpty) {
                 this.isMappingsEmpty = false;
@@ -285,6 +296,9 @@ Shopware.Component.register('ff-export-detail', {
             this.ff_export_mappings_newId = this.ff_export_mappings_newId + 1;
         },
 
+        /**
+         * On button delete mapping click
+         */
         onDeleteMapping(id) {
             var position = -1;
             this.ff_export_mappings.forEach((mapping, key) => {
@@ -302,6 +316,9 @@ Shopware.Component.register('ff-export-detail', {
             }
         },
 
+        /**
+         * sets mappings to save in database
+         */
         setMappings() {
             var mappings = [];
             // removing ids from saving
@@ -316,6 +333,9 @@ Shopware.Component.register('ff-export-detail', {
             this.ff_export.mapping = JSON.stringify(mappings);
         },
 
+        /**
+         * fetches the mappings from export-entity
+         */
         getMappings() {
             var result = [];
             var mappings = [];
@@ -340,6 +360,9 @@ Shopware.Component.register('ff-export-detail', {
             return result;
         },
 
+        /**
+         * fetches the config from export-entity
+         */
         getConfig() {
             var result = {};
             try {
@@ -355,6 +378,9 @@ Shopware.Component.register('ff-export-detail', {
             return result;
         },
 
+        /**
+         * sets config to save in database
+         */
         setConfig() {
             this.ff_export.config = JSON.stringify(this.ff_export_config);
         },
@@ -401,6 +427,9 @@ Shopware.Component.register('ff-export-detail', {
             });
         },
 
+        /**
+         * Format date in twig
+         */
         formatDate(dateToFormat) {
             var dt = new Date(dateToFormat);
 
