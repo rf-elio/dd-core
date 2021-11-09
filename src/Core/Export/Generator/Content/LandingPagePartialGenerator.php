@@ -32,7 +32,6 @@
 
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
-use Elio\FactFinder\Core\Exception\FactFinderException;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
@@ -44,7 +43,6 @@ use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
@@ -60,7 +58,6 @@ use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defau
  */
 class LandingPagePartialGenerator implements ExportGeneratorInterface
 {
-    public const TYPE = 'content';
     protected const EXPORT_TYPE = 'landingpage';
     private EntityRepositoryInterface $landingPageRepository;
 
@@ -73,9 +70,13 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
         $this->landingPageRepository = $landingPageRepository;
     }
 
+    /**
+     * @param ExportEntity $export
+     * @return bool
+     */
     public function supports(ExportEntity $export): bool
     {
-        return $export->getType() === static::TYPE;
+        return $export->getType() === ContentExportDefaults::TYPE;
     }
 
     /**

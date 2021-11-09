@@ -35,11 +35,12 @@ namespace Elio\FactFinder\Core\RealTimeUpdate;
 use Elio\FactFinder\Api\Import\ImportApi;
 use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
 use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
+use Elio\FactFinder\Api\Import\Response\ImportResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
+use Throwable;
 
 /**
  * Class ImportService
@@ -48,7 +49,7 @@ use Swagger\Client\ApiException;
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportService
+class ImportService implements ImportServiceInterface
 {
     private FactFinderConfigService $configService;
     private ImportApi $importApi;
@@ -75,21 +76,29 @@ class ImportService
      *
      * @param ExportEntity $export
      * @param SalesChannelContext $salesChannelContext
+     * @return ImportResponse[]
      */
-    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext): void
+    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext): array
     {
         $config = $this->configService->getByContext($salesChannelContext);
+        $results = [];
 
         try {
-            if ($export->getType() === 'product') {
-                $importRequest = new SearchImportRequest($config->getApiChannel());
-                $this->importApi->searchImport($importRequest, $salesChannelContext);
-            } else if ($export->getType() === 'content') {
-                $importRequest = new SuggestImportRequest($config->getApiChannel());
-                $this->importApi->suggestImport($importRequest, $salesChannelContext);
+            $importRequest = new SearchImportRequest($config->getApiChannel());
+            $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
+            if($importResponse = $responseCollection->get(ImportResponse::class)) {
+                $results[] = $importResponse;
             }
-        } catch (ApiException $exception) {
+
+            $importRequest = new SuggestImportRequest($config->getApiChannel());
+            $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
+            if($importResponse = $responseCollection->get(ImportResponse::class)) {
+                $results[] = $importResponse;
+            }
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
+
+        return $results;
     }
 }
