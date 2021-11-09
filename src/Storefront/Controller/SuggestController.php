@@ -113,9 +113,10 @@ class SuggestController extends SearchController
 
         return $this->renderStorefront(
             '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
-            ['response' => $suggestionResponse,
-                'searchTerm' => $searchTerm,
-                ]
+            [
+                'response' => $suggestionResponse,
+                'searchTerm' => $searchTerm
+            ]
         );
     }
 }

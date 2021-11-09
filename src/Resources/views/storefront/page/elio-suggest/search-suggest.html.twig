@@ -67,7 +67,7 @@
                             <div class="row align-items-center no-gutters">
                                 {% block layout_search_suggest_result_total_link %}
                                     <div class="col">
-                                        <a href="{{ path('frontend.search.page') }}?search={{ searchTerm }}"
+                                        <a href="{{ path('frontend.search.page') }}?search={{ searchTerm|url_encode }}"
                                             title="{{ "header.searchAllResults"|trans|striptags }}"
                                             class="search-suggest-total-link">
                                             {% sw_icon 'arrow-head-right' style { 'size': 'sm' } %}
