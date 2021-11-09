@@ -72,7 +72,7 @@ class ImportApi
     {
         $apiClient = $this->apiFactory->createImportApi($context);
         return $apiClient->startSearchImportUsingPOST(
-            $importRequest->getChannel(),
+            [$importRequest->getChannel()],
             $importRequest->isDownload(),
             $importRequest->isCacheFlush(),
             $importRequest->isQuiet(),
@@ -92,7 +92,7 @@ class ImportApi
     {
         $apiClient = $this->apiFactory->createImportApi($context);
         return $apiClient->startSuggestImportUsingPOST(
-            $importRequest->getChannel(),
+            [$importRequest->getChannel()],
             $importRequest->isQuiet()
         );
     }
