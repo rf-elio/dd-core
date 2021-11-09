@@ -162,11 +162,19 @@ abstract class BaseCategoryExportGenerator
     protected function processCategories(EntityCollection $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         $categoryIds = [];
+        $exportConfig = json_decode($export->getConfig(), true);
+        $isExportLink = $exportConfig['export_link_categories'] ?? false;
 
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
             if(isset($this->customFields[$category->getId()])) {
                 $category->setCustomFields($this->customFields[$category->getId()]);
+            }
+
+            if(
+                !$isExportLink && $category->getType() === 'link'
+            ) {
+                continue;
             }
 
             if(
