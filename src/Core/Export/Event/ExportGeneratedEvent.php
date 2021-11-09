@@ -30,46 +30,62 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import;
+namespace Elio\FactFinder\Core\Export\Event;
 
-
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Import\Request\ImportRequest;
+use Elio\FactFinder\Core\Export\ExportEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\ImportChannelResult;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class ImportApi
- * @package Elio\FactFinder\Api\Import
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class ExportGeneratedEvent
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportApi
+class ExportGeneratedEvent extends Event
 {
-    private ApiClientFactoryInterface $apiFactory;
+    private ExportEntity $export;
+    private SalesChannelContext $context;
 
-    /**
-     * ImportApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     */
-    public function __construct(ApiClientFactoryInterface $apiFactory)
-    {
-        $this->apiFactory = $apiFactory;
+    public function __construct(
+        ExportEntity $export,
+        SalesChannelContext $context
+    ) {
+        $this->export = $export;
+        $this->context = $context;
     }
 
     /**
-     * Executes the ff import request
-     * @param ImportRequest $importRequest
+     * @return ExportEntity
+     */
+    public function getExport(): ExportEntity
+    {
+        return $this->export;
+    }
+
+    /**
+     * @param ExportEntity $export
+     */
+    public function setExport(ExportEntity $export): void
+    {
+        $this->export = $export;
+    }
+
+    /**
+     * @return SalesChannelContext
+     */
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
+
+    /**
      * @param SalesChannelContext $context
-     * @return ImportChannelResult[]
-     * @throws ApiException
      */
-    public function import(ImportRequest $importRequest, SalesChannelContext $context): array
+    public function setContext(SalesChannelContext $context): void
     {
-        $apiClient = $this->apiFactory->createImportApi($context);
-        return $apiClient->startSuggestImportUsingPOST($importRequest->getChannel());
+        $this->context = $context;
     }
+
 }

@@ -30,46 +30,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import;
+namespace Elio\FactFinder\Core\RealTimeUpdate;
 
-
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Import\ImportApi;
 use Elio\FactFinder\Api\Import\Request\ImportRequest;
+use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
-use Swagger\Client\Model\ImportChannelResult;
 
 /**
- * Class ImportApi
- * @package Elio\FactFinder\Api\Import
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class ImportService
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportApi
+class ImportService
 {
-    private ApiClientFactoryInterface $apiFactory;
+    private FactFinderConfigService $configService;
+    private ImportApi $importApi;
 
-    /**
-     * ImportApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     */
-    public function __construct(ApiClientFactoryInterface $apiFactory)
-    {
-        $this->apiFactory = $apiFactory;
+    public function __construct(
+        FactFinderConfigService $configService,
+        ImportApi $importApi
+    ) {
+        $this->configService = $configService;
+        $this->importApi = $importApi;
     }
 
-    /**
-     * Executes the ff import request
-     * @param ImportRequest $importRequest
-     * @param SalesChannelContext $context
-     * @return ImportChannelResult[]
-     * @throws ApiException
-     */
-    public function import(ImportRequest $importRequest, SalesChannelContext $context): array
-    {
-        $apiClient = $this->apiFactory->createImportApi($context);
-        return $apiClient->startSuggestImportUsingPOST($importRequest->getChannel());
+    public function import(SalesChannelContext $salesChannelContext) {
+        $config = $this->configService->getByContext($salesChannelContext);
+        $importRequest = new ImportRequest($config->getApiChannel());
+        try {
+            $this->importApi->import($importRequest, $salesChannelContext);
+        } catch (ApiException $exception) {
+
+        }
     }
 }

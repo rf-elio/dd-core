@@ -40,6 +40,7 @@ use DateTime;
 use Elio\FactFinder\Core\Export\Exception\ExportNotSupportedException;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Writer\FileWriterInterface;
+use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -50,6 +51,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 /**
@@ -82,11 +84,16 @@ class ExportService
      * @var AbstractSalesChannelContextFactory
      */
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * ExportService constructor.
      * @param EntityRepositoryInterface $exportRepository
      * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
+     * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface $logger
      * @param ExportGeneratorInterface[] $generators
      * @param FileWriterInterface[] $writers
@@ -94,6 +101,7 @@ class ExportService
     public function __construct(
         EntityRepositoryInterface $exportRepository,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
         iterable $generators,
         iterable $writers
@@ -101,6 +109,7 @@ class ExportService
     {
         $this->exportRepository = $exportRepository;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+        $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
         $this->generators = $generators;
         $this->writers = $writers;
@@ -182,6 +191,9 @@ class ExportService
                 $generator->generate($export, $stream, $salesChannelContext);
             }
             $stream->close();
+
+            $this->eventDispatcher->dispatch(new ExportGeneratedEvent($export, $salesChannelContext));
+
         } catch (Throwable $ex) {
             $stream->abort();
             $this->logger->error($ex->getMessage());

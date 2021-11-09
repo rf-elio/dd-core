@@ -30,46 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import;
+namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
 
-
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Import\Request\ImportRequest;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\ImportChannelResult;
+use Elio\FactFinder\Core\RealTimeUpdate\ImportService;
+use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class ImportApi
- * @package Elio\FactFinder\Api\Import
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class ExportGeneratedSubscriber
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ImportApi
+class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
-    private ApiClientFactoryInterface $apiFactory;
+    private ImportService $importService;
 
-    /**
-     * ImportApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     */
-    public function __construct(ApiClientFactoryInterface $apiFactory)
+    public function __construct(ImportService $importService)
     {
-        $this->apiFactory = $apiFactory;
+        $this->importService = $importService;
     }
 
-    /**
-     * Executes the ff import request
-     * @param ImportRequest $importRequest
-     * @param SalesChannelContext $context
-     * @return ImportChannelResult[]
-     * @throws ApiException
-     */
-    public function import(ImportRequest $importRequest, SalesChannelContext $context): array
+    public static function getSubscribedEvents(): array
     {
-        $apiClient = $this->apiFactory->createImportApi($context);
-        return $apiClient->startSuggestImportUsingPOST($importRequest->getChannel());
+        return[
+            ExportGeneratedEvent::class => 'onExportGenerated',
+        ];
+    }
+
+    private function onExportGenerated(ExportGeneratedEvent $event) {
+        $this->importService->import($event->getContext());
     }
 }
