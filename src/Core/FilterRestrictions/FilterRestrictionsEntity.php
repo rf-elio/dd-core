@@ -64,6 +64,7 @@ class FilterRestrictionsEntity extends Entity
      * @var string
      */
     protected $salesChannelId;
+    //@TODO add language id and differentiate between languages
     /**
      * is it collection of filters for allowed or blocked column
      * @var bool

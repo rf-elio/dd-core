@@ -49,9 +49,11 @@ class FilterEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $propertyName;
+    protected ?string $propertyName;
+
+    //@TODO add non translatable unique technical name
 
     /**
      * @var bool
@@ -74,17 +76,17 @@ class FilterEntity extends Entity
     protected $propertyId;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPropertyName(): string
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
 
     /**
-     * @param string $propertyName
+     * @param string|null $propertyName
      */
-    public function setPropertyName(string $propertyName): void
+    public function setPropertyName(?string $propertyName): void
     {
         $this->propertyName = $propertyName;
     }

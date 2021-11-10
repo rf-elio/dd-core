@@ -113,6 +113,7 @@ class FilterSyncService
      */
     public function syncAll(Context $context): void
     {
+        //@TODO also sync all available translations
         /**
          * Getting all properties
          */

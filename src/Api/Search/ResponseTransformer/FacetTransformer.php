@@ -140,8 +140,11 @@ class FacetTransformer implements ResponseTransformerInterface
                 continue;
             }
 
-            if (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true)) {
+            if (
+                (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true))
                 // isn't allowed
+                || in_array($facet->getName(), $filtersRestrictions[1], true)
+            ) {
                 continue;
             }
 

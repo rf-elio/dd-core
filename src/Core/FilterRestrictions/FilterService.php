@@ -41,6 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -217,7 +218,9 @@ class FilterService
         array $filters,
         FilterRestrictionsEntity $restriction,
         bool $isOverrides
-    ): ?array {
+    ): ?array
+    {
+        //@TODO differentiate between narrowing down and widening restrictions
         if ($restriction->isAllChecked()) { // if Allow/Block All checked
             if ($isOverrides) { // if this restriction overrides top-level restrictions
                 // we return everything allowed/blocked
@@ -339,7 +342,8 @@ class FilterService
         $criteria = new Criteria();
         $criteria->addAssociation('filters');
         $criteria->addFilter(
-            new EqualsFilter('salesChannelId', $salesChannelId)
+            new EqualsFilter('salesChannelId', $salesChannelId),
+            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('isInherited', true)])
         );
         if ($categoryId) {
             $criteria->addFilter(
