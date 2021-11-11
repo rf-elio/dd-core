@@ -25,6 +25,13 @@ Shopware.Component.register('ff-restriction-ruler', {
                 return 'global';
             }
         },
+        rulerHeader: {
+            type: String,
+            required: false,
+            default() {
+                return '';
+            }
+        },
         categoryId: {
             type: String,
             required: false,
@@ -44,6 +51,9 @@ Shopware.Component.register('ff-restriction-ruler', {
         filterRestrictionFilterRepository() {
             return this.repositoryFactory.create('elio_ff_filter_restrictions_filters');
         },
+        languageRepository() {
+            return this.repositoryFactory.create('language');
+        },
     },
 
     data() {
@@ -60,12 +70,17 @@ Shopware.Component.register('ff-restriction-ruler', {
             blockAllChecked: false,
             limitForCriteria: 500,
             salesChannelId: null,
+            languageId: null,
+            languageIdsList: [{
+                id: null,
+                name: 'All languages'
+            }],
             isModified: false,
             isDisplayingLeavePageWarning: false,
             forceDiscardChanges: false,
             nextRoute: null,
             isInherited: true,
-            isInheritable: false,
+            isInheritable: false
         }
     },
 
@@ -77,10 +92,17 @@ Shopware.Component.register('ff-restriction-ruler', {
         salesChannelId() {
             this.isInheritable = this.salesChannelId != null;
             this.loadFilters();
+        },
+        languageId() {
+            this.loadFilters();
         }
     },
 
     methods: {
+        setSalesChannelId(salesChannelId) {
+            this.salesChannelId = salesChannelId;
+        },
+
         onLeaving(to) {
             if (this.forceDiscardChanges) {
                 this.forceDiscardChanges = false;
@@ -117,13 +139,6 @@ Shopware.Component.register('ff-restriction-ruler', {
         removeInheritance() {
             this.isModified = true;
             this.isInherited = false;
-        },
-
-        onCreated() {
-            if(this.salesChannelId == null) {
-                this.isInherited = false;
-            }
-            this.loadFilters();
         },
 
         onDragStart(dragData) {
@@ -189,8 +204,20 @@ Shopware.Component.register('ff-restriction-ruler', {
             }
         },
 
-        setSalesChannelId(salesChannelId) {
-            this.salesChannelId = salesChannelId;
+        onCreated() {
+            const that = this;
+            if(this.salesChannelId == null) {
+                this.isInherited = false;
+            }
+            this.languageRepository.search(new Criteria, Shopware.Context.api).then((languages) => {
+                languages.forEach((language) => {
+                    that.languageIdsList.push({
+                        id: language.id,
+                        name: language.name
+                    });
+                });
+            });
+            this.loadFilters();
         },
 
         //todo: place below functions to seperate API/service
@@ -215,7 +242,8 @@ Shopware.Component.register('ff-restriction-ruler', {
                             [
                                 Criteria.equals('elio_ff_filter_restrictions.isCategory', true),
                                 Criteria.equals('elio_ff_filter_restrictions.categoryId', this.categoryId),
-                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId)
+                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId),
+                                Criteria.equals('elio_ff_filter_restrictions.languageId', this.languageId)
                             ]
                         )
                     );
@@ -226,7 +254,8 @@ Shopware.Component.register('ff-restriction-ruler', {
                             [
                                 Criteria.equals('elio_ff_filter_restrictions.isCategory', false),
                                 Criteria.equals('elio_ff_filter_restrictions.layer', this.layer),
-                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId)
+                                Criteria.equals('elio_ff_filter_restrictions.salesChannelId', this.salesChannelId),
+                                Criteria.equals('elio_ff_filter_restrictions.languageId', this.languageId)
                             ]
                         )
                     );
@@ -274,6 +303,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isAllowed = true;
                             filterRestriction.isAllChecked = false;
                             filterRestriction.salesChannelId = operator.salesChannelId;
+                            filterRestriction.languageId = operator.languageId;
                             filterRestriction.isInherited = operator.salesChannelId != null;
                             operator.isInherited = operator.salesChannelId != null;
 
@@ -297,6 +327,7 @@ Shopware.Component.register('ff-restriction-ruler', {
                             filterRestriction.isAllowed = false;
                             filterRestriction.isAllChecked = false;
                             filterRestriction.salesChannelId = operator.salesChannelId;
+                            filterRestriction.languageId = operator.languageId;
                             filterRestriction.isInherited = operator.salesChannelId != null;
                             operator.isInherited = operator.salesChannelId != null;
 
@@ -332,7 +363,7 @@ Shopware.Component.register('ff-restriction-ruler', {
             var operator = this;
             await this.filterRepository
                 .search(criteria, Shopware.Context.api)
-                .then(filters => {
+                .then((filters) => {
                     filters.forEach(function (filter) {
                         operator.allList.push(filter);
                     });

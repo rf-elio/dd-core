@@ -31,9 +31,11 @@
         "detail": {
           "cardTitleGroupInfo" : "Basic information",
           "labelName": "Property Name",
-          "textHeadline": "Neue Filter"
+          "labelTechnicalName": "Technical Name",
+          "textHeadline": "New Property"
         },
-        "placeholderPropertyName": "Property Name"
+        "placeholderPropertyName": "Property Name",
+        "placeholderTechnicalName": "Technical Name"
       },
       "customFilters": {
         "contextMenuView": "Bearbeiten",

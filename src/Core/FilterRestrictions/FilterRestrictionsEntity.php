@@ -35,6 +35,8 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
  * Class FilterRestrictionsEntity
@@ -64,7 +66,18 @@ class FilterRestrictionsEntity extends Entity
      * @var string
      */
     protected $salesChannelId;
-    //@TODO add language id and differentiate between languages
+    /**
+     * @var SalesChannelEntity|null
+     */
+    protected $salesChannel;
+    /**
+     * @var string
+     */
+    protected $languageId;
+    /**
+     * @var LanguageEntity|null
+     */
+    protected $language;
     /**
      * is it collection of filters for allowed or blocked column
      * @var bool
@@ -211,5 +224,53 @@ class FilterRestrictionsEntity extends Entity
     public function setSalesChannelId(string $salesChannelId): void
     {
         $this->salesChannelId = $salesChannelId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguageId(): string
+    {
+        return $this->languageId;
+    }
+
+    /**
+     * @param string $languageId
+     */
+    public function setLanguageId(string $languageId): void
+    {
+        $this->languageId = $languageId;
+    }
+
+    /**
+     * @return SalesChannelEntity|null
+     */
+    public function getSalesChannel(): ?SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
+    /**
+     * @param SalesChannelEntity|null $salesChannel
+     */
+    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
+    }
+
+    /**
+     * @return LanguageEntity|null
+     */
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param LanguageEntity|null $language
+     */
+    public function setLanguage(?LanguageEntity $language): void
+    {
+        $this->language = $language;
     }
 }

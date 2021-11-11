@@ -1,6 +1,16 @@
 {% block ff_restrictions_ruler %}
     <div class="elio-ff-restrictions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
+        <sw-field
+                v-model="languageId"
+                type="select"
+                required
+                :options="languageIdsList"
+                :label="$tc('ff-export.detail.labelLanguage')">
+        </sw-field>
+
+        <h1>{{ $tc(rulerHeader) }}</h1>
+
         <div v-if="isInheritable" class="elio-ff-restrictions-ruler-inheritance-block">
             <sw-inheritance-switch
                     class="sw-inherit-wrapper__inheritance-icon elio-ff-restrictions-ruler-inheritance"

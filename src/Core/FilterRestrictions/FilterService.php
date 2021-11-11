@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Elio\FactFinder\Configuration\LanguageHelper;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -102,6 +103,7 @@ class FilterService
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
         $context = $salesChannelContext->getContext();
+        $languageId = LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext);
         $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
         $filters = [null, null];
 
@@ -111,26 +113,26 @@ class FilterService
 
         // Global Level
         $salesChannelId = $salesChannelContext->getSalesChannelId();
-        $restrictions = $this->getRestrictions($salesChannelId, $context, 'global');
+        $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'global');
         $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
 
         // Applying overriding restrictions
         if ($level === self::LEVEL_SEARCH) {
-            $restrictions = $this->getRestrictions($salesChannelId, $context, 'search');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'search');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$configIsOverridingTopToDown
             );
         } elseif ($level === self::LEVEL_NAVIGATION) {
-            $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
             $filters = $this->applyRestrictionsToFiltersArray(
                 $filters,
                 $restrictions,
                 !$configIsOverridingTopToDown
             );
         } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
-            $restrictions = $this->getRestrictions($salesChannelId, $context, 'navigation');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
             if (count($restrictions->getElements()) != 0) {
                 $filters = $this->applyRestrictionsToFiltersArray(
                     $filters,
@@ -161,7 +163,7 @@ class FilterService
             }
 
             foreach ($categoriesTreeIds as $currentCategoryId) {
-                $restrictions = $this->getRestrictions($salesChannelId, $context, '', $currentCategoryId);
+                $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, '', $currentCategoryId);
                 if (count($restrictions->getElements()) != 0) {
                     $filters = $this->applyRestrictionsToFiltersArray(
                         $filters,
@@ -302,6 +304,7 @@ class FilterService
 
     /**
      * @param string $salesChannelId
+     * @param string $languageId
      * @param Context $context
      * @param string $layer
      * @param string|null $categoryId
@@ -309,20 +312,22 @@ class FilterService
      */
     private function getRestrictions(
         string $salesChannelId,
+        string $languageId,
         Context $context,
         string $layer,
         string $categoryId = null
     ): EntityCollection {
-        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $layer, $categoryId);
+        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $categoryId);
         $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         if (count($restrictions->getElements()) == 0) {
-            // if config for specified salesChannelId wasn't set up, then we get settings for all salesChannels
-            $criteria = $this->getFilterRestrictionsCriteria(null, $layer, $categoryId);
+            // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all salesChannels for this languageId
+            $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
-        } else if ($restrictions->first()->isInherited()) {
-            // if config for specified salesChannelId inherited from settings for all salesChannels then we push it
-            $criteria = $this->getFilterRestrictionsCriteria(null, $layer, $categoryId);
-            $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            if (count($restrictions->getElements()) == 0) {
+                // if config for all salesChannels AND languageId wasn't set up, then we get settings for all salesChannels for all languages
+                $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $categoryId);
+                $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+            }
         }
         return $restrictions;
     }
@@ -330,12 +335,14 @@ class FilterService
     /**
      * Returning criteria to search filter restrictions columns
      * @param string|null $salesChannelId
+     * @param string|null $languageId
      * @param string $layer
      * @param string|null $categoryId
      * @return Criteria
      */
     private function getFilterRestrictionsCriteria(
         ?string $salesChannelId,
+        ?string $languageId,
         string $layer,
         string $categoryId = null
     ): Criteria {
@@ -344,6 +351,9 @@ class FilterService
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),
             new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('isInherited', true)])
+        );
+        $criteria->addFilter(
+            new EqualsFilter('languageId', $languageId)
         );
         if ($categoryId) {
             $criteria->addFilter(

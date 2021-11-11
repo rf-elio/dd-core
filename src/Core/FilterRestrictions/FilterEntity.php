@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationCollection;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -53,8 +55,10 @@ class FilterEntity extends Entity
      */
     protected ?string $propertyName;
 
-    //@TODO add non translatable unique technical name
-
+    /**
+     * @var string
+     */
+    protected string $technicalName;
     /**
      * @var bool
      */
@@ -74,6 +78,11 @@ class FilterEntity extends Entity
      * @var string
      */
     protected $propertyId;
+
+    /**
+     * @var FilterDefinitionTranslationCollection|null
+     */
+    protected $translations;
 
     /**
      * @return string|null
@@ -153,5 +162,37 @@ class FilterEntity extends Entity
     public function setPropertyId(string $propertyId): void
     {
         $this->propertyId = $propertyId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTechnicalName(): string
+    {
+        return $this->technicalName;
+    }
+
+    /**
+     * @param string $technicalName
+     */
+    public function setTechnicalName(string $technicalName): void
+    {
+        $this->technicalName = $technicalName;
+    }
+
+    /**
+     * @return FilterDefinitionTranslationCollection|null
+     */
+    public function getTranslations(): ?FilterDefinitionTranslationCollection
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param FilterDefinitionTranslationCollection|null $translations
+     */
+    public function setTranslations(?FilterDefinitionTranslationCollection $translations): void
+    {
+        $this->translations = $translations;
     }
 }
