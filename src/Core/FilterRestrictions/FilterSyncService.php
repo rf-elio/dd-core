@@ -35,6 +35,8 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationEntity;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -57,21 +59,25 @@ class FilterSyncService
 {
     private EntityRepositoryInterface $propertyRepository;
     private EntityRepositoryInterface $filterRepository;
+    private EntityRepositoryInterface $filterTranslationRepository;
     private LoggerInterface $logger;
 
     /**
      * FilterService constructor.
      * @param EntityRepositoryInterface $propertyRepository
      * @param EntityRepositoryInterface $filterRepository
+     * @param EntityRepositoryInterface $filterTranslationRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
         EntityRepositoryInterface $propertyRepository,
         EntityRepositoryInterface $filterRepository,
+        EntityRepositoryInterface $filterTranslationRepository,
         LoggerInterface $logger
     ) {
         $this->propertyRepository = $propertyRepository;
         $this->filterRepository = $filterRepository;
+        $this->filterTranslationRepository = $filterTranslationRepository;
         $this->logger = $logger;
     }
 
@@ -117,11 +123,15 @@ class FilterSyncService
         /**
          * Getting all properties
          */
-        $properties = $this->propertyRepository->search(new Criteria(), $context);
-        $propertiesNames = [];
+        $criteria = new Criteria();
+        $criteria->addAssociation('translations');
+        $properties = $this->propertyRepository->search($criteria, $context);
+        $propertiesTranslations = [];
         $propertiesNamesUpdated = [];
+        $propertiesNames = [];
         /** @var PropertyGroupEntity $property */
         foreach ($properties as $property) {
+            $propertiesTranslations[$property->getId()] = $property->getTranslations()->getElements();
             $propertiesNames[$property->getId()] = $property->getName();
         }
 
@@ -129,27 +139,34 @@ class FilterSyncService
          * Updating properties names
          */
         $criteria = new Criteria();
+        $criteria->addAssociation('translations');
         $criteria->addFilter(
-            new EqualsAnyFilter('propertyId', array_keys($propertiesNames))
+            new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))
         );
         $filters = $this->filterRepository->search($criteria, $context);
-
         $dataToUpdate = [];
         /** @var FilterEntity $filter */
         foreach ($filters as $filter) {
-            $dataToUpdate[] = ['id' => $filter->getId(), 'propertyName' => $propertiesNames[$filter->getPropertyId()]];
+            /** @var PropertyGroupTranslationEntity $propertiesTranslation */
+            foreach ($propertiesTranslations[$filter->getPropertyId()] as $propertiesTranslation) {
+                $dataToUpdate[] = [
+                    'elioFfFilterId' => $filter->getId(),
+                    'languageId' => $propertiesTranslation->getLanguageId(),
+                    'propertyName' => $propertiesTranslation->getName()
+                ];
+            }
+            // flag as updated
             $propertiesNamesUpdated[$filter->getPropertyId()] = true;
         }
         try {
             if (count($dataToUpdate) > 0) {
-                $this->filterRepository->update($dataToUpdate, $context);
+                $this->filterTranslationRepository->upsert($dataToUpdate, $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot update filters with this property ids',
                 ['$dataToUpdate' => $dataToUpdate]
             );
-
             throw new FilterSyncUpdateFailedException(
                 'FilterSync: Update failed - {{ message }}',
                 ['message' => $e->getMessage()]
@@ -161,7 +178,7 @@ class FilterSyncService
          */
         $criteriaToDelete = new Criteria();
         $criteriaToDelete->addFilter(
-            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesNames))])
+            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))])
 
         );
         $filtersIdsToDelete = $this->filterRepository->searchIds($criteriaToDelete, $context)->getIds();
@@ -188,25 +205,37 @@ class FilterSyncService
         /**
          * Creating filters for new properties
          */
-        $propertyIdsToCreate = array_diff_key($propertiesNames, $propertiesNamesUpdated);
+        $propertyIdsToCreate = array_diff_key($propertiesTranslations, $propertiesNamesUpdated);
         $dataToCreate = [];
-        foreach ($propertyIdsToCreate as $propertyId => $propertyName) {
+        $dataTranslationToCreate = [];
+        /** @var PropertyGroupTranslationEntity $propertyTranslation */
+        foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
+            $newFilterId = Uuid::randomHex();
             $dataToCreate[] = [
-                'propertyName' => $propertyName,
+                'id' => $newFilterId,
+                'propertyName' => $propertiesNames[$propertyId],
+                'technicalName' => $propertiesNames[$propertyId],
                 'propertyId' => $propertyId,
                 'isCustom' => false
             ];
+            foreach ($propertyTranslations as $propertyTranslation) {
+                $dataTranslationToCreate[] = [
+                    'elioFfFilterId' => $newFilterId,
+                    'languageId' => $propertyTranslation->getLanguageId(),
+                    'propertyName' => $propertyTranslation->getName()
+                ];
+            }
         }
         try {
             if (count($dataToCreate) > 0) {
                 $this->filterRepository->create($dataToCreate, $context);
+                $this->filterTranslationRepository->upsert($dataTranslationToCreate, $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot create filters with this property ids and names',
                 ['$dataToCreate' => $dataToCreate]
             );
-
             throw new FilterSyncCreateException(
                 'FilterSync: Create failed - {{ message }}',
                 ['message' => $e->getMessage()]
