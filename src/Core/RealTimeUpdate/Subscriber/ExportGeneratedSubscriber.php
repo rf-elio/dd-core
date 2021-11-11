@@ -30,38 +30,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
 
-
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Elio\FactFinder\Core\RealTimeUpdate\ImportService;
+use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
+use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class ExportGeneratedSubscriber
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private ImportService $importService;
 
     /**
-     * Returns a definition about all fields that are added to the export
+     * ExportGeneratedSubscriber constructor.
+     * @param ImportServiceInterface $importService
+     */
+    public function __construct(ImportServiceInterface $importService)
+    {
+        $this->importService = $importService;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            ExportGeneratedEvent::class => 'onExportGenerated',
+        ];
+    }
+
+    /**
+     * Triggers the ff api after every successful export generation
      *
-     * @param ExportEntity $export
-     * @return array
+     * @param ExportGeneratedEvent $event
      */
-    public function getModel(ExportEntity $export) : array;
-
-    /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
-     */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function onExportGenerated(ExportGeneratedEvent $event): void
+    {
+        $this->importService->import($event->getExport(), $event->getContext());
+    }
 }

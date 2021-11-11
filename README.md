@@ -45,7 +45,9 @@ Commands:
 *  `bin/console elio-ff:export:generate {id} -f`: Refreshes a specific export (interval ignored)
 
 ### Events
-@todo
+*  **FilterProductModelEvent**: Can be used to register additional fields that should be added to the product export.
+*  **FilterProductExportItemPrepareEvent**: Can be used to add additional fields to the product export item
+
 
 ### Extensions
 #### Generator

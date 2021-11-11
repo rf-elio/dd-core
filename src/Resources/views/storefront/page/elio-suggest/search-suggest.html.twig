@@ -1,38 +1,66 @@
 {% block elio_search_suggest %}
     <div class="search-suggest e-search-suggest js-search-result">
         {% block elio_search_suggest_container %}
-            <div class="d-flex flex-md-row flex-wrap search-suggest-container">
-                {% if response.empty %}
-                <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
-                    {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
-                        type: "warning",
-                        content: "Zu Ihrer Suche wurden leider keine Suchergebnisse gefunden"
-                    } %}
-                </ul>
-                {% endif %}
+            <div class="search-suggest-container">
+                <div class="d-flex flex-md-row flex-wrap">
+                    {% if response.empty %}
+                        <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+                            <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
+                        </ul>
+                    {% else %}
+                        {% set searchResults = 0 %}
+                        {% for type, suggestionType in response.suggestions %}
+                            {% set suggestionUrlPath = '' %}
+                            {% if type == 'productName' %}
+                                {% set suggestionUrlPath = 'ProductURL' %}
+                            {% elseif type == 'category' %}
+                                {% set suggestionUrlPath = 'Path' %}
+                            {% endif %}
 
-                {% for type, suggestionType in response.suggestions %}
-                    {% set suggestionUrlPath = '' %}
-                    {% if type == 'productName' %}
-                        {% set suggestionUrlPath = 'ProductURL' %}
-                    {% elseif type == 'category' %}
-                        {% set suggestionUrlPath = 'Path' %}
-                    {% endif %}
+                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+                                <div class="elio-suggest-block-header">
+                                    {{ response.getTypeLabel(type) }}
+                                </div>
 
-                    <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
-                        <div class="elio-suggest-block-header text-capitalize">
-                            {{ response.getTypeLabel(type) }}
-                        </div>
+                                {% set searchResults = searchResults + suggestionType|length %}
 
-                        {% for suggestion in suggestionType %}
-                            {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
-                                searchTerm,
-                                suggestion,
-                                suggestionUrlPath
-                            } %}
+                                {% for suggestion in suggestionType %}
+                                    {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
+                                        searchTerm,
+                                        suggestion,
+                                        suggestionUrlPath
+                                    } %}
+                                {% endfor %}
+                            </ul>
                         {% endfor %}
-                    </ul>
-                {% endfor %}
+                    {% endif %}
+                </div>
+                {% if not response.empty %}
+                    {% block layout_search_suggest_result_total_result %}
+                        <div class="js-result search-suggest-total">
+                            <div class="row align-items-center no-gutters">
+                                {% block layout_search_suggest_result_total_link %}
+                                    <div class="col">
+                                        <a href="{{ path('frontend.search.page') }}?search={{ searchTerm|url_encode }}"
+                                           title="{{ "header.searchAllResults"|trans|striptags }}"
+                                           class="search-suggest-total-link">
+                                            {% sw_icon 'arrow-head-right' style { 'size': 'sm' } %}
+                                            {{ "header.searchAllResults"|trans|sw_sanitize }}
+                                        </a>
+                                    </div>
+                                {% endblock %}
+
+                                {% block layout_search_suggest_result_total_count %}
+                                    <div class="col-auto search-suggest-total-count">
+                                        {{ "header.searchResults"|trans({
+                                            '%count%': searchResults,
+                                        })|sw_sanitize }}
+                                    </div>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endblock %}
+                {% endif %}
             </div>
         {% endblock %}
     </div>

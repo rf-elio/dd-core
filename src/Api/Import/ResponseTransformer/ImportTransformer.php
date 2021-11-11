@@ -30,65 +30,67 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\FactFinder\Api\Import\ResponseTransformer;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Api\Import\Response\ImportResponse;
+use Elio\FactFinder\Api\Request\ApiRequest;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\ImportChannelResult;
+use Swagger\Client\Model\ModelInterface;
 
 /**
- * Class CSVFileWriter
- * @package Elio\FactFinder\Core\Export\Writer
+ * Class ImportTransformer
+ * @package Elio\FactFinder\Api\Import\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CSVFileWriter extends BaseWriter implements FileWriterInterface
+class ImportTransformer implements ResponseTransformerInterface
 {
-    public const TYPE = 'csv';
-    private const SEPARATOR = ';';
-    private bool $headerWritten = false;
-    private array $header = [];
-
     /**
-     * Checks if the writer can be used for the given export
-     * @param ExportEntity $export
+     * All results that are type of import channel can be transformed
+     *
+     * @param ModelInterface $model
+     * @param ApiRequest $request
+     * @param SalesChannelContext $context
      * @return bool
      */
-    public function supports(ExportEntity $export): bool
+    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
-        return $export->getFormat() === self::TYPE;
+        return $model instanceof ImportChannelResult;
     }
 
     /**
-     * @return resource
+     * Converts the api model to an response object
+     *
+     * @param ModelInterface $model
+     * @param ResponseCollection $responseCollection
+     * @param SalesChannelContext $context
+     * @param ApiRequest $request
      */
-    public function open(SalesChannelContext $context)
+    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
     {
-        $this->headerWritten = false;
-        return parent::open($context);
-    }
-
-    /**
-     * @param resource $handle
-     * @param ExportItem $item
-     */
-    protected function write($handle, ExportItem $item): void
-    {
-        if(!$this->headerWritten) {
-            fputcsv($handle, $this->model, self::SEPARATOR);
-            $this->headerWritten = true;
+        if (!$model instanceof ImportChannelResult) {
+            throw new InvalidTypeException($model, ImportChannelResult::class);
         }
 
-        $output = $item->getParams();
-        $orderedOutput = [];
+        $response = new ImportResponse(
+            $model->getChannel(),
+            $model->getDurationInSeconds(),
+            $model->getErrorMessages(),
+            $model->getImportType(),
+            $model->getImportedFields() ?? 0,
+            $model->getImportedRecords() ?? 0,
+            $model->getImportedWorldmatchDocuments() ?? 0,
+            $model->getStartDate(),
+            $model->getStatusMessages()
+        );
 
-        foreach ($this->model as $key) {
-            $orderedOutput[] = $output[$key] ?? '';
-        }
-
-        fputcsv($handle, $orderedOutput, self::SEPARATOR);
+        $responseCollection->set(ImportResponse::class, $response);
     }
 }

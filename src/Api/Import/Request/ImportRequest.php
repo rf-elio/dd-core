@@ -30,38 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Api\Import\Request;
 
-
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Elio\FactFinder\Api\Request\ChannelRequest;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class ImportRequest
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+abstract class ImportRequest extends ChannelRequest
 {
+    protected bool $quiet = false;
+
     /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
      * @return bool
      */
-    public function supports(ExportEntity $export) : bool;
+    public function isQuiet(): bool
+    {
+        return $this->quiet;
+    }
 
     /**
-     * Returns a definition about all fields that are added to the export
-     *
-     * @param ExportEntity $export
-     * @return array
+     * @param bool $quiet
      */
-    public function getModel(ExportEntity $export) : array;
-
-    /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
-     */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function setQuiet(bool $quiet): void
+    {
+        $this->quiet = $quiet;
+    }
 }

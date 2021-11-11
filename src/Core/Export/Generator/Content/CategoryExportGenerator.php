@@ -36,7 +36,6 @@ use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
 use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\FactFinder;
@@ -54,9 +53,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CategoryExportGenerator extends BaseCategoryExportGenerator implements ExportGeneratorInterface
+class CategoryExportGenerator extends BaseCategoryExportGenerator
 {
-    public const TYPE = 'content';
     protected const EXPORT_TYPE_CATEGORY = 'category';
     protected const EXPORT_TYPE_PAGE = 'page';
 
@@ -67,7 +65,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator implements Exp
      */
     public function supports(ExportEntity $export): bool
     {
-        return $export->getType() === static::TYPE;
+        return $export->getType() === ContentExportDefaults::TYPE;
     }
 
     /**
@@ -118,6 +116,11 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator implements Exp
             $type = self::EXPORT_TYPE_CATEGORY;
             $description .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
             $description = ltrim($description, ExportDefaults::KEYWORD_SEPARATOR);
+
+            // product categories disabled
+            if (!($export->getConfig()['export_product_categories'] ?? true)) {
+                return null;
+            }
         }
 
         $type = ValueUtil::getCustomFieldValue(

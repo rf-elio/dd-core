@@ -30,38 +30,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\FactFinder\Core\RealTimeUpdate;
 
 
+use Elio\FactFinder\Api\Import\Response\ImportResponse;
 use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class ImportService
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+interface ImportServiceInterface
 {
     /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
-
-    /**
-     * Returns a definition about all fields that are added to the export
+     * Starts the import at ff via the ff api
      *
      * @param ExportEntity $export
-     * @return array
+     * @param SalesChannelContext $salesChannelContext
+     * @return ImportResponse[]
      */
-    public function getModel(ExportEntity $export) : array;
-
-    /**
-     * @param ExportEntity $export
-     * @param OutputStream $output
-     * @param SalesChannelContext $context
-     */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function import(ExportEntity $export, SalesChannelContext $salesChannelContext): array;
 }

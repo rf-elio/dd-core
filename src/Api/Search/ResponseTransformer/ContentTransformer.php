@@ -73,7 +73,7 @@ class ContentTransformer implements ResponseTransformerInterface
                 $this->restoreDateTime(
                     $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_PUBLICATION_DATE) ?? ''
                 ),
-                $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_PRIORITY) ?? '',
+                (int)($this->getFirstValue($masterValues, ContentExportDefaults::FIELD_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY),
                 $hit->getPosition()
             );
             $listing->addContentItem($content);

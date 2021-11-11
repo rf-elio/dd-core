@@ -30,38 +30,62 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
-
+namespace Elio\FactFinder\Core\Export\Event;
 
 use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * Class ExportGeneratedEvent
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Andrey Baev <anb@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-interface ExportGeneratorInterface
+class ExportGeneratedEvent extends Event
 {
-    /**
-     * Checks if the generator can be used for the given export
-     * @param ExportEntity $export
-     * @return bool
-     */
-    public function supports(ExportEntity $export) : bool;
+    private ExportEntity $export;
+    private SalesChannelContext $context;
+
+    public function __construct(
+        ExportEntity $export,
+        SalesChannelContext $context
+    ) {
+        $this->export = $export;
+        $this->context = $context;
+    }
 
     /**
-     * Returns a definition about all fields that are added to the export
-     *
-     * @param ExportEntity $export
-     * @return array
+     * @return ExportEntity
      */
-    public function getModel(ExportEntity $export) : array;
+    public function getExport(): ExportEntity
+    {
+        return $this->export;
+    }
 
     /**
      * @param ExportEntity $export
-     * @param OutputStream $output
+     */
+    public function setExport(ExportEntity $export): void
+    {
+        $this->export = $export;
+    }
+
+    /**
+     * @return SalesChannelContext
+     */
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
+
+    /**
      * @param SalesChannelContext $context
      */
-    public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context) : void;
+    public function setContext(SalesChannelContext $context): void
+    {
+        $this->context = $context;
+    }
+
 }

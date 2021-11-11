@@ -33,7 +33,8 @@
 namespace Elio\FactFinder\Core\Export\Setup;
 
 use Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator;
-use Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator;
+use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
+use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -71,7 +72,7 @@ class ExportSetup
      */
     public function createExports(Context $context, ?array $types = null, string $format = null): void
     {
-        $exportTypes = $types ?? [ProductExportGenerator::TYPE, CategoryExportGenerator::TYPE];
+        $exportTypes = $types ?? [ProductExportDefaults::TYPE, ContentExportDefaults::TYPE];
         $exportFormat = $format ?? CSVFileWriter::TYPE;
         $criteria = new Criteria();
         $criteria->addAssociation('languages');
@@ -100,10 +101,11 @@ class ExportSetup
                         'active' => true,
                         'type' => $exportType,
                         'format' => $exportFormat,
-                        'interval' => '0 * * * *',
+                        'interval' => '0 */4 * * *',
                         'salesChannelId' => $salesChannel->getId(),
                         'languageId' => $language->getId(),
-                        'mapping' => '[]',
+                        'mapping' => [],
+                        'config' => [],
                         'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
                     ];
                 }

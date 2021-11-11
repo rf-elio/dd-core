@@ -6,17 +6,14 @@ const {Criteria} = Shopware.Data;
 
 Shopware.Component.register('ff-export-detail', {
     template: template,
-
     inject: [
         'repositoryFactory',
         'ffExport'
     ],
-
     mixins: [
         Mixin.getByName('notification'),
         Mixin.getByName('placeholder')
     ],
-
     shortcuts: {
         'SYSTEMKEY+S': {
             active() {
@@ -49,24 +46,12 @@ Shopware.Component.register('ff-export-detail', {
             isSaveSuccessful: false,
             // todo: fetch somehow with ajax to server or from configs or from file
             typeList: [
-                {
-                    id: 'product',
-                    name: 'product'
-                },
-                {
-                    id: 'content',
-                    name: 'content'
-                }
+                {id: 'product', name: 'product'},
+                {id: 'content', name: 'content'}
             ],
             formatList: [
-                {
-                    id: 'csv',
-                    name: 'csv'
-                },
-                {
-                    id: 'xml',
-                    name: 'xml'
-                }
+                {id: 'csv', name: 'csv'},
+                // {id: 'xml', name: 'xml'}
             ],
             languageIdsList: [],
             categoryIdsList: [],
@@ -117,114 +102,94 @@ Shopware.Component.register('ff-export-detail', {
         },
         getDownloadUrl() {
             return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
-        },
-        /**
-         * Keys which will be configured there for config column of export entity
-         */
-        getConfigKeys() {
-            // todo: fetch somehow with ajax to server or from configs or from file
-            if (this.isContent) {
-                return [
-                    'export_link_categories'
-                ]
-            } else {
-                return [
-                    'export_product_categories',
-                    'export_structure_categories',
-                    'export_link_categories',
-                    'export_footer_categories',
-                    'export_service_categories',
-                    'export_manufactures'
-                ]
-            }
-        },
+        }
     },
 
     methods: {
         createdComponent() {
-            this.fillSelectors();
-            this.loadEntityData();
-            this.updateStatus();
+            this._fillSelectors();
+            this._loadEntityData();
+            this._updateStatus();
         },
 
         /**
-         * filling selectors for saleschannels and languages
+         * filling selectors for sales channels and languages
+         * @private
          */
-        fillSelectors() {
-            var operator = this;
-            this.salesChannelRepository.search(new Criteria, Shopware.Context.api)
-                .then((salesChannels) => {
-                    salesChannels.forEach((salesChannel) => {
-                        operator.salesChannelIdsList.push({
-                            id: salesChannel.id,
-                            name: salesChannel.name
-                        });
+        _fillSelectors() {
+            const that = this;
+            this.salesChannelRepository.search(new Criteria, Shopware.Context.api).then((salesChannels) => {
+                salesChannels.forEach((salesChannel) => {
+                    that.salesChannelIdsList.push({
+                        id: salesChannel.id,
+                        name: salesChannel.name
                     });
                 });
-            this.languageRepository.search(new Criteria, Shopware.Context.api)
-                .then((languages) => {
-                    languages.forEach((language) => {
-                        operator.languageIdsList.push({
-                            id: language.id,
-                            name: language.name
-                        });
+            });
+            this.languageRepository.search(new Criteria, Shopware.Context.api).then((languages) => {
+                languages.forEach((language) => {
+                    that.languageIdsList.push({
+                        id: language.id,
+                        name: language.name
                     });
                 });
+            });
+
+            this.baseCategories = new Shopware.Data.EntityCollection('collection', 'collection', {}, null, []);
         },
 
         /**
          * Reloading entity data => cleaning unsaved changes
+         * @private
          */
-        loadEntityData() {
+        _loadEntityData() {
             this.isLoading = true;
-            var operator = this;
+            const that = this;
 
-            var criteria = new Criteria();
+            const criteria = new Criteria();
             criteria.addAssociation('salesChannel');
             criteria.addAssociation('language.locale');
-            this.exportRepository.get(this.exportId, Shopware.Context.api, criteria)
-                .then((currenExport) => {
-                    if (currenExport == null) {
-                        operator.$router.push({name: 'elio.factfinder.export.list'});
-                    }
+            this.exportRepository.get(this.exportId, Shopware.Context.api, criteria).then((currenExport) => {
+                if (currenExport == null) {
+                    that.$router.push({name: 'elio.factfinder.export.list'});
+                }
 
-                    operator.ff_export = currenExport;
-                    if (operator.ff_export.type === 'content') {
-                        operator.isContent = true;
-                    }
-                    operator.ff_export_mappings = operator.getMappings();
-                    operator.ff_export_config = operator.getConfig();
-                    operator.ff_export_mappings_newId = operator.ff_export_mappings.length;
-                    operator.isLoading = false;
+                that.ff_export = currenExport;
+                if (that.ff_export.type === 'content') {
+                    that.isContent = true;
+                }
+                that.ff_export_mappings = that._prepareSavedMapping();
+                that.ff_export_mappings_newId = that.ff_export_mappings.length;
+                that.isLoading = false;
 
-                    this.baseCategories = [];
-                    if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
-                        const criteria = new Criteria();
-                        criteria.setIds(currenExport.baseCategoryIds);
+                if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
+                    const criteria = new Criteria();
+                    criteria.setIds(currenExport.baseCategoryIds);
 
-                        return this.categoryRepository.search(criteria, Shopware.Context.api).then((categories) => {
-                            this.baseCategories = categories;
-                        });
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                    operator.isLoading = false;
-                    operator.$router.push({name: 'elio.factfinder.export.list'});
-                });
+                    return this.categoryRepository.search(criteria, Shopware.Context.api).then((categories) => {
+                        this.baseCategories = categories;
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                that.isLoading = false;
+                that.$router.push({name: 'elio.factfinder.export.list'});
+            });
         },
 
         /**
          * safety loading only timings data and not cleaning the unsaved changes for entity
+         * @private
          */
-        loadTimingsData() {
-            var operator = this;
+        _loadTimingsData() {
+            const that = this;
             this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
                 .then((currenExport) => {
                     if (currenExport != null) {
-                        operator.ff_export.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
-                        operator.ff_export.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
-                        operator.ff_export.nextGenerationDueAt = currenExport.nextGenerationDueAt;
+                        that.ff_export.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
+                        that.ff_export.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
+                        that.ff_export.nextGenerationDueAt = currenExport.nextGenerationDueAt;
                     }
                 })
                 .catch((err) => {
@@ -234,8 +199,9 @@ Shopware.Component.register('ff-export-detail', {
 
         /**
          * Updates the current status of this export
+         * @private
          */
-        updateStatus() {
+        _updateStatus() {
             this.ffExport.getStatus(this.exportId).then((response) => {
                 this.status = response.data
             })
@@ -245,35 +211,38 @@ Shopware.Component.register('ff-export-detail', {
          * Updates the base categories assigned to the export
          * @param categories
          */
-        changeBaseCategory(categories) {
+        onChangeBaseCategory(categories) {
             this.ff_export.baseCategoryIds = categories.getIds();
             this.baseCategories = categories;
         },
 
+        /**
+         * Saves the current export profile
+         * @returns {*}
+         */
         onSave() {
             this.ff_export.nextGenerationDueAt = null;
             this.isSaveSuccessful = false;
             this.isLoading = true;
-            var operator = this;
-            this.setMappings();
-            this.setConfig();
+            const that = this;
+            this._prepareMappingForSaving();
 
             return this.exportRepository.save(this.ff_export).then(() => {
-                operator.loadEntityData();
-                operator.isLoading = false;
-                operator.isSaveSuccessful = true;
+                that._loadEntityData();
+                that.isLoading = false;
+                that.isSaveSuccessful = true;
             }).catch((exception) => {
-                operator.createNotificationError({
+                that.createNotificationError({
                     message: this.$tc('ff-export.detail.messageSaveError', 0, {
                         error: exception.message, // todo: add proper error message
                     })
                 });
-                operator.isLoading = false;
+                that.isLoading = false;
                 throw exception;
             });
         },
 
-        saveFinish() {
+        onSaveFinish() {
             this.isSaveSuccessful = false;
         },
 
@@ -290,7 +259,7 @@ Shopware.Component.register('ff-export-detail', {
             }
             this.ff_export_mappings.push({
                 id: this.ff_export_mappings_newId,
-                source: 'new_source',
+                source: this.$tc('ff-export.detail.mappingSourcePlaceholder'),
                 target: 'new_target'
             });
             this.ff_export_mappings_newId = this.ff_export_mappings_newId + 1;
@@ -300,7 +269,7 @@ Shopware.Component.register('ff-export-detail', {
          * On button delete mapping click
          */
         onDeleteMapping(id) {
-            var position = -1;
+            let position = -1;
             this.ff_export_mappings.forEach((mapping, key) => {
                 if (position === -1) {
                     if (mapping.id === id) {
@@ -318,9 +287,10 @@ Shopware.Component.register('ff-export-detail', {
 
         /**
          * sets mappings to save in database
+         * @private
          */
-        setMappings() {
-            var mappings = [];
+        _prepareMappingForSaving() {
+            const mappings = [];
             // removing ids from saving
             this.ff_export_mappings.forEach((mapping) => {
                 mappings.push(
@@ -330,20 +300,16 @@ Shopware.Component.register('ff-export-detail', {
                     }
                 );
             });
-            this.ff_export.mapping = JSON.stringify(mappings);
+            this.ff_export.mapping = mappings;
         },
 
         /**
          * fetches the mappings from export-entity
+         * @private
          */
-        getMappings() {
-            var result = [];
-            var mappings = [];
-            try {
-                mappings = JSON.parse(this.ff_export.mapping);
-            } catch (err) {
-            }
-            var i = 0;
+        _prepareSavedMapping() {
+            const mappings = Object.values(this.ff_export.mapping);
+            let i = 0, result = [];
             mappings.forEach((mapping) => {
                 result.push(
                     {
@@ -354,35 +320,11 @@ Shopware.Component.register('ff-export-detail', {
                 );
                 i++;
             });
+
             if (mappings.length >= 1) {
                 this.isMappingsEmpty = false;
             }
             return result;
-        },
-
-        /**
-         * fetches the config from export-entity
-         */
-        getConfig() {
-            var result = {};
-            try {
-                result = JSON.parse(this.ff_export.config);
-                result = Object.fromEntries(result);
-            } catch (err) {}
-
-            this.getConfigKeys.forEach((key) => {
-                if(!(key in result)) {
-                    result[key] = false;
-                }
-            });
-            return result;
-        },
-
-        /**
-         * sets config to save in database
-         */
-        setConfig() {
-            this.ff_export.config = JSON.stringify(this.ff_export_config);
         },
 
         /**
@@ -396,34 +338,33 @@ Shopware.Component.register('ff-export-detail', {
          * On click on generate button
          */
         onGenerate() {
-            var operator = this;
-
+            const that = this;
             this.updateTimer = setTimeout(function requestStatus() {
-                operator.updateStatus();
-                if (operator.status.exists === true) {
-                    clearTimeout(operator.updateTimer);
-                    operator.isGenerating = false;
-                    operator.createNotificationSuccess({
-                        title: operator.$tc('global.default.success'),
-                        message: operator.$tc('ff-export.detail.messageGeneratingSuccess')
+                that._updateStatus();
+                if (that.status.exists === true) {
+                    clearTimeout(that.updateTimer);
+                    that.isGenerating = false;
+                    that.createNotificationSuccess({
+                        title: that.$tc('global.default.success'),
+                        message: that.$tc('ff-export.detail.messageGeneratingSuccess')
                     });
-                    operator.loadTimingsData();
+                    that._loadTimingsData();
                 } else {
-                    operator.updateTimer = setTimeout(requestStatus, operator.updateInterval || 3000);
+                    that.updateTimer = setTimeout(requestStatus, that.updateInterval || 3000);
                 }
-            }, operator.updateInterval || 3000);
+            }, that.updateInterval || 3000);
 
             this.isGenerating = true;
             this.ffExport.generate(this.exportId).then((responce) => {
                 console.log(responce);
-                operator.ff_export.lastGenerationStartedAt = Date.now();
+                that.ff_export.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
-                operator.createNotificationError({
+                that.createNotificationError({
                     message: this.$tc('ff-export.detail.messageGeneratingError', 0, {
                         error: exception.message, // todo: add proper error message
                     })
                 });
-                operator.isGenerating = false;
+                that.isGenerating = false;
             });
         },
 
@@ -431,13 +372,10 @@ Shopware.Component.register('ff-export-detail', {
          * Format date in twig
          */
         formatDate(dateToFormat) {
-            var dt = new Date(dateToFormat);
-
-            var result = ('0' + dt.getUTCDate()).slice(-2) + '-' + ('0' + dt.getUTCMonth() + 1).slice(-2) + '-' + dt.getUTCFullYear() + ' '
+            const dt = new Date(dateToFormat);
+            return ('0' + dt.getUTCDate()).slice(-2) + '-' + ('0' + dt.getUTCMonth() + 1).slice(-2) + '-' + dt.getUTCFullYear() + ' '
                 + ('0' + dt.getUTCHours()).slice(-2) + ':' + ('0' + dt.getUTCMinutes()).slice(-2)
                 + ':' + ('0' + dt.getUTCSeconds()).slice(-2) + '.' + ('00' + dt.getUTCMilliseconds()).slice(-3) + ' (UTC)';
-
-            return result;
         }
     }
 });

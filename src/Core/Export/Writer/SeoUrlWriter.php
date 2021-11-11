@@ -54,6 +54,9 @@ class SeoUrlWriter implements FileWriterInterface
         return true;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function open(SalesChannelContext $context)
     {
         $this->salesChannelContext = $context;
@@ -67,6 +70,14 @@ class SeoUrlWriter implements FileWriterInterface
         }
 
         return $this->decorated->open($context);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function registerModel(array $model): void
+    {
+        $this->decorated->registerModel($model);
     }
 
     /**
@@ -120,7 +131,7 @@ class SeoUrlWriter implements FileWriterInterface
      *
      * @param SeoRoute[][][] $routeResolveGroups
      */
-    private function resolveSeoUrls(array $routeResolveGroups): void
+    protected function resolveSeoUrls(array $routeResolveGroups): void
     {
         if(!$this->salesChannelContext) {
             return;
@@ -146,7 +157,7 @@ class SeoUrlWriter implements FileWriterInterface
      *
      * @param SeoRoute[][][] $routeResolveGroups
      */
-    private function resolveUnresolved(array $routeResolveGroups) : void
+    protected function resolveUnresolved(array $routeResolveGroups) : void
     {
         foreach ($routeResolveGroups as $seoRouteGroups) {
             foreach ($seoRouteGroups as $seoRouteGroup) {
@@ -161,12 +172,24 @@ class SeoUrlWriter implements FileWriterInterface
         }
     }
 
+    /**
+     * Clears the seo generation context for the next write process
+     *
+     * @param ExportEntity $export
+     * @param SalesChannelContext $context
+     * @param resource $handle
+     */
     public function close(ExportEntity $export, SalesChannelContext $context, $handle): void
     {
         $this->salesChannelContext = null;
         $this->decorated->close($export, $context, $handle);
     }
 
+    /**
+     * Clears the seo generation content for the next write process
+     *
+     * @param resource $handle
+     */
     public function abort($handle): void
     {
         $this->salesChannelContext = null;
@@ -181,7 +204,7 @@ class SeoUrlWriter implements FileWriterInterface
      * @param SalesChannelContext $context
      * @return array
      */
-    private function getSeoUrls(array $ids, string $routeName, SalesChannelContext $context): array
+    protected function getSeoUrls(array $ids, string $routeName, SalesChannelContext $context): array
     {
         $sql = 'SELECT LOWER(HEX(foreign_key)) as id, seo_path_info as path
                     FROM seo_url WHERE foreign_key IN (:ids)
