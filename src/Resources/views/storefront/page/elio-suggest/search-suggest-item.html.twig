@@ -1,0 +1,47 @@
+{% block e_layout_search_suggest_result_item %}
+    <li class="search-suggest-product js-result">
+        {% block layout_search_suggest_result_link %}
+            <a href="{{ suggestion.attributes[suggestionUrlPath] }}"
+               title="{{ suggestion.name }}"
+               class="search-suggest-product-link">
+                <div class="row align-items-center no-gutters">
+                    {% block layout_search_suggest_result_image %}
+                        <div class="col-auto search-suggest-product-image-container">
+                            {% if suggestion.imgUrl %}
+                                <img
+                                    src="{{ suggestion.imgUrl }}"
+                                    sizes="100px"
+                                    class="search-suggest-product-image"
+                                >
+                            {% else %}
+                                {% sw_icon 'placeholder' style {
+                                    'size': 'lg'
+                                } %}
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+
+                    {% block layout_search_suggest_result_name %}
+                        {% set searchMatchPairs = {} %}
+                        {% set nameLowerArray = suggestion.name|lower|split('') %}
+
+                        {% for letter in nameLowerArray %}
+                            {% set index = loop.index0 %}
+                            {% set restOfTheWord = nameLowerArray[index:]|join %}
+
+                            {% if restOfTheWord starts with searchTerm|lower %}
+                                {% set match = suggestion.name|split('')|slice(index, searchTerm|length)|join %}
+
+                                {% set searchMatchPairs = searchMatchPairs|merge({(match): "<span class='highlight'>"~match~"</span>"}) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="col search-suggest-product-name text-truncate">
+                            {{ suggestion.name|replace(searchMatchPairs)|raw }}
+                        </div>
+                    {% endblock %}
+                </div>
+            </a>
+        {% endblock %}
+    </li>
+{% endblock %}

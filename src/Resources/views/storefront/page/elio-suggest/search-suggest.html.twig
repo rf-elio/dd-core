@@ -21,41 +21,15 @@
 
                     <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
                         <div class="elio-suggest-block-header text-capitalize">
-                           {{ response.getTypeLabel(type) }}
+                            {{ response.getTypeLabel(type) }}
                         </div>
 
                         {% for suggestion in suggestionType %}
-                            <li class="search-suggest-product js-result">
-                                {% block layout_search_suggest_result_link %}
-                                    <a href="{{ suggestion.url }}"
-                                       title="{{ suggestion.name }}"
-                                       class="search-suggest-product-link">
-                                        <div class="row align-items-center no-gutters">
-                                            {% block layout_search_suggest_result_image %}
-                                                <div class="col-auto search-suggest-product-image-container">
-                                                    {% if suggestion.imgUrl %}
-                                                        <img
-                                                                src="{{ suggestion.imgUrl }}"
-                                                                sizes="100px"
-                                                                class="search-suggest-product-image"
-                                                        >
-                                                    {% else %}
-                                                        {% sw_icon 'placeholder' style {
-                                                            'size': 'lg'
-                                                        } %}
-                                                    {% endif %}
-                                                </div>
-                                            {% endblock %}
-
-                                            {% block layout_search_suggest_result_name %}
-                                                <div class="col search-suggest-product-name text-truncate">
-                                                    {{ suggestion.name }}
-                                                </div>
-                                            {% endblock %}
-                                        </div>
-                                    </a>
-                                {% endblock %}
-                            </li>
+                            {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
+                                searchTerm,
+                                suggestion,
+                                suggestionUrlPath
+                            } %}
                         {% endfor %}
                     </ul>
                 {% endfor %}
@@ -63,4 +37,3 @@
         {% endblock %}
     </div>
 {% endblock %}
-

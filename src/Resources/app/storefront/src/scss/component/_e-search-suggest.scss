@@ -16,6 +16,11 @@
 		font-weight: 500;
 		border-bottom: 1px solid $sw-text-color;
 	}
+
+	.highlight {
+		text-decoration: underline;
+		color: $sw-color-danger;
+	}
 }
 
 @include media-breakpoint-up(sm) {
