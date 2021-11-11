@@ -25,37 +25,11 @@
                                 {% set searchResults = searchResults + suggestionType|length %}
 
                                 {% for suggestion in suggestionType %}
-                                    <li class="search-suggest-product js-result">
-                                        {% block layout_search_suggest_result_link %}
-                                            <a href="{{ suggestion.url }}"
-                                               title="{{ suggestion.name }}"
-                                               class="search-suggest-product-link">
-                                                <div class="row align-items-center no-gutters">
-                                                    {% block layout_search_suggest_result_image %}
-                                                        <div class="col-auto search-suggest-product-image-container">
-                                                            {% if suggestion.imgUrl %}
-                                                                <img
-                                                                        src="{{ suggestion.imgUrl }}"
-                                                                        sizes="100px"
-                                                                        class="search-suggest-product-image"
-                                                                >
-                                                            {% else %}
-                                                                {% sw_icon 'placeholder' style {
-                                                                    'size': 'lg'
-                                                                } %}
-                                                            {% endif %}
-                                                        </div>
-                                                    {% endblock %}
-
-                                                    {% block layout_search_suggest_result_name %}
-                                                        <div class="col search-suggest-product-name text-truncate">
-                                                            {{ suggestion.name }}
-                                                        </div>
-                                                    {% endblock %}
-                                                </div>
-                                            </a>
-                                        {% endblock %}
-                                    </li>
+                                    {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
+                                        searchTerm,
+                                        suggestion,
+                                        suggestionUrlPath
+                                    } %}
                                 {% endfor %}
                             </ul>
                         {% endfor %}
@@ -68,8 +42,8 @@
                                 {% block layout_search_suggest_result_total_link %}
                                     <div class="col">
                                         <a href="{{ path('frontend.search.page') }}?search={{ searchTerm|url_encode }}"
-                                            title="{{ "header.searchAllResults"|trans|striptags }}"
-                                            class="search-suggest-total-link">
+                                           title="{{ "header.searchAllResults"|trans|striptags }}"
+                                           class="search-suggest-total-link">
                                             {% sw_icon 'arrow-head-right' style { 'size': 'sm' } %}
                                             {{ "header.searchAllResults"|trans|sw_sanitize }}
                                         </a>
@@ -91,4 +65,3 @@
         {% endblock %}
     </div>
 {% endblock %}
-

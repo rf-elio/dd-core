@@ -23,6 +23,11 @@
 		border-bottom: 1px solid $sw-text-color;
 	}
 
+	.highlight {
+		text-decoration: underline;
+		color: $sw-color-danger;
+	}
+
 	.search-suggest-total {
 		padding-right: 20px;
 		padding-top: 20px;
