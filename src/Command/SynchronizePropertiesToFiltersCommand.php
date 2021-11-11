@@ -51,7 +51,6 @@ use Throwable;
 class SynchronizePropertiesToFiltersCommand extends Command
 {
     private FilterSyncService $filterService;
-    //@TODO similar command for shopware base filters(categoryPath, manufacturers, price, etc)
 
     /**
      * SynchronizePropertiesToFiltersCommand constructor.
