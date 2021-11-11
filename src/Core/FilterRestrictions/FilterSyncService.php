@@ -90,11 +90,15 @@ class FilterSyncService
     {
         /** @var PropertyGroupEntity $property */
         $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
-
+        if (!$property) {
+            return;
+        }
         $criteria = new Criteria();
+        $criteria->addAssociation('translations');
         $criteria->addFilter(
             new EqualsFilter('propertyId', $property->getId())
         );
+        $propertyTranslations = $property->getTranslations();
         $filter = $this->filterRepository->search($criteria, $context);
         if ($filter->getTotal() > 0) {
             // updating
@@ -104,12 +108,40 @@ class FilterSyncService
                 ['id' => $filterEntity->getId(), 'propertyName' => $property->getName()],
                 $context
             );
+            $dataToUpdate = [];
+            foreach ($propertyTranslations as $propertyTranslation) {
+                $dataToUpdate[] = [
+                    'elioFfFilterId' => $filterEntity->getId(),
+                    'languageId' => $propertyTranslation->getLanguageId(),
+                    'propertyName' => $propertyTranslation->getName()
+                ];
+            }
+            if (count($dataToUpdate) > 0) {
+                $this->filterTranslationRepository->upsert($dataToUpdate, $context);
+            }
         } else {
             // creating
+            $newFilterId = Uuid::randomHex();
             $this->filterRepository->create(
-                ['propertyName' => $property->getName(), 'propertyId' => $property->getId(), 'isCustom' => false],
+                [
+                    'id' => $newFilterId,
+                    'propertyName' => $property->getName(),
+                    'propertyId' => $property->getId(),
+                    'isCustom' => false
+                ],
                 $context
             );
+            $dataToCreate = [];
+            foreach ($propertyTranslations as $propertyTranslation) {
+                $dataToCreate[] = [
+                    'elioFfFilterId' => $newFilterId,
+                    'languageId' => $propertyTranslation->getLanguageId(),
+                    'propertyName' => $propertyTranslation->getName()
+                ];
+            }
+            if (count($dataToCreate) > 0) {
+                $this->filterTranslationRepository->upsert($dataToCreate, $context);
+            }
         }
     }
 
@@ -178,7 +210,10 @@ class FilterSyncService
          */
         $criteriaToDelete = new Criteria();
         $criteriaToDelete->addFilter(
-            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))])
+            new NotFilter(
+                NotFilter::CONNECTION_AND,
+                [new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))]
+            )
 
         );
         $filtersIdsToDelete = $this->filterRepository->searchIds($criteriaToDelete, $context)->getIds();
