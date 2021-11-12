@@ -54,7 +54,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class FactFinder extends Plugin
 {
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_INHERITED_TYPE = 'content_export_inherited_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD = 'content_export_exclude_child';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
 
     public const CUSTOM_FIELDS = [
@@ -72,12 +74,28 @@ class FactFinder extends Plugin
                         'en-GB' => 'Type'
                     ]
                 ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_INHERITED_TYPE => [
+                    'type' => 'text',
+                    'componentName' => 'sw-field',
+                    'placeholder' => 'category',
+                    'label' => [
+                        'en-GB' => 'Inherited Type'
+                    ]
+                ],
                 self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
                     'type' => 'bool',
                     'componentName' => 'sw-field',
                     'label' => [
                         'en-GB' => 'Exclude in content export',
                         'de-DE' => 'Aus dem Content Export ausschließen'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD => [
+                    'type' => 'bool',
+                    'componentName' => 'sw-field',
+                    'label' => [
+                        'en-GB' => 'Exclude child in content export',
+                        'de-DE' => 'Kind vom Inhaltsexport ausschließen'
                     ]
                 ],
                 self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
