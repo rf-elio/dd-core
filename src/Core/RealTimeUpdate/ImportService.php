@@ -82,18 +82,23 @@ class ImportService implements ImportServiceInterface
     {
         $config = $this->configService->getByContext($salesChannelContext);
         $results = [];
+        $exportConfig = $export->getConfig();
 
         try {
-            $importRequest = new SearchImportRequest($config->getApiChannel());
-            $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
-            if($importResponse = $responseCollection->get(ImportResponse::class)) {
-                $results[] = $importResponse;
+            if ($exportConfig['trigger_import_search_data'] ?? false) {
+                $importRequest = new SearchImportRequest($config->getApiChannel());
+                $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
+                if($importResponse = $responseCollection->get(ImportResponse::class)) {
+                    $results[] = $importResponse;
+                }
             }
 
-            $importRequest = new SuggestImportRequest($config->getApiChannel());
-            $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
-            if($importResponse = $responseCollection->get(ImportResponse::class)) {
-                $results[] = $importResponse;
+            if ($exportConfig['trigger_import_suggest_data'] ?? false) {
+                $importRequest = new SuggestImportRequest($config->getApiChannel());
+                $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
+                if ($importResponse = $responseCollection->get(ImportResponse::class)) {
+                    $results[] = $importResponse;
+                }
             }
         } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
