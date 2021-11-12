@@ -105,7 +105,7 @@ class FilterService
         $context = $salesChannelContext->getContext();
         $languageId = LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext);
         $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
-        $filters = [null, null];
+        $filters = [null, []];
 
         $config = $this->configService->getByContext($salesChannelContext);
         $configParentCategories = $config->isRestrictionsParentCategories();
@@ -222,13 +222,13 @@ class FilterService
         bool $isOverrides
     ): ?array
     {
-        //@TODO differentiate between narrowing down and widening restrictions
         if ($restriction->isAllChecked()) { // if Allow/Block All checked
             if ($isOverrides) { // if this restriction overrides top-level restrictions
                 // we return everything allowed/blocked
                 $result = null;
             } else { // if this restriction doesn't override top-level restrictions
-                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $this->getAllFilters());
+                // we return all allowed filters from level before because it is allowing/blocking-all and not-overriding case
+                return $filters;
             }
         } else { // if allow/block only selected checked (default)
             $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
@@ -236,7 +236,7 @@ class FilterService
                 // we return allowed/blocked only selected on this level
                 $result = array_values($restrictionFilters);
             } else { // if this restriction doesn't override top-level restrictions
-                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters);
+                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters, $isOverrides);
             }
         }
         return $result;
@@ -246,25 +246,36 @@ class FilterService
      * @param array $filters
      * @param FilterRestrictionsEntity $restriction
      * @param array $filtersToApply
+     * @param $isOverrides
      * @return array|null
      */
     private function getMergedFilterArrayAfterRestriction(
         array $filters,
         FilterRestrictionsEntity $restriction,
-        array $filtersToApply
+        array $filtersToApply,
+        $isOverrides
     ): ?array {
+        // case: allow/block only selected and override is false
         if ($filters[$restriction->isAllowed() ? 0 : 1] === null) { // if we already have null what's mean that we allow/block everything
             $result = null; // we keep it as it is
         } else {
             $result = [];
             if ($filters[$restriction->isAllowed() ? 1 : 0] !== null) { // if $filters[1:0] == null then we are blocking/allowing all already and can't override it
+
                 // we add filters to allowed/blocked Filters which aren't blocked/allowed on level before
                 // (bcs we aren't overriding rules)
                 foreach ($filtersToApply as $filter) {
-                    if (!in_array($filter, $filters[$restriction->isAllowed() ? 1 : 0], true)) {
+                    if ($restriction->isAllowed()) {
+                        // allowed before
+                        if (in_array($filter, $filters[0], true)) {
+                            $result[] = $filter;
+                        }
+                    } else {
+                        // blocking new filter anyway
                         $result[] = $filter;
                     }
                 }
+
                 // we merge them together
                 $result = array_unique(array_merge($result, $filters[$restriction->isAllowed() ? 0 : 1]));
             }
