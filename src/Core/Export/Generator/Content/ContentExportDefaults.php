@@ -55,6 +55,7 @@ abstract class ContentExportDefaults
     public const FIELD_PUBLICATION_DATE = 'PublicationDate';
     public const FIELD_PRIORITY = 'Priority';
     public const FIELD_CONTENT_STRUCTURE = 'ContentStructure';
+    public const FIELD_TYPE_DEFAULT = 'category';
 
     public const DEFAULT_PRIORITY = 50;
 }

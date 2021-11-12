@@ -82,7 +82,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param ExportEntity $entity
      * @return array
      */
-    public function getModel(ExportEntity $entity) : array
+    public function getModel(ExportEntity $entity): array
     {
         return [
             Defaults::FIELD_ID,
@@ -123,7 +123,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      *
      * @param Node[] $nodes
      */
-    private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []) : void
+    private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []): void
     {
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
@@ -131,6 +131,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
             $categoryCustomFields = $category->getCustomFields() ?? [];
             $categoryCustomFields = array_filter($categoryCustomFields);
             $categoryCustomFields = array_replace($inheritedCustomFields, $categoryCustomFields);
+            $categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_INHERITED_TYPE] = $inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] ?? ($category->getCustomFields(
+                    )[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] ?? ContentExportDefaults::FIELD_TYPE_DEFAULT);
             $this->customFields[$category->getId()] = $categoryCustomFields;
             $this->buildCustomFieldInheritanceByNodes($node->getChildNodes(), $categoryCustomFields);
         }
@@ -143,7 +145,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      */
     protected function getCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
     {
-        if(empty($categoryIds)) {
+        if (empty($categoryIds)) {
             return new EntityCollection([]);
         }
 
@@ -183,17 +185,20 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param OutputStream $output
      * @param SalesChannelContext $context
      */
-    protected function processCategories(EntityCollection $categories, ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
-    {
+    protected function processCategories(
+        EntityCollection $categories,
+        ExportEntity $export,
+        OutputStream $output,
+        SalesChannelContext $context
+    ): void {
         $categoryIds = [];
-
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
-            if(isset($this->customFields[$category->getId()])) {
+            if (isset($this->customFields[$category->getId()])) {
                 $category->setCustomFields($this->customFields[$category->getId()]);
             }
 
-            if(
+            if (
                 !$this->isCategoryAllowed($category, $export) ||
                 (
                     isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
@@ -203,14 +208,18 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 continue;
             }
 
-            $categoryIds[] = $category->getId();
-            if($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
+            if (
+                !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD]) &&
+                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD])
+            ) {
+                $categoryIds[] = $category->getId();
+            }
+            if ($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
                 $output->write($item);
             }
         }
-
         $childCategories = $this->getCategories($categoryIds, $context);
-        if($childCategories->count() > 0) {
+        if ($childCategories->count() > 0) {
             $this->processCategories($childCategories, $export, $output, $context);
         }
     }
@@ -228,7 +237,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         ExportItem $exportItem,
         ExportEntity $export,
         SalesChannelContext $context
-    ) : ?ExportItem;
+    ): ?ExportItem;
 
     /**
      * Checks if the given category is allowed to be exported
