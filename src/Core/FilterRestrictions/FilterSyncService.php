@@ -90,9 +90,6 @@ class FilterSyncService
     {
         /** @var PropertyGroupEntity $property */
         $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
-        if (!$property) {
-            return;
-        }
         $criteria = new Criteria();
         $criteria->addAssociation('translations');
         $criteria->addFilter(
@@ -243,7 +240,6 @@ class FilterSyncService
         $propertyIdsToCreate = array_diff_key($propertiesTranslations, $propertiesNamesUpdated);
         $dataToCreate = [];
         $dataTranslationToCreate = [];
-        /** @var PropertyGroupTranslationEntity $propertyTranslation */
         foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
             $newFilterId = Uuid::randomHex();
             $dataToCreate[] = [

@@ -236,7 +236,7 @@ class FilterService
                 // we return allowed/blocked only selected on this level
                 $result = array_values($restrictionFilters);
             } else { // if this restriction doesn't override top-level restrictions
-                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters, $isOverrides);
+                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters);
             }
         }
         return $result;
@@ -246,14 +246,12 @@ class FilterService
      * @param array $filters
      * @param FilterRestrictionsEntity $restriction
      * @param array $filtersToApply
-     * @param $isOverrides
      * @return array|null
      */
     private function getMergedFilterArrayAfterRestriction(
         array $filters,
         FilterRestrictionsEntity $restriction,
-        array $filtersToApply,
-        $isOverrides
+        array $filtersToApply
     ): ?array {
         // case: allow/block only selected and override is false
         if ($filters[$restriction->isAllowed() ? 0 : 1] === null) { // if we already have null what's mean that we allow/block everything
