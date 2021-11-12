@@ -49,7 +49,9 @@
         "export_structure_categories": "Export structure categories",
         "export_link_categories": "Export link categories",
         "export_footer_categories": "Export footer categories",
-        "export_service_categories": "Export service categories"
+        "export_service_categories": "Export service categories",
+        "trigger_import_search_data": "Trigger: Import Search Data",
+        "trigger_import_suggest_data": "Trigger: Import Suggest Data"
       },
       "download": "Download",
       "buttonGenerate": "Generate",

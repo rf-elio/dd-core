@@ -213,9 +213,16 @@
                                 :label="$tc('ff-export.detail.config.export_link_categories')">
                         </sw-field>
                     </div>
-                    <div v-else>
-                        {{ $tc('ff-export.detail.noConfigAvailable') }}
-                    </div>
+                    <sw-field
+                            v-model="ff_export.config.trigger_import_search_data"
+                            type="switch"
+                            :label="$tc('ff-export.detail.config.trigger_import_search_data')">
+                    </sw-field>
+                    <sw-field
+                            v-model="ff_export.config.trigger_import_suggest_data"
+                            type="switch"
+                            :label="$tc('ff-export.detail.config.trigger_import_suggest_data')">
+                    </sw-field>
                 </sw-card>
 
                 <sw-card :class="[{'ff-mappings--empty':isMappingsEmpty}]"
