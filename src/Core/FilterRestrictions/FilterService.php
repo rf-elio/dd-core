@@ -329,13 +329,18 @@ class FilterService
         $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $categoryId);
         $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         if (count($restrictions->getElements()) == 0) {
-            // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all salesChannels for this languageId
-            $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $categoryId);
+            // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all languages for this salesChannelId
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, null, $layer, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
             if (count($restrictions->getElements()) == 0) {
-                // if config for all salesChannels AND languageId wasn't set up, then we get settings for all salesChannels for all languages
-                $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $categoryId);
+                // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all salesChannels for this languageId
+                $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $categoryId);
                 $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+                if (count($restrictions->getElements()) == 0) {
+                    // if config for all salesChannels AND languageId wasn't set up, then we get settings for all salesChannels for all languages
+                    $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $categoryId);
+                    $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
+                }
             }
         }
         return $restrictions;

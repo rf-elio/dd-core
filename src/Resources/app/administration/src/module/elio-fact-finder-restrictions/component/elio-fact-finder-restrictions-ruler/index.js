@@ -90,10 +90,11 @@ Shopware.Component.register('ff-restriction-ruler', {
 
     watch: {
         salesChannelId() {
-            this.isInheritable = this.salesChannelId != null;
+            this.isInheritable = this.salesChannelId != null || this.languageId != null;
             this.loadFilters();
         },
         languageId() {
+            this.isInheritable = this.salesChannelId != null || this.languageId != null;
             this.loadFilters();
         }
     },
