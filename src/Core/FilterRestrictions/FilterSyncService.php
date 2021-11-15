@@ -201,7 +201,11 @@ class FilterSyncService
      */
     private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) {
         $this->filterRepository->update(
-            ['id' => $filterEntity->getId(), 'propertyName' => $propertyName],
+            [
+                'id' => $filterEntity->getId(),
+                'propertyName' => $propertyName,
+                'technicalName' => $propertyName
+            ],
             $context
         );
         $dataToUpdate = [];
@@ -230,6 +234,7 @@ class FilterSyncService
             [
                 'id' => $newFilterId,
                 'propertyName' => $propertyName,
+                'technicalName' => $propertyName,
                 'propertyId' => $propertyId,
                 'isCustom' => false
             ],
