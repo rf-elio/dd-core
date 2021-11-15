@@ -143,21 +143,21 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param SalesChannelContext $context
      * @return EntityCollection<CategoryEntity>
      */
-    protected function getCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
+    protected function getChildCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
     {
         if (empty($categoryIds)) {
             return new EntityCollection([]);
         }
 
-        $criteria = $this->getCriteria($categoryIds);
+        $criteria = $this->getBaseCriteria($categoryIds);
+        $this->extendCriteriaForChildCategories($criteria, $categoryIds);
         return $this->categoryRepository->search($criteria, $context->getContext());
     }
 
     /**
-     * @param array $categoryIds
      * @return Criteria
      */
-    protected function getCriteria(array $categoryIds): Criteria
+    protected function getBaseCriteria(): Criteria
     {
         $criteria = new Criteria();
         $criteria->addAssociation('cmsPage');
@@ -165,15 +165,22 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('translations');
         $criteria->addAssociation('media');
 
+        $criteria->addFilter(new EqualsFilter('category.visible', true));
+        $criteria->addFilter(new EqualsFilter('category.active', true));
+        return $criteria;
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @param array $categoryIds
+     */
+    protected function extendCriteriaForChildCategories(Criteria $criteria, array $categoryIds): void
+    {
         $categoryFilters = [];
         foreach ($categoryIds as $categoryId) {
             $categoryFilters[] = new EqualsFilter('parentId', $categoryId);
         }
-
         $criteria->addFilter(new OrFilter($categoryFilters));
-        $criteria->addFilter(new EqualsFilter('category.visible', true));
-        $criteria->addFilter(new EqualsFilter('category.active', true));
-        return $criteria;
     }
 
     /**
@@ -198,13 +205,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $category->setCustomFields($this->customFields[$category->getId()]);
             }
 
-            if (
-                !$this->isCategoryAllowed($category, $export) ||
-                (
-                    isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
-                    $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
-                )
-            ) {
+            if (!$this->isCategoryAllowed($category, $export)) {
                 continue;
             }
 
@@ -214,11 +215,12 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
             ) {
                 $categoryIds[] = $category->getId();
             }
+
             if ($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
                 $output->write($item);
             }
         }
-        $childCategories = $this->getCategories($categoryIds, $context);
+        $childCategories = $this->getChildCategories($categoryIds, $context);
         if ($childCategories->count() > 0) {
             $this->processCategories($childCategories, $export, $output, $context);
         }
@@ -256,6 +258,21 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         }
 
         if ($categoryType === 'folder' && !($exportConfig['export_structure_categories'] ?? true)) {
+            return false;
+        }
+
+        if (
+            $category->getParentId() &&
+            isset($this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD])
+            && $this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD]
+        ) {
+            return false;
+        }
+
+        if (
+            isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+            $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+        ) {
             return false;
         }
 

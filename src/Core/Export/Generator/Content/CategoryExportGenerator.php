@@ -42,6 +42,8 @@ use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -78,19 +80,22 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         $this->buildCustomFieldInheritance($context->getContext());
-        $categories = $this->getCategories($export->getBaseCategoryIds(), $context);
+
+        $criteria = $this->getBaseCriteria();
+        $criteria->addFilter(new EqualsAnyFilter('id', $export->getBaseCategoryIds()));
+        $categories = $this->categoryRepository->search($criteria, $context->getContext());
+
         $this->processCategories($categories, $export, $output, $context);
     }
 
     /**
      * Restricts the result to only categories with active products
      *
-     * @param array $categoryIds
      * @return Criteria
      */
-    protected function getCriteria(array $categoryIds): Criteria
+    protected function getBaseCriteria(): Criteria
     {
-        $criteria = parent::getCriteria($categoryIds);
+        $criteria = parent::getBaseCriteria();
         $criteria->addAssociation('products');
         return $criteria;
     }
