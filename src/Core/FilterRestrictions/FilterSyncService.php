@@ -36,7 +36,6 @@ use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationEntity;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -100,45 +99,10 @@ class FilterSyncService
         if ($filter->getTotal() > 0) {
             // updating
             /** @var FilterEntity $filterEntity */
-            $filterEntity = $filter->first();
-            $this->filterRepository->update(
-                ['id' => $filterEntity->getId(), 'propertyName' => $property->getName()],
-                $context
-            );
-            $dataToUpdate = [];
-            foreach ($propertyTranslations as $propertyTranslation) {
-                $dataToUpdate[] = [
-                    'elioFfFilterId' => $filterEntity->getId(),
-                    'languageId' => $propertyTranslation->getLanguageId(),
-                    'propertyName' => $propertyTranslation->getName()
-                ];
-            }
-            if (count($dataToUpdate) > 0) {
-                $this->filterTranslationRepository->upsert($dataToUpdate, $context);
-            }
+            $this->update($filter->first(), $property->getName(), $propertyTranslations, $context);
         } else {
             // creating
-            $newFilterId = Uuid::randomHex();
-            $this->filterRepository->create(
-                [
-                    'id' => $newFilterId,
-                    'propertyName' => $property->getName(),
-                    'propertyId' => $property->getId(),
-                    'isCustom' => false
-                ],
-                $context
-            );
-            $dataToCreate = [];
-            foreach ($propertyTranslations as $propertyTranslation) {
-                $dataToCreate[] = [
-                    'elioFfFilterId' => $newFilterId,
-                    'languageId' => $propertyTranslation->getLanguageId(),
-                    'propertyName' => $propertyTranslation->getName()
-                ];
-            }
-            if (count($dataToCreate) > 0) {
-                $this->filterTranslationRepository->upsert($dataToCreate, $context);
-            }
+            $this->create($property->getId(), $property->getName(), $propertyTranslations, $context);
         }
     }
 
@@ -148,7 +112,6 @@ class FilterSyncService
      */
     public function syncAll(Context $context): void
     {
-        //@TODO also sync all available translations
         /**
          * Getting all properties
          */
@@ -173,28 +136,16 @@ class FilterSyncService
             new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))
         );
         $filters = $this->filterRepository->search($criteria, $context);
-        $dataToUpdate = [];
-        /** @var FilterEntity $filter */
-        foreach ($filters as $filter) {
-            /** @var PropertyGroupTranslationEntity $propertiesTranslation */
-            foreach ($propertiesTranslations[$filter->getPropertyId()] as $propertiesTranslation) {
-                $dataToUpdate[] = [
-                    'elioFfFilterId' => $filter->getId(),
-                    'languageId' => $propertiesTranslation->getLanguageId(),
-                    'propertyName' => $propertiesTranslation->getName()
-                ];
-            }
-            // flag as updated
-            $propertiesNamesUpdated[$filter->getPropertyId()] = true;
-        }
         try {
-            if (count($dataToUpdate) > 0) {
-                $this->filterTranslationRepository->upsert($dataToUpdate, $context);
+            /** @var FilterEntity $filter */
+            foreach ($filters as $filter) {
+                $propertiesNamesUpdated[$filter->getPropertyId()] = true; // flag as updated
+                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations, $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot update filters with this property ids',
-                ['$dataToUpdate' => $dataToUpdate]
+                ['$filters' => $filters]
             );
             throw new FilterSyncUpdateFailedException(
                 'FilterSync: Update failed - {{ message }}',
@@ -206,28 +157,15 @@ class FilterSyncService
          * Deleting old filters
          */
         $criteriaToDelete = new Criteria();
-        $criteriaToDelete->addFilter(
-            new NotFilter(
-                NotFilter::CONNECTION_AND,
-                [new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))]
-            )
-
-        );
+        $criteriaToDelete->addFilter(new NotFilter(NotFilter::CONNECTION_AND, [new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))]));
         $filtersIdsToDelete = $this->filterRepository->searchIds($criteriaToDelete, $context)->getIds();
-        $dataToDelete = [];
-        foreach ($filtersIdsToDelete as $id) {
-            $dataToDelete[] = ['id' => $id];
-        }
         try {
-            if (count($dataToDelete) > 0) {
-                $this->filterRepository->delete($dataToDelete, $context);
-            }
+            $this->delete($filtersIdsToDelete, $context);
         } catch (Throwable $e) {
             $this->logger->error(
-                'Cannot delete filters with this property ids',
-                ['$dataToDelete' => $dataToDelete]
+                'Cannot delete filters with this ids',
+                ['$filtersIdsToDelete' => $filtersIdsToDelete]
             );
-
             throw new FilterSyncDeleteException(
                 'FilterSync: Delete failed - {{ message }}',
                 ['message' => $e->getMessage()]
@@ -238,34 +176,14 @@ class FilterSyncService
          * Creating filters for new properties
          */
         $propertyIdsToCreate = array_diff_key($propertiesTranslations, $propertiesNamesUpdated);
-        $dataToCreate = [];
-        $dataTranslationToCreate = [];
-        foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
-            $newFilterId = Uuid::randomHex();
-            $dataToCreate[] = [
-                'id' => $newFilterId,
-                'propertyName' => $propertiesNames[$propertyId],
-                'technicalName' => $propertiesNames[$propertyId],
-                'propertyId' => $propertyId,
-                'isCustom' => false
-            ];
-            foreach ($propertyTranslations as $propertyTranslation) {
-                $dataTranslationToCreate[] = [
-                    'elioFfFilterId' => $newFilterId,
-                    'languageId' => $propertyTranslation->getLanguageId(),
-                    'propertyName' => $propertyTranslation->getName()
-                ];
-            }
-        }
         try {
-            if (count($dataToCreate) > 0) {
-                $this->filterRepository->create($dataToCreate, $context);
-                $this->filterTranslationRepository->upsert($dataTranslationToCreate, $context);
+            foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
+                $this->create($propertyId, $propertiesNames[$propertyId], $propertyTranslations, $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot create filters with this property ids and names',
-                ['$dataToCreate' => $dataToCreate]
+                ['$propertyIdsToCreate' => $propertyIdsToCreate]
             );
             throw new FilterSyncCreateException(
                 'FilterSync: Create failed - {{ message }}',
@@ -274,4 +192,75 @@ class FilterSyncService
         }
     }
 
+    /**
+     * Update filter info in database with provided propertyName and propertyTranslations
+     * @param FilterEntity $filterEntity
+     * @param string $propertyName
+     * @param array $propertyTranslations
+     * @param Context $context
+     */
+    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) {
+        $this->filterRepository->update(
+            ['id' => $filterEntity->getId(), 'propertyName' => $propertyName],
+            $context
+        );
+        $dataToUpdate = [];
+        foreach ($propertyTranslations as $propertyTranslation) {
+            $dataToUpdate[] = [
+                'elioFfFilterId' => $filterEntity->getId(),
+                'languageId' => $propertyTranslation->getLanguageId(),
+                'propertyName' => $propertyTranslation->getName()
+            ];
+        }
+        if (count($dataToUpdate) > 0) {
+            $this->filterTranslationRepository->upsert($dataToUpdate, $context);
+        }
+    }
+
+    /**
+     * Create filter in database with provided propertyId, propertyName and propertyTranslations
+     * @param string $propertyId
+     * @param string $propertyName
+     * @param array $propertyTranslations
+     * @param Context $context
+     */
+    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) {
+        $newFilterId = Uuid::randomHex();
+        $this->filterRepository->create(
+            [
+                'id' => $newFilterId,
+                'propertyName' => $propertyName,
+                'propertyId' => $propertyId,
+                'isCustom' => false
+            ],
+            $context
+        );
+        $dataToCreate = [];
+        foreach ($propertyTranslations as $propertyTranslation) {
+            $dataToCreate[] = [
+                'elioFfFilterId' => $newFilterId,
+                'languageId' => $propertyTranslation->getLanguageId(),
+                'propertyName' => $propertyTranslation->getName()
+            ];
+        }
+        if (count($dataToCreate) > 0) {
+            $this->filterTranslationRepository->upsert($dataToCreate, $context);
+        }
+    }
+
+    /**
+     * Removes filters from database
+     * @param array $filtersIdsToDelete
+     * @param Context $context
+     */
+    private function delete(array $filtersIdsToDelete, Context $context)
+    {
+        $dataToDelete = [];
+        foreach ($filtersIdsToDelete as $id) {
+            $dataToDelete[] = ['id' => $id];
+        }
+        if (count($dataToDelete) > 0) {
+            $this->filterRepository->delete($dataToDelete, $context);
+        }
+    }
 }
