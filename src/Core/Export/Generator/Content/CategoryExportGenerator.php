@@ -110,12 +110,12 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         }
 
         $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_PAGE;
-        $description = $category->getDescription() ?? $category->getTranslated()['description'];
+        $keywords = $category->getKeywords() ?? $category->getTranslated()['keywords'];
 
         if($type === 'product_list' || !empty($productInformation)) {
             $type = self::EXPORT_TYPE_CATEGORY;
-            $description .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
-            $description = ltrim($description, ExportDefaults::KEYWORD_SEPARATOR);
+            $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+            $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
 
             // product categories disabled
             if (!($export->getConfig()['export_product_categories'] ?? true)) {
@@ -128,7 +128,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         ) ?? $type;
 
         $this->prepareExportItem($category, $exportItem, $type);
-        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($description));
+        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
         return $exportItem;
     }
 
