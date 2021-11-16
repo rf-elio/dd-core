@@ -116,6 +116,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
 
         $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_PAGE;
         $keywords = $category->getKeywords() ?? $category->getTranslated()['keywords'];
+        $productInfo = '';
 
         if($type === 'product_list' || !empty($productInformation)) {
             // product categories disabled
@@ -124,8 +125,27 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
             }
 
             $type = self::EXPORT_TYPE_CATEGORY;
-            $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
-            $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
+            $productInfo = ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+
+            // adding own productInformation
+            if (
+                !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) &&
+                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS])
+            ) {
+                $keywords .= $productInfo;
+                $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
+            }
+        }
+
+        // adding child productInformation
+        if (
+            !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) &&
+                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS])
+        ) {
+            $keywords .= $this->productInfo[$category->getId()] ?? '';
+        }
+        if ($category->getParentId()) {
+            $this->productInfo[$category->getParentId()] = ($this->productInfo[$category->getParentId()] ?? '') . ltrim($productInfo, ExportDefaults::KEYWORD_SEPARATOR);
         }
 
         $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;

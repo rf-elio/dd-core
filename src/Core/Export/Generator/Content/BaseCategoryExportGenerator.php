@@ -66,6 +66,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 {
     protected EntityRepositoryInterface $categoryRepository;
     protected array $customFields = [];
+    protected array $productInfo = [];
 
     /**
      * CategoryExportGenerator constructor.
@@ -149,8 +150,9 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
             ) {
                 $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
-
             $this->customFields[$category->getId()] = $mergedCategoryCustomFields;
+            // if we exclude product info in main category we don't inherit its exclusion to child categories
+            unset($mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
             $this->buildCustomFieldInheritanceByNodes($node->getChildNodes(), $mergedCategoryCustomFields);
         }
     }
@@ -239,13 +241,14 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $categoryIds[] = $category->getId();
             }
 
+            $childCategories = $this->getChildCategories($categoryIds, $context);
+            if ($childCategories->count() > 0) {
+                $this->processCategories($childCategories, $export, $output, $context);
+            }
+
             if ($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
                 $output->write($item);
             }
-        }
-        $childCategories = $this->getChildCategories($categoryIds, $context);
-        if ($childCategories->count() > 0) {
-            $this->processCategories($childCategories, $export, $output, $context);
         }
     }
 
