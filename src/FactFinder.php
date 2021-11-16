@@ -54,9 +54,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class FactFinder extends Plugin
 {
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_INHERITED_TYPE = 'content_export_inherited_type';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = 'content_export_type_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD = 'content_export_exclude_child';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = 'content_export_exclude_inherited';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
 
     public const CUSTOM_FIELDS = [
@@ -71,15 +71,17 @@ class FactFinder extends Plugin
                     'componentName' => 'sw-field',
                     'placeholder' => 'category',
                     'label' => [
-                        'en-GB' => 'Type'
+                        'en-GB' => 'Type',
+                        'de-DE' => 'Typ'
                     ]
                 ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_INHERITED_TYPE => [
+                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED => [
                     'type' => 'text',
                     'componentName' => 'sw-field',
                     'placeholder' => 'category',
                     'label' => [
-                        'en-GB' => 'Inherited Type'
+                        'en-GB' => 'Type for sub categories',
+                        'de-DE' => 'Typ für Unterkategorien'
                     ]
                 ],
                 self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
@@ -90,12 +92,12 @@ class FactFinder extends Plugin
                         'de-DE' => 'Aus dem Content Export ausschließen'
                     ]
                 ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_CHILD => [
+                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
                     'type' => 'bool',
                     'componentName' => 'sw-field',
                     'label' => [
-                        'en-GB' => 'Exclude child in content export',
-                        'de-DE' => 'Kind vom Inhaltsexport ausschließen'
+                        'en-GB' => 'Exclude sub categories in content export',
+                        'de-DE' => 'Unterkategorien vom Content Export ausschließen'
                     ]
                 ],
                 self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
