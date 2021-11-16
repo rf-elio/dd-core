@@ -38,12 +38,12 @@ use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defau
 use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\FactFinder\Core\Export\SeoRoute;
 use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -151,6 +151,13 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
         $this->prepareExportItem($category, $exportItem, $type);
         $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
+        // if this is main navigation category of this salesChannel, we rewrite exported url
+        if ($context->getSalesChannel()->getNavigationCategoryId() == $category->getId()) {
+            $exportItem->set(Defaults::FIELD_URL, new SeoRoute(
+                'frontend.home.page', $category->getId(), []
+            ));
+        }
+
         return $exportItem;
     }
 
