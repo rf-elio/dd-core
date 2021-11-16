@@ -288,9 +288,11 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 
         // category is excluded by parent
         if (
-            $category->getParentId() &&
+            ($category->getParentId() &&
             isset($this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
-            && $this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]
+            && $this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
+            // not base category of export itself
+            && (!in_array($category->getId(), $export->getBaseCategoryIds()))
         ) {
             return false;
         }
