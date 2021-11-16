@@ -38,6 +38,7 @@ use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
 use Elio\FactFinder\Api\Import\Response\ImportResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -65,7 +66,8 @@ class ImportService implements ImportServiceInterface
         FactFinderConfigService $configService,
         ImportApi $importApi,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->configService = $configService;
         $this->importApi = $importApi;
         $this->logger = $logger;
@@ -86,9 +88,12 @@ class ImportService implements ImportServiceInterface
 
         try {
             if ($exportConfig['trigger_import_search_data'] ?? false) {
-                $importRequest = new SearchImportRequest($config->getApiChannel());
+                $searchImportChannel = $export->getType() === ContentExportDefaults::TYPE ?
+                    $config->getApiContentChannel() : $config->getApiChannel();
+
+                $importRequest = new SearchImportRequest($searchImportChannel);
                 $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
-                if($importResponse = $responseCollection->get(ImportResponse::class)) {
+                if ($importResponse = $responseCollection->get(ImportResponse::class)) {
                     $results[] = $importResponse;
                 }
             }

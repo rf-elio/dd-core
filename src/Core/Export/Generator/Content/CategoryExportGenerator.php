@@ -42,6 +42,8 @@ use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -78,19 +80,22 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
         $this->buildCustomFieldInheritance($context->getContext());
-        $categories = $this->getCategories($export->getBaseCategoryIds(), $context);
+
+        $criteria = $this->getBaseCriteria();
+        $criteria->addFilter(new EqualsAnyFilter('id', $export->getBaseCategoryIds()));
+        $categories = $this->categoryRepository->search($criteria, $context->getContext());
+
         $this->processCategories($categories, $export, $output, $context);
     }
 
     /**
      * Restricts the result to only categories with active products
      *
-     * @param array $categoryIds
      * @return Criteria
      */
-    protected function getCriteria(array $categoryIds): Criteria
+    protected function getBaseCriteria(): Criteria
     {
-        $criteria = parent::getCriteria($categoryIds);
+        $criteria = parent::getBaseCriteria();
         $criteria->addAssociation('products');
         return $criteria;
     }
@@ -110,25 +115,22 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         }
 
         $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_PAGE;
-        $description = $category->getDescription() ?? $category->getTranslated()['description'];
+        $keywords = $category->getKeywords() ?? $category->getTranslated()['keywords'];
 
         if($type === 'product_list' || !empty($productInformation)) {
-            $type = self::EXPORT_TYPE_CATEGORY;
-            $description .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
-            $description = ltrim($description, ExportDefaults::KEYWORD_SEPARATOR);
-
             // product categories disabled
             if (!($export->getConfig()['export_product_categories'] ?? true)) {
                 return null;
             }
+
+            $type = self::EXPORT_TYPE_CATEGORY;
+            $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+            $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
         }
 
-        $type = ValueUtil::getCustomFieldValue(
-            $category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
-        ) ?? $type;
-
+        $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
         $this->prepareExportItem($category, $exportItem, $type);
-        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($description));
+        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
         return $exportItem;
     }
 
@@ -145,8 +147,8 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
             if(!$product->getActive()) {
                 continue;
             }
-            $informationCollection[] = $product->getName();
-            $informationCollection[] = $product->getDescription();
+            $informationCollection[] = $product->getTranslation('name') ?? $product->getName();
+            $informationCollection[] = $product->getTranslation('description') ?? $product->getDescription();
             $informationCollection[] = $product->getProductNumber();
         }
         return implode(ExportDefaults::KEYWORD_SEPARATOR, $informationCollection);
