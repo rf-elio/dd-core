@@ -118,20 +118,17 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         $keywords = $category->getKeywords() ?? $category->getTranslated()['keywords'];
 
         if($type === 'product_list' || !empty($productInformation)) {
-            $type = self::EXPORT_TYPE_CATEGORY;
-            $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
-            $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
-
             // product categories disabled
             if (!($export->getConfig()['export_product_categories'] ?? true)) {
                 return null;
             }
+
+            $type = self::EXPORT_TYPE_CATEGORY;
+            $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
+            $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
         }
 
-        $type = ValueUtil::getCustomFieldValue(
-            $category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
-        ) ?? $type;
-
+        $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
         $this->prepareExportItem($category, $exportItem, $type);
         $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
         return $exportItem;

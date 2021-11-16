@@ -66,7 +66,8 @@ class ImportService implements ImportServiceInterface
         FactFinderConfigService $configService,
         ImportApi $importApi,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->configService = $configService;
         $this->importApi = $importApi;
         $this->logger = $logger;
@@ -87,13 +88,12 @@ class ImportService implements ImportServiceInterface
 
         try {
             if ($exportConfig['trigger_import_search_data'] ?? false) {
-                $searchImportChannel = $config->getApiChannel();
-                if($export->getType() === ContentExportDefaults::TYPE) {
-                    $searchImportChannel = $config->getApiContentChannel();
-                }
+                $searchImportChannel = $export->getType() === ContentExportDefaults::TYPE ?
+                    $config->getApiContentChannel() : $config->getApiChannel();
+
                 $importRequest = new SearchImportRequest($searchImportChannel);
                 $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
-                if($importResponse = $responseCollection->get(ImportResponse::class)) {
+                if ($importResponse = $responseCollection->get(ImportResponse::class)) {
                     $results[] = $importResponse;
                 }
             }
