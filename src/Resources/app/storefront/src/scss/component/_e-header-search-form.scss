@@ -1,0 +1,14 @@
+.e-header-search-form {
+	.e-autocomplete {
+		position: absolute;
+
+		z-index: 4;
+
+		// In accordance with the default shopware .form-control styles
+		bottom: $input-border-width;
+		top: $input-border-width;
+		padding: $input-padding-y $input-padding-x;
+
+		color: $input-placeholder-color;
+	}
+}
