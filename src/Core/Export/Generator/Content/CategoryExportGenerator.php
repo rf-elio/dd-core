@@ -147,8 +147,8 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
             if(!$product->getActive()) {
                 continue;
             }
-            $informationCollection[] = $product->getName();
-            $informationCollection[] = $product->getDescription();
+            $informationCollection[] = $product->getTranslation('name') ?? $product->getName();
+            $informationCollection[] = $product->getTranslation('description') ?? $product->getDescription();
             $informationCollection[] = $product->getProductNumber();
         }
         return implode(ExportDefaults::KEYWORD_SEPARATOR, $informationCollection);
