@@ -95,6 +95,16 @@ class ExportSetup
                         continue;
                     }
 
+                    //$baseCategoryIds = $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : [];
+                    $baseCategoryIds = [];
+                    if ($exportType === ContentExportDefaults::TYPE) {
+                        $baseCategoryIds[] = $salesChannel->getNavigationCategoryId();
+                        $baseCategoryIds[] = $salesChannel->getFooterCategoryId();
+                        $baseCategoryIds[] = $salesChannel->getServiceCategoryId();
+                    } else if ($exportType === ProductExportDefaults::TYPE) {
+                        $baseCategoryIds = $salesChannel->getNavigationCategoryId();
+                    }
+
                     $exports[] = [
                         'id' => Uuid::randomHex(),
                         'name' => $salesChannel->getName() . '_' . $language->getLocale()->getCode() . '_' . $exportType . '_' . $exportFormat,
@@ -106,7 +116,7 @@ class ExportSetup
                         'languageId' => $language->getId(),
                         'mapping' => [],
                         'config' => [],
-                        'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
+                        'baseCategoryIds' => $baseCategoryIds
                     ];
                 }
             }
