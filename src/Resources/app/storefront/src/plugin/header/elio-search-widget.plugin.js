@@ -38,17 +38,15 @@ export default class ElioSearchWidgetPlugin extends SearchWidgetPlugin {
             this.el.insertAdjacentHTML('beforeend', response);
 
             let firstElement = "";
-
             let suggestAutocompleteType = this.options.suggestAutocompleteType;
             let listNotEmpty = !this.el.querySelector('.empty');
             if (suggestAutocompleteType && listNotEmpty) {
                 try {
                     let searchTermsColumn = DomAccess.querySelector(this.el, `.elio-suggest-block-${suggestAutocompleteType}`);
-
                     firstElement = DomAccess.querySelector(searchTermsColumn, `li:first-of-type .search-suggest-product-name`);
                 }
                 catch(err) {
-                    console.log('The search terms column is not configured in administration')
+                    console.warn('The search terms column is not configured in administration');
                 }
             }
             this.$emitter.publish('afterSuggest', { firstElement });

@@ -11,5 +11,4 @@ PluginManager.register('FactFinderFilterPropertySelect', FactFinderFilterPropert
 PluginManager.register('FactFinderFilterRange', FactFinderFilterRangePlugin, '[data-fact-finder-filter-range]');
 PluginManager.register('FactFinderFilterTreeSelect', FactFinderFilterTreeSelectPlugin, '[data-fact-finder-filter-tree-select]');
 PluginManager.register('ElioSuggestAutocompletePlugin', ElioSuggestAutocompletePlugin, '.e-header-search-form');
-
 PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-form]');
