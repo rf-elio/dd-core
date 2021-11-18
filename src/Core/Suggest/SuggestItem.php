@@ -55,7 +55,7 @@ class SuggestItem
     /**
      * @var array
      */
-    protected array $attributes;
+    protected array $attributes = [];
 
     /**
      * @var string

@@ -1,0 +1,25 @@
+{% sw_extends "@Storefront/storefront/layout/header/search.html.twig" %}
+
+{% block layout_header_search %}
+    {% set searchOptions = {
+        suggestAutocompleteType: config_by_lang("FactFinder.config.suggestAutocompleteType")
+    } %}
+
+    <div class="collapse"
+         id="searchCollapse">
+        <div class="header-search">
+            <form action="{{ path('frontend.search.page') }}"
+                  method="get"
+                  data-search-form="true"
+                  data-search-widget-options='{{ searchOptions|json_encode }}'
+                  data-url="{{ path('frontend.search.suggest') }}?search="
+                  class="header-search-form e-header-search-form">
+                {% block layout_header_search_input_group %}
+                    {{ parent() }}
+
+                    <div class="e-autocomplete text-truncate"></div>
+                {% endblock %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
