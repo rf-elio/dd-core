@@ -32,7 +32,6 @@
 
 namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
 
-use Elio\FactFinder\Core\RealTimeUpdate\ImportService;
 use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
 use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -46,7 +45,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
-    private ImportService $importService;
+    private ImportServiceInterface $importService;
 
     /**
      * ExportGeneratedSubscriber constructor.

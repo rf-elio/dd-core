@@ -32,7 +32,6 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
-use Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
@@ -95,15 +94,16 @@ class ExportSetup
                         continue;
                     }
 
-                    //$baseCategoryIds = $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : [];
                     $baseCategoryIds = [];
                     if ($exportType === ContentExportDefaults::TYPE) {
                         $baseCategoryIds[] = $salesChannel->getNavigationCategoryId();
                         $baseCategoryIds[] = $salesChannel->getFooterCategoryId();
                         $baseCategoryIds[] = $salesChannel->getServiceCategoryId();
                     } else if ($exportType === ProductExportDefaults::TYPE) {
-                        $baseCategoryIds = $salesChannel->getNavigationCategoryId();
+                        $baseCategoryIds[] = $salesChannel->getNavigationCategoryId();
                     }
+
+                    $baseCategoryIds = array_filter($baseCategoryIds);
 
                     $exports[] = [
                         'id' => Uuid::randomHex(),
