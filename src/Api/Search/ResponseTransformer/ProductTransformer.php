@@ -120,7 +120,6 @@ class ProductTransformer implements ResponseTransformerInterface
         $isCount = $products->count();
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
-        die();
     }
 
     /**
