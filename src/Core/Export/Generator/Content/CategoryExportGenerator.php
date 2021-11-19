@@ -39,6 +39,7 @@ use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
+use Elio\FactFinder\Core\Util\ArrayUtil;
 use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -59,6 +60,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
 {
     protected const EXPORT_TYPE_CATEGORY = 'category';
     protected const EXPORT_TYPE_PAGE = 'page';
+    protected array $productInfo = [];
 
     /**
      * Checks if the generator can be used for the given export
@@ -112,47 +114,47 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         $productInformation = null;
         if($category->getProducts() && $category->getProducts()->count() > 0) {
             $productInformation = $this->assembleProductInformation($category->getProducts());
+
+            if($category->getParentId()) {
+                ArrayUtil::arrayKeyPush($this->productInfo, $productInformation, $category->getParentId());
+            }
+        }
+
+        // add product info provided by child categories
+        if(isset($this->productInfo[$category->getId()])) {
+            $productInformation .= implode(ExportDefaults::KEYWORD_SEPARATOR, $this->productInfo[$category->getId()]);
         }
 
         $type = $category->getCmsPage() ? $category->getCmsPage()->getType() : self::EXPORT_TYPE_PAGE;
         $keywords = $category->getKeywords() ?? $category->getTranslated()['keywords'];
-        $productInfo = '';
 
+        // if product category, change type to EXPORT_TYPE_CATEGORY
         if($type === 'product_list' || !empty($productInformation)) {
+            $type = self::EXPORT_TYPE_CATEGORY;
+
             // product categories disabled
             if (!($export->getConfig()['export_product_categories'] ?? true)) {
                 return null;
             }
+        }
 
-            $type = self::EXPORT_TYPE_CATEGORY;
-            $productInfo = ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
-
-            // adding own productInformation
+        if(!empty($productInformation)) {
+            // adding productInformation if not disabled
             if (
-                !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) &&
-                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS])
+                !isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) ||
+                !$category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]
             ) {
-                $keywords .= $productInfo;
+                $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
                 $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
             }
-        }
-
-        // adding child productInformation
-        if (
-            !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) &&
-                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS])
-        ) {
-            $keywords .= $this->productInfo[$category->getId()] ?? '';
-        }
-        if ($category->getParentId()) {
-            $this->productInfo[$category->getParentId()] = ($this->productInfo[$category->getParentId()] ?? '') . ltrim($productInfo, ExportDefaults::KEYWORD_SEPARATOR);
         }
 
         $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
         $this->prepareExportItem($category, $exportItem, $type);
         $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
+
         // if this is main navigation category of this salesChannel, we rewrite exported url
-        if ($context->getSalesChannel()->getNavigationCategoryId() == $category->getId()) {
+        if ($context->getSalesChannel()->getNavigationCategoryId() === $category->getId()) {
             $exportItem->set(Defaults::FIELD_URL, new SeoRoute(
                 'frontend.home.page', $category->getId(), []
             ));
