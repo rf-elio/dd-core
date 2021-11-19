@@ -1,25 +1,36 @@
 {% block e_layout_search_suggest_result_item %}
     <li class="search-suggest-product js-result">
         {% block layout_search_suggest_result_link %}
-            <a href="{{ suggestion.attributes[suggestionUrlPath] }}"
+
+            {% set suggestionLink = suggestion.url %}
+            {% if specificUrlPath != "" %}
+                {% set suggestionLink = suggestion.attributes[specificUrlPath] %}
+            {% endif %}
+            {% if suggestionLink == "" %}
+                {% set suggestionLink = path('frontend.search.page')~"?search="~suggestion.name|url_encode %}
+            {% endif %}
+
+            <a href="{{ suggestionLink }}"
                title="{{ suggestion.name }}"
                class="search-suggest-product-link">
                 <div class="row align-items-center no-gutters">
-                    {% block layout_search_suggest_result_image %}
-                        <div class="col-auto search-suggest-product-image-container">
-                            {% if suggestion.imgUrl %}
-                                <img
-                                    src="{{ suggestion.imgUrl }}"
-                                    sizes="100px"
-                                    class="search-suggest-product-image"
-                                >
-                            {% else %}
-                                {% sw_icon 'placeholder' style {
-                                    'size': 'lg'
-                                } %}
-                            {% endif %}
-                        </div>
-                    {% endblock %}
+                    {% if not blockWithoutImages %}
+                        {% block layout_search_suggest_result_image %}
+                            <div class="col-auto search-suggest-product-image-container">
+                                {% if suggestion.imgUrl %}
+                                    <img
+                                        src="{{ suggestion.imgUrl }}"
+                                        sizes="100px"
+                                        class="search-suggest-product-image"
+                                    >
+                                {% else %}
+                                    {% sw_icon 'placeholder' style {
+                                        'size': 'lg'
+                                    } %}
+                                {% endif %}
+                            </div>
+                        {% endblock %}
+                    {% endif %}
 
                     {% block layout_search_suggest_result_name %}
                         {% set searchMatchPairs = {} %}

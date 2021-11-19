@@ -10,11 +10,11 @@
                     {% else %}
                         {% set searchResults = 0 %}
                         {% for type, suggestionType in response.suggestions %}
-                            {% set suggestionUrlPath = '' %}
+                            {% set specificUrlPath = '' %}
                             {% if type == 'productName' %}
-                                {% set suggestionUrlPath = 'ProductURL' %}
+                                {% set specificUrlPath = 'ProductURL' %}
                             {% elseif type == 'category' %}
-                                {% set suggestionUrlPath = 'Path' %}
+                                {% set specificUrlPath = 'Path' %}
                             {% endif %}
 
                             <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
@@ -24,11 +24,19 @@
 
                                 {% set searchResults = searchResults + suggestionType|length %}
 
+                                {% set blockWithoutImages = true %}
+                                {% for suggestion in suggestionType %}
+                                    {% if suggestion.imgUrl != "" %}
+                                        {% set blockWithoutImages = false %}
+                                    {% endif %}
+                                {% endfor %}
+
                                 {% for suggestion in suggestionType %}
                                     {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
                                         searchTerm,
                                         suggestion,
-                                        suggestionUrlPath
+                                        specificUrlPath,
+                                        blockWithoutImages
                                     } %}
                                 {% endfor %}
                             </ul>
