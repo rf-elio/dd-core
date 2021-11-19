@@ -43,7 +43,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Swagger\Client\Model\ModelInterface;
@@ -185,6 +187,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
      * @param string $id
      * @param SalesChannelContext $context
      * @return string
+     * @throws InconsistentCriteriaIdsException
      */
     private function getImgUrl(string $type, string $id, SalesChannelContext $context): string
     {
@@ -192,10 +195,11 @@ class SuggestionTransformer implements ResponseTransformerInterface
             return '';
         }
 
-        $criteria = new Criteria([$id]);
+        $criteria = new Criteria();
         $criteria->addAssociation('media');
 
         if ($type === self::TYPE_PRODUCT) {
+            $criteria->addFilter(new EqualsFilter('productNumber', $id));
             /** @var ProductEntity|null $product */
             $product = $this->productRepository->search($criteria, $context->getContext())->first();
             if (
@@ -205,6 +209,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
                 return $product->getMedia()->first()->getMedia()->getUrl();
             }
         } elseif ($type === self::TYPE_CATEGORY) {
+            $criteria->addFilter(new EqualsFilter('id', $id));
             /** @var CategoryEntity|null $category */
             $category = $this->categoryRepository->search($criteria, $context->getContext())->first();
             if ($category && $category->getMedia()) {
