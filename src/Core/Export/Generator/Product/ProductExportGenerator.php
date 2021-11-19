@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Export\Generator\Product;
 
 
+use Elio\FactFinder\Core\Defaults;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
@@ -45,6 +46,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -96,8 +98,8 @@ class ProductExportGenerator implements ExportGeneratorInterface
     public function getModel(ExportEntity $export): array
     {
         $model = [
-            ProductExportDefaults::FIELD_PRODUCT_ID,
             ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER,
+            ProductExportDefaults::FIELD_PRODUCT_ID,
             ProductExportDefaults::FIELD_MANUFACTURER_NUMBER,
             ProductExportDefaults::FIELD_NAME,
             ProductExportDefaults::FIELD_DESCRIPTION,
@@ -112,7 +114,8 @@ class ProductExportGenerator implements ExportGeneratorInterface
             ProductExportDefaults::FIELD_RATING_AVERAGE,
             ProductExportDefaults::FIELD_SHIPPING_FREE,
             ProductExportDefaults::FIELD_ATTRIBUTE,
-            ProductExportDefaults::FIELD_IMAGE_URL
+            ProductExportDefaults::FIELD_IMAGE_URL,
+            ProductExportDefaults::FIELD_TAGS
         ];
 
         foreach ($export->getMapping() as $mapping) {
@@ -128,6 +131,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      * @param ExportEntity $export
      * @param OutputStream $output
      * @param SalesChannelContext $context
+     * @throws InconsistentCriteriaIdsException
      */
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
@@ -138,6 +142,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria->addAssociation('cover');
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
+        $criteria->addAssociation('tags');
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $export->getSalesChannelId()));
         $criteria->setLimit(self::PRODUCT_CHUNK_SIZE);
 
@@ -147,7 +152,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         while ($products = $iterator->fetch()) {
             foreach ($products as $product) {
                 $item = new ExportItem();
-                $this->prepareExportItem($product, $item);
+                $this->prepareExportItem($product, $item, $context);
                 $this->addMappedPropertiesToExportItem($product, $item, $mappings, $propertyAccessor);
                 $this->eventDispatcher->dispatch(new FilterProductExportItemPrepareEvent($product, $item, $export, $context));
                 $output->write($item);
@@ -160,12 +165,19 @@ class ProductExportGenerator implements ExportGeneratorInterface
      *
      * @param ProductEntity $product
      * @param ExportItem $item
+     * @throws InconsistentCriteriaIdsException
      */
-    private function prepareExportItem(ProductEntity $product, ExportItem $item): void
+    private function prepareExportItem(ProductEntity $product, ExportItem $item, SalesChannelContext $context): void
     {
+        $parentProduct = null;
+        if($product->getParentId()) {
+            $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
+        }
+
+        $parentProduct = $parentProduct ?? $product;
         $translated = $product->getTranslated();
-        $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getId());
-        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $product->getProductNumber());
+        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct->getProductNumber());
+        $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getProductNumber());
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, $product->getDescription() ?? $translated['description'] ?? '');
@@ -184,6 +196,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
         $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
         $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($product));
+        $item->set(ProductExportDefaults::FIELD_TAGS, $this->getProductTags($product));
 
         if($product->getCover() && $product->getCover()->getMedia()) {
             $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()->getMedia()->getUrl());
@@ -205,7 +218,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      * @param array $mappings
      * @param PropertyAccessorInterface $propertyAccessor
      */
-    private function addMappedPropertiesToExportItem(
+    protected function addMappedPropertiesToExportItem(
         ProductEntity $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
     ): void
     {
@@ -247,7 +260,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         foreach ($categories as $category) {
             $path .= implode('/', array_slice($category->getBreadcrumb(), 1));
             if (++$index < $numCategories) {
-                $path .= '|';
+                $path .= Defaults::VALUE_SEPARATOR;
             }
         }
 
@@ -266,17 +279,37 @@ class ProductExportGenerator implements ExportGeneratorInterface
             return '';
         }
 
-        $resultAttribute = '|';
+        $resultAttribute = Defaults::VALUE_SEPARATOR;
         $attributes = $product->getProperties()->getElements();
         foreach ($attributes as $attribute) {
             $group = $attribute->getGroup();
             if($group) {
                 $name = $group->getTranslation('name') ?? $group->getName();
                 $value = $attribute->getTranslation('name') ?? $attribute->getName();
-                $resultAttribute .= $name . '=' . $value . '|';
+                $resultAttribute .= $name . '=' . $value . Defaults::VALUE_SEPARATOR;
             }
         }
 
         return ValueUtil::cleanValue($resultAttribute);
+    }
+
+    /**
+     * Creates the product tags string
+     *
+     * @param ProductEntity $product
+     * @return string
+     */
+    protected function getProductTags(ProductEntity $product) : string
+    {
+        if(!$product->getTags()) {
+            return '';
+        }
+
+        $tags = [];
+        foreach ($product->getTags() as $tag) {
+            $tags[] = $tag->getTranslation('name') ?? $tag->getName();
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $tags);
     }
 }

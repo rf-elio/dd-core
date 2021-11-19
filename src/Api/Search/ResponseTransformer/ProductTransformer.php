@@ -42,6 +42,7 @@ use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -83,6 +84,7 @@ class ProductTransformer implements ResponseTransformerInterface
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
      * @param ApiRequest $request
+     * @throws InconsistentCriteriaIdsException
      */
     public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
     {
@@ -90,10 +92,7 @@ class ProductTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        // extract product ids
-        $productNumbers = array_map(static function (SearchRecord $searchRecord) {
-            return $searchRecord->getId();
-        }, $model->getHits());
+        $productNumbers = $this->extractProductNumbers($model);
         $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
@@ -121,5 +120,19 @@ class ProductTransformer implements ResponseTransformerInterface
         $isCount = $products->count();
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
+        die();
+    }
+
+    /**
+     * Extracts the product numbers from the given search result
+     *
+     * @param Result $result
+     * @return array
+     */
+    protected function extractProductNumbers(Result $result): array
+    {
+        return array_map(static function (SearchRecord $searchRecord) {
+            return $searchRecord->getId();
+        }, $result->getHits());
     }
 }
