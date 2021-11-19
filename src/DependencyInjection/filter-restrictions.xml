@@ -43,6 +43,11 @@
             <argument type="service" id="elio_ff_filter.repository" />
             <argument type="service" id="logger" />
         </service>
+        <service id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService"
+                 decorates="Elio\FactFinder\Core\FilterRestrictions\FilterService">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService.inner" />
+            <argument type="service" id="cache.object"/>
+        </service>
 
         <service id="Elio\FactFinder\Command\SynchronizePropertiesToFiltersCommand">
             <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService" />

@@ -51,7 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FilterService
+class FilterService implements FilterInterface
 {
     public const LEVEL_GLOBAL = 1;
     public const LEVEL_SEARCH = 2;
