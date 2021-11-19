@@ -105,41 +105,31 @@ class FilterService
         $context = $salesChannelContext->getContext();
         $languageId = LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext);
         $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
-        $filters = [null, []];
+        $allowedFilters = null; //everything allowed by default
+        $blockedFilters = []; // nothing blocked by default
 
         $config = $this->configService->getByContext($salesChannelContext);
         $configParentCategories = $config->isRestrictionsParentCategories();
-        $configIsOverridingTopToDown = $config->isRestrictionsOverridingTopToDown();
 
         // Global Level
         $salesChannelId = $salesChannelContext->getSalesChannelId();
         $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'global');
-        $filters = $this->applyRestrictionsToFiltersArray($filters, $restrictions, true);
+        $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions, true);
+        $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions, true);
 
         // Applying overriding restrictions
         if ($level === self::LEVEL_SEARCH) {
             $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'search');
-            $filters = $this->applyRestrictionsToFiltersArray(
-                $filters,
-                $restrictions,
-                !$configIsOverridingTopToDown
-            );
+            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
+            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
         } elseif ($level === self::LEVEL_NAVIGATION) {
             $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
-            $filters = $this->applyRestrictionsToFiltersArray(
-                $filters,
-                $restrictions,
-                !$configIsOverridingTopToDown
-            );
+            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
+            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
         } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
             $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
-            if (count($restrictions->getElements()) != 0) {
-                $filters = $this->applyRestrictionsToFiltersArray(
-                    $filters,
-                    $restrictions,
-                    !$configIsOverridingTopToDown
-                );
-            }
+            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
+            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
 
             $categoriesTreeIds = [];
             if ($configParentCategories) {
@@ -165,45 +155,9 @@ class FilterService
             foreach ($categoriesTreeIds as $currentCategoryId) {
                 $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, '', $currentCategoryId);
                 if (count($restrictions->getElements()) != 0) {
-                    $filters = $this->applyRestrictionsToFiltersArray(
-                        $filters,
-                        $restrictions,
-                        !$configIsOverridingTopToDown
-                    );
+                    $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
+                    $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
                 }
-            }
-        }
-
-        return $filters;
-    }
-
-    /**
-     * Modifying inputted filters array
-     * with provided FilterRestrictionsCollection and $isOverrides flag
-     *
-     * $filters = [ [...AllowedFiltersArray...], [...BlockedFiltersArray...] ]
-     *
-     * @param array $filters
-     * @param EntityCollection<FilterRestrictionsEntity> $restrictions
-     * @param bool $isOverrides
-     * @return array
-     */
-    private function applyRestrictionsToFiltersArray(
-        array $filters,
-        EntityCollection $restrictions,
-        bool $isOverrides
-    ): array {
-        $allowedFilters = null;
-        $blockedFilters = null;
-
-        /** @var FilterRestrictionsEntity $restriction */
-        foreach ($restrictions as $restriction) {
-            if ($restriction->isAllowed()) {
-                // allowed column
-                $allowedFilters = $this->getFilterArrayAfterRestriction($filters, $restriction, $isOverrides);
-            } else {
-                // blocked column
-                $blockedFilters = $this->getFilterArrayAfterRestriction($filters, $restriction, $isOverrides);
             }
         }
 
@@ -211,71 +165,70 @@ class FilterService
     }
 
     /**
-     * @param array $filters
-     * @param FilterRestrictionsEntity $restriction
-     * @param bool $isOverrides
-     * @return array
+     * @param array|null $parentFilters
+     * @param EntityCollection $restrictions
+     * @param bool $overrideParent
+     * @return array|null
      */
-    private function getFilterArrayAfterRestriction(
-        array $filters,
-        FilterRestrictionsEntity $restriction,
-        bool $isOverrides
+    protected function applyAllowedRestrictions(
+        ?array $parentFilters,
+        EntityCollection $restrictions,
+        bool $overrideParent = false
     ): ?array
     {
-        if ($restriction->isAllChecked()) { // if Allow/Block All checked
-            if ($isOverrides) { // if this restriction overrides top-level restrictions
-                // we return everything allowed/blocked
-                $result = null;
-            } else { // if this restriction doesn't override top-level restrictions
-                // we return all allowed filters from level before because it is allowing/blocking-all and not-overriding case
-                return $filters;
-            }
-        } else { // if allow/block only selected checked (default)
-            $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
-            if ($isOverrides) { // if this restriction overrides top-level restrictions
-                // we return allowed/blocked only selected on this level
-                $result = array_values($restrictionFilters);
-            } else { // if this restriction doesn't override top-level restrictions
-                $result = $this->getMergedFilterArrayAfterRestriction($filters, $restriction, $restrictionFilters);
+        $result = $parentFilters;
+        /** @var FilterRestrictionsEntity $restriction */
+        foreach ($restrictions as $restriction) {
+            if ($restriction->isAllowed()) {
+                if ($restriction->isAllChecked()) { // if Allow/Block All checked
+                    if ($overrideParent) {
+                        $result = null;
+                    } else {
+                        //only apply filters allowed in parent and current level
+                        $result = $parentFilters;
+                    }
+                } else { // if allow/block only selected checked (default)
+                    $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
+                    if ($overrideParent) {
+                        $result = array_values($restrictionFilters);
+                    } else {
+                        //only apply filters allowed in parent and current level
+                        $result = $parentFilters === null ? $restrictionFilters : array_intersect($parentFilters, $restrictionFilters);
+                    }
+                }
             }
         }
         return $result;
     }
 
     /**
-     * @param array $filters
-     * @param FilterRestrictionsEntity $restriction
-     * @param array $filtersToApply
+     * @param array|null $parentFilters
+     * @param EntityCollection $restrictions
+     * @param bool $overrideParent
      * @return array|null
      */
-    private function getMergedFilterArrayAfterRestriction(
-        array $filters,
-        FilterRestrictionsEntity $restriction,
-        array $filtersToApply
-    ): ?array {
-        // case: allow/block only selected and override is false
-        if ($filters[$restriction->isAllowed() ? 0 : 1] === null) { // if we already have null what's mean that we allow/block everything
-            $result = null; // we keep it as it is
-        } else {
-            $result = [];
-            if ($filters[$restriction->isAllowed() ? 1 : 0] !== null) { // if $filters[1:0] == null then we are blocking/allowing all already and can't override it
-
-                // we add filters to allowed/blocked Filters which aren't blocked/allowed on level before
-                // (bcs we aren't overriding rules)
-                foreach ($filtersToApply as $filter) {
-                    if ($restriction->isAllowed()) {
-                        // allowed before
-                        if (in_array($filter, $filters[0], true)) {
-                            $result[] = $filter;
-                        }
+    protected function applyBlockedRestrictions(
+        ?array $parentFilters,
+        EntityCollection $restrictions,
+        bool $overrideParent = false
+    ): ?array
+    {
+        $result = $parentFilters;
+        /** @var FilterRestrictionsEntity $restriction */
+        foreach ($restrictions as $restriction) {
+            if (!$restriction->isAllowed()) {
+                if ($restriction->isAllChecked()) { // if Allow/Block All checked
+                    //parent filters don't matter if everything is blocked on current level
+                    $result = null;
+                } else { // if allow/block only selected checked (default)
+                    $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
+                    if ($overrideParent) {
+                        $result = array_values($restrictionFilters);
                     } else {
-                        // blocking new filter anyway
-                        $result[] = $filter;
+                        //combine filters blocked in parent and current level
+                        $result = array_unique(array_merge($restrictionFilters, $parentFilters));
                     }
                 }
-
-                // we merge them together
-                $result = array_unique(array_merge($result, $filters[$restriction->isAllowed() ? 0 : 1]));
             }
         }
         return $result;
