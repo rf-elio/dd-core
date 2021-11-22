@@ -227,9 +227,9 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLanguageId(): string
+    public function getLanguageId(): ?string
     {
         return $this->languageId;
     }
