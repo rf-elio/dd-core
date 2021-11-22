@@ -81,6 +81,7 @@ class Configuration extends Struct
     private string $apiContentChannel;
     private bool $searchUseContentChannel;
     private array $suggestTypeLabels;
+    private array $suggestAcceptedTypes;
 
     /**
      * Configuration constructor.
@@ -108,6 +109,7 @@ class Configuration extends Struct
      * @param string $apiContentChannel
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
+     * @param array $suggestAcceptedTypes
      */
     public function __construct(
         bool $active,
@@ -133,7 +135,8 @@ class Configuration extends Struct
         bool $restrictionsOverridingTopToDown,
         string $apiContentChannel,
         bool $searchUseContentChannel,
-        array $suggestTypeLabels
+        array $suggestTypeLabels,
+        array $suggestAcceptedTypes
     )
     {
         $this->useAso = $useAso;
@@ -160,6 +163,7 @@ class Configuration extends Struct
         $this->apiContentChannel = $apiContentChannel;
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->suggestTypeLabels = $suggestTypeLabels;
+        $this->suggestAcceptedTypes = $suggestAcceptedTypes;
     }
 
     /**
@@ -361,5 +365,13 @@ class Configuration extends Struct
     public function getSuggestTypeLabels(): array
     {
         return $this->suggestTypeLabels;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSuggestAcceptedTypes(): array
+    {
+        return $this->suggestAcceptedTypes;
     }
 }
