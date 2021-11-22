@@ -71,7 +71,7 @@ class FilterRestrictionsEntity extends Entity
      */
     protected $salesChannel;
     /**
-     * @var string
+     * @var string|null
      */
     protected $languageId;
     /**
@@ -235,9 +235,9 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @param string $languageId
+     * @param string|null $languageId
      */
-    public function setLanguageId(string $languageId): void
+    public function setLanguageId(?string $languageId): void
     {
         $this->languageId = $languageId;
     }
