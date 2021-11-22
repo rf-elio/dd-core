@@ -109,7 +109,7 @@
             <name>suggestTypeLabels</name>
             <label>Labels for Suggest types</label>
             <label lang="de-DE">Label für die Suggest-Typen</label>
-            <placeholder>type:Label|product:Product</placeholder>
+            <placeholder>type:Label|productName:Product</placeholder>
             <helpText>Labels for suggest type labels: type:Label|product:Product</helpText>
             <helpText lang="de-DE">Label für Suggest-Typ Label: typ:Label|product:Produkt</helpText>
         </input-field>
