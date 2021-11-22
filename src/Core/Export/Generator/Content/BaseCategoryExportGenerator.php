@@ -47,6 +47,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -129,6 +130,9 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      */
     private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []): void
     {
+        // if we exclude product info in main category we don't inherit its exclusion to child categories
+        unset($inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
+
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
             $category = $node->getValue();
@@ -159,6 +163,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param array $categoryIds
      * @param SalesChannelContext $context
      * @return EntityCollection<CategoryEntity>
+     * @throws InconsistentCriteriaIdsException
      */
     protected function getChildCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
     {
@@ -175,6 +180,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * Creates the base criteria that is required to load all the categories
      *
      * @return Criteria
+     * @throws InconsistentCriteriaIdsException
      */
     protected function getBaseCriteria(): Criteria
     {
@@ -212,6 +218,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param ExportEntity $export
      * @param OutputStream $output
      * @param SalesChannelContext $context
+     * @throws InconsistentCriteriaIdsException
      */
     protected function processCategories(
         EntityCollection $categories,
@@ -220,6 +227,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         SalesChannelContext $context
     ): void {
         $categoryIds = [];
+        $processableCategories = [];
+
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
             // apply prepared custom fields to category
@@ -239,13 +248,22 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $categoryIds[] = $category->getId();
             }
 
-            if ($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
-                $output->write($item);
-            }
+            $processableCategories[] = $category;
         }
+
         $childCategories = $this->getChildCategories($categoryIds, $context);
         if ($childCategories->count() > 0) {
             $this->processCategories($childCategories, $export, $output, $context);
+        }
+
+        /*
+         * Child categories need to be processed first, because we inherit down some information to parent
+         * categories.
+         */
+        foreach ($processableCategories as $processableCategory) {
+            if ($item = $this->processCategory($processableCategory, new ExportItem(), $export, $context)) {
+                $output->write($item);
+            }
         }
     }
 
