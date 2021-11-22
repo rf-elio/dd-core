@@ -51,16 +51,6 @@ class SuggestionResponse extends Response
     protected array $groups = [];
 
     /**
-     * Checks if the suggest is empty
-     *
-     * @return bool
-     */
-    public function isEmpty() : bool
-    {
-        return empty($this->groups);
-    }
-
-    /**
      * @param SuggestGroup[] $groups
      */
     public function setGroups(array $groups): void
@@ -75,6 +65,23 @@ class SuggestionResponse extends Response
     {
         return $this->groups;
     }
+
+    /**
+     * @return SuggestGroup[]
+     */
+    public function getVisibleGroups(): array
+    {
+        $visibleGroups = [];
+
+        foreach ($this->groups as $group) {
+            if($group->isVisible()) {
+                $visibleGroups[] = $group;
+            }
+        }
+
+        return $visibleGroups;
+    }
+
 
     /**
      * @param string $identifier
@@ -95,12 +102,38 @@ class SuggestionResponse extends Response
     }
 
     /**
+     * @return bool
+     */
+    public function hasItems(): bool
+    {
+        return $this->count() > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasVisibleItems(): bool
+    {
+        return $this->countVisible() > 0;
+    }
+
+    /**
      * @return int
      */
     public function count() : int
     {
         return array_sum(array_map(static function (SuggestGroup $group) {
             return $group->count();
-        }, $this->groups));
+        }, $this->getGroups()));
+    }
+
+    /**
+     * @return int
+     */
+    public function countVisible() : int
+    {
+        return array_sum(array_map(static function (SuggestGroup $group) {
+            return $group->count();
+        }, $this->getVisibleGroups()));
     }
 }

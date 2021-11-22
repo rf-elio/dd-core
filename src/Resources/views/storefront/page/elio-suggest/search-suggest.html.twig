@@ -3,35 +3,22 @@
         {% block elio_search_suggest_container %}
             <div class="search-suggest-container">
                 <div class="d-flex flex-md-row flex-wrap">
-                    {% if response.empty %}
+                    {% if not response.hasVisibleItems %}
                         <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
                             <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
                         </ul>
                     {% else %}
-                        {% set searchResults = 0 %}
-{#                        {% for type, suggestionType in response.groups %}#}
-                        {% for group in response.groups %}
+                        {% for group in response.visibleGroups %}
                             <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
                                 <div class="elio-suggest-block-header">
                                     {{ group.label }}
                                 </div>
 
-                                {% set searchResults = searchResults + suggestionType|length %}
-
-                                {# check if this group has atleast one image #}
-                                {% set suggestionTypeContainsImages = false %}
-                                {% for suggestion in suggestionType %}
-                                    {% if suggestion.imgUrl != "" %}
-                                        {% set suggestionTypeContainsImages = true %}
-                                    {% endif %}
-                                {% endfor %}
-
                                 {% for item in group.items %}
                                     {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
                                         group,
                                         item,
-                                        suggestion,
-                                        suggestionTypeContainsImages
+                                        suggestion
                                     } %}
                                 {% endfor %}
                             </ul>
@@ -55,11 +42,13 @@
                                 {% endblock %}
 
                                 {% block layout_search_suggest_result_total_count %}
-                                    <div class="col-auto search-suggest-total-count">
-                                        {{ "header.searchResults"|trans({
-                                            '%count%': response.count,
-                                        })|sw_sanitize }}
-                                    </div>
+                                    {% if response.hasVisibleItems %}
+                                        <div class="col-auto search-suggest-total-count">
+                                            {{ "header.searchResults"|trans({
+                                                '%count%': response.countVisible,
+                                            })|sw_sanitize }}
+                                        </div>
+                                    {% endif %}
                                 {% endblock %}
                             </div>
                         </div>
