@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -77,7 +78,7 @@ class CachedFilterService implements FilterInterface
      * @param int $level
      * @param ApiRequest $request
      * @return array
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
@@ -102,12 +103,12 @@ class CachedFilterService implements FilterInterface
      * @param string|null $categoryId
      * @return string
      */
-    private function generateCacheKey(
+    protected function generateCacheKey(
         SalesChannelContext $salesChannelContext,
         int $level,
         ?string $categoryId = null
     ): string {
         return 'elio_fact_finder.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
-            ) . '_' . $level . ($categoryId ? '_' . $categoryId : '');
+            ) . '_' . $level . '_' . ($categoryId ?? '');
     }
 }
