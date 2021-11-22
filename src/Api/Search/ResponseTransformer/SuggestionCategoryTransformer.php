@@ -35,45 +35,40 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
-use Elio\FactFinder\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Swagger\Client\Model\ModelInterface;
-use Swagger\Client\Model\ResultSuggestion;
 use Swagger\Client\Model\SuggestionResult;
-use Throwable;
 
 /**
- * Converts suggest result to internal structure
+ * Enriches the category suggest group
  *
- * Class SuggestionTransformer
+ * Class SuggestionCategoryTransformer
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Andrey Baev <anb@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * @author Ralf Frommherz <ralf@frommherz.me>
  */
-class SuggestionTransformer implements ResponseTransformerInterface
+class SuggestionCategoryTransformer implements ResponseTransformerInterface
 {
-    private FactFinderConfigServiceInterface $configService;
-    private EventDispatcherInterface $eventDispatcher;
+    private const TYPE = 'category';
+    private const CATEGORY_ID_ATTRIBUTE = 'CategoryID';
+    private const URL_ATTRIBUTE = 'ProductURL';
+
+    private EntityRepositoryInterface $categoryRepository;
 
     /**
      * SuggestionTransformer constructor.
-     * @param FactFinderConfigServiceInterface $configService
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param EntityRepositoryInterface $categoryRepository
      */
-    public function __construct(
-        FactFinderConfigServiceInterface $configService,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->configService = $configService;
-        $this->eventDispatcher = $eventDispatcher;
+    public function __construct(EntityRepositoryInterface $categoryRepository) {
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -85,6 +80,8 @@ class SuggestionTransformer implements ResponseTransformerInterface
     }
 
     /**
+     * Enriches the product suggest result with product urls and product images
+     *
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
@@ -102,66 +99,76 @@ class SuggestionTransformer implements ResponseTransformerInterface
 
         /** @var SuggestionResponse|null $suggestionResponse */
         $suggestionResponse = $responseCollection->get(SuggestionResponse::class) ?? new SuggestionResponse();
-        $responseCollection->set(SuggestionResponse::class, $suggestionResponse);
-        $config = $this->configService->getByContext($context);
-        $groupLabels = $config->getSuggestTypeLabels();
-        $suggestGroups = [];
+        if(!$suggestionResponse || !$suggestionResponse->hasGroup(self::TYPE)) {
+            return;
+        }
 
-        foreach ($model->getSuggestions() as $suggestion) {
-            $suggestItem = $this->transformSuggestion($suggestion);
+        $categoryGroup = $suggestionResponse->getGroup(self::TYPE);
+        $categories = $this->collect($categoryGroup, $context->getContext());
+        $this->enrich($categoryGroup, $categories);
+    }
 
-            $event = new SuggestItemTransformEvent($suggestItem, $model, $responseCollection, $request, $context);
-            $this->eventDispatcher->dispatch($event);
+    /**
+     * Collects all category entities
+     *
+     * @param SuggestGroup $group
+     * @param Context $context
+     * @return EntityCollection<CategoryEntity>
+     */
+    protected function collect(SuggestGroup $group, Context $context): EntityCollection
+    {
+        $categoryIds = [];
+        foreach ($group->getItems() as $item) {
+            if($productNumber = $this->getCategoryId($item)) {
+                $categoryIds[] = $productNumber;
+            }
+        }
 
-            if($event->isRemoveSuggestItemFromResult()) {
-                continue;
+        if(empty($categoryIds)) {
+            return new EntityCollection();
+        }
+
+        $criteria = new Criteria($categoryIds);
+        $criteria->addAssociation('media');
+        return $this->categoryRepository->search($criteria, $context);
+    }
+
+    /**
+     * Adds the url and the image if present
+     *
+     * @param SuggestGroup $group
+     * @param EntityCollection $categories
+     */
+    protected function enrich(SuggestGroup $group, EntityCollection $categories): void
+    {
+        foreach ($group->getItems() as $item) {
+            // add url
+            $attributes = $item->getAttributes();
+            if(isset($attributes[self::URL_ATTRIBUTE])) {
+                $item->setUrl($attributes[self::URL_ATTRIBUTE]);
             }
 
-            $type = $suggestItem->getType();
-            $group = $suggestGroups[$type] ?? new SuggestGroup($type, $groupLabels[$type] ?? $type);
-            $suggestGroups[$type] = $group;
-            $group->addItem($suggestItem);
-        }
+            // add image
+            $categoryId = $this->getCategoryId($item);
+            if(!$item->hasImage() && $categories->has($categoryId)) {
+                $category = $categories->get($categoryId);
 
-        $suggestionResponse->setGroups($suggestGroups);
-    }
-
-    /**
-     * @param ResultSuggestion $suggestion
-     * @return SuggestItem
-     */
-    private function transformSuggestion(ResultSuggestion $suggestion): SuggestItem
-    {
-        $suggestItem = new SuggestItem();
-        $suggestItem->setName($suggestion->getName());
-        $suggestItem->setType($suggestion->getType());
-        if (!$suggestion->getImage() && $suggestion->getImage() !== '') {
-            $suggestItem->setImgUrl($suggestion->getImage());
-        }
-
-        /** @var array $attributes */
-        $attributes = $suggestion->getAttributes();
-        if (!empty($attributes)) {
-            $suggestItem->setAttributes($this->parseAttributes($attributes));
-        }
-        return $suggestItem;
-    }
-
-    /**
-     * Parsing attributes from FactFinder attributes to ours
-     * @param array $attributes
-     * @return array
-     */
-    private function parseAttributes(array $attributes): array
-    {
-        $result = [];
-        foreach ($attributes as $key => $attribute) {
-            try {
-                if (is_array($attribute) && count($attribute) > 0 && is_string($attribute[0])) {
-                    $result[$key] = $attribute[0];
+                if ($category->getMedia()) {
+                    $item->setUrl($category->getMedia()->getUrl());
                 }
-            } catch (Throwable $e) {}
+            }
         }
-        return $result;
+    }
+
+    /**
+     * Extracts the product number by the given item
+     *
+     * @param SuggestItem $item
+     * @return string|null
+     */
+    protected function getCategoryId(SuggestItem $item): ?string
+    {
+        $attributes = $item->getAttributes();
+        return $attributes[self::CATEGORY_ID_ATTRIBUTE] ?? null;
     }
 }

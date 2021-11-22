@@ -9,40 +9,36 @@
                         </ul>
                     {% else %}
                         {% set searchResults = 0 %}
-                        {% for type, suggestionType in response.suggestions %}
-                            {% set specificUrlPath = '' %}
-                            {% if type == 'productName' %}
-                                {% set specificUrlPath = 'ProductURL' %}
-                            {% elseif type == 'category' %}
-                                {% set specificUrlPath = 'Path' %}
-                            {% endif %}
-
-                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+{#                        {% for type, suggestionType in response.groups %}#}
+                        {% for group in response.groups %}
+                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
                                 <div class="elio-suggest-block-header">
-                                    {{ response.getTypeLabel(type) }}
+                                    {{ group.label }}
                                 </div>
 
                                 {% set searchResults = searchResults + suggestionType|length %}
 
-                                {% set blockWithoutImages = true %}
+                                {# check if this group has atleast one image #}
+                                {% set suggestionTypeContainsImages = false %}
                                 {% for suggestion in suggestionType %}
                                     {% if suggestion.imgUrl != "" %}
-                                        {% set blockWithoutImages = false %}
+                                        {% set suggestionTypeContainsImages = true %}
                                     {% endif %}
                                 {% endfor %}
 
-                                {% for suggestion in suggestionType %}
+                                {% for item in group.items %}
                                     {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
-                                        searchTerm,
+                                        group,
+                                        item,
                                         suggestion,
-                                        specificUrlPath,
-                                        blockWithoutImages
+                                        suggestionTypeContainsImages
                                     } %}
                                 {% endfor %}
                             </ul>
                         {% endfor %}
                     {% endif %}
                 </div>
+
                 {% if not response.empty %}
                     {% block layout_search_suggest_result_total_result %}
                         <div class="js-result search-suggest-total">
@@ -61,7 +57,7 @@
                                 {% block layout_search_suggest_result_total_count %}
                                     <div class="col-auto search-suggest-total-count">
                                         {{ "header.searchResults"|trans({
-                                            '%count%': searchResults,
+                                            '%count%': response.count,
                                         })|sw_sanitize }}
                                     </div>
                                 {% endblock %}

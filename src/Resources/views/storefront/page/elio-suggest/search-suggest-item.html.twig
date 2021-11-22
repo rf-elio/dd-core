@@ -1,54 +1,52 @@
 {% block e_layout_search_suggest_result_item %}
     <li class="search-suggest-product js-result">
         {% block layout_search_suggest_result_link %}
-
-            {% set suggestionLink = suggestion.url %}
-            {% if specificUrlPath != "" %}
-                {% set suggestionLink = suggestion.attributes[specificUrlPath] %}
-            {% endif %}
-            {% if suggestionLink == "" %}
-                {% set suggestionLink = path('frontend.search.page')~"?search="~suggestion.name|url_encode %}
+            {% if item.hasUrl %}
+                {% set itemUrl = item.url %}
+            {% else %}
+                {% set itemUrl = path('frontend.search.page')~"?search="~item.name|url_encode %}
             {% endif %}
 
-            <a href="{{ suggestionLink }}"
-               title="{{ suggestion.name }}"
+            <a href="{{ itemUrl }}"
+               title="{{ item.name }}"
                class="search-suggest-product-link">
+
                 <div class="row align-items-center no-gutters">
-                    {% if not blockWithoutImages %}
+                    {# image #}
+                    {% if group.hasImage %}
                         {% block layout_search_suggest_result_image %}
                             <div class="col-auto search-suggest-product-image-container">
-                                {% if suggestion.imgUrl %}
+                                {% if item.hasImage %}
                                     <img
-                                        src="{{ suggestion.imgUrl }}"
+                                        src="{{ item.imgUrl }}"
                                         sizes="100px"
                                         class="search-suggest-product-image"
-                                    >
+                                        alt="{{ item.name }}" />
                                 {% else %}
-                                    {% sw_icon 'placeholder' style {
-                                        'size': 'lg'
-                                    } %}
+                                    {% sw_icon 'placeholder' style {'size': 'lg'} %}
                                 {% endif %}
                             </div>
                         {% endblock %}
                     {% endif %}
 
+                    {# name with highlightes search term #}
                     {% block layout_search_suggest_result_name %}
                         {% set searchMatchPairs = {} %}
-                        {% set nameLowerArray = suggestion.name|lower|split('') %}
+                        {% set nameLowerArray = item.name|lower|split('') %}
 
                         {% for letter in nameLowerArray %}
                             {% set index = loop.index0 %}
                             {% set restOfTheWord = nameLowerArray[index:]|join %}
 
                             {% if restOfTheWord starts with searchTerm|lower %}
-                                {% set match = suggestion.name|split('')|slice(index, searchTerm|length)|join %}
+                                {% set match = item.name|split('')|slice(index, searchTerm|length)|join %}
 
                                 {% set searchMatchPairs = searchMatchPairs|merge({(match): "<span class='highlight'>"~match~"</span>"}) %}
                             {% endif %}
                         {% endfor %}
 
                         <div class="col search-suggest-product-name text-truncate">
-                            {{ suggestion.name|replace(searchMatchPairs)|raw }}
+                            {{ item.name|replace(searchMatchPairs)|raw }}
                         </div>
                     {% endblock %}
                 </div>

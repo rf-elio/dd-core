@@ -33,7 +33,7 @@
 namespace Elio\FactFinder\Api\Search\Response;
 
 use Elio\FactFinder\Api\Response\Response;
-use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Elio\FactFinder\Core\Suggest\SuggestGroup;
 
 /**
  * Class SuggestionResponse
@@ -46,35 +46,9 @@ use Elio\FactFinder\Core\Suggest\SuggestItem;
 class SuggestionResponse extends Response
 {
     /**
-     * @var SuggestItem[][]
+     * @var SuggestGroup[]
      */
-    protected array $suggestions = [];
-    /**
-     * @var array<string>
-     */
-    protected array $typeLabels = [];
-
-    /**
-     * @return SuggestItem[][]
-     */
-    public function getSuggestions(): array
-    {
-        return $this->suggestions;
-    }
-
-    /**
-     * @param SuggestItem $suggestion
-     */
-    public function addSuggestions(SuggestItem $suggestion): void
-    {
-        $type = $suggestion->getType();
-
-        if (!isset($this->suggestions[$type])) {
-            $this->suggestions[$type] = [];
-        }
-
-        $this->suggestions[$type][] = $suggestion;
-    }
+    protected array $groups = [];
 
     /**
      * Checks if the suggest is empty
@@ -83,25 +57,50 @@ class SuggestionResponse extends Response
      */
     public function isEmpty() : bool
     {
-        return empty($this->suggestions);
+        return empty($this->groups);
     }
 
     /**
-     * @param string[] $typeLabels
+     * @param SuggestGroup[] $groups
      */
-    public function setTypeLabels(array $typeLabels): void
+    public function setGroups(array $groups): void
     {
-        $this->typeLabels = $typeLabels;
+        $this->groups = $groups;
     }
 
     /**
-     * Returns the label for the given type or as fallback the label itself
-     *
-     * @param string $type
-     * @return string
+     * @return SuggestGroup[]
      */
-    public function getTypeLabel(string $type) : string
+    public function getGroups(): array
     {
-        return $this->typeLabels[$type] ?? $type;
+        return $this->groups;
+    }
+
+    /**
+     * @param string $identifier
+     * @return SuggestGroup
+     */
+    public function getGroup(string $identifier) : SuggestGroup
+    {
+        return $this->groups[$identifier];
+    }
+
+    /**
+     * @param string $identifier
+     * @return bool
+     */
+    public function hasGroup(string $identifier) : bool
+    {
+        return isset($this->groups[$identifier]);
+    }
+
+    /**
+     * @return int
+     */
+    public function count() : int
+    {
+        return array_sum(array_map(static function (SuggestGroup $group) {
+            return $group->count();
+        }, $this->groups));
     }
 }
