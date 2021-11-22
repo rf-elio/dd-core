@@ -207,9 +207,9 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSalesChannelId(): string
+    public function getSalesChannelId(): ?string
     {
         return $this->salesChannelId;
     }
