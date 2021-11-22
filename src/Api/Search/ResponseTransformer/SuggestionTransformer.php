@@ -37,6 +37,7 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
@@ -123,6 +124,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
             $group->addItem($suggestItem);
         }
 
+        $suggestGroups = $this->setResultRepresentation($suggestGroups, $config);
         $suggestionResponse->setGroups($suggestGroups);
     }
 
@@ -163,5 +165,46 @@ class SuggestionTransformer implements ResponseTransformerInterface
             } catch (Throwable $e) {}
         }
         return $result;
+    }
+
+    /**
+     * Sets the visibility and the order of the given groups
+     *
+     * @param SuggestGroup[] $groups
+     * @param Configuration $config
+     * @return SuggestGroup[]
+     */
+    protected function setResultRepresentation(array $groups, Configuration $config): array
+    {
+        $acceptedTypes = $config->getSuggestAcceptedTypes();
+
+        if(empty($acceptedTypes)) {
+            return $groups;
+        }
+
+        // set visibility and position
+        foreach ($groups as $group) {
+            $type = $group->getType();
+            $acceptedTypePosition = array_search($type, $acceptedTypes, true);
+
+            if($acceptedTypePosition === false) {
+                $group->setVisible(false);
+            } else {
+                $group->setVisible(true);
+                $group->setPosition($acceptedTypePosition);
+
+            }
+        }
+
+        // sort groups
+        usort($groups, static function (SuggestGroup $a, SuggestGroup $b) {
+            $posA = $a->getPosition();
+            $posB = $b->getPosition();
+            if ($posA === $posB) {
+                return 0;
+            }
+            return ($posA < $posB) ? -1 : 1;
+        });
+        return $groups;
     }
 }
