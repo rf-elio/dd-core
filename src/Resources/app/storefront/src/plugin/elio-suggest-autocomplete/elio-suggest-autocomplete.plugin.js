@@ -107,8 +107,11 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
         let autocompleteText = "";
 
         try {
-            if (DomAccess.querySelector(suggestName, '.highlight')) {
-                autocompleteText = suggestName.getInnerHTML().trim().replaceAll('highlight', 'invisible');
+            let firstHighlight = DomAccess.querySelector(suggestName, '.highlight');
+            let suggestNameInner = suggestName.getInnerHTML().trim();
+            let suggestStartsWithMatch = suggestNameInner.startsWith(firstHighlight.outerHTML.trim());
+            if (firstHighlight && suggestStartsWithMatch) {
+                autocompleteText = suggestNameInner.replaceAll('highlight', 'invisible');
             }
         }
         catch(err) {
