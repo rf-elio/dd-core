@@ -34,8 +34,11 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Psr\Cache\CacheItemPoolInterface;
+use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Throwable;
 
 /**
  * Class CachedFilterService
@@ -49,18 +52,22 @@ class CachedFilterService implements FilterInterface
 {
 
     private FilterInterface $decorated;
-    private CacheItemPoolInterface $cachePool;
+    private TagAwareAdapterInterface $cache;
+    private FactFinderConfigService $configService;
 
     /**
      * @param FilterInterface $decorated
-     * @param CacheItemPoolInterface $cachePool
+     * @param TagAwareAdapterInterface $cache
+     * @param FactFinderConfigService $configService
      */
     public function __construct(
         FilterInterface $decorated,
-        CacheItemPoolInterface $cachePool
+        TagAwareAdapterInterface $cache,
+        FactFinderConfigService $configService
     ) {
         $this->decorated = $decorated;
-        $this->cachePool = $cachePool;
+        $this->cache = $cache;
+        $this->configService = $configService;
     }
 
     /**
@@ -77,23 +84,35 @@ class CachedFilterService implements FilterInterface
      * @param int $level
      * @param ApiRequest $request
      * @return array
+     * @throws \Psr\Cache\CacheException
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
+        $config = $this->configService->getByContext($salesChannelContext);
+        $cacheTime = $config->getRestrictionsCacheTime();
         $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
-        $key = $this->generateCacheKey($salesChannelContext, $level, $categoryId);
 
-        $filters = $this->cachePool->getItem($key);
+        $item = $this->cache->getItem(
+            $this->generateCacheKey($salesChannelContext, $level, $categoryId)
+        );
 
-        if ($filters->get() === null) {
-            $filters->set(
-                $this->decorated->getFilters($salesChannelContext, $level, $request)
-            );
-            $this->cachePool->save($filters);
+        try {
+            if ($item->isHit() && $item->get()) {
+                return CacheCompressor::uncompress($item);
+            }
+        } catch (Throwable $e) {
         }
 
-        return $filters->get();
+        $item->set(
+            $this->decorated->getFilters($salesChannelContext, $level, $request)
+        );
+        $item = CacheCompressor::compress($item, $item->get());
+        $item->expiresAfter($cacheTime * 60); // in seconds
+        $item->tag($this->generateTags());
+        $this->cache->save($item);
+
+        return CacheCompressor::uncompress($item);
     }
 
     /**
@@ -102,12 +121,41 @@ class CachedFilterService implements FilterInterface
      * @param string|null $categoryId
      * @return string
      */
-    private function generateCacheKey(
+    public function generateCacheKey(
         SalesChannelContext $salesChannelContext,
         int $level,
         ?string $categoryId = null
     ): string {
         return 'elio_fact_finder.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
             ) . '_' . $level . ($categoryId ? '_' . $categoryId : '');
+    }
+
+    /**
+     * @return string[]
+     */
+    private function generateTags(): array
+    {
+        return ['elio_factfinder_filtersrestrictions'];
+    }
+
+    /**
+     * Removes cached items with provided keys
+     * @param string[] $keys
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function removeItems(array $keys)
+    {
+        if ($keys) {
+            $this->cache->deleteItems($keys);
+        }
+    }
+
+    /**
+     * Clears the whole cache pool
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function clearCache()
+    {
+        $this->cache->invalidateTags($this->generateTags());
     }
 }

@@ -47,6 +47,12 @@
                  decorates="Elio\FactFinder\Core\FilterRestrictions\FilterService">
             <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService.inner" />
             <argument type="service" id="cache.object"/>
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+        </service>
+
+        <service id="Elio\FactFinder\Storefront\Subscriber\FilterRestrictionsSubscriber">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Elio\FactFinder\Command\SynchronizePropertiesToFiltersCommand">

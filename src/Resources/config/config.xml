@@ -171,6 +171,14 @@
             <defaultValue>true</defaultValue>
             <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
         </input-field>
+        <input-field type="int">
+            <name>restrictionsCacheTime</name>
+            <label>Restrictions cacheable time</label>
+            <label lang="de-DE">Restrictions cacheable time</label>
+            <defaultValue>60</defaultValue>
+            <helpText>Number in minutes</helpText>
+            <helpText lang="de-DE">Number in minutes</helpText>
+        </input-field>
     </card>
     <card>
         <title>Recommendations</title>
