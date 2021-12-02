@@ -15,7 +15,9 @@ Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
             this.ff_export.config = {
                 export_product_categories: true,
                 export_structure_categories: true,
-                export_link_categories: true
+                export_link_categories: true,
+                trigger_import_search_data: false,
+                trigger_import_suggest_data: false
             }
             this.ff_export.interval = '0 */4 * * *';
             this.ff_export.type = 'product';
