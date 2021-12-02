@@ -154,6 +154,16 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
 
+            // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)
+            if(
+                !(
+                    isset($categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                    $categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                )
+            ) {
+                unset($mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]);
+            }
+
             $this->customFields[$category->getId()] = $mergedCategoryCustomFields;
             $this->buildCustomFieldInheritanceByNodes($node->getChildNodes(), $mergedCategoryCustomFields);
         }
@@ -236,16 +246,16 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $category->setCustomFields($this->customFields[$category->getId()]);
             }
 
-            if (!$this->isCategoryAllowed($category, $export)) {
-                continue;
-            }
-
             // child categories are excluded from export -> don't add
             if (
                 !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]) &&
                 $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
             ) {
                 $categoryIds[] = $category->getId();
+            }
+
+            if (!$this->isCategoryAllowed($category, $export)) {
+                continue;
             }
 
             $processableCategories[] = $category;
