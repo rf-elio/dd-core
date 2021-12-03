@@ -53,7 +53,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
+use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
+use Elio\FactFinder\Core\Defaults;
 
 /**
  * Class BaseCategoryExportGenerator
@@ -86,17 +87,18 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     public function getModel(ExportEntity $entity): array
     {
         return [
-            Defaults::FIELD_ID,
-            Defaults::FIELD_TYPE,
-            Defaults::FIELD_TITLE,
-            Defaults::FIELD_SEO_TEXT,
-            Defaults::FIELD_URL,
-            Defaults::FIELD_KEYWORDS,
-            Defaults::FIELD_DESCRIPTION,
-            Defaults::FIELD_IMAGE_URL,
-            Defaults::FIELD_PUBLICATION_DATE,
-            Defaults::FIELD_PRIORITY,
-            Defaults::FIELD_CONTENT_STRUCTURE
+            ContentExportDefaults::FIELD_ID,
+            ContentExportDefaults::FIELD_TYPE,
+            ContentExportDefaults::FIELD_TITLE,
+            ContentExportDefaults::FIELD_SEO_TEXT,
+            ContentExportDefaults::FIELD_URL,
+            ContentExportDefaults::FIELD_KEYWORDS,
+            ContentExportDefaults::FIELD_DESCRIPTION,
+            ContentExportDefaults::FIELD_IMAGE_URL,
+            ContentExportDefaults::FIELD_PUBLICATION_DATE,
+            ContentExportDefaults::FIELD_PRIORITY,
+            ContentExportDefaults::FIELD_CONTENT_STRUCTURE,
+            ContentExportDefaults::FIELD_TAGS
         ];
     }
 
@@ -331,21 +333,42 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     protected function prepareExportItem(CategoryEntity $category, ExportItem $exportItem, string $type): void
     {
         $translated = $category->getTranslated();
-        $exportItem->set(Defaults::FIELD_ID, $category->getId());
-        $exportItem->set(Defaults::FIELD_TYPE, $type);
-        $exportItem->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName() ?? $translated['name']));
-        $exportItem->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription() ?? $translated['metaDescription']));
-        $exportItem->set(Defaults::FIELD_URL, new SeoRoute(
+        $exportItem->set(ContentExportDefaults::FIELD_ID, $category->getId());
+        $exportItem->set(ContentExportDefaults::FIELD_TYPE, $type);
+        $exportItem->set(ContentExportDefaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName() ?? $translated['name']));
+        $exportItem->set(ContentExportDefaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription() ?? $translated['metaDescription']));
+        $exportItem->set(ContentExportDefaults::FIELD_URL, new SeoRoute(
             NavigationPageSeoUrlRoute::ROUTE_NAME, $category->getId(), ['navigationId' => $category->getId()]
         ));
-        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords() ?? $translated['keywords']));
-        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription() ?? $translated['description']));
-        $exportItem->set(Defaults::FIELD_IMAGE_URL, '');
+        $exportItem->set(ContentExportDefaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords() ?? $translated['keywords']));
+        $exportItem->set(ContentExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription() ?? $translated['description']));
+        $exportItem->set(ContentExportDefaults::FIELD_IMAGE_URL, '');
         if($category->getMedia()){
-            $exportItem->set(Defaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
+            $exportItem->set(ContentExportDefaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
         }
-        $exportItem->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
-        $exportItem->set(Defaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? Defaults::DEFAULT_PRIORITY);
-        $exportItem->set(Defaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
+        $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
+        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_TAGS, $this->getCategoryTags($category));
+    }
+
+    /**
+     * Creates the content tags string
+     *
+     * @param CategoryEntity $category
+     * @return string
+     */
+    protected function getCategoryTags(CategoryEntity $category) : string
+    {
+        if(!$category->getTags()) {
+            return '';
+        }
+
+        $tags = [];
+        foreach ($category->getTags() as $tag) {
+            $tags[] = $tag->getTranslation('name') ?? $tag->getName();
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $tags);
     }
 }
