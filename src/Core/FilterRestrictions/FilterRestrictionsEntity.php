@@ -60,7 +60,7 @@ class FilterRestrictionsEntity extends Entity
     /**
      * @var string|null
      */
-    protected string $categoryId;
+    protected $categoryId;
     /**
      * @var CategoryEntity|null
      */
