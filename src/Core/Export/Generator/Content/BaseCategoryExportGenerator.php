@@ -53,7 +53,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Defaults;
 
 /**
