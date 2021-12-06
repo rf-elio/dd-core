@@ -41,7 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
@@ -114,18 +114,18 @@ class FilterRestrictionsDefinition extends EntityDefinition
                new ApiAware(),
                new Required()
            ),
-           new OneToOneAssociationField(
+           new ManyToOneAssociationField(
                'salesChannel',
                'sales_channel_id',
-               'id',
                SalesChannelDefinition::class,
+               'id',
                false
            ),
-           new OneToOneAssociationField(
+           new ManyToOneAssociationField(
                'category',
                'category_id',
-               'id',
                CategoryDefinition::class,
+               'id',
                false
            ),
            new ManyToManyAssociationField(

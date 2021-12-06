@@ -47,8 +47,8 @@ class ArrayUtil
      * Adds data to an sub array with the given key
      *
      * @param array  $array
-     * @param        $data
-     * @param array  $keys
+     * @param mixed  $data
+     * @param string $keys
      */
     public static function arrayKeyPush(array &$array, $data, ...$keys): void
     {
@@ -70,9 +70,9 @@ class ArrayUtil
     /**
      * Adds data to an sub array with the given key
      *
-     * @param array  $array
-     * @param        $data
-     * @param array  $keys
+     * @param array $array
+     * @param mixed $data
+     * @param string $keys
      */
     public static function arrayKeyAdd(array &$array, $data, ...$keys): void
     {
@@ -168,12 +168,12 @@ class ArrayUtil
     /**
      * Returns the array keys as string
      *
-     * @param $array
+     * @param array $array
      * @return array
      */
-    public static function getArrayKeysAsString($array): array
+    public static function getArrayKeysAsString(array $array): array
     {
-        return array_map(function ($key) {
+        return array_map(static function ($key) {
             return (string)$key;
         }, array_keys($array));
     }
@@ -189,20 +189,20 @@ class ArrayUtil
      */
     public static function swap(array $values, string $keyKey, ?string $valueKey = null): array
     {
-        $swapedValues = [];
+        $swappedValues = [];
 
         foreach ($values as $value)
         {
             if(!$valueKey)
             {
-                $swapedValues[$value[$keyKey]] = $value;
+                $swappedValues[$value[$keyKey]] = $value;
             }
             else
             {
-                $swapedValues[$value[$keyKey]] = $value[$valueKey];
+                $swappedValues[$value[$keyKey]] = $value[$valueKey];
             }
         }
 
-        return $swapedValues;
+        return $swappedValues;
     }
 }

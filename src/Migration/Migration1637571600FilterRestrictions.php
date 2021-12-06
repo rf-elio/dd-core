@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -30,50 +31,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\FactFinder\Migration;
 
-use Elio\FactFinder\Core\RealTimeUpdate\ImportService;
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
- * Class ExportGeneratedSubscriber
+ * Class Migration1637571600FilterRestrictions
+ * @package Elio\FactFinder\Migration
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratedSubscriber implements EventSubscriberInterface
+class Migration1637571600FilterRestrictions extends MigrationStep
 {
-    private ImportServiceInterface $importService;
-
-    /**
-     * ExportGeneratedSubscriber constructor.
-     * @param ImportServiceInterface $importService
-     */
-    public function __construct(ImportServiceInterface $importService)
+    public function getCreationTimestamp(): int
     {
-        $this->importService = $importService;
+        return 1637571600;
     }
 
-    /**
-     * @return string[]
-     */
-    public static function getSubscribedEvents(): array
+    public function update(Connection $connection): void
     {
-        return [
-            ExportGeneratedEvent::class => 'onExportGenerated',
-        ];
+        $query = <<<SQL
+ALTER TABLE `elio_ff_filter_restrictions` ADD 
+    KEY `fk.elio_ff_filter_restrictions.sales_channel_id` (`sales_channel_id`);
+ALTER TABLE `elio_ff_filter_restrictions` ADD 
+    KEY `fk.elio_ff_filter_restrictions.category_id` (`category_id`);
+ALTER TABLE `elio_ff_filter_restrictions` ADD 
+    CONSTRAINT `fk.elio_ff_filter_restrictions.sales_channel_id`
+        FOREIGN KEY (`sales_channel_id`)
+            REFERENCES `sales_channel` (`id`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
+ALTER TABLE `elio_ff_filter_restrictions` ADD
+    CONSTRAINT `fk.elio_ff_filter_restrictions.category_id`
+        FOREIGN KEY (`category_id`)
+            REFERENCES `category` (`id`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
+SQL;
+
+        $connection->executeStatement($query);
+
+        $query = <<<SQL
+ALTER TABLE `elio_ff_filter` ADD
+    KEY `fk.elio_ff_filter.property_id` (`property_id`);
+ALTER TABLE `elio_ff_filter` ADD
+    CONSTRAINT `fk.elio_ff_filter.property_id`
+        FOREIGN KEY (`property_id`)
+            REFERENCES `property_group` (`id`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
+SQL;
+
+        $connection->executeStatement($query);
     }
 
-    /**
-     * Triggers the ff api after every successful export generation
-     *
-     * @param ExportGeneratedEvent $event
-     */
-    public function onExportGenerated(ExportGeneratedEvent $event): void
+    public function updateDestructive(Connection $connection): void
     {
-        $this->importService->import($event->getExport(), $event->getContext());
+        // implement update destructive
     }
 }
