@@ -26,9 +26,11 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
                             let suggestName = DomAccess.querySelector(mutation.target, '.search-suggest-product-name');
 
                             if (suggestName) {
-                                let autocompleteContent = this._createAutocompleteText(suggestName);
-
-                                this._autoCompleteEl.innerHTML = autocompleteContent;
+                                let text = this._createAutocompleteText(suggestName);
+                                if (text)
+                                    this._autoCompleteEl.innerHTML = text;
+                                else
+                                    this._removeAutoComplete();
                             }
                         }
                         catch(err) {
@@ -70,15 +72,11 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
             if (afterSuggestObject && afterSuggestObject.detail.firstElement) {
                 let firstElement = afterSuggestObject.detail.firstElement;
 
-                try {
-                    if (DomAccess.querySelector(firstElement, '.highlight')) {
-                        let autocompleteText = this._createAutocompleteText(firstElement);
-                        this._autoCompleteEl.innerHTML = autocompleteText;
-                    }
-                }
-                catch(err) {
-                    console.log("There is no exact match in results")
-                }
+                let text = this._createAutocompleteText(firstElement);
+                if (text)
+                    this._autoCompleteEl.innerHTML = text;
+                else
+                    this._removeAutoComplete();
             }
         }
 
@@ -105,7 +103,21 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
         this._autoCompleteEl.innerHTML = "";
     }
 
-    _createAutocompleteText(productNameHTML) {
-        return productNameHTML.getInnerHTML().trim().replaceAll('highlight', 'invisible');
+    _createAutocompleteText(suggestName) {
+        let autocompleteText = "";
+
+        try {
+            let firstHighlight = DomAccess.querySelector(suggestName, '.highlight');
+            let suggestNameInner = suggestName.getInnerHTML().trim();
+            let suggestStartsWithMatch = suggestNameInner.startsWith(firstHighlight.outerHTML.trim());
+            if (firstHighlight && suggestStartsWithMatch) {
+                autocompleteText = suggestNameInner.replaceAll('highlight', 'invisible');
+            }
+        }
+        catch(err) {
+            console.log("There is no exact match in results");
+        }
+
+        return autocompleteText;
     }
 }

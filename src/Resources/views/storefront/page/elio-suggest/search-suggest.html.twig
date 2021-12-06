@@ -26,7 +26,7 @@
                     {% endif %}
                 </div>
 
-                {% if not response.empty %}
+                {% if response.hasVisibleItems %}
                     {% block layout_search_suggest_result_total_result %}
                         <div class="js-result search-suggest-total">
                             <div class="row align-items-center no-gutters">
@@ -42,13 +42,11 @@
                                 {% endblock %}
 
                                 {% block layout_search_suggest_result_total_count %}
-                                    {% if response.hasVisibleItems %}
-                                        <div class="col-auto search-suggest-total-count">
-                                            {{ "header.searchResults"|trans({
-                                                '%count%': response.countVisible,
-                                            })|sw_sanitize }}
-                                        </div>
-                                    {% endif %}
+                                    <div class="col-auto search-suggest-total-count">
+                                        {{ "header.searchResults"|trans({
+                                            '%count%': response.countVisible,
+                                        })|sw_sanitize }}
+                                    </div>
                                 {% endblock %}
                             </div>
                         </div>
