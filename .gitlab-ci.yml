@@ -93,7 +93,8 @@ test:php7.4:
 
 upload:
   stage: release
-  needs: ['test:phpstan', 'test:php7.4', 'test:php8.0']
+#  needs: ['test:phpstan', 'test:php7.4', 'test:php8.0']
+  needs: ['build']
   image: curlimages/curl:latest
   rules:
     - if: $CI_COMMIT_TAG
