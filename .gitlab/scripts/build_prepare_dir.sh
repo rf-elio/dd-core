@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir build
-cp -r src/ build/src
-cp -r tests/ build/tests
-find . -type f -maxdepth 1 -exec cp {} build/ \;
+mkdir prepare
+cp -r src/ prepare/src
+cp -r tests/ prepare/tests
+find . -type f -maxdepth 1 -exec cp {} prepare/ \;

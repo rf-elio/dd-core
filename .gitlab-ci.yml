@@ -19,8 +19,8 @@ build:
     - bash .gitlab/scripts/docker_install.sh > /dev/null
   script:
     - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
-    - cp -r build dev
-    - cp -r build prod
+    - cp -r prepare dev
+    - cp -r prepare prod
     - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
     - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
     - zip -r ./prod.zip ./prod
