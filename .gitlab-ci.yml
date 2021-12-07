@@ -66,6 +66,9 @@ test:php7.4:
 
 release_job:
   stage: release
+  needs: ['build']
+  only:
+    - tags
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
     - if: $CI_COMMIT_TAG
@@ -75,3 +78,11 @@ release_job:
     tag_name: ${MAJOR}_${MINOR}_${REVISION}
     name: 'Release $CI_COMMIT_TAG'
     description: 'Release created using the release-cli.'
+    assets:
+      links:
+        - name: 'asset1'
+          url: 'https://example.com/assets/1'
+        - name: 'asset2'
+          url: 'https://example.com/assets/2'
+          filepath: '/pretty/url/1' # optional
+          link_type: 'other' # optional
