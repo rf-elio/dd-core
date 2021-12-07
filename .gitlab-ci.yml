@@ -4,6 +4,7 @@ stages:
   - publish
 
 build:
+  stage: build
   only:
     - merge_requests
   image: php:8.0
@@ -68,7 +69,6 @@ test:php7.4:
 publish:
   image: curlimages/curl:latest
   stage: publish
-  needs: ['build']
   variables:
     URL: "$CI_SERVER_PROTOCOL://$CI_SERVER_HOST:$CI_SERVER_PORT/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
   script:
