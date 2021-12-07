@@ -4,7 +4,6 @@ stages:
   - publish
 
 build:
-  stage: build
   only:
     - merge_requests
   image: php:8.0
