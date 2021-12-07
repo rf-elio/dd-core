@@ -91,7 +91,7 @@ test:php7.4:
 #          filepath: '/pretty/url/1' # optional
 #          link_type: 'other' # optional
 
-release:upload:
+upload:
   stage: release
   needs: ['build']
   image: curlimages/curl:latest
@@ -105,7 +105,7 @@ release:upload:
     - |
       curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file prod.zip "${PACKAGE_REGISTRY_URL}/prod.zip"
 
-release:create:
+release_create:
   stage: release
   needs: ['upload']
   image: registry.gitlab.com/gitlab-org/release-cli:latest
