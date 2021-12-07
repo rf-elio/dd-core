@@ -28,6 +28,7 @@ test:phpstan:
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '8.0'
@@ -44,6 +45,7 @@ test:php8.0:
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '8.0'
@@ -58,6 +60,7 @@ test:php7.4:
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '7.4'
