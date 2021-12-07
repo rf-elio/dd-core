@@ -5,6 +5,9 @@ stages:
 
 build:
   stage: build
+  only:
+    - merge_requests
+    - tags
   image: php:8.0
   artifacts:
     paths:
