@@ -13,6 +13,7 @@ build:
     paths:
       - dev
       - prod
+      - build
     expire_in: 1 hour
   before_script:
     - bash .gitlab/scripts/docker_install.sh > /dev/null
@@ -22,6 +23,7 @@ build:
     - cp -r build prod
     - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
     - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - zip -r ./build/prod.zip ./prod
 
 test:phpstan:
   stage: test
