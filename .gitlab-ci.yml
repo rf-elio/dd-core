@@ -1,3 +1,12 @@
+#include:
+#  - local: .gitlab/ci/test.yml
+##  - local: .gitlab/ci/analyze.yml
+#  - local: .gitlab/ci/build.yml
+##  - local: .gitlab/ci/publish.yml
+##  - local: .gitlab/ci/analyze-container.yml
+##  - local: .gitlab/ci/release.yml
+
+
 stages:
   - build
   - test
