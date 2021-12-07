@@ -15,13 +15,13 @@ build:
       - prod
     expire_in: 1 hour
   before_script:
-    - bash .ci/docker_install.sh > /dev/null
+    - bash .gitlab/scripts/docker_install.sh > /dev/null
   script:
-    - bash .ci/build_prepare_dir.sh > /dev/null
+    - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
     - cp -r build dev
     - cp -r build prod
-    - cd ./dev && make dev && bash ../.ci/build_clean_dir.sh && cd ..
-    - cd ./prod && make prod && bash ../.ci/build_clean_dir.sh && cd ..
+    - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
 
 test:phpstan:
   stage: test
@@ -51,7 +51,7 @@ test:php8.0:
     paths:
       - dev
   script:
-    - bash .ci/test_phpunit.sh
+    - bash .gitlab/scripts/test_phpunit.sh
 
 test:php7.4:
   stage: test
@@ -65,7 +65,7 @@ test:php7.4:
     paths:
       - dev
   script:
-    - bash .ci/test_phpunit.sh
+    - bash .gitlab/scripts/test_phpunit.sh
 
 release_job:
   stage: release
