@@ -66,6 +66,18 @@ test:php7.4:
   script:
     - bash .ci/test_phpunit.sh
 
+publish:
+  image: inetprocess/gitlab-release
+  stage: publish
+  only:
+    - tags
+  except:
+    - schedules
+  dependencies:
+    - build
+  script:
+    - gitlab-release --message 'Automatic release' ./Demo.txt
+
 #publish:
 #  image: curlimages/curl:latest
 #  stage: publish
