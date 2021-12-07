@@ -88,9 +88,9 @@ upload:
       - build
   script:
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/prod.zip "${PACKAGE_REGISTRY_URL}/${$CI_COMMIT_TAG}/prod.zip"
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/prod.zip "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/prod.zip"
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/dev.zip "${PACKAGE_REGISTRY_URL}/${$CI_COMMIT_TAG}/dev.zip"
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/dev.zip "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/dev.zip"
 
 release_create:
   stage: release
@@ -107,6 +107,6 @@ release_create:
     assets: # Optional, multiple asset links
       links:
         - name: 'prod.zip'
-          url: '${PACKAGE_REGISTRY_URL}/${$CI_COMMIT_TAG}/prod.zip'
+          url: '${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/prod.zip'
         - name: 'dev.zip'
-          url: '${PACKAGE_REGISTRY_URL}/${$CI_COMMIT_TAG}/dev.zip'
+          url: '${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/dev.zip'
