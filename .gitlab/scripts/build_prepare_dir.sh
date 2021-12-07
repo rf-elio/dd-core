@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir build
 mkdir prepare
 cp -r src/ prepare/src
 cp -r tests/ prepare/tests
