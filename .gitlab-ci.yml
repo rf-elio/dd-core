@@ -1,12 +1,3 @@
-#include:
-#  - local: .gitlab/ci/test.yml
-##  - local: .gitlab/ci/analyze.yml
-#  - local: .gitlab/ci/build.yml
-##  - local: .gitlab/ci/publish.yml
-##  - local: .gitlab/ci/analyze-container.yml
-##  - local: .gitlab/ci/release.yml
-
-
 stages:
   - build
   - test
@@ -76,23 +67,23 @@ test:php7.4:
   script:
     - bash .gitlab/scripts/test_phpunit.sh
 
-release_job:
-  stage: release
-  needs: ['build']
-  only:
-    - tags
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  script:
-    - echo "Running the release job."
-  release:
-    tag_name: $CI_COMMIT_TAG
-    name: 'Release $CI_COMMIT_TAG'
-    description: 'Release created using the release-cli.'
-    assets:
-      links:
-        - name: 'asset1'
-          url: 'https://example.com/assets/1'
-        - name: 'asset2'
-          url: 'https://example.com/assets/2'
-          filepath: '/pretty/url/1' # optional
-          link_type: 'other' # optional
+#release_job:
+#  stage: release
+#  needs: ['build']
+#  only:
+#    - tags
+#  image: registry.gitlab.com/gitlab-org/release-cli:latest
+#  script:
+#    - echo "Running the release job."
+#  release:
+#    tag_name: $CI_COMMIT_TAG
+#    name: 'Release $CI_COMMIT_TAG'
+#    description: 'Release created using the release-cli.'
+#    assets:
+#      links:
+#        - name: 'asset1'
+#          url: 'https://example.com/assets/1'
+#        - name: 'asset2'
+#          url: 'https://example.com/assets/2'
+#          filepath: '/pretty/url/1' # optional
+#          link_type: 'other' # optional
