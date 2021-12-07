@@ -3,6 +3,12 @@ stages:
   - test
   - release
 
+variables:
+  PACKAGE_VERSION: "1.0.0"
+  PROD_PACKAGE: "prod-${PACKAGE_VERSION}"
+  DEV_PACKAGE: "prod-${PACKAGE_VERSION}"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/release/${PACKAGE_VERSION}"
+
 build:
   stage: build
   only:
@@ -73,27 +79,6 @@ test:php7.4:
   script:
     - bash .gitlab/scripts/test_phpunit.sh
 
-#release_job:
-#  stage: release
-#  needs: ['build']
-#  only:
-#    - tags
-#  image: registry.gitlab.com/gitlab-org/release-cli:latest
-#  script:
-#    - echo "Running the release job."
-#  release:
-#    tag_name: $CI_COMMIT_TAG
-#    name: 'Release $CI_COMMIT_TAG'
-#    description: 'Release created using the release-cli.'
-#    assets:
-#      links:
-#        - name: 'asset1'
-#          url: 'https://example.com/assets/1'
-#        - name: 'asset2'
-#          url: 'https://example.com/assets/2'
-#          filepath: '/pretty/url/1' # optional
-#          link_type: 'other' # optional
-
 upload:
   stage: release
 #  needs: ['test:phpstan', 'test:php7.4', 'test:php8.0']
@@ -106,7 +91,7 @@ upload:
       - build
   script:
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/prod.zip "${PACKAGE_REGISTRY_URL}/prod"
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/prod.zip "${PACKAGE_REGISTRY_URL}/${PROD_PACKAGE}"
 
 release_create:
   stage: release
