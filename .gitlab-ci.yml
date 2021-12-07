@@ -106,7 +106,7 @@ upload:
       - build
   script:
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/prod.zip "${PACKAGE_REGISTRY_URL}/prod.zip"
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/prod.zip "${PACKAGE_REGISTRY_URL}/prod"
 
 release_create:
   stage: release
