@@ -342,7 +342,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
 
         /** @var Price $price */
         foreach ($product->getPrice() as $price) {
-            /** @var CurrencyEntity $currency */
+            /** @var CurrencyEntity|null $currency */
             $currency = $currencies->get($price->getCurrencyId());
             if ($currency === null) {
                 continue;
