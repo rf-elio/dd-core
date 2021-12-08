@@ -330,7 +330,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      *
      * @return string
      */
-    private function getProductPrices(ProductEntity $product, Context $context) : string
+    protected function getProductPrices(ProductEntity $product, Context $context) : string
     {
         if ($product->getPrice() === null) {
             return '';
@@ -344,7 +344,9 @@ class ProductExportGenerator implements ExportGeneratorInterface
         foreach ($product->getPrice() as $price) {
             /** @var CurrencyEntity $currency */
             $currency = $currencies->get($price->getCurrencyId());
-            if ($currency === null) continue;
+            if ($currency === null) {
+                continue;
+            }
 
             $prices[] = sprintf('%s~~%s=%s', $currency->getIsoCode(), $currency->getSymbol(), $price->getGross());
         }
