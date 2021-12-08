@@ -43,12 +43,16 @@ use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -67,15 +71,22 @@ class ProductExportGenerator implements ExportGeneratorInterface
     private const PRODUCT_CHUNK_SIZE = 500;
     private EntityRepositoryInterface $productRepository;
     private EventDispatcherInterface $eventDispatcher;
+    private EntityRepositoryInterface $currencyRepository;
 
     /**
      * ProductExportGenerator constructor.
      * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepositoryInterface $currencyRepository
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EntityRepositoryInterface $productRepository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        EntityRepositoryInterface $productRepository,
+        EntityRepositoryInterface $currencyRepository,
+        EventDispatcherInterface $eventDispatcher
+    )
     {
         $this->productRepository = $productRepository;
+        $this->currencyRepository = $currencyRepository;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -181,7 +192,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, $product->getDescription() ?? $translated['description'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_PRICE, $product->getPrice()->first()->getGross());
+        $item->set(ProductExportDefaults::FIELD_PRICE, $this->getProductPrices($product, $context->getContext()));
 
         $manufacturer = $product->getManufacturer();
         if($manufacturer) {
@@ -311,5 +322,38 @@ class ProductExportGenerator implements ExportGeneratorInterface
         }
 
         return implode(Defaults::VALUE_SEPARATOR, $tags);
+    }
+
+    /**
+     * @param ProductEntity $product
+     * @param Context $context
+     *
+     * @return string
+     */
+    private function getProductPrices(ProductEntity $product, Context $context) : string
+    {
+        if ($product->getPrice() === null) {
+            return '';
+        }
+
+        $prices = [];
+        $currencyIds = $product->getPrice()->map(static fn (Price $price) => $price->getCurrencyId());
+        $currencies = $this->currencyRepository->search(new Criteria($currencyIds), $context);
+
+        /** @var Price $price */
+        foreach ($product->getPrice() as $price) {
+            /** @var CurrencyEntity $currency */
+            $currency = $currencies->get($price->getCurrencyId());
+            if ($currency === null) continue;
+
+            $prices[] = sprintf('%s~~%s=%s', $currency->getIsoCode(), $currency->getSymbol(), $price->getGross());
+        }
+
+        return !empty($prices) ? sprintf(
+            '%s%s%s',
+            Defaults::VALUE_SEPARATOR,
+            implode(Defaults::VALUE_SEPARATOR, $prices),
+            Defaults::VALUE_SEPARATOR
+        ) : '';
     }
 }
