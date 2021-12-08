@@ -37,6 +37,7 @@ use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
 use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
 use Elio\FactFinder\Api\Import\Response\ImportResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Psr\Log\LoggerInterface;
@@ -87,7 +88,7 @@ class ImportService implements ImportServiceInterface
         $exportConfig = $export->getConfig();
 
         try {
-            if ($exportConfig['trigger_import_search_data'] ?? false) {
+            if ($exportConfig[ExportConfig::TRIGGER_IMPORT_SEARCH_DATA] ?? false) {
                 $searchImportChannel = $export->getType() === ContentExportDefaults::TYPE ?
                     $config->getApiContentChannel() : $config->getApiChannel();
 
@@ -98,7 +99,7 @@ class ImportService implements ImportServiceInterface
                 }
             }
 
-            if ($exportConfig['trigger_import_suggest_data'] ?? false) {
+            if ($exportConfig[ExportConfig::TRIGGER_IMPORT_SUGGEST_DATA] ?? false) {
                 $importRequest = new SuggestImportRequest($config->getApiChannel());
                 $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
                 if ($importResponse = $responseCollection->get(ImportResponse::class)) {

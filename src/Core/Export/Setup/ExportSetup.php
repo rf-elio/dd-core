@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
@@ -107,11 +108,11 @@ class ExportSetup
                         'languageId' => $language->getId(),
                         'mapping' => [],
                         'config' => [
-                            FactFinder::EXPORT_CONFIG_EXPORT_PRODUCT_CATEGORIES => true,
-                            FactFinder::EXPORT_CONFIG_EXPORT_STRUCTURE_CATEGORIES => true,
-                            FactFinder::EXPORT_CONFIG_EXPORT_LINK_CATEGORIES => true,
-                            FactFinder::EXPORT_CONFIG_TRIGGER_IMPORT_SEARCH_DATA => false,
-                            FactFinder::EXPORT_CONFIG_TRIGGER_IMPORT_SUGGEST_DATA => false,
+                            ExportConfig::EXPORT_PRODUCT_CATEGORIES => true,
+                            ExportConfig::EXPORT_STRUCTURE_CATEGORIES => true,
+                            ExportConfig::EXPORT_LINK_CATEGORIES => true,
+                            ExportConfig::TRIGGER_IMPORT_SEARCH_DATA => false,
+                            ExportConfig::TRIGGER_IMPORT_SUGGEST_DATA => false,
                         ],
                         'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
                     ];

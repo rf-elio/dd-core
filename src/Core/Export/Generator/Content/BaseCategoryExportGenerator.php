@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
 
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
@@ -295,8 +296,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         $categoryType = $category->getType();
 
         if (
-            ($categoryType === 'link' && !($exportConfig['export_link_categories'] ?? true)) ||
-            ($categoryType === 'folder' && !($exportConfig['export_structure_categories'] ?? true))
+            ($categoryType === 'link' && !($exportConfig[ExportConfig::EXPORT_LINK_CATEGORIES] ?? true)) ||
+            ($categoryType === 'folder' && !($exportConfig[ExportConfig::EXPORT_STRUCTURE_CATEGORIES] ?? true))
         ) {
             return false;
         }

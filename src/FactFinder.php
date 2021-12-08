@@ -123,12 +123,6 @@ class FactFinder extends Plugin
         ]
     ];
 
-    public const EXPORT_CONFIG_EXPORT_PRODUCT_CATEGORIES = 'export_product_categories';
-    public const EXPORT_CONFIG_EXPORT_STRUCTURE_CATEGORIES = 'export_structure_categories';
-    public const EXPORT_CONFIG_EXPORT_LINK_CATEGORIES = 'export_link_categories';
-    public const EXPORT_CONFIG_TRIGGER_IMPORT_SEARCH_DATA = 'trigger_import_search_data';
-    public const EXPORT_CONFIG_TRIGGER_IMPORT_SUGGEST_DATA = 'trigger_import_suggest_data';
-
     /**
      * Adds the additional service definitions
      *
