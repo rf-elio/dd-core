@@ -17,6 +17,7 @@ Shopware.Component.extend('ff-restrictions-customfilters-create', 'ff-restrictio
 
             this.filter = this.filterRepository.create();
             this.filter.isCustom = true;
+            this.filter.technicalName = 'technicalName'
             this.filter.propertyName = 'propertyName';
             this.newId = this.filter.id;
 

@@ -30,41 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Extension;
+namespace Elio\FactFinder\Core;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
-use Shopware\Core\Content\Property\PropertyGroupDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
- * Class PropertyGroupExtension
- * @package Elio\FactFinder\Core\FilterRestrictions\Extension
+ * Class Defaults
+ * @package Elio\FactFinder\Core
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Andrey Baev <anb@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class PropertyGroupExtension extends EntityExtension
+class Defaults
 {
-    public function extendFields(FieldCollection $collection): void
-    {
-        $collection->add(
-
-            (new OneToOneAssociationField(
-                'filter',
-                'filter_id',
-                'property_id',
-                FilterDefinition::class,
-                false
-            ))->addFlags(new CascadeDelete())
-        );
-    }
-
-    public function getDefinitionClass(): string
-    {
-        return PropertyGroupDefinition::class;
-    }
+    public const VALUE_SEPARATOR = '|';
 }

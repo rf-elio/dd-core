@@ -82,6 +82,7 @@ class Configuration extends Struct
     private bool $searchUseContentChannel;
     private array $suggestTypeLabels;
     private int $restrictionsCacheTime;
+    private array $suggestAcceptedTypes;
 
     /**
      * Configuration constructor.
@@ -110,6 +111,7 @@ class Configuration extends Struct
      * @param string $apiContentChannel
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
+     * @param array $suggestAcceptedTypes
      */
     public function __construct(
         bool $active,
@@ -136,7 +138,8 @@ class Configuration extends Struct
         int $restrictionsCacheTime,
         string $apiContentChannel,
         bool $searchUseContentChannel,
-        array $suggestTypeLabels
+        array $suggestTypeLabels,
+        array $suggestAcceptedTypes
     )
     {
         $this->useAso = $useAso;
@@ -164,6 +167,7 @@ class Configuration extends Struct
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->suggestTypeLabels = $suggestTypeLabels;
         $this->restrictionsCacheTime = $restrictionsCacheTime;
+        $this->suggestAcceptedTypes = $suggestAcceptedTypes;
     }
 
     /**
@@ -376,10 +380,10 @@ class Configuration extends Struct
     }
 
     /**
-     * @param int $restrictionsCacheTime
+     * @return array
      */
-    public function setRestrictionsCacheTime(int $restrictionsCacheTime): void
+    public function getSuggestAcceptedTypes(): array
     {
-        $this->restrictionsCacheTime = $restrictionsCacheTime;
+        return $this->suggestAcceptedTypes;
     }
 }

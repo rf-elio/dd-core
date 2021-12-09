@@ -11,6 +11,7 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
     });
 
     getValues() {
+        this.listing.options.disableEmptyFilter = true;
         const values = super.getValues();
         values[this.options.ffFilterName] = values[this.options.name].slice();
         return values;
@@ -76,13 +77,21 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
         //     return;
         // }
 
+        this.activeItemsTotalHits = [];
+        var activeItemsTotalHits = [];
+        activeItems.forEach( (item) => {
+            activeItemsTotalHits[item.extensions.ff_facet_extension.key] = item.extensions.ff_facet_extension.totalHits
+        });
+        this.activeItemsTotalHits = activeItemsTotalHits;
+        console.log(this.activeItemsTotalHits);
+
         this._disableInactiveFilterOptions(activeItems.map(entity => entity.extensions.ff_facet_extension.key));
     }
 
     /**
      * @public
      */
-    disableOption(input){
+    disableOption(input) {
         const listItem = input.closest(this.options.listItemSelector);
         listItem.classList.add('disabled', 'hidden');
         listItem.setAttribute('title', this.options.snippets.disabledFilterText);
@@ -100,6 +109,12 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
         listItem.classList.remove('disabled', 'hidden');
         input.disabled = false;
         listItem.hidden = false;
+
+        const label = listItem.querySelector('label');
+        var count = this.activeItemsTotalHits[label.htmlFor];
+        if ((label.innerText.substr(0, label.innerText.lastIndexOf('(')))) {
+            label.innerText = (label.innerText.substr(0, label.innerText.lastIndexOf('('))) + '(' + count + ')';
+        }
     }
 
     _disableInactiveFilterOptions(activeItemIds) {

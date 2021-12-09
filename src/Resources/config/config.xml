@@ -109,9 +109,19 @@
             <name>suggestTypeLabels</name>
             <label>Labels for Suggest types</label>
             <label lang="de-DE">Label für die Suggest-Typen</label>
-            <placeholder>type:Label|product:Product</placeholder>
+            <placeholder>type:Label|productName:Product</placeholder>
             <helpText>Labels for suggest type labels: type:Label|product:Product</helpText>
             <helpText lang="de-DE">Label für Suggest-Typ Label: typ:Label|product:Produkt</helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>suggestAcceptedTypes</name>
+            <label>Suggest accepted types in order</label>
+            <label lang="de-DE">Akzeptierte Typen in der Reihenfolge vorschlagen</label>
+            <placeholder>searchTerm|category|productName</placeholder>
+            <defaultValue>searchTerm|category|productName</defaultValue>
+            <helpText>Accepted types for suggest result: searchTerm|category|productName</helpText>
+            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis vorschlagen: searchTerm|category|productName</helpText>
         </input-field>
 
         <input-field type="text">

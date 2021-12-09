@@ -5,9 +5,9 @@
                                      @change-sales-channel-id="onSalesChannelChanged">
             </sw-sales-channel-switch>
         </div>
-        <h1>{{ $tc('ff.restrictions.tabs.navigation') }}</h1>
         <ff-restriction-ruler :isCategory="false"
                               :layer="type"
+                              rulerHeader="ff.restrictions.tabs.navigation"
                               ref="ruler"></ff-restriction-ruler>
     </sw-meteor-card>
 {% endblock %}

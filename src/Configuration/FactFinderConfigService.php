@@ -33,9 +33,11 @@
 namespace Elio\FactFinder\Configuration;
 
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
+use Elio\FactFinder\Core\Defaults;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -51,7 +53,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class FactFinderConfigService implements FactFinderConfigServiceInterface
 {
     public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
-    protected const CONFIG_VALUE_SEPARATOR = '|';
+    protected const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
@@ -137,6 +139,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'apiContentChannel', $languagePrefix) ?? '',
             $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
             $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
+            $this->prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix)
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
@@ -230,6 +233,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      *
      * @param string|null $languageId
      * @return string
+     * @throws InconsistentCriteriaIdsException
      */
     private function getLanguagePrefix(?string $languageId): string
     {

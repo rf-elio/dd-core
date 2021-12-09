@@ -44,6 +44,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -82,6 +83,10 @@ class FilterDefinition extends EntityDefinition
                new ApiAware(),
                new Required(),
                new PrimaryKey()
+           ),
+           (new StringField('technical_name', 'technicalName'))->addFlags(
+               new ApiAware(),
+               new Required()
            ),
            (new TranslatedField('propertyName'))->addFlags(new ApiAware()),
            (new BoolField('is_custom', 'isCustom'))->addFlags(

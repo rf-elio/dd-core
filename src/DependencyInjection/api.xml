@@ -75,11 +75,17 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionTransformer">
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="category.repository" />
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="event_dispatcher"/>
-            <tag name="elio-ff.api.transformer.response"/>
+            <tag name="elio-ff.api.transformer.response" priority="50"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionProductTransformer">
+            <argument type="service" id="product.repository" />
+            <tag name="elio-ff.api.transformer.response" priority="49"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionCategoryTransformer">
+            <argument type="service" id="category.repository" />
+            <tag name="elio-ff.api.transformer.response" priority="49"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\CampaignTransformer">
             <tag name="elio-ff.api.transformer.response"/>

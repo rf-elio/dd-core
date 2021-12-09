@@ -3,39 +3,30 @@
         {% block elio_search_suggest_container %}
             <div class="search-suggest-container">
                 <div class="d-flex flex-md-row flex-wrap">
-                    {% if response.empty %}
+                    {% if not response.hasVisibleItems %}
                         <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
                             <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
                         </ul>
                     {% else %}
-                        {% set searchResults = 0 %}
-                        {% for type, suggestionType in response.suggestions %}
-                            {% set suggestionUrlPath = '' %}
-                            {% if type == 'productName' %}
-                                {% set suggestionUrlPath = 'ProductURL' %}
-                            {% elseif type == 'category' %}
-                                {% set suggestionUrlPath = 'Path' %}
-                            {% endif %}
-
-                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
+                        {% for group in response.visibleGroups %}
+                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
                                 <div class="elio-suggest-block-header">
-                                    {{ response.getTypeLabel(type) }}
+                                    {{ group.label }}
                                 </div>
 
-                                {% set searchResults = searchResults + suggestionType|length %}
-
-                                {% for suggestion in suggestionType %}
+                                {% for item in group.items %}
                                     {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
-                                        searchTerm,
-                                        suggestion,
-                                        suggestionUrlPath
+                                        group,
+                                        item,
+                                        suggestion
                                     } %}
                                 {% endfor %}
                             </ul>
                         {% endfor %}
                     {% endif %}
                 </div>
-                {% if not response.empty %}
+
+                {% if response.hasVisibleItems %}
                     {% block layout_search_suggest_result_total_result %}
                         <div class="js-result search-suggest-total">
                             <div class="row align-items-center no-gutters">
@@ -53,7 +44,7 @@
                                 {% block layout_search_suggest_result_total_count %}
                                     <div class="col-auto search-suggest-total-count">
                                         {{ "header.searchResults"|trans({
-                                            '%count%': searchResults,
+                                            '%count%': response.countVisible,
                                         })|sw_sanitize }}
                                     </div>
                                 {% endblock %}

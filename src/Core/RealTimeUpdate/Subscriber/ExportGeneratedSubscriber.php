@@ -46,7 +46,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ExportGeneratedSubscriber implements EventSubscriberInterface
 {
-    private ImportService $importService;
+    private ImportServiceInterface $importService;
 
     /**
      * ExportGeneratedSubscriber constructor.

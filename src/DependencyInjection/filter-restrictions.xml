@@ -12,18 +12,6 @@
             <tag name="shopware.entity.definition" entity="elio_ff_filter_restrictions"/>
         </service>
 
-        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\CategoryExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-
-        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\PropertyGroupExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-
-        <service id="Elio\FactFinder\Core\FilterRestrictions\Extension\SalesChannelExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping">
             <tag name="shopware.entity.definition"/>
         </service>
@@ -41,6 +29,7 @@
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService">
             <argument type="service" id="property_group.repository" />
             <argument type="service" id="elio_ff_filter.repository" />
+            <argument type="service" id="elio_ff_filter_translation.repository" />
             <argument type="service" id="logger" />
         </service>
         <service id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService"
