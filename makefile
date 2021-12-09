@@ -24,4 +24,5 @@ stan: ## Starts the PHPStan Analyser
 
 update: ## Executes the plugin migrations
 	../../../bin/console database:migrate FactFinder --all
+	../../../bin/console plugin:update FactFinder
 
