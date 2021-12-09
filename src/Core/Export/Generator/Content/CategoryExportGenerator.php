@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
@@ -133,7 +134,7 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
             $type = self::EXPORT_TYPE_CATEGORY;
 
             // product categories disabled
-            if (!($export->getConfig()['export_product_categories'] ?? true)) {
+            if (!($export->getConfig()[ExportConfig::EXPORT_PRODUCT_CATEGORIES] ?? true)) {
                 return null;
             }
         }

@@ -32,10 +32,12 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
+use Elio\FactFinder\FactFinder;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -105,7 +107,13 @@ class ExportSetup
                         'salesChannelId' => $salesChannel->getId(),
                         'languageId' => $language->getId(),
                         'mapping' => [],
-                        'config' => [],
+                        'config' => [
+                            ExportConfig::EXPORT_PRODUCT_CATEGORIES => true,
+                            ExportConfig::EXPORT_STRUCTURE_CATEGORIES => true,
+                            ExportConfig::EXPORT_LINK_CATEGORIES => true,
+                            ExportConfig::TRIGGER_IMPORT_SEARCH_DATA => false,
+                            ExportConfig::TRIGGER_IMPORT_SUGGEST_DATA => false,
+                        ],
                         'baseCategoryIds' =>  $salesChannel->getMainCategories() ? $salesChannel->getMainCategories()->getIds() : []
                     ];
                 }
