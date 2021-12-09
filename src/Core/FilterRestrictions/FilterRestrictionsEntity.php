@@ -103,19 +103,131 @@ class FilterRestrictionsEntity extends Entity
     protected $filters;
 
     /**
-     * @return FilterCollection|null
+     * @return bool
      */
-    public function getFilters(): ?FilterCollection
+    public function isCategory(): bool
     {
-        return $this->filters;
+        return $this->isCategory;
     }
 
     /**
-     * @param FilterCollection|null $filters
+     * @param bool $isCategory
      */
-    public function setFilters(?FilterCollection $filters): void
+    public function setIsCategory(bool $isCategory): void
     {
-        $this->filters = $filters;
+        $this->isCategory = $isCategory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLayer(): string
+    {
+        return $this->layer;
+    }
+
+    /**
+     * @param string $layer
+     */
+    public function setLayer(string $layer): void
+    {
+        $this->layer = $layer;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string|null $categoryId
+     */
+    public function setCategoryId(?string $categoryId): void
+    {
+        $this->categoryId = $categoryId;
+    }
+
+    /**
+     * @return CategoryEntity|null
+     */
+    public function getCategory(): ?CategoryEntity
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param CategoryEntity|null $category
+     */
+    public function setCategory(?CategoryEntity $category): void
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSalesChannelId(): ?string
+    {
+        return $this->salesChannelId;
+    }
+
+    /**
+     * @param string|null $salesChannelId
+     */
+    public function setSalesChannelId(?string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
+    }
+
+    /**
+     * @return SalesChannelEntity|null
+     */
+    public function getSalesChannel(): ?SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
+    /**
+     * @param SalesChannelEntity|null $salesChannel
+     */
+    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLanguageId(): ?string
+    {
+        return $this->languageId;
+    }
+
+    /**
+     * @param string|null $languageId
+     */
+    public function setLanguageId(?string $languageId): void
+    {
+        $this->languageId = $languageId;
+    }
+
+    /**
+     * @return LanguageEntity|null
+     */
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param LanguageEntity|null $language
+     */
+    public function setLanguage(?LanguageEntity $language): void
+    {
+        $this->language = $language;
     }
 
     /**
@@ -151,54 +263,6 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return CategoryEntity|null
-     */
-    public function getCategory(): ?CategoryEntity
-    {
-        return $this->category;
-    }
-
-    /**
-     * @param CategoryEntity|null $category
-     */
-    public function setCategory(?CategoryEntity $category): void
-    {
-        $this->category = $category;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLayer(): string
-    {
-        return $this->layer;
-    }
-
-    /**
-     * @param string $layer
-     */
-    public function setLayer(string $layer): void
-    {
-        $this->layer = $layer;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCategory(): bool
-    {
-        return $this->isCategory;
-    }
-
-    /**
-     * @param bool $isCategory
-     */
-    public function setIsCategory(bool $isCategory): void
-    {
-        $this->isCategory = $isCategory;
-    }
-
-    /**
      * @return bool
      */
     public function isAllChecked(): bool
@@ -215,98 +279,18 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return string|null
+     * @return FilterCollection|null
      */
-    public function getSalesChannelId(): ?string
+    public function getFilters(): ?FilterCollection
     {
-        return $this->salesChannelId;
+        return $this->filters;
     }
 
     /**
-     * @param string|null $salesChannelId
+     * @param FilterCollection|null $filters
      */
-    public function setSalesChannelId(?string $salesChannelId): void
+    public function setFilters(?FilterCollection $filters): void
     {
-        $this->salesChannelId = $salesChannelId;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getLanguageId(): ?string
-    {
-        return $this->languageId;
-    }
-
-    /**
-     * @param string|null $languageId
-     */
-    public function setLanguageId(?string $languageId): void
-    {
-        $this->languageId = $languageId;
-    }
-
-    /**
-     * @return SalesChannelEntity|null
-     */
-    public function getSalesChannel(): ?SalesChannelEntity
-    {
-        return $this->salesChannel;
-    }
-
-    /**
-     * @param SalesChannelEntity|null $salesChannel
-     */
-    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
-    {
-        $this->salesChannel = $salesChannel;
-    }
-
-    /**
-     * @return LanguageEntity|null
-     */
-    public function getLanguage(): ?LanguageEntity
-    {
-        return $this->language;
-    }
-
-    /**
-     * @param LanguageEntity|null $language
-     */
-    public function setLanguage(?LanguageEntity $language): void
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * @return SalesChannelEntity|null
-     */
-    public function getSalesChannel(): ?SalesChannelEntity
-    {
-        return $this->salesChannel;
-    }
-
-    /**
-     * @param SalesChannelEntity|null $salesChannel
-     */
-    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
-    {
-        $this->salesChannel = $salesChannel;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCategoryId(): ?string
-    {
-        return $this->categoryId;
-    }
-
-    /**
-     * @param string|null $categoryId
-     */
-    public function setCategoryId(?string $categoryId): void
-    {
-        $this->categoryId = $categoryId;
+        $this->filters = $filters;
     }
 }
