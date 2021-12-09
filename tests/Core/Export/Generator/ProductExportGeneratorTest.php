@@ -10,8 +10,9 @@ use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
+use Elio\FactFinder\Core\Features\FeatureService;
 use Elio\FactFinder\Tests\Core\Export\Mock\EventDispatcherMock;
-use Elio\FactFinder\Tests\Core\Export\Mock\Repository\CurrencyRepositoryMock;
+use Elio\FactFinder\Tests\Core\Export\Mock\Repository\SalesChannelRepositoryMock;
 use Elio\FactFinder\Tests\Core\Export\Mock\Repository\ProductRepositoryMock;
 use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
@@ -19,6 +20,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -44,8 +46,9 @@ class ProductExportGeneratorTest extends TestCase
     {
         $this->generator = new ProductExportGenerator(
             new ProductRepositoryMock(),
-            new CurrencyRepositoryMock(),
-            new EventDispatcherMock()
+            new EventDispatcherMock(),
+            new SalesChannelRepositoryMock(),
+            new FeatureService()
         );
     }
 
@@ -135,12 +138,12 @@ class ProductExportGeneratorTest extends TestCase
         );
         // first product
         self::assertSame(
-            'productNumber1;productNumber1;test;product1;test;;|USD~~$=200|;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
+            'productNumber1;productNumber1;test;product1;test;;200;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
             $rows[1]
         );
         // second product
         self::assertSame(
-            'productNumber2;productNumber2;test;product2;test;;|USD~~$=200|;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
+            'productNumber2;productNumber2;test;product2;test;;200;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
             $rows[2]
         );
     }
@@ -163,13 +166,19 @@ class ProductExportGeneratorTest extends TestCase
         ];
     }
 
+    /**
+     * @return SalesChannelContext
+     */
     private function getSalesChannelContext(): SalesChannelContext
     {
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(Defaults::SALES_CHANNEL);
+
         return new SalesChannelContext(
             Context::createDefaultContext(),
             '',
             null,
-            new SalesChannelEntity(),
+            $salesChannel,
             new CurrencyEntity(),
             new CustomerGroupEntity(),
             new CustomerGroupEntity(),

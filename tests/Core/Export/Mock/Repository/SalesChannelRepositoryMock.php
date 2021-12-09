@@ -18,13 +18,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
- * Class CurrencyRepositoryMock
+ * Class SalesChannelRepositoryMock
  *
  * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
  */
-class CurrencyRepositoryMock implements EntityRepositoryInterface
+class SalesChannelRepositoryMock implements EntityRepositoryInterface
 {
     public function getDefinition(): EntityDefinition
     {
@@ -54,13 +56,15 @@ class CurrencyRepositoryMock implements EntityRepositoryInterface
     {
         $currency = new CurrencyEntity();
         $currency->setId(Defaults::CURRENCY);
-        $currency->setIsoCode('USD');
-        $currency->setSymbol('$');
+
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(Defaults::SALES_CHANNEL);
+        $salesChannel->setCurrencies(new CurrencyCollection([$currency]));
 
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new CurrencyCollection([$currency]),
+            new SalesChannelCollection([$salesChannel]),
             null,
             $criteria,
             $context
