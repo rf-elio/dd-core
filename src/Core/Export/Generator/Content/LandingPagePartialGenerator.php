@@ -46,7 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
+use Elio\FactFinder\Core\Defaults;
 
 /**
  * Class LandingPagePartialGenerator
@@ -88,17 +88,17 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
     public function getModel(ExportEntity $entity) : array
     {
         return [
-            Defaults::FIELD_ID,
-            Defaults::FIELD_TYPE,
-            Defaults::FIELD_TITLE,
-            Defaults::FIELD_SEO_TEXT,
-            Defaults::FIELD_URL,
-            Defaults::FIELD_KEYWORDS,
-            Defaults::FIELD_DESCRIPTION,
-            Defaults::FIELD_IMAGE_URL,
-            Defaults::FIELD_PUBLICATION_DATE,
-            Defaults::FIELD_PRIORITY,
-            Defaults::FIELD_CONTENT_STRUCTURE
+            ContentExportDefaults::FIELD_ID,
+            ContentExportDefaults::FIELD_TYPE,
+            ContentExportDefaults::FIELD_TITLE,
+            ContentExportDefaults::FIELD_SEO_TEXT,
+            ContentExportDefaults::FIELD_URL,
+            ContentExportDefaults::FIELD_KEYWORDS,
+            ContentExportDefaults::FIELD_DESCRIPTION,
+            ContentExportDefaults::FIELD_IMAGE_URL,
+            ContentExportDefaults::FIELD_PUBLICATION_DATE,
+            ContentExportDefaults::FIELD_PRIORITY,
+            ContentExportDefaults::FIELD_CONTENT_STRUCTURE
         ];
     }
 
@@ -128,20 +128,41 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
             ) ?? self::EXPORT_TYPE;
 
             $item = new ExportItem();
-            $item->set(Defaults::FIELD_ID, $landingPage->getId());
-            $item->set(Defaults::FIELD_TYPE, $type);
-            $item->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($landingPage->getName()));
-            $item->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($landingPage->getMetaDescription()));
-            $item->set(Defaults::FIELD_URL, new SeoRoute(
+            $item->set(ContentExportDefaults::FIELD_ID, $landingPage->getId());
+            $item->set(ContentExportDefaults::FIELD_TYPE, $type);
+            $item->set(ContentExportDefaults::FIELD_TITLE, ValueUtil::cleanValue($landingPage->getName()));
+            $item->set(ContentExportDefaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($landingPage->getMetaDescription()));
+            $item->set(ContentExportDefaults::FIELD_URL, new SeoRoute(
                 LandingPageSeoUrlRoute::ROUTE_NAME, $landingPage->getId(), ['landingPageId' => $landingPage->getId()]
             ));
-            $item->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($landingPage->getKeywords()));
-            $item->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($landingPage->getMetaDescription()));
-            $item->set(Defaults::FIELD_IMAGE_URL, '');
-            $item->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::formatDate($landingPage->getCreatedAt()));
-            $item->set(Defaults::FIELD_PRIORITY, Defaults::DEFAULT_PRIORITY);
-            $item->set(Defaults::FIELD_CONTENT_STRUCTURE, '');
+            $item->set(ContentExportDefaults::FIELD_KEYWORDS, ValueUtil::cleanValue($landingPage->getKeywords()));
+            $item->set(ContentExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($landingPage->getMetaDescription()));
+            $item->set(ContentExportDefaults::FIELD_IMAGE_URL, '');
+            $item->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::formatDate($landingPage->getCreatedAt()));
+            $item->set(ContentExportDefaults::FIELD_PRIORITY, ContentExportDefaults::DEFAULT_PRIORITY);
+            $item->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, '');
+            $item->set(ContentExportDefaults::FIELD_TAGS, $this->getLandingPageTags($landingPage));
             $output->write($item);
         }
+    }
+
+    /**
+     * Creates the content tags string
+     *
+     * @param LandingPageEntity $landingPage
+     * @return string
+     */
+    protected function getLandingPageTags(LandingPageEntity $landingPage) : string
+    {
+        if(!$landingPage->getTags()) {
+            return '';
+        }
+
+        $tags = [];
+        foreach ($landingPage->getTags() as $tag) {
+            $tags[] = $tag->getTranslation('name') ?? $tag->getName();
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $tags);
     }
 }

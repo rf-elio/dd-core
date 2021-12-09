@@ -37,13 +37,11 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\FactFinder\Core\Suggest\SuggestGroup;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Swagger\Client\Model\ModelInterface;
@@ -63,29 +61,18 @@ use Throwable;
  */
 class SuggestionTransformer implements ResponseTransformerInterface
 {
-    public const TYPE_PRODUCT = 'productName';
-    public const TYPE_CATEGORY = 'category';
-
-    private EntityRepositoryInterface $categoryRepository;
-    private EntityRepositoryInterface $productRepository;
     private FactFinderConfigServiceInterface $configService;
     private EventDispatcherInterface $eventDispatcher;
 
     /**
      * SuggestionTransformer constructor.
-     * @param EntityRepositoryInterface $productRepository
-     * @param EntityRepositoryInterface $categoryRepository
      * @param FactFinderConfigServiceInterface $configService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        EntityRepositoryInterface $productRepository,
-        EntityRepositoryInterface $categoryRepository,
         FactFinderConfigServiceInterface $configService,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->productRepository = $productRepository;
-        $this->categoryRepository = $categoryRepository;
         $this->configService = $configService;
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -114,43 +101,44 @@ class SuggestionTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, SuggestionResult::class);
         }
 
-        /** @var SuggestionResponse $suggestionResponse */
+        /** @var SuggestionResponse|null $suggestionResponse */
         $suggestionResponse = $responseCollection->get(SuggestionResponse::class) ?? new SuggestionResponse();
         $responseCollection->set(SuggestionResponse::class, $suggestionResponse);
+        $config = $this->configService->getByContext($context);
+        $groupLabels = $config->getSuggestTypeLabels();
+        $suggestGroups = [];
 
         foreach ($model->getSuggestions() as $suggestion) {
-            $suggestion = $this->transformSuggestion($suggestion, $context);
+            $suggestItem = $this->transformSuggestion($suggestion);
 
-            $event = new SuggestItemTransformEvent($suggestion, $model, $responseCollection, $request, $context);
+            $event = new SuggestItemTransformEvent($suggestItem, $model, $responseCollection, $request, $context);
             $this->eventDispatcher->dispatch($event);
 
-            if(!$event->isRemoveSuggestItemFromResult()) {
-                $suggestionResponse->addSuggestions($suggestion);
+            if($event->isRemoveSuggestItemFromResult()) {
+                continue;
             }
+
+            $type = $suggestItem->getType();
+            $group = $suggestGroups[$type] ?? new SuggestGroup($type, $groupLabels[$type] ?? $type);
+            $suggestGroups[$type] = $group;
+            $group->addItem($suggestItem);
         }
 
-        $config = $this->configService->getByContext($context);
-        $suggestionResponse->setTypeLabels($config->getSuggestTypeLabels());
+        $suggestGroups = $this->setResultRepresentation($suggestGroups, $config);
+        $suggestionResponse->setGroups($suggestGroups);
     }
 
     /**
      * @param ResultSuggestion $suggestion
-     * @param SalesChannelContext $context
      * @return SuggestItem
      */
-    private function transformSuggestion(ResultSuggestion $suggestion, SalesChannelContext $context): SuggestItem
+    private function transformSuggestion(ResultSuggestion $suggestion): SuggestItem
     {
         $suggestItem = new SuggestItem();
         $suggestItem->setName($suggestion->getName());
         $suggestItem->setType($suggestion->getType());
         if (!$suggestion->getImage() && $suggestion->getImage() !== '') {
             $suggestItem->setImgUrl($suggestion->getImage());
-        } else {
-            $suggestItem->setImgUrl($this->getImgUrl(
-                $suggestion->getType(),
-                $this->getId($suggestion->getType(), $suggestion),
-                $context
-            ));
         }
 
         /** @var array $attributes */
@@ -180,60 +168,43 @@ class SuggestionTransformer implements ResponseTransformerInterface
     }
 
     /**
-     * Trying to get image url from database
-     * @param string $type
-     * @param string $id
-     * @param SalesChannelContext $context
-     * @return string
+     * Sets the visibility and the order of the given groups
+     *
+     * @param SuggestGroup[] $groups
+     * @param Configuration $config
+     * @return SuggestGroup[]
      */
-    private function getImgUrl(string $type, string $id, SalesChannelContext $context): string
+    protected function setResultRepresentation(array $groups, Configuration $config): array
     {
-        if (!$id) {
-            return '';
+        $acceptedTypes = $config->getSuggestAcceptedTypes();
+
+        if(empty($acceptedTypes)) {
+            return $groups;
         }
 
-        $criteria = new Criteria([$id]);
-        $criteria->addAssociation('media');
+        // set visibility and position
+        foreach ($groups as $group) {
+            $type = $group->getType();
+            $acceptedTypePosition = array_search($type, $acceptedTypes, true);
 
-        if ($type === self::TYPE_PRODUCT) {
-            /** @var ProductEntity|null $product */
-            $product = $this->productRepository->search($criteria, $context->getContext())->first();
-            if (
-                $product && $product->getMedia() && $product->getMedia()->first() &&
-                $product->getMedia()->first()->getMedia()
-            ) {
-                return $product->getMedia()->first()->getMedia()->getUrl();
-            }
-        } elseif ($type === self::TYPE_CATEGORY) {
-            /** @var CategoryEntity|null $category */
-            $category = $this->categoryRepository->search($criteria, $context->getContext())->first();
-            if ($category && $category->getMedia()) {
-                return $category->getMedia()->getUrl();
+            if($acceptedTypePosition === false) {
+                $group->setVisible(false);
+            } else {
+                $group->setVisible(true);
+                $group->setPosition($acceptedTypePosition);
+
             }
         }
 
-        return '';
-    }
-
-    /**
-     * Getting Entity ID from ResultSuggestion
-     * @param string $type
-     * @param ResultSuggestion $suggestion
-     * @return string
-     */
-    private function getId(string $type, ResultSuggestion $suggestion): string
-    {
-        /** @var array $attributes */
-        $attributes = $suggestion->getAttributes();
-
-        if ($type === self::TYPE_PRODUCT && isset($attributes['ProductID'][0])) {
-            return $attributes['ProductID'][0];
-        }
-
-        if ($type === self::TYPE_CATEGORY && isset($attributes['CategoryID'][0])) {
-            return $attributes['CategoryID'][0];
-        }
-
-        return '';
+        // sort groups
+        usort($groups, static function (SuggestGroup $a, SuggestGroup $b) {
+            $posA = $a->getPosition();
+            $posB = $b->getPosition();
+            if ($posA === $posB) {
+                return 0;
+            }
+            return ($posA < $posB) ? -1 : 1;
+        });
+        return $groups;
     }
 }

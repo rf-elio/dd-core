@@ -51,6 +51,7 @@ abstract class ProductExportDefaults
     public const FIELD_DESCRIPTION = 'Description';
     public const FIELD_PRODUCT_URL = 'ProductURL';
     public const FIELD_PRICE = 'Price';
+    public const FIELD_CURRENCY_PRICES = 'CurrencyPrices';
     public const FIELD_MANUFACTURER = 'Manufacturer';
     public const FIELD_CATEGORY_PATH = 'CategoryPath';
     public const FIELD_EAN = 'EAN';
@@ -61,4 +62,5 @@ abstract class ProductExportDefaults
     public const FIELD_SHIPPING_FREE = 'ShippingFree';
     public const FIELD_ATTRIBUTE = 'Attribute';
     public const FIELD_IMAGE_URL = 'ImageURL';
+    public const FIELD_TAGS = 'Tags';
 }

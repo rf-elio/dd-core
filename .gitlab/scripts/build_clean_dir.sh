@@ -1,5 +1,5 @@
 #!/bin/bash
 
-rm -r .ci
+rm -r .gitlab
 rm -r .git
 rm .gitlab-ci.yml

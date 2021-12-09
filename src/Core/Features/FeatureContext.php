@@ -30,41 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Extension;
+namespace Elio\FactFinder\Core\Features;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
- * Class SalesChannelExtension
- * @package Elio\FactFinder\Core\FilterRestrictions\Extension
+ * Class FeatureContext
+ * @package Elio\FactFinder\Core\Features
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Andrey Baev <anb@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SalesChannelExtension extends EntityExtension
+class FeatureContext
 {
-    public function extendFields(FieldCollection $collection): void
-    {
-        $collection->add(
+    private array $features;
 
-            (new OneToOneAssociationField(
-                'filterRestriction',
-                'filter_restriction_id',
-                'sales_channel_id',
-                FilterRestrictionsDefinition::class,
-                false
-            ))->addFlags(new CascadeDelete())
-        );
+    /**
+     * FeatureContext constructor.
+     * @param array $features
+     */
+    public function __construct(array $features)
+    {
+        $this->features = $features;
     }
 
-    public function getDefinitionClass(): string
+    /**
+     * @param string $featureName
+     * @return bool
+     */
+    public function isEnabled(string $featureName) : bool
     {
-        return SalesChannelDefinition::class;
+        return isset($this->features[$featureName]) && $this->features[$featureName] === '1';
     }
 }

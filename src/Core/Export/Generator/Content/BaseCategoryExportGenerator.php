@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Export\Generator\Content;
 
 
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
@@ -47,12 +48,13 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults as Defaults;
+use Elio\FactFinder\Core\Defaults;
 
 /**
  * Class BaseCategoryExportGenerator
@@ -85,17 +87,18 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     public function getModel(ExportEntity $entity): array
     {
         return [
-            Defaults::FIELD_ID,
-            Defaults::FIELD_TYPE,
-            Defaults::FIELD_TITLE,
-            Defaults::FIELD_SEO_TEXT,
-            Defaults::FIELD_URL,
-            Defaults::FIELD_KEYWORDS,
-            Defaults::FIELD_DESCRIPTION,
-            Defaults::FIELD_IMAGE_URL,
-            Defaults::FIELD_PUBLICATION_DATE,
-            Defaults::FIELD_PRIORITY,
-            Defaults::FIELD_CONTENT_STRUCTURE
+            ContentExportDefaults::FIELD_ID,
+            ContentExportDefaults::FIELD_TYPE,
+            ContentExportDefaults::FIELD_TITLE,
+            ContentExportDefaults::FIELD_SEO_TEXT,
+            ContentExportDefaults::FIELD_URL,
+            ContentExportDefaults::FIELD_KEYWORDS,
+            ContentExportDefaults::FIELD_DESCRIPTION,
+            ContentExportDefaults::FIELD_IMAGE_URL,
+            ContentExportDefaults::FIELD_PUBLICATION_DATE,
+            ContentExportDefaults::FIELD_PRIORITY,
+            ContentExportDefaults::FIELD_CONTENT_STRUCTURE,
+            ContentExportDefaults::FIELD_TAGS
         ];
     }
 
@@ -129,6 +132,9 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      */
     private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []): void
     {
+        // if we exclude product info in main category we don't inherit its exclusion to child categories
+        unset($inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
+
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
             $category = $node->getValue();
@@ -150,6 +156,16 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
 
+            // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)
+            if(
+                !(
+                    isset($categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                    $categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                )
+            ) {
+                unset($mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]);
+            }
+
             $this->customFields[$category->getId()] = $mergedCategoryCustomFields;
             $this->buildCustomFieldInheritanceByNodes($node->getChildNodes(), $mergedCategoryCustomFields);
         }
@@ -159,6 +175,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param array $categoryIds
      * @param SalesChannelContext $context
      * @return EntityCollection<CategoryEntity>
+     * @throws InconsistentCriteriaIdsException
      */
     protected function getChildCategories(array $categoryIds, SalesChannelContext $context): EntityCollection
     {
@@ -175,6 +192,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * Creates the base criteria that is required to load all the categories
      *
      * @return Criteria
+     * @throws InconsistentCriteriaIdsException
      */
     protected function getBaseCriteria(): Criteria
     {
@@ -212,6 +230,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
      * @param ExportEntity $export
      * @param OutputStream $output
      * @param SalesChannelContext $context
+     * @throws InconsistentCriteriaIdsException
      */
     protected function processCategories(
         EntityCollection $categories,
@@ -220,15 +239,13 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         SalesChannelContext $context
     ): void {
         $categoryIds = [];
+        $processableCategories = [];
+
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
             // apply prepared custom fields to category
             if (isset($this->customFields[$category->getId()])) {
                 $category->setCustomFields($this->customFields[$category->getId()]);
-            }
-
-            if (!$this->isCategoryAllowed($category, $export)) {
-                continue;
             }
 
             // child categories are excluded from export -> don't add
@@ -239,13 +256,26 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
                 $categoryIds[] = $category->getId();
             }
 
-            if ($item = $this->processCategory($category, new ExportItem(), $export, $context)) {
-                $output->write($item);
+            if (!$this->isCategoryAllowed($category, $export)) {
+                continue;
             }
+
+            $processableCategories[] = $category;
         }
+
         $childCategories = $this->getChildCategories($categoryIds, $context);
         if ($childCategories->count() > 0) {
             $this->processCategories($childCategories, $export, $output, $context);
+        }
+
+        /*
+         * Child categories need to be processed first, because we inherit down some information to parent
+         * categories.
+         */
+        foreach ($processableCategories as $processableCategory) {
+            if ($item = $this->processCategory($processableCategory, new ExportItem(), $export, $context)) {
+                $output->write($item);
+            }
         }
     }
 
@@ -277,8 +307,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         $categoryType = $category->getType();
 
         if (
-            ($categoryType === 'link' && !($exportConfig['export_link_categories'] ?? true)) ||
-            ($categoryType === 'folder' && !($exportConfig['export_structure_categories'] ?? true))
+            ($categoryType === 'link' && !($exportConfig[ExportConfig::EXPORT_LINK_CATEGORIES] ?? true)) ||
+            ($categoryType === 'folder' && !($exportConfig[ExportConfig::EXPORT_STRUCTURE_CATEGORIES] ?? true))
         ) {
             return false;
         }
@@ -313,21 +343,42 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     protected function prepareExportItem(CategoryEntity $category, ExportItem $exportItem, string $type): void
     {
         $translated = $category->getTranslated();
-        $exportItem->set(Defaults::FIELD_ID, $category->getId());
-        $exportItem->set(Defaults::FIELD_TYPE, $type);
-        $exportItem->set(Defaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName() ?? $translated['name']));
-        $exportItem->set(Defaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription() ?? $translated['metaDescription']));
-        $exportItem->set(Defaults::FIELD_URL, new SeoRoute(
+        $exportItem->set(ContentExportDefaults::FIELD_ID, $category->getId());
+        $exportItem->set(ContentExportDefaults::FIELD_TYPE, $type);
+        $exportItem->set(ContentExportDefaults::FIELD_TITLE, ValueUtil::cleanValue($category->getName() ?? $translated['name']));
+        $exportItem->set(ContentExportDefaults::FIELD_SEO_TEXT, ValueUtil::cleanValue($category->getMetaDescription() ?? $translated['metaDescription']));
+        $exportItem->set(ContentExportDefaults::FIELD_URL, new SeoRoute(
             NavigationPageSeoUrlRoute::ROUTE_NAME, $category->getId(), ['navigationId' => $category->getId()]
         ));
-        $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords() ?? $translated['keywords']));
-        $exportItem->set(Defaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription() ?? $translated['description']));
-        $exportItem->set(Defaults::FIELD_IMAGE_URL, '');
+        $exportItem->set(ContentExportDefaults::FIELD_KEYWORDS, ValueUtil::cleanValue($category->getKeywords() ?? $translated['keywords']));
+        $exportItem->set(ContentExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($category->getDescription() ?? $translated['description']));
+        $exportItem->set(ContentExportDefaults::FIELD_IMAGE_URL, '');
         if($category->getMedia()){
-            $exportItem->set(Defaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
+            $exportItem->set(ContentExportDefaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
         }
-        $exportItem->set(Defaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
-        $exportItem->set(Defaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? Defaults::DEFAULT_PRIORITY);
-        $exportItem->set(Defaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
+        $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
+        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_TAGS, $this->getCategoryTags($category));
+    }
+
+    /**
+     * Creates the content tags string
+     *
+     * @param CategoryEntity $category
+     * @return string
+     */
+    protected function getCategoryTags(CategoryEntity $category) : string
+    {
+        if(!$category->getTags()) {
+            return '';
+        }
+
+        $tags = [];
+        foreach ($category->getTags() as $tag) {
+            $tags[] = $tag->getTranslation('name') ?? $tag->getName();
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $tags);
     }
 }

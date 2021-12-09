@@ -32,10 +32,10 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationCollection;
 
 /**
  * Class FilterEntity
@@ -50,9 +50,9 @@ class FilterEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $propertyName;
+    protected ?string $propertyName;
 
     /**
      * @var string
@@ -85,17 +85,17 @@ class FilterEntity extends Entity
     protected $translations;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPropertyName(): string
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
 
     /**
-     * @param string $propertyName
+     * @param string|null $propertyName
      */
-    public function setPropertyName(string $propertyName): void
+    public function setPropertyName(?string $propertyName): void
     {
         $this->propertyName = $propertyName;
     }
@@ -163,7 +163,6 @@ class FilterEntity extends Entity
     {
         $this->propertyId = $propertyId;
     }
-
 
     /**
      * @return string
