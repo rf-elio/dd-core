@@ -1,0 +1,151 @@
+<?php
+
+
+namespace Elio\FactFinder\Tests\Core\Export\Mock\Repository;
+
+
+use Elio\FactFinder\Tests\Core\Export\Mock\EntityDefinitionMock;
+use Shopware\Core\Content\Category\Aggregate\CategoryTranslation\CategoryTranslationEntity;
+use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityHydrator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+
+/**
+ * Class ProductRepositoryMock
+ *
+ * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
+ */
+class ProductRepositoryMock implements EntityRepositoryInterface
+{
+    use KernelTestBehaviour;
+
+    public function getDefinition(): EntityDefinition
+    {
+        return new EntityDefinitionMock();
+    }
+
+    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
+    {
+        // TODO: Implement aggregate() method.
+    }
+
+    public function searchIds(Criteria $criteria, Context $context): IdSearchResult
+    {
+        // TODO: Implement searchIds() method.
+    }
+
+    public function clone(
+        string $id,
+        Context $context,
+        ?string $newId = null,
+        ?CloneBehavior $behavior = null
+    ): EntityWrittenContainerEvent {
+        // TODO: Implement clone() method.
+    }
+
+    public function search(Criteria $criteria, Context $context): EntitySearchResult
+    {
+        if ($criteria->getOffset() > 0) {
+            return new EntitySearchResult(
+                $this->getDefinition()->getEntityName(),
+                0,
+                new ProductCollection([]),
+                null,
+                $criteria,
+                $context
+            );
+        }
+
+        return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
+            2,
+            new ProductCollection([
+                $this->createProduct('product1', 'productNumber1'),
+                $this->createProduct('product2', 'productNumber2')
+            ]),
+            null,
+            $criteria,
+            $context
+        );
+    }
+
+    public function update(array $data, Context $context): EntityWrittenContainerEvent
+    {
+        // TODO: Implement update() method.
+    }
+
+    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
+    {
+        // TODO: Implement upsert() method.
+    }
+
+    public function create(array $data, Context $context): EntityWrittenContainerEvent
+    {
+        // TODO: Implement create() method.
+    }
+
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
+    {
+        // TODO: Implement createVersion() method.
+    }
+
+    public function merge(string $versionId, Context $context): void
+    {
+        // TODO: Implement merge() method.
+    }
+
+    private function createProduct($name, $productNumber): ProductEntity
+    {
+        $product = new ProductEntity();
+        $product->setId(Uuid::randomHex());
+        $product->setName($name);
+        $product->setProductNumber($productNumber);
+        $product->setManufacturerNumber('test');
+        $product->setDescription('test');
+        $product->setStock(1);
+
+        $priceCollection = new PriceCollection();
+        $priceCollection->add(new Price(Defaults::CURRENCY, 150, 200, false));
+        $priceCollection->add(new Price(Defaults::CURRENCY, 150, 200, false));
+        $product->setPrice($priceCollection);
+
+        $manufacturer = new ProductManufacturerEntity();
+        $manufacturer->setName('test');
+        $product->setManufacturer($manufacturer);
+
+        $category = new CategoryEntity();
+        $category->setId(Uuid::randomHex());
+        $category->setPath('1|2|3|');
+        $category->addTranslated('breadcrumb', ['1' => 'test 1', '2' => 'test 2', '3' => 'breadcrumb 3', $category->getId() => 'breadcrumb 4']);
+        $categoryCollection = new CategoryCollection();
+        $categoryCollection->add($category);
+        $product->setCategories($categoryCollection);
+
+
+        return $product;
+    }
+}
