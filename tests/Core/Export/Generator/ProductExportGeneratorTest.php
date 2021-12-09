@@ -15,10 +15,19 @@ use Elio\FactFinder\Tests\Core\Export\Mock\Repository\CurrencyRepositoryMock;
 use Elio\FactFinder\Tests\Core\Export\Mock\Repository\ProductRepositoryMock;
 use League\Flysystem\FilesystemInterface;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\Test\TestDefaults;
+use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\Tax\TaxCollection;
 
 /**
  * Class ProductExportGeneratorTest
@@ -104,7 +113,7 @@ class ProductExportGeneratorTest extends TestCase
         $exportEntity->setFormat(CSVFileWriter::TYPE);
         $exportEntity->setMapping([]);
 
-        $context = $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
+        $context = $this->getSalesChannelContext();
 
         $stream = new OutputStream($writer, $exportEntity, $context);
         $stream->open($context);
@@ -152,5 +161,25 @@ class ProductExportGeneratorTest extends TestCase
                 true
             ]
         ];
+    }
+
+    private function getSalesChannelContext(): SalesChannelContext
+    {
+        return new SalesChannelContext(
+            Context::createDefaultContext(),
+            '',
+            null,
+            new SalesChannelEntity(),
+            new CurrencyEntity(),
+            new CustomerGroupEntity(),
+            new CustomerGroupEntity(),
+            new TaxCollection(),
+            new PaymentMethodEntity(),
+            new ShippingMethodEntity(),
+            new ShippingLocation(new CountryEntity(), null, null),
+            null,
+            new CashRoundingConfig(0, 0, false),
+            new CashRoundingConfig(0, 0, false)
+        );
     }
 }
