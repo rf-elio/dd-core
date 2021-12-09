@@ -54,7 +54,10 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class FactFinder extends Plugin
 {
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = 'content_export_type_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = 'content_export_exclude_inherited';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
 
     public const CUSTOM_FIELDS = [
@@ -69,7 +72,17 @@ class FactFinder extends Plugin
                     'componentName' => 'sw-field',
                     'placeholder' => 'category',
                     'label' => [
-                        'en-GB' => 'Type'
+                        'en-GB' => 'Type',
+                        'de-DE' => 'Typ'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED => [
+                    'type' => 'text',
+                    'componentName' => 'sw-field',
+                    'placeholder' => 'category',
+                    'label' => [
+                        'en-GB' => 'Type for sub categories',
+                        'de-DE' => 'Typ für Unterkategorien'
                     ]
                 ],
                 self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
@@ -78,6 +91,22 @@ class FactFinder extends Plugin
                     'label' => [
                         'en-GB' => 'Exclude in content export',
                         'de-DE' => 'Aus dem Content Export ausschließen'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
+                    'type' => 'bool',
+                    'componentName' => 'sw-field',
+                    'label' => [
+                        'en-GB' => 'Exclude sub categories in content export',
+                        'de-DE' => 'Unterkategorien vom Content Export ausschließen'
+                    ]
+                ],
+                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
+                    'type' => 'bool',
+                    'componentName' => 'sw-field',
+                    'label' => [
+                        'en-GB' => 'Exclude product info in keywords',
+                        'de-DE' => 'Produktinformationen in den Keywords ausschließen'
                     ]
                 ],
                 self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [

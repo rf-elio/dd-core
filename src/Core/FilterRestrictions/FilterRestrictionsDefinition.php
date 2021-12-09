@@ -119,11 +119,11 @@ class FilterRestrictionsDefinition extends EntityDefinition
                new ApiAware(),
                new Required()
            ),
-           new OneToOneAssociationField(
+           new ManyToOneAssociationField(
                'salesChannel',
                'sales_channel_id',
-               'id',
                SalesChannelDefinition::class,
+               'id',
                false
            ),
            new ManyToOneAssociationField(
@@ -133,11 +133,11 @@ class FilterRestrictionsDefinition extends EntityDefinition
                'id',
                false
            ),
-           new OneToOneAssociationField(
+           new ManyToOneAssociationField(
                'category',
                'category_id',
-               'id',
                CategoryDefinition::class,
+               'id',
                false
            ),
            new ManyToManyAssociationField(

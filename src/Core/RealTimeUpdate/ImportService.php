@@ -37,7 +37,9 @@ use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
 use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
 use Elio\FactFinder\Api\Import\Response\ImportResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Elio\FactFinder\Core\Export\ExportConfig;
 use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -65,7 +67,8 @@ class ImportService implements ImportServiceInterface
         FactFinderConfigService $configService,
         ImportApi $importApi,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->configService = $configService;
         $this->importApi = $importApi;
         $this->logger = $logger;
@@ -82,18 +85,26 @@ class ImportService implements ImportServiceInterface
     {
         $config = $this->configService->getByContext($salesChannelContext);
         $results = [];
+        $exportConfig = $export->getConfig();
 
         try {
-            $importRequest = new SearchImportRequest($config->getApiChannel());
-            $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
-            if($importResponse = $responseCollection->get(ImportResponse::class)) {
-                $results[] = $importResponse;
+            if ($exportConfig[ExportConfig::TRIGGER_IMPORT_SEARCH_DATA] ?? false) {
+                $searchImportChannel = $export->getType() === ContentExportDefaults::TYPE ?
+                    $config->getApiContentChannel() : $config->getApiChannel();
+
+                $importRequest = new SearchImportRequest($searchImportChannel);
+                $responseCollection = $this->importApi->searchImport($importRequest, $salesChannelContext);
+                if ($importResponse = $responseCollection->get(ImportResponse::class)) {
+                    $results[] = $importResponse;
+                }
             }
 
-            $importRequest = new SuggestImportRequest($config->getApiChannel());
-            $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
-            if($importResponse = $responseCollection->get(ImportResponse::class)) {
-                $results[] = $importResponse;
+            if ($exportConfig[ExportConfig::TRIGGER_IMPORT_SUGGEST_DATA] ?? false) {
+                $importRequest = new SuggestImportRequest($config->getApiChannel());
+                $responseCollection = $this->importApi->suggestImport($importRequest, $salesChannelContext);
+                if ($importResponse = $responseCollection->get(ImportResponse::class)) {
+                    $results[] = $importResponse;
+                }
             }
         } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());

@@ -55,7 +55,7 @@ class SuggestItem
     /**
      * @var array
      */
-    protected array $attributes;
+    protected array $attributes = [];
 
     /**
      * @var string
@@ -145,6 +145,14 @@ class SuggestItem
     }
 
     /**
+     * @return bool
+     */
+    public function hasImage() : bool
+    {
+        return !empty($this->imgUrl);
+    }
+
+    /**
      * @param string $imgUrl
      */
     public function setImgUrl(string $imgUrl): void
@@ -168,4 +176,11 @@ class SuggestItem
         $this->url = $url;
     }
 
+    /**
+     * @return bool
+     */
+    public function hasUrl(): bool
+    {
+        return !empty($this->url);
+    }
 }

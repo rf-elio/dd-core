@@ -33,7 +33,7 @@
 namespace Elio\FactFinder\Api\Search\Response;
 
 use Elio\FactFinder\Api\Response\Response;
-use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Elio\FactFinder\Core\Suggest\SuggestGroup;
 
 /**
  * Class SuggestionResponse
@@ -46,62 +46,94 @@ use Elio\FactFinder\Core\Suggest\SuggestItem;
 class SuggestionResponse extends Response
 {
     /**
-     * @var SuggestItem[][]
+     * @var SuggestGroup[]
      */
-    protected array $suggestions = [];
-    /**
-     * @var array<string>
-     */
-    protected array $typeLabels = [];
+    protected array $groups = [];
 
     /**
-     * @return SuggestItem[][]
+     * @param SuggestGroup[] $groups
      */
-    public function getSuggestions(): array
+    public function setGroups(array $groups): void
     {
-        return $this->suggestions;
+        $this->groups = $groups;
     }
 
     /**
-     * @param SuggestItem $suggestion
+     * @return SuggestGroup[]
      */
-    public function addSuggestions(SuggestItem $suggestion): void
+    public function getGroups(): array
     {
-        $type = $suggestion->getType();
+        return $this->groups;
+    }
 
-        if (!isset($this->suggestions[$type])) {
-            $this->suggestions[$type] = [];
+    /**
+     * @return SuggestGroup[]
+     */
+    public function getVisibleGroups(): array
+    {
+        $visibleGroups = [];
+
+        foreach ($this->groups as $group) {
+            if($group->isVisible()) {
+                $visibleGroups[] = $group;
+            }
         }
 
-        $this->suggestions[$type][] = $suggestion;
+        return $visibleGroups;
+    }
+
+
+    /**
+     * @param string $identifier
+     * @return SuggestGroup
+     */
+    public function getGroup(string $identifier) : SuggestGroup
+    {
+        return $this->groups[$identifier];
     }
 
     /**
-     * Checks if the suggest is empty
-     *
+     * @param string $identifier
      * @return bool
      */
-    public function isEmpty() : bool
+    public function hasGroup(string $identifier) : bool
     {
-        return empty($this->suggestions);
+        return isset($this->groups[$identifier]);
     }
 
     /**
-     * @param string[] $typeLabels
+     * @return bool
      */
-    public function setTypeLabels(array $typeLabels): void
+    public function hasItems(): bool
     {
-        $this->typeLabels = $typeLabels;
+        return $this->count() > 0;
     }
 
     /**
-     * Returns the label for the given type or as fallback the label itself
-     *
-     * @param string $type
-     * @return string
+     * @return bool
      */
-    public function getTypeLabel(string $type) : string
+    public function hasVisibleItems(): bool
     {
-        return $this->typeLabels[$type] ?? $type;
+        return $this->countVisible() > 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function count() : int
+    {
+        return array_sum(array_map(static function (SuggestGroup $group) {
+            return $group->count();
+        }, $this->getGroups()));
+    }
+
+    /**
+     * @return int
+     */
+    public function countVisible() : int
+    {
+        return array_sum(array_map(static function (SuggestGroup $group) {
+            return $group->count();
+        }, $this->getVisibleGroups()));
     }
 }

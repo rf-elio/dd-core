@@ -30,41 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Extension;
+namespace Elio\FactFinder\Core\Features;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Shopware\Core\Content\Category\CategoryDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
- * Class CategoryExtension
- * @package Elio\FactFinder\Core\FilterRestrictions\Extension
+ * Class FeatureService
+ * @package Elio\FactFinder\Core\Features
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
- * @author    Andrey Baev <anb@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CategoryExtension extends EntityExtension
+class FeatureService implements FeatureServiceInterface
 {
-    public function extendFields(FieldCollection $collection): void
-    {
-        $collection->add(
+    /**
+     * @var array
+     */
+    private array $features;
 
-            (new OneToOneAssociationField(
-                'filterRestriction',
-                'filter_restriction_id',
-                'category_id',
-                FilterRestrictionsDefinition::class,
-                false
-            ))->addFlags(new CascadeDelete())
-        );
+    /**
+     * FeatureService constructor.
+     */
+    public function __construct()
+    {
+        $this->features = $this->readConfig();
     }
 
-    public function getDefinitionClass(): string
+    /**
+     * @return array
+     */
+    protected function readConfig() : array
     {
-        return CategoryDefinition::class;
+        $configFilePath = __DIR__.'/../../Resources/config/features.config';
+        return parse_ini_file($configFilePath) ?? [];
+    }
+
+    /**
+     * @return FeatureContext
+     */
+    public function getContext() : FeatureContext
+    {
+        return new FeatureContext($this->features);
     }
 }

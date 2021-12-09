@@ -59,11 +59,15 @@ class FilterRestrictionsEntity extends Entity
      */
     protected string $layer;
     /**
+     * @var string|null
+     */
+    protected $categoryId;
+    /**
      * @var CategoryEntity|null
      */
     protected $category;
     /**
-     * @var string
+     * @var string|null
      */
     protected $salesChannelId;
     /**
@@ -211,17 +215,17 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSalesChannelId(): string
+    public function getSalesChannelId(): ?string
     {
         return $this->salesChannelId;
     }
 
     /**
-     * @param string $salesChannelId
+     * @param string|null $salesChannelId
      */
-    public function setSalesChannelId(string $salesChannelId): void
+    public function setSalesChannelId(?string $salesChannelId): void
     {
         $this->salesChannelId = $salesChannelId;
     }
@@ -272,5 +276,37 @@ class FilterRestrictionsEntity extends Entity
     public function setLanguage(?LanguageEntity $language): void
     {
         $this->language = $language;
+    }
+
+    /**
+     * @return SalesChannelEntity|null
+     */
+    public function getSalesChannel(): ?SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
+    /**
+     * @param SalesChannelEntity|null $salesChannel
+     */
+    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string|null $categoryId
+     */
+    public function setCategoryId(?string $categoryId): void
+    {
+        $this->categoryId = $categoryId;
     }
 }

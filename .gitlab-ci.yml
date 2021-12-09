@@ -1,32 +1,40 @@
 stages:
   - build
   - test
-  - publish
+  - release
+
+variables:
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/release"
 
 build:
   stage: build
   only:
     - merge_requests
+    - tags
   image: php:8.0
   artifacts:
     paths:
       - dev
       - prod
+      - build
     expire_in: 1 hour
   before_script:
-    - bash .ci/docker_install.sh > /dev/null
+    - bash .gitlab/scripts/docker_install.sh > /dev/null
   script:
-    - bash .ci/build_prepare_dir.sh > /dev/null
-    - cp -r build dev
-    - cp -r build prod
-    - cd ./dev && make dev && bash ../.ci/build_clean_dir.sh && cd ..
-    - cd ./prod && make prod && bash ../.ci/build_clean_dir.sh && cd ..
+    - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
+    - cp -r prepare dev
+    - cp -r prepare prod
+    - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - zip -r ./build/dev.zip ./dev
+    - zip -r ./build/prod.zip ./prod
 
 test:phpstan:
   stage: test
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '8.0'
@@ -43,6 +51,7 @@ test:php8.0:
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '8.0'
@@ -50,13 +59,14 @@ test:php8.0:
     paths:
       - dev
   script:
-    - bash .ci/test_phpunit.sh
+    - bash .gitlab/scripts/test_phpunit.sh
 
 test:php7.4:
   stage: test
   needs: ['build']
   only:
     - merge_requests
+    - tags
   image: dockware/dev:latest
   variables:
     PHP_VERSION: '7.4'
@@ -64,24 +74,39 @@ test:php7.4:
     paths:
       - dev
   script:
-    - bash .ci/test_phpunit.sh
+    - bash .gitlab/scripts/test_phpunit.sh
 
-#publish:
-#  image: curlimages/curl:latest
-#  stage: publish
-#  needs: ['build']
-#  variables:
-#    URL: "$CI_SERVER_PROTOCOL://$CI_SERVER_HOST:$CI_SERVER_PORT/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
-#  script:
-#    - version=$([[ -z "$CI_COMMIT_TAG" ]] && echo "branch=$CI_COMMIT_REF_NAME" || echo "tag=$CI_COMMIT_TAG")
-#    - insecure=$([ "$CI_SERVER_PROTOCOL" = "http" ] && echo "--insecure" || echo "")
-#    - response=$(curl -s -w "\n%{http_code}" $insecure --data $version $URL)
-#    - code=$(echo "$response" | tail -n 1)
-#    - body=$(echo "$response" | head -n 1)
-#    # Output state information
-#    - if [ $code -eq 201 ]; then
-#      echo "Package created - Code $code - $body";
-#      else
-#      echo "Could not create package - Code $code - $body";
-#      exit 1;
-#      fi
+upload:
+  stage: release
+#  needs: ['test:phpstan', 'test:php7.4', 'test:php8.0']
+  needs: ['build']
+  image: curlimages/curl:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+  artifacts:
+    paths:
+      - build
+  script:
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/prod.zip "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/prod.zip"
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ./build/dev.zip "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/dev.zip"
+
+release_create:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG                  # Run this job when a tag is created manually
+  script:
+    - echo "running release_job"
+  release:
+    name: 'Release $CI_COMMIT_TAG'
+    description: 'Created using the release-cli $EXTRA_DESCRIPTION'  # $EXTRA_DESCRIPTION must be defined
+    tag_name: '$CI_COMMIT_TAG'                                       # elsewhere in the pipeline.
+    ref: '$CI_COMMIT_TAG'
+    assets: # Optional, multiple asset links
+      links:
+        - name: 'prod.zip'
+          url: '${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/prod.zip'
+        - name: 'dev.zip'
+          url: '${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/dev.zip'

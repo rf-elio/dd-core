@@ -74,6 +74,7 @@ class ValueUtil
             return '';
         }
 
+        $value = str_replace(',,', ',', $value);
         return implode(',', array_unique(explode(',', $value)));
     }
 
