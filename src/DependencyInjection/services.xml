@@ -13,6 +13,7 @@
         <import resource="tracking.xml"/>
         <import resource="storefront.xml"/>
         <import resource="export.xml"/>
+        <import resource="features.xml"/>
         <import resource="filter-restrictions.xml"/>
         <import resource="real-time-update.xml"/>
     </imports>

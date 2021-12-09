@@ -42,6 +42,7 @@ use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductModelEvent;
 use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
 use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
+use Elio\FactFinder\Core\Features\FeatureServiceInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -50,6 +51,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaI
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -67,16 +69,27 @@ class ProductExportGenerator implements ExportGeneratorInterface
     private const PRODUCT_CHUNK_SIZE = 500;
     private EntityRepositoryInterface $productRepository;
     private EventDispatcherInterface $eventDispatcher;
+    private EntityRepositoryInterface $salesChannelRepository;
+    private FeatureServiceInterface $featureService;
 
     /**
      * ProductExportGenerator constructor.
      * @param EntityRepositoryInterface $productRepository
      * @param EventDispatcherInterface $eventDispatcher
+     * @param EntityRepositoryInterface $salesChannelRepository
+     * @param FeatureServiceInterface $featureService
      */
-    public function __construct(EntityRepositoryInterface $productRepository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        EntityRepositoryInterface $productRepository,
+        EventDispatcherInterface $eventDispatcher,
+        EntityRepositoryInterface $salesChannelRepository,
+        FeatureServiceInterface $featureService
+    )
     {
         $this->productRepository = $productRepository;
         $this->eventDispatcher = $eventDispatcher;
+        $this->salesChannelRepository = $salesChannelRepository;
+        $this->featureService = $featureService;
     }
 
     /**
@@ -118,6 +131,10 @@ class ProductExportGenerator implements ExportGeneratorInterface
             ProductExportDefaults::FIELD_TAGS
         ];
 
+        if($this->featureService->getContext()->isEnabled('currency-specific-prices')) {
+            $model[] = ProductExportDefaults::FIELD_CURRENCY_PRICES;
+        }
+
         foreach ($export->getMapping() as $mapping) {
             $model[] = $mapping['target'];
         }
@@ -135,6 +152,15 @@ class ProductExportGenerator implements ExportGeneratorInterface
      */
     public function generate(ExportEntity $export, OutputStream $output, SalesChannelContext $context): void
     {
+        // add currencies for price calculation
+        $criteria = new Criteria([$context->getSalesChannelId()]);
+        $criteria->addAssociation('currencies');
+
+        if($salesChannel = $this->salesChannelRepository->search($criteria, $context->getContext())->first()) {
+            $context->getSalesChannel()->setCurrencies($salesChannel->getCurrencies());
+        }
+
+        // fetch products
         $criteria = new Criteria();
         $criteria->addAssociation('manufacturer');
         $criteria->addAssociation('visibilities');
@@ -165,7 +191,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      *
      * @param ProductEntity $product
      * @param ExportItem $item
-     * @throws InconsistentCriteriaIdsException
+     * @param SalesChannelContext $context
      */
     private function prepareExportItem(ProductEntity $product, ExportItem $item, SalesChannelContext $context): void
     {
@@ -181,13 +207,15 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, $product->getDescription() ?? $translated['description'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_PRICE, $product->getPrice()->first()->getGross());
+        $item->set(ProductExportDefaults::FIELD_PRICE, $this->getProductPrice($product));
+        if($this->featureService->getContext()->isEnabled('currency-specific-prices')) {
+            $item->set(ProductExportDefaults::FIELD_CURRENCY_PRICES, $this->getProductPrices($product, $context));
+        }
 
         $manufacturer = $product->getManufacturer();
         if($manufacturer) {
             $item->set(ProductExportDefaults::FIELD_MANUFACTURER, $manufacturer->getTranslation('name') ?? $manufacturer->getName());
         }
-
         $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH, $this->getCategoryPath($product));
         $item->set(ProductExportDefaults::FIELD_EAN, $product->getEan());
         $item->set(ProductExportDefaults::FIELD_KEYWORDS, $product->getKeywords() ?? $translated['keywords'] ?? '');
@@ -311,5 +339,53 @@ class ProductExportGenerator implements ExportGeneratorInterface
         }
 
         return implode(Defaults::VALUE_SEPARATOR, $tags);
+    }
+
+    /**
+     * Fetches the main product price
+     *
+     * @param ProductEntity $product
+     * @return float|null
+     */
+    protected function getProductPrice(ProductEntity $product) : ?float
+    {
+        if ($product->getPrice() === null || !$price = $product->getPrice()->first()) {
+            return null;
+        }
+
+        return $price->getGross();
+    }
+
+    /**
+     * Fetches the product price string with all currencies
+     *
+     * @param ProductEntity $product
+     * @param SalesChannelContext $context
+     *
+     * @return string
+     */
+    protected function getProductPrices(ProductEntity $product, SalesChannelContext $context) : string
+    {
+        $price = $this->getProductPrice($product);
+        if (!$price) {
+            return '';
+        }
+
+        $prices = [];
+        foreach ($context->getSalesChannel()->getCurrencies() as $currency) {
+            $currencyPrice = $price;
+            if ($currency->getId() !== $context->getCurrency()->getId()) {
+                $currencyPrice *= $currency->getFactor();
+            }
+
+            $prices[] = sprintf('%s~~%s=%s', $currency->getIsoCode(), $currency->getSymbol(), $currencyPrice);
+        }
+
+        return !empty($prices) ? sprintf(
+            '%s%s%s',
+            Defaults::VALUE_SEPARATOR,
+            implode(Defaults::VALUE_SEPARATOR, $prices),
+            Defaults::VALUE_SEPARATOR
+        ) : '';
     }
 }
