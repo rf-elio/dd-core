@@ -20,7 +20,7 @@ class ArrayUtilTest extends TestCase
      * @dataProvider arrayKeyPushDataProvider
      *
      * @param array $array
-     * @param $data
+     * @param mixed $data
      * @param array $keys
      * @param array $expected
      */
@@ -34,7 +34,7 @@ class ArrayUtilTest extends TestCase
      * @dataProvider arrayKeyAddDataProvider
      *
      * @param array $array
-     * @param $data
+     * @param mixed $data
      * @param array $keys
      * @param array $expected
      */
@@ -100,8 +100,8 @@ class ArrayUtilTest extends TestCase
     /**
      * @dataProvider convertToStringDataProvider
      *
-     * @param $data
-     * @param $expected
+     * @param mixed $data
+     * @param mixed $expected
      */
     public function testConvertToString($data, $expected): void
     {
@@ -119,8 +119,8 @@ class ArrayUtilTest extends TestCase
     /**
      * @dataProvider convertStringToArrayDataProvider
      *
-     * @param $data
-     * @param $expected
+     * @param mixed $data
+     * @param mixed $expected
      */
     public function testConvertStringToArray($data, $expected): void
     {
@@ -131,8 +131,8 @@ class ArrayUtilTest extends TestCase
     /**
      * @dataProvider getArrayKeysAsStringDataProvider
      *
-     * @param $data
-     * @param $expected
+     * @param mixed $data
+     * @param mixed $expected
      */
     public function testGetArrayKeysAsString($data, $expected): void
     {

@@ -26,6 +26,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
+use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -45,12 +46,12 @@ class ProductRepositoryMock implements EntityRepositoryInterface
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
-        // TODO: Implement aggregate() method.
+        return new AggregationResultCollection();
     }
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
-        // TODO: Implement searchIds() method.
+        return new IdSearchResult(0, [], $criteria, $context);
     }
 
     public function clone(
@@ -59,7 +60,7 @@ class ProductRepositoryMock implements EntityRepositoryInterface
         ?string $newId = null,
         ?CloneBehavior $behavior = null
     ): EntityWrittenContainerEvent {
-        // TODO: Implement clone() method.
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection(), []);
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
@@ -90,32 +91,31 @@ class ProductRepositoryMock implements EntityRepositoryInterface
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement update() method.
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection(), []);
     }
 
     public function upsert(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement upsert() method.
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection(), []);
     }
 
     public function create(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement create() method.
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection(), []);
     }
 
     public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement delete() method.
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection(), []);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
     {
-        // TODO: Implement createVersion() method.
+        return '';
     }
 
     public function merge(string $versionId, Context $context): void
     {
-        // TODO: Implement merge() method.
     }
 
     private function createProduct($name, $productNumber): ProductEntity
