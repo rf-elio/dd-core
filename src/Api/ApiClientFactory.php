@@ -4,6 +4,13 @@ namespace Elio\FactFinder\Api;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+use Elio\FactFinder\Core\Logging\LoggingService;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
 use Swagger\Client\Api\ManagementApi;
@@ -156,9 +163,28 @@ class ApiClientFactory implements ApiClientFactoryInterface
         } else {
             $configuration = $this->configService->getByContext($salesChannelContext);
         }
-        return new Client([
-            'max' => $configuration->getApiTimeout()
-        ]);
+
+        $config = [
+            'max' => $configuration->getApiTimeout(),
+        ];
+
+        if ($configuration->isApiDebugActive()) {
+            $logger = new Logger('FactFinder');
+            $handler = new RotatingFileHandler(
+                $this->logDir . LoggingService::FILE_NAME,
+                5,
+                Logger::DEBUG,
+                true
+            );
+            $logger->pushHandler($handler);
+            $stack = HandlerStack::create();
+            $stack->push(
+                Middleware::log($logger, new MessageFormatter(MessageFormatter::DEBUG))
+            );
+
+            $config['handler'] = $stack;
+        }
+        return new Client($config);
     }
 
     /**
@@ -183,9 +209,6 @@ class ApiClientFactory implements ApiClientFactoryInterface
         $apiConfiguration->setPassword($credentials->getApiPassword());
         $apiConfiguration->setAccessToken(null);
         $apiConfiguration->setUserAgent($this->getUserAgent($salesChannelId));
-
-        $apiConfiguration->setDebug($configuration->isApiDebugActive());
-        $apiConfiguration->setDebugFile($this->logDir.'/elio_fact_finder-api-client.log');
 
         return $apiConfiguration;
     }

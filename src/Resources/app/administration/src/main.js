@@ -1,6 +1,7 @@
 import './module/elio-fact-finder/index';
 import './module/elio-extension-config-detail/index';
 import './module/elio-fact-finder-export/index';
+import './module/elio-fact-finder-logging/index';
 import './module/elio-fact-finder-restrictions/index';
 import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';

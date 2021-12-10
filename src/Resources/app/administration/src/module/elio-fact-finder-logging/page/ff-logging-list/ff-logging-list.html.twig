@@ -1,0 +1,17 @@
+{% block ff_logging_list_page %}
+    <sw-page class="elio-ff-logging-list">
+        <template #smart-bar-actions>
+            <sw-single-select
+                :options="logs"
+                v-model="selectedLog"
+                size="medium"
+                :is-loading="isLoading"
+            ></sw-single-select>
+        </template>
+        <sw-card-view slot="content">
+            <sw-card :isLoading="isLoading">
+                {{ content }}
+            </sw-card>
+        </sw-card-view>
+    </sw-page>
+{% endblock %}
