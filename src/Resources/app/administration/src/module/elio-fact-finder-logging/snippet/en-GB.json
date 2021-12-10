@@ -1,6 +1,8 @@
 {
     "ff-logging": {
         "title": "Logging",
-        "description": ""
+        "description": "",
+        "logIsEmpty": "Log is empty",
+        "LogsNotFound": "Logs not found"
     }
 }

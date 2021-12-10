@@ -102,6 +102,7 @@ class SuggestController extends SearchController
         $suggestRequest = new SuggestRequest($config->getApiChannel());
         $searchTerm = $request->get('search') ?? '*';
         $suggestRequest->setQuery($searchTerm);
+        $suggestRequest->setRemoteIp($request->getClientIp());
         $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
 
         /** @var SuggestionResponse|null $suggestionResponse */

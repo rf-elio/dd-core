@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * @RouteScope(scopes={"api"})
@@ -38,17 +39,21 @@ class LoggingController extends AbstractController
      */
     public function show(Request $request): JsonResponse
     {
-        $logs = $this->loggingService->getLogs();
-        $logIndex = $request->get('log', 0);
+        try {
+            $logIndex = $request->get('log', 0);
 
-        $content = $this->loggingService->getLogContent($logIndex);
-
-        return $this->json([
-            'success' => true,
-            'data' => [
-                'logs' => $logs,
-                'logContent' => $content
-            ]
-        ]);
+            return $this->json([
+                'success' => true,
+                'data' => [
+                    'logs' => $this->loggingService->getLogs(),
+                    'logContent' => $this->loggingService->getLogContent($logIndex)
+                ]
+            ]);
+        } catch (Throwable $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

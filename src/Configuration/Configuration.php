@@ -48,6 +48,10 @@ class Configuration extends Struct
     protected string $apiChannel;
     protected bool $useAso;
     protected bool $apiDebugActive;
+    /**
+     * @var array<string>
+     */
+    private array $logDebugIpFilter;
     private bool $searchUseFactFinder;
     private int $apiTimeout;
     private bool $trackCheckout;
@@ -90,6 +94,7 @@ class Configuration extends Struct
      * @param int $apiTimeout
      * @param bool $useAso
      * @param bool $apiDebugActive
+     * @param array<string> $logDebugIpFilter
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
      * @param bool $trackCart
@@ -117,6 +122,7 @@ class Configuration extends Struct
         int $apiTimeout,
         bool $useAso,
         bool $apiDebugActive,
+        array $logDebugIpFilter,
         bool $searchUseFactFinder,
         bool $trackRequireConsent,
         bool $trackCart,
@@ -141,6 +147,7 @@ class Configuration extends Struct
     {
         $this->useAso = $useAso;
         $this->apiDebugActive = $apiDebugActive;
+        $this->logDebugIpFilter = $logDebugIpFilter;
         $this->apiChannel = $apiChannel;
         $this->searchUseFactFinder = $searchUseFactFinder;
         $this->apiTimeout = $apiTimeout;
@@ -181,6 +188,14 @@ class Configuration extends Struct
     public function isApiDebugActive(): bool
     {
         return $this->apiDebugActive;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLogDebugIpFilter(): array
+    {
+        return $this->logDebugIpFilter;
     }
 
     /**

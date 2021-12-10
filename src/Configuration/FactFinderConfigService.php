@@ -119,6 +119,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'apiTimeout', $languagePrefix) ?? 0,
             $this->getConfigWithLanguagePrefix($config, 'useAso', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'apiDebugActive', $languagePrefix) ?? false,
+            $this->prepareValueList($config, 'logDebugIpFilter', $languagePrefix),
             $this->getConfigWithLanguagePrefix($config, 'searchUseFactFinder', $languagePrefix) ?? false,
             !empty($this->getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),

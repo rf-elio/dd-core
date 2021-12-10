@@ -77,7 +77,7 @@ class SuggestApi
      */
     public function suggest(SuggestRequest $suggestRequest, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
+        $apiClient = $this->apiFactory->createSearchApi($context, $suggestRequest->getRemoteIp());
         $result = $apiClient->getSuggestionsUsingPOST(new SuggestParams([
             'channel' => $suggestRequest->getChannel(),
             'query' => $suggestRequest->getQuery(),

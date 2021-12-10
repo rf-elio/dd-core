@@ -52,6 +52,7 @@ class ContentSearchRequestBuilder
         if(!empty($request->get('search'))) {
             $searchRequest->setQuery($request->get('search'));
         }
+        $searchRequest->setRemoteIp($request->getClientIp());
         $this->addCustomParameters($searchRequest, $config);
 
         return $searchRequest;

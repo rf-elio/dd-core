@@ -83,7 +83,7 @@ class SearchApi
      */
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
+        $apiClient = $this->apiFactory->createSearchApi($context, $searchRequest->getRemoteIp());
         $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
             'query' => $searchRequest->getQuery(),
             'channel' => $searchRequest->getChannel(),
@@ -104,7 +104,7 @@ class SearchApi
      */
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
+        $apiClient = $this->apiFactory->createSearchApi($context, $searchRequest->getRemoteIp());
         $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
             'query' => $searchRequest->getQuery(),
             'channel' => $searchRequest->getChannel(),
@@ -127,7 +127,7 @@ class SearchApi
      */
     public function navigation(NavigationRequestProduct $searchRequest, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
+        $apiClient = $this->apiFactory->createSearchApi($context, $searchRequest->getRemoteIp());
         $filters = $this->getNavigationFilters($searchRequest);
         $result = $apiClient->navigationUsingPOST(new \Swagger\Client\Model\NavigationRequest([
             'params' => [

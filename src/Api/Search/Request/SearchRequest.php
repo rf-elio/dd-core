@@ -6,6 +6,7 @@ namespace Elio\FactFinder\Api\Search\Request;
 use Elio\FactFinder\Api\Request\AbTestTrait;
 use Elio\FactFinder\Api\Request\ChannelRequest;
 use Elio\FactFinder\Api\Request\CustomParametersTrait;
+use Elio\FactFinder\Api\Request\RemoteIpTrait;
 
 /**
  * Class SearchRequest
@@ -19,6 +20,7 @@ abstract class SearchRequest extends ChannelRequest
 {
     use AbTestTrait;
     use CustomParametersTrait;
+    use RemoteIpTrait;
 
     protected string $query = '*';
     protected bool $excludeProductsNotInRange = true;

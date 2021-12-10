@@ -1,5 +1,6 @@
 .elio-ff-logging-list {
-    .sw-card__content {
+    &__content {
         overflow-wrap: break-word;
+        line-height: 1.4;
     }
 }
