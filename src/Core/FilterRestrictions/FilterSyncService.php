@@ -98,11 +98,10 @@ class FilterSyncService
         $filter = $this->filterRepository->search($criteria, $context);
         if ($filter->getTotal() > 0) {
             // updating
-            /** @var FilterEntity $filterEntity */
-            $this->update($filter->first(), $property->getName(), $propertyTranslations, $context);
+            $this->update($filter->first(), $property->getName(), $propertyTranslations->getElements(), $context);
         } else {
             // creating
-            $this->create($property->getId(), $property->getName(), $propertyTranslations, $context);
+            $this->create($property->getId(), $property->getName(), $propertyTranslations->getElements(), $context);
         }
     }
 
