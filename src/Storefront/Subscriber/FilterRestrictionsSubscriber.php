@@ -71,7 +71,6 @@ class FilterRestrictionsSubscriber implements EventSubscriberInterface
     /**
      * Clearing filter-restrictions cache
      * @param EntityWrittenEvent $event
-     * @throws InvalidArgumentException
      */
     public function onClearRestrictionsCache(EntityWrittenEvent $event) : void {
         $this->cachedFilterService->clearCache();
