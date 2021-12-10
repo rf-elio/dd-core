@@ -58,6 +58,7 @@ class FilterRestrictionsEntity extends Entity
      * @var string
      */
     protected string $layer;
+
     /**
      * @var string|null
      */
