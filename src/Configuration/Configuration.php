@@ -81,6 +81,7 @@ class Configuration extends Struct
     private string $apiContentChannel;
     private bool $searchUseContentChannel;
     private array $suggestTypeLabels;
+    private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
 
     /**
@@ -106,6 +107,7 @@ class Configuration extends Struct
      * @param bool $suggestUseFactFinder
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
+     * @param int $restrictionsCacheTime
      * @param string $apiContentChannel
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
@@ -133,6 +135,7 @@ class Configuration extends Struct
         bool $suggestUseFactFinder,
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown,
+        int $restrictionsCacheTime,
         string $apiContentChannel,
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
@@ -163,6 +166,7 @@ class Configuration extends Struct
         $this->apiContentChannel = $apiContentChannel;
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->suggestTypeLabels = $suggestTypeLabels;
+        $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
     }
 
@@ -365,6 +369,14 @@ class Configuration extends Struct
     public function getSuggestTypeLabels(): array
     {
         return $this->suggestTypeLabels;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRestrictionsCacheTime(): int
+    {
+        return $this->restrictionsCacheTime;
     }
 
     /**
