@@ -33,7 +33,6 @@
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
 use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationCollection;
-use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -59,6 +58,7 @@ class FilterEntity extends Entity
      * @var string
      */
     protected string $technicalName;
+
     /**
      * @var bool
      */
