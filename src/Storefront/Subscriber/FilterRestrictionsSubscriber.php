@@ -34,8 +34,6 @@ namespace Elio\FactFinder\Storefront\Subscriber;
 
 use Elio\FactFinder\Core\FilterRestrictions\CachedFilterService;
 use Elio\FactFinder\Core\FilterRestrictions\FiltersEvents;
-use Psr\Cache\InvalidArgumentException;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -48,12 +46,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class FilterRestrictionsSubscriber implements EventSubscriberInterface
 {
-
     private CachedFilterService $cachedFilterService;
 
-    public function __construct(
-        CachedFilterService $cachedFilterService
-    ) {
+    public function __construct(CachedFilterService $cachedFilterService) {
         $this->cachedFilterService = $cachedFilterService;
     }
 
@@ -70,9 +65,8 @@ class FilterRestrictionsSubscriber implements EventSubscriberInterface
 
     /**
      * Clearing filter-restrictions cache
-     * @param EntityWrittenEvent $event
      */
-    public function onClearRestrictionsCache(EntityWrittenEvent $event) : void {
+    public function onClearRestrictionsCache() : void {
         $this->cachedFilterService->clearCache();
     }
 }

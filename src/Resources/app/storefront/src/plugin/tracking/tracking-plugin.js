@@ -11,11 +11,11 @@ export default class TrackingPlugin extends Plugin {
         pagePathAttribute: 'data-elio-ff-page',
         pageSizePathAttribute: 'data-elio-ff-pageSize',
         campaignPathAttribute: 'data-elio-ff-campaign',
-        updatePathAttribute: 'data-elio-ff-path'
+        trackProductClickPath: 'data-elio-ff-track-product-click-path'
     };
     init() {
         this._client = new HttpClient()
-        this._path = this.el.getAttribute(this.options.updatePathAttribute);
+        this._path = this.el.getAttribute(this.options.trackProductClickPath);
         if(this._path.length > 0) {
             this._linkElements = this.el.getElementsByTagName('a')
             this._trackingId = this.el.getAttribute(this.options.idPathAttribute);

@@ -42,7 +42,6 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SuccessResponse;
 use Shopware\Storefront\Controller\StorefrontController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -85,12 +84,11 @@ class ProductDetailTrackingController extends StorefrontController
     /**
      * @Route("/widgets/ff/productDetailTrack", name="widgets.elio-ff.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
-     * @param Request $request
      * @param RequestDataBag $dataBag
      * @param SalesChannelContext $salesChannelContext
      * @return Response
      */
-    public function trackProductDetail(Request $request, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
+    public function trackProductDetail(RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
     {
         $config = $this->configService->getByContext($salesChannelContext);
 
