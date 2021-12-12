@@ -29,6 +29,7 @@
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService">
             <argument type="service" id="property_group.repository" />
             <argument type="service" id="elio_ff_filter.repository" />
+            <argument type="service" id="elio_ff_filter_translation.repository" />
             <argument type="service" id="logger" />
         </service>
 

@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
@@ -57,6 +58,7 @@ class FilterRestrictionsEntity extends Entity
      * @var string
      */
     protected string $layer;
+
     /**
      * @var string|null
      */
@@ -69,11 +71,18 @@ class FilterRestrictionsEntity extends Entity
      * @var string|null
      */
     protected $salesChannelId;
-
     /**
      * @var SalesChannelEntity|null
      */
     protected $salesChannel;
+    /**
+     * @var string|null
+     */
+    protected $languageId;
+    /**
+     * @var LanguageEntity|null
+     */
+    protected $language;
     /**
      * is it collection of filters for allowed or blocked column
      * @var bool
@@ -95,67 +104,19 @@ class FilterRestrictionsEntity extends Entity
     protected $filters;
 
     /**
-     * @return FilterCollection|null
-     */
-    public function getFilters(): ?FilterCollection
-    {
-        return $this->filters;
-    }
-
-    /**
-     * @param FilterCollection|null $filters
-     */
-    public function setFilters(?FilterCollection $filters): void
-    {
-        $this->filters = $filters;
-    }
-
-    /**
      * @return bool
      */
-    public function isAllowed(): bool
+    public function isCategory(): bool
     {
-        return $this->isAllowed;
+        return $this->isCategory;
     }
 
     /**
-     * @param bool $isAllowed
+     * @param bool $isCategory
      */
-    public function setIsAllowed(bool $isAllowed): void
+    public function setIsCategory(bool $isCategory): void
     {
-        $this->isAllowed = $isAllowed;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInherited(): bool
-    {
-        return $this->isInherited;
-    }
-
-    /**
-     * @param bool $isInherited
-     */
-    public function setIsInherited(bool $isInherited): void
-    {
-        $this->isInherited = $isInherited;
-    }
-
-    /**
-     * @return CategoryEntity|null
-     */
-    public function getCategory(): ?CategoryEntity
-    {
-        return $this->category;
-    }
-
-    /**
-     * @param CategoryEntity|null $category
-     */
-    public function setCategory(?CategoryEntity $category): void
-    {
-        $this->category = $category;
+        $this->isCategory = $isCategory;
     }
 
     /**
@@ -175,35 +136,35 @@ class FilterRestrictionsEntity extends Entity
     }
 
     /**
-     * @return bool
+     * @return string|null
      */
-    public function isCategory(): bool
+    public function getCategoryId(): ?string
     {
-        return $this->isCategory;
+        return $this->categoryId;
     }
 
     /**
-     * @param bool $isCategory
+     * @param string|null $categoryId
      */
-    public function setIsCategory(bool $isCategory): void
+    public function setCategoryId(?string $categoryId): void
     {
-        $this->isCategory = $isCategory;
+        $this->categoryId = $categoryId;
     }
 
     /**
-     * @return bool
+     * @return CategoryEntity|null
      */
-    public function isAllChecked(): bool
+    public function getCategory(): ?CategoryEntity
     {
-        return $this->isAllChecked;
+        return $this->category;
     }
 
     /**
-     * @param bool $isAllChecked
+     * @param CategoryEntity|null $category
      */
-    public function setIsAllChecked(bool $isAllChecked): void
+    public function setCategory(?CategoryEntity $category): void
     {
-        $this->isAllChecked = $isAllChecked;
+        $this->category = $category;
     }
 
     /**
@@ -241,16 +202,96 @@ class FilterRestrictionsEntity extends Entity
     /**
      * @return string|null
      */
-    public function getCategoryId(): ?string
+    public function getLanguageId(): ?string
     {
-        return $this->categoryId;
+        return $this->languageId;
     }
 
     /**
-     * @param string|null $categoryId
+     * @param string|null $languageId
      */
-    public function setCategoryId(?string $categoryId): void
+    public function setLanguageId(?string $languageId): void
     {
-        $this->categoryId = $categoryId;
+        $this->languageId = $languageId;
+    }
+
+    /**
+     * @return LanguageEntity|null
+     */
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param LanguageEntity|null $language
+     */
+    public function setLanguage(?LanguageEntity $language): void
+    {
+        $this->language = $language;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllowed(): bool
+    {
+        return $this->isAllowed;
+    }
+
+    /**
+     * @param bool $isAllowed
+     */
+    public function setIsAllowed(bool $isAllowed): void
+    {
+        $this->isAllowed = $isAllowed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInherited(): bool
+    {
+        return $this->isInherited;
+    }
+
+    /**
+     * @param bool $isInherited
+     */
+    public function setIsInherited(bool $isInherited): void
+    {
+        $this->isInherited = $isInherited;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllChecked(): bool
+    {
+        return $this->isAllChecked;
+    }
+
+    /**
+     * @param bool $isAllChecked
+     */
+    public function setIsAllChecked(bool $isAllChecked): void
+    {
+        $this->isAllChecked = $isAllChecked;
+    }
+
+    /**
+     * @return FilterCollection|null
+     */
+    public function getFilters(): ?FilterCollection
+    {
+        return $this->filters;
+    }
+
+    /**
+     * @param FilterCollection|null $filters
+     */
+    public function setFilters(?FilterCollection $filters): void
+    {
+        $this->filters = $filters;
     }
 }
