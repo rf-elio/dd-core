@@ -92,7 +92,7 @@ class FactFinderCookieProvider implements CookieProviderInterface
         $config = $this->configService->getByContext($salesChannelContext);
         if($config->isTrackRequireConsent()) {
             foreach ($cookieGroups as &$cookieGroup) {
-                if($cookieGroup['snippet_name'] !== 'cookie.groupStatistical') {
+                if($cookieGroup['snippet_name'] !== 'cookie.groupRequired') {
                     continue;
                 }
 
