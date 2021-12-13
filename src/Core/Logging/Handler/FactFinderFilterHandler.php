@@ -30,58 +30,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\FactFinder\Core\Logging\Handler;
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SuggestRequest;
-use Elio\FactFinder\Api\Transform\Transformer;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\SuggestParams;
-use Throwable;
+use Elio\FactFinder\Core\Logging\LogFilterContext;
+use Monolog\Handler\HandlerInterface;
 
 /**
- * Class SuggestApi
- * @package Elio\FactFinder\Api\Search
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Andrey Baev <anb@elio-systems.com>
+ * Class LogFilterProcessor
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SuggestApi
+class FactFinderFilterHandler implements HandlerInterface
 {
-    private ApiClientFactoryInterface $apiFactory;
-    private Transformer $transformer;
+    private HandlerInterface $handler;
+    private LogFilterContext $logFilterContext;
 
     /**
-     * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     * @param Transformer $transformer
+     * FactFinderFilterHandler constructor.
+     * @param HandlerInterface $handler
+     * @param LogFilterContext $logFilterContext
      */
-    public function __construct(
-        ApiClientFactoryInterface $apiFactory,
-        Transformer $transformer
-    )
+    public function __construct(HandlerInterface $handler, LogFilterContext $logFilterContext)
     {
-        $this->apiFactory = $apiFactory;
-        $this->transformer = $transformer;
+        $this->handler = $handler;
+        $this->logFilterContext = $logFilterContext;
     }
 
-    /**
-     * @param SuggestRequest $suggestRequest
-     * @param SalesChannelContext $context
-     * @return ResponseCollection
-     * @throws ApiException
-     * @throws Throwable
-     */
-    public function suggest(SuggestRequest $suggestRequest, SalesChannelContext $context): ResponseCollection
+    public function isHandling(array $record): bool
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->getSuggestionsUsingPOST(new SuggestParams([
-            'channel' => $suggestRequest->getChannel(),
-            'query' => $suggestRequest->getQuery(),
-        ]));
-        return $this->transformer->transformResponse($result, $context, $suggestRequest);
+        if (!$this->logFilterContext->isIsDebugLoggingActive()) {
+            return false;
+        }
+        return $this->handler->isHandling($record);
+    }
+
+    public function handle(array $record): bool
+    {
+        return $this->handler->handle($record);
+    }
+
+    public function handleBatch(array $records): void
+    {
+        $this->handler->handleBatch($records);
+    }
+
+    public function close(): void
+    {
+        $this->handler->close();
     }
 }

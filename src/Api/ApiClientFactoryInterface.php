@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Api;
 
 
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;

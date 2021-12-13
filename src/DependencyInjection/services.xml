@@ -16,5 +16,6 @@
         <import resource="features.xml"/>
         <import resource="filter-restrictions.xml"/>
         <import resource="real-time-update.xml"/>
+        <import resource="logging.xml"/>
     </imports>
 </container>
