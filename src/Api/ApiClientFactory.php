@@ -4,14 +4,12 @@ namespace Elio\FactFinder\Api;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Core\Logging\LoggingService;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
 use Swagger\Client\Api\ManagementApi;
@@ -23,7 +21,6 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use GuzzleHttp\ClientInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Configuration;
-use Elio\FactFinder\Configuration\Configuration as PluginConfiguration;
 use GuzzleHttp\Client;
 
 /**
@@ -37,20 +34,20 @@ use GuzzleHttp\Client;
 class ApiClientFactory implements ApiClientFactoryInterface
 {
     private FactFinderConfigServiceInterface $configService;
-    private string $logDir;
+    private LoggerInterface $logger;
 
     /**
      * ApiFactory constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param string $logDir
+     * @param LoggerInterface $logger
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
-        string $logDir
+        LoggerInterface $logger
     )
     {
         $this->configService = $configService;
-        $this->logDir = $logDir;
+        $this->logger = $logger;
     }
 
     /**
@@ -63,7 +60,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new CampaignApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -77,7 +74,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new ImportApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -91,7 +88,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new ManagementApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -105,7 +102,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new PredbasketApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -127,17 +124,13 @@ class ApiClientFactory implements ApiClientFactoryInterface
      * Creates the search api instance, configured for the given sales channel.
      *
      * @param SalesChannelContext $salesChannelContext
-     * @param string|null $remoteIp
-     *
      * @return SearchApi
      */
-    public function createSearchApi(SalesChannelContext $salesChannelContext, ?string $remoteIp = null): SearchApi
+    public function createSearchApi(SalesChannelContext $salesChannelContext): SearchApi
     {
         return new SearchApi(
-            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext, [
-                'remoteIp' => $remoteIp
-            ]),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -171,68 +164,34 @@ class ApiClientFactory implements ApiClientFactoryInterface
             $configuration = $this->configService->getByContext($salesChannelContext);
         }
 
+        $stack = HandlerStack::create();
+        $mapResponse = Middleware::mapResponse(function(ResponseInterface $response) { $response->getBody()->rewind(); return $response; } );
+        $stack->push($mapResponse);
+        $stack->push(Middleware::log($this->logger, new MessageFormatter(LoggingService::LOG_FORMAT)));
+
         $config = [
             'max' => $configuration->getApiTimeout(),
+            'handler' => $stack
         ];
 
-        if ($this->loggingIsEnabled($configuration, $params)) {
-            $logger = new Logger('FactFinder');
-            $handler = new RotatingFileHandler(
-                $this->logDir . '/' . LoggingService::FILE_NAME . '.log',
-                LoggingService::MAX_LOG_FILES
-            );
-            $logger->pushHandler($handler);
-            $stack = HandlerStack::create();
-            $stack->push(
-                Middleware::log($logger, new MessageFormatter(LoggingService::LOG_FORMAT))
-            );
-
-            $config['handler'] = $stack;
-        }
         return new Client($config);
-    }
-
-    /**
-     * @param PluginConfiguration $configuration
-     * @param array $params
-     *
-     * @return bool
-     */
-    protected function loggingIsEnabled(PluginConfiguration $configuration, array $params): bool
-    {
-        if (!$configuration->isApiDebugActive()) {
-            return false;
-        }
-        if (!isset($params['remoteIp'])) {
-            return true;
-        }
-        $logDebugFilter = array_map(static fn ($item) => trim($item), $configuration->getLogDebugIpFilter());
-        return in_array(trim($params['remoteIp']), $logDebugFilter, true);
     }
 
     /**
      * Creates the configuration struct that contains the api address and credentials
      *
      * @param string $salesChannelId
-     * @param SalesChannelContext|null $salesChannelContext
      * @return Configuration
      */
-    protected function createConfiguration(string $salesChannelId, SalesChannelContext $salesChannelContext = null) : Configuration
+    protected function createConfiguration(string $salesChannelId) : Configuration
     {
         $credentials = $this->configService->getApiCredentials($salesChannelId);
-        if ($salesChannelContext === null) {
-            $configuration = $this->configService->get($salesChannelId);
-        } else {
-            $configuration = $this->configService->getByContext($salesChannelContext);
-        }
-
         $apiConfiguration = new Configuration();
         $apiConfiguration->setHost($credentials->getApiUrl());
         $apiConfiguration->setUsername($credentials->getApiUsername());
         $apiConfiguration->setPassword($credentials->getApiPassword());
         $apiConfiguration->setAccessToken(null);
         $apiConfiguration->setUserAgent($this->getUserAgent($salesChannelId));
-
         return $apiConfiguration;
     }
 

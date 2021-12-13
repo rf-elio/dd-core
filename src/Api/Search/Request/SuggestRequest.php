@@ -33,7 +33,6 @@
 namespace Elio\FactFinder\Api\Search\Request;
 
 use Elio\FactFinder\Api\Request\ChannelRequest;
-use Elio\FactFinder\Api\Request\RemoteIpTrait;
 
 /**
  * Class SuggestRequest
@@ -45,8 +44,6 @@ use Elio\FactFinder\Api\Request\RemoteIpTrait;
  */
 class SuggestRequest extends ChannelRequest
 {
-    use RemoteIpTrait;
-
     protected string $query = '*';
 
     /**

@@ -1,0 +1,99 @@
+<?php
+/**
+ * Copyright (c) 2021, elio GmbH.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+namespace Elio\FactFinder\Core\Logging;
+
+
+use Elio\FactFinder\Core\Logging\Handler\FactFinderFilterHandler;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
+use Psr\Log\LoggerInterface;
+
+/**
+ * Class LoggerFactory
+ * @package Elio\FactFinder\Core\Logging
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ */
+class LoggerFactory
+{
+    private string $rotatingFilePathPattern;
+    private int $defaultFileRotationCount;
+    private LogFilterContext $logFilterContext;
+
+    /**
+     * LoggerFactory constructor.
+     * @param string $rotatingFilePathPattern
+     * @param int $defaultFileRotationCount
+     * @param LogFilterContext $logFilterContext
+     */
+    public function __construct(
+        string $rotatingFilePathPattern,
+        int $defaultFileRotationCount,
+        LogFilterContext $logFilterContext
+    )
+    {
+        $this->rotatingFilePathPattern = $rotatingFilePathPattern;
+        $this->defaultFileRotationCount = $defaultFileRotationCount;
+        $this->logFilterContext = $logFilterContext;
+    }
+
+    /**
+     * Creates the logger with additional filtering
+     *
+     * @param string $filePrefix
+     * @param int|null $fileRotationCount
+     * @param bool $useLogFilter
+     * @param int $loggerLevel
+     * @return LoggerInterface
+     */
+    public function createRotating(string $filePrefix, ?int $fileRotationCount = null, bool $useLogFilter = false, int $loggerLevel = Logger::DEBUG): LoggerInterface
+    {
+        $filepath = sprintf($this->rotatingFilePathPattern, $filePrefix);
+
+        $result = new Logger($filePrefix);
+        $handler = new RotatingFileHandler($filepath, $fileRotationCount ?? $this->defaultFileRotationCount, $loggerLevel);
+
+        if ($useLogFilter) {
+            $result->pushHandler(new FactFinderFilterHandler($handler, $this->logFilterContext));
+        } else {
+            $result->pushHandler($handler);
+        }
+
+        $result->pushProcessor(new PsrLogMessageProcessor());
+
+        return $result;
+    }
+}

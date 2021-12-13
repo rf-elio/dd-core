@@ -30,58 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\FactFinder\Core\Logging;
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SuggestRequest;
-use Elio\FactFinder\Api\Transform\Transformer;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\SuggestParams;
-use Throwable;
 
 /**
- * Class SuggestApi
- * @package Elio\FactFinder\Api\Search
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Andrey Baev <anb@elio-systems.com>
+ * Holds the runtime settings for the log filter
+ *
+ * Class LogFilterContext
+ * @package Elio\FactFinder\Core\Logging
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class SuggestApi
+class LogFilterContext
 {
-    private ApiClientFactoryInterface $apiFactory;
-    private Transformer $transformer;
+    protected bool $isDebugLoggingActive = false;
 
     /**
-     * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
-     * @param Transformer $transformer
+     * @return bool
      */
-    public function __construct(
-        ApiClientFactoryInterface $apiFactory,
-        Transformer $transformer
-    )
+    public function isIsDebugLoggingActive(): bool
     {
-        $this->apiFactory = $apiFactory;
-        $this->transformer = $transformer;
+        return $this->isDebugLoggingActive;
     }
 
     /**
-     * @param SuggestRequest $suggestRequest
-     * @param SalesChannelContext $context
-     * @return ResponseCollection
-     * @throws ApiException
-     * @throws Throwable
+     * @param bool $isDebugLoggingActive
      */
-    public function suggest(SuggestRequest $suggestRequest, SalesChannelContext $context): ResponseCollection
+    public function setIsDebugLoggingActive(bool $isDebugLoggingActive): void
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->getSuggestionsUsingPOST(new SuggestParams([
-            'channel' => $suggestRequest->getChannel(),
-            'query' => $suggestRequest->getQuery(),
-        ]));
-        return $this->transformer->transformResponse($result, $context, $suggestRequest);
+        $this->isDebugLoggingActive = $isDebugLoggingActive;
     }
 }

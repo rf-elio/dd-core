@@ -93,11 +93,9 @@ interface ApiClientFactoryInterface
      * Creates the search api instance, configured for the given sales channel.
      *
      * @param SalesChannelContext $salesChannelContext
-     * @param string|null $remoteIp
-     *
      * @return SearchApi
      */
-    public function createSearchApi(SalesChannelContext $salesChannelContext, ?string $remoteIp = null): SearchApi;
+    public function createSearchApi(SalesChannelContext $salesChannelContext): SearchApi;
 
     /**
      * Creates the tracking api instance, configured for the given sales channel.

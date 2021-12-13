@@ -47,11 +47,11 @@ class Configuration extends Struct
 {
     protected string $apiChannel;
     protected bool $useAso;
-    protected bool $apiDebugActive;
+    protected bool $loggingDebugActive;
     /**
      * @var array<string>
      */
-    private array $logDebugIpFilter;
+    private array $loggingDebugIpFilter;
     private bool $searchUseFactFinder;
     private int $apiTimeout;
     private bool $trackCheckout;
@@ -95,8 +95,8 @@ class Configuration extends Struct
      * @param string $apiChannel
      * @param int $apiTimeout
      * @param bool $useAso
-     * @param bool $apiDebugActive
-     * @param array<string> $logDebugIpFilter
+     * @param bool $loggingDebugActive
+     * @param array<string> $loggingDebugIpFilter
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
      * @param bool $trackCart
@@ -125,8 +125,8 @@ class Configuration extends Struct
         string $apiChannel,
         int $apiTimeout,
         bool $useAso,
-        bool $apiDebugActive,
-        array $logDebugIpFilter,
+        bool $loggingDebugActive,
+        array $loggingDebugIpFilter,
         bool $searchUseFactFinder,
         bool $trackRequireConsent,
         bool $trackCart,
@@ -152,8 +152,8 @@ class Configuration extends Struct
     )
     {
         $this->useAso = $useAso;
-        $this->apiDebugActive = $apiDebugActive;
-        $this->logDebugIpFilter = $logDebugIpFilter;
+        $this->loggingDebugActive = $loggingDebugActive;
+        $this->loggingDebugIpFilter = $loggingDebugIpFilter;
         $this->apiChannel = $apiChannel;
         $this->searchUseFactFinder = $searchUseFactFinder;
         $this->apiTimeout = $apiTimeout;
@@ -193,17 +193,17 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isApiDebugActive(): bool
+    public function isLoggingDebugActive(): bool
     {
-        return $this->apiDebugActive;
+        return $this->loggingDebugActive;
     }
 
     /**
      * @return array
      */
-    public function getLogDebugIpFilter(): array
+    public function getLoggingDebugIpFilter(): array
     {
-        return $this->logDebugIpFilter;
+        return $this->loggingDebugIpFilter;
     }
 
     /**

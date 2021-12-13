@@ -14,9 +14,8 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class LoggingService
 {
-    public const FILE_NAME = 'elio_fact_finder-api-client';
+    public const FILE_NAME = 'elio_fact_finder';
     public const LOG_FORMAT = "method: {method}, uri: {uri}, req_body: {req_body}, res_body: {res_body}";
-    public const MAX_LOG_FILES = 5;
 
     private string $logDir;
     private Finder $finder;

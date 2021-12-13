@@ -91,7 +91,6 @@ class ProductSearchRequestBuilder
         if(!empty($request->get('search'))) {
             $searchRequest->setQuery($request->get('search'));
         }
-        $searchRequest->setRemoteIp($request->getClientIp());
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
