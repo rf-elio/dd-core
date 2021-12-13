@@ -83,6 +83,7 @@ class Configuration extends Struct
     private array $suggestTypeLabels;
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
+    private string $suggestProductNumberAttribute;
 
     /**
      * Configuration constructor.
@@ -112,6 +113,7 @@ class Configuration extends Struct
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
+     * @param string $suggestProductNumberAttribute
      */
     public function __construct(
         bool $active,
@@ -139,7 +141,8 @@ class Configuration extends Struct
         string $apiContentChannel,
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
-        array $suggestAcceptedTypes
+        array $suggestAcceptedTypes,
+        string $suggestProductNumberAttribute
     )
     {
         $this->useAso = $useAso;
@@ -168,6 +171,7 @@ class Configuration extends Struct
         $this->suggestTypeLabels = $suggestTypeLabels;
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
+        $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
     }
 
     /**
@@ -324,14 +328,6 @@ class Configuration extends Struct
     }
 
     /**
-     * @param bool $suggestUseFactFinder
-     */
-    public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
-    {
-        $this->suggestUseFactFinder = $suggestUseFactFinder;
-    }
-
-    /**
      * @return bool
      */
     public function isRestrictionsParentCategories(): bool
@@ -385,5 +381,13 @@ class Configuration extends Struct
     public function getSuggestAcceptedTypes(): array
     {
         return $this->suggestAcceptedTypes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuggestProductNumberAttribute(): string
+    {
+        return $this->suggestProductNumberAttribute;
     }
 }

@@ -74,7 +74,7 @@ class SuggestionResponse extends Response
         $visibleGroups = [];
 
         foreach ($this->groups as $group) {
-            if($group->isVisible()) {
+            if($group->isVisible() && $group->hasItems()) {
                 $visibleGroups[] = $group;
             }
         }
