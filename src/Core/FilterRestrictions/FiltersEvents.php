@@ -30,49 +30,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\FactFinder\Core\FilterRestrictions;
 
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\Framework\Event\Annotation\Event;
 
 /**
- * Class ExportGeneratedSubscriber
+ * Class FiltersEvents
+ * @package Elio\FactFinder\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratedSubscriber implements EventSubscriberInterface
+class FiltersEvents
 {
-    private ImportServiceInterface $importService;
+    /**
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent")
+     */
+    public const FILTER_WRITTEN_EVENT = 'elio_ff_filter.written';
 
     /**
-     * ExportGeneratedSubscriber constructor.
-     * @param ImportServiceInterface $importService
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent")
      */
-    public function __construct(ImportServiceInterface $importService)
-    {
-        $this->importService = $importService;
-    }
+    public const FILTER_DELETED_EVENT = 'elio_ff_filter.deleted';
 
     /**
-     * @return string[]
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent")
      */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ExportGeneratedEvent::class => 'onExportGenerated',
-        ];
-    }
+    public const FILTER_LOADED_EVENT = 'elio_ff_filter.loaded';
 
     /**
-     * Triggers the ff api after every successful export generation
-     *
-     * @param ExportGeneratedEvent $event
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent")
      */
-    public function onExportGenerated(ExportGeneratedEvent $event): void
-    {
-        $this->importService->import($event->getExport(), $event->getContext());
-    }
+    public const FILTER_RESTRICTION_WRITTEN_EVENT = 'elio_ff_filter_restrictions.written';
+
+    /**
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent")
+     */
+    public const FILTER_RESTRICTION_DELETED_EVENT = 'elio_ff_filter_restrictions.deleted';
+
+    /**
+     * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent")
+     */
+    public const FILTER_RESTRICTION_LOADED_EVENT = 'elio_ff_filter_restrictions.loaded';
+
 }

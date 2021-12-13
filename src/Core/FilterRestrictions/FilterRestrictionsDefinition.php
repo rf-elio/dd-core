@@ -42,8 +42,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
@@ -96,6 +98,9 @@ class FilterRestrictionsDefinition extends EntityDefinition
            (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(
                new ApiAware()
            ),
+           (new FkField('language_id', 'languageId', LanguageDefinition::class))->addFlags(
+               new ApiAware()
+           ),
            /**
             * is it collection of filters for allowed or blocked column
             */
@@ -118,6 +123,13 @@ class FilterRestrictionsDefinition extends EntityDefinition
                'salesChannel',
                'sales_channel_id',
                SalesChannelDefinition::class,
+               'id',
+               false
+           ),
+           new ManyToOneAssociationField(
+               'language',
+               'language_id',
+               LanguageDefinition::class,
                'id',
                false
            ),

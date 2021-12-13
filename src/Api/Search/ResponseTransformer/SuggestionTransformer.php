@@ -197,7 +197,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
         }
 
         // sort groups
-        usort($groups, static function (SuggestGroup $a, SuggestGroup $b) {
+        uasort($groups, static function (SuggestGroup $a, SuggestGroup $b) {
             $posA = $a->getPosition();
             $posB = $b->getPosition();
             if ($posA === $posB) {

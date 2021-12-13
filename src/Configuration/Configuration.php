@@ -85,7 +85,9 @@ class Configuration extends Struct
     private string $apiContentChannel;
     private bool $searchUseContentChannel;
     private array $suggestTypeLabels;
+    private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
+    private string $suggestProductNumberAttribute;
 
     /**
      * Configuration constructor.
@@ -111,10 +113,12 @@ class Configuration extends Struct
      * @param bool $suggestUseFactFinder
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
+     * @param int $restrictionsCacheTime
      * @param string $apiContentChannel
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
+     * @param string $suggestProductNumberAttribute
      */
     public function __construct(
         bool $active,
@@ -139,10 +143,12 @@ class Configuration extends Struct
         bool $suggestUseFactFinder,
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown,
+        int $restrictionsCacheTime,
         string $apiContentChannel,
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
-        array $suggestAcceptedTypes
+        array $suggestAcceptedTypes,
+        string $suggestProductNumberAttribute
     )
     {
         $this->useAso = $useAso;
@@ -170,7 +176,9 @@ class Configuration extends Struct
         $this->apiContentChannel = $apiContentChannel;
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->suggestTypeLabels = $suggestTypeLabels;
+        $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
+        $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
     }
 
     /**
@@ -335,14 +343,6 @@ class Configuration extends Struct
     }
 
     /**
-     * @param bool $suggestUseFactFinder
-     */
-    public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
-    {
-        $this->suggestUseFactFinder = $suggestUseFactFinder;
-    }
-
-    /**
      * @return bool
      */
     public function isRestrictionsParentCategories(): bool
@@ -383,10 +383,26 @@ class Configuration extends Struct
     }
 
     /**
+     * @return int
+     */
+    public function getRestrictionsCacheTime(): int
+    {
+        return $this->restrictionsCacheTime;
+    }
+
+    /**
      * @return array
      */
     public function getSuggestAcceptedTypes(): array
     {
         return $this->suggestAcceptedTypes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuggestProductNumberAttribute(): string
+    {
+        return $this->suggestProductNumberAttribute;
     }
 }

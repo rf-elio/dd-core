@@ -30,49 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\FactFinder\Core\FilterRestrictions;
 
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Elio\FactFinder\Api\Request\ApiRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Class ExportGeneratedSubscriber
+ * Interface FilterInterface
+ * @package Elio\FactFinder\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratedSubscriber implements EventSubscriberInterface
+interface FilterInterface
 {
-    private ImportServiceInterface $importService;
-
     /**
-     * ExportGeneratedSubscriber constructor.
-     * @param ImportServiceInterface $importService
-     */
-    public function __construct(ImportServiceInterface $importService)
-    {
-        $this->importService = $importService;
-    }
-
-    /**
-     * @return string[]
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ExportGeneratedEvent::class => 'onExportGenerated',
-        ];
-    }
-
-    /**
-     * Triggers the ff api after every successful export generation
+     * Get all allowed/blocked filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
      *
-     * @param ExportGeneratedEvent $event
+     * Returns array [
+     *              [ array of allowed filters with keys filterId and values filterName],
+     *              [ array of blocked filters with keys filterId and values filterName]
+     * ]
+     *
+     * if array of allowed/blocked filters is null - it means allow/block everything
+     *
+     * @param SalesChannelContext $salesChannelContext
+     * @param int $level
+     * @param ApiRequest $request
+     * @return array
      */
-    public function onExportGenerated(ExportGeneratedEvent $event): void
-    {
-        $this->importService->import($event->getExport(), $event->getContext());
-    }
+    public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array;
 }

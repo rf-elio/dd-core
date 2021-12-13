@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Search;
 
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ContentListingResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
@@ -44,6 +46,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
@@ -123,13 +126,9 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             }
 
             $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-                $productListingResponse, $criteria, $context
+                $productListingResponse, $criteria, $context, $resultCollection
             );
             $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
-
-            /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
-            $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
 
             try {
                 if ($config->isSearchUseContentChannel()) {

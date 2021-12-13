@@ -133,6 +133,16 @@
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
             <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
+
+        <input-field type="text">
+            <name>suggestProductNumberAttribute</name>
+            <label>Mapping: Product number attribute</label>
+            <label lang="de-DE">Mapping: Produktnummer-Attribute</label>
+            <placeholder>MasterProductNumber</placeholder>
+            <defaultValue>MasterProductNumber</defaultValue>
+            <helpText>Defines which attribute contains the product number in the ff api response.</helpText>
+            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der FF Api Antwort enthält.</helpText>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>
@@ -180,6 +190,14 @@
             <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
             <defaultValue>true</defaultValue>
             <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>restrictionsCacheTime</name>
+            <label>Restrictions cacheable time</label>
+            <label lang="de-DE">Restrictions cacheable time</label>
+            <defaultValue>60</defaultValue>
+            <helpText>Number in minutes</helpText>
+            <helpText lang="de-DE">Number in minutes</helpText>
         </input-field>
     </card>
     <card>

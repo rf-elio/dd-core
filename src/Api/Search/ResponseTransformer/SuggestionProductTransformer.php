@@ -36,6 +36,8 @@ use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Configuration\Configuration;
+use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -45,8 +47,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Enriches the product suggest group
@@ -57,18 +61,27 @@ use Swagger\Client\Model\SuggestionResult;
  */
 class SuggestionProductTransformer implements ResponseTransformerInterface
 {
-    private const TYPE = 'productName';
-    private const PRODUCT_NUMBER_ATTRIBUTE = 'MasterProductNumber';
+    public const TYPE = 'productName';
     private const URL_ATTRIBUTE = 'ProductURL';
 
     private EntityRepositoryInterface $productRepository;
+    private RouterInterface $router;
+    private FactFinderConfigServiceInterface $configService;
 
     /**
      * SuggestionTransformer constructor.
      * @param EntityRepositoryInterface $productRepository
+     * @param RouterInterface $router
+     * @param FactFinderConfigServiceInterface $configService
      */
-    public function __construct(EntityRepositoryInterface $productRepository) {
+    public function __construct(
+        EntityRepositoryInterface $productRepository,
+        RouterInterface $router,
+        FactFinderConfigServiceInterface $configService
+    ) {
         $this->productRepository = $productRepository;
+        $this->router = $router;
+        $this->configService = $configService;
     }
 
     /**
@@ -103,9 +116,10 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
             return;
         }
 
+        $config = $this->configService->getByContext($context);
         $productGroup = $suggestionResponse->getGroup(self::TYPE);
-        $products = $this->collect($productGroup, $context->getContext());
-        $this->enrich($productGroup, $products);
+        $products = $this->collect($productGroup, $context->getContext(), $config);
+        $this->enrich($productGroup, $products, $config);
     }
 
     /**
@@ -113,13 +127,14 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
      *
      * @param SuggestGroup $group
      * @param Context $context
+     * @param Configuration $config
      * @return ProductEntity[]
      */
-    protected function collect(SuggestGroup $group, Context $context): array
+    protected function collect(SuggestGroup $group, Context $context, Configuration $config): array
     {
         $productNumbers = [];
         foreach ($group->getItems() as $item) {
-            if($productNumber = $this->getProductNumber($item)) {
+            if($productNumber = $this->getProductNumber($item, $config)) {
                 $productNumbers[] = $productNumber;
             }
         }
@@ -129,7 +144,7 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
         }
 
         $criteria = new Criteria();
-        $criteria->addAssociation('media');
+        $criteria->addAssociation('cover');
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
         $products = [];
 
@@ -146,8 +161,9 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
      *
      * @param SuggestGroup $group
      * @param ProductEntity[] $products
+     * @param Configuration $config
      */
-    protected function enrich(SuggestGroup $group, array $products): void
+    protected function enrich(SuggestGroup $group, array $products, Configuration $config): void
     {
         foreach ($group->getItems() as $item) {
             // add url
@@ -156,17 +172,22 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
                 $item->setUrl($attributes[self::URL_ATTRIBUTE]);
             }
 
-            // add image
-            $productNumber = $this->getProductNumber($item);
-            if($productNumber && isset($products[$productNumber]) && !$item->hasImage()) {
+            $productNumber = $this->getProductNumber($item, $config);
+            if($productNumber && isset($products[$productNumber])) {
                 $product = $products[$productNumber];
 
+                if(!$item->hasUrl()) {
+                    $url = $this->router->generate(ProductPageSeoUrlRoute::ROUTE_NAME, ['productId' => $product->getId()]);
+                    $item->setUrl($url);
+                }
+
+                // add image
                 if (
-                    $product->getMedia() &&
-                    $product->getMedia()->first() &&
-                    $product->getMedia()->first()->getMedia()
+                    !$item->hasImage() &&
+                    $product->getCover() &&
+                    $product->getCover()->getMedia()
                 ) {
-                    $item->setImgUrl($product->getMedia()->first()->getMedia()->getUrl());
+                    $item->setImgUrl($product->getCover()->getMedia()->getUrl());
                 }
             }
         }
@@ -176,11 +197,12 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
      * Extracts the product number by the given item
      *
      * @param SuggestItem $item
+     * @param Configuration $config
      * @return string|null
      */
-    protected function getProductNumber(SuggestItem $item): ?string
+    protected function getProductNumber(SuggestItem $item, Configuration $config): ?string
     {
         $attributes = $item->getAttributes();
-        return $attributes[self::PRODUCT_NUMBER_ATTRIBUTE] ?? null;
+        return $attributes[$config->getSuggestProductNumberAttribute()] ?? null;
     }
 }

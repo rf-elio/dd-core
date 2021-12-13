@@ -33,10 +33,12 @@
 namespace Elio\FactFinder;
 
 use Elio\FactFinder\Core\Export\Setup\ExportSetup;
+use Elio\FactFinder\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
 use Elio\FactFinder\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
+use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,6 +61,8 @@ class FactFinder extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = 'content_export_exclude_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
+
+    public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     public const CUSTOM_FIELDS = [
         'FactFinderContentExportCategory' => [
@@ -145,8 +149,8 @@ class FactFinder extends Plugin
             return;
         }
 
-        $setup = new ExportSetup($this->container);
-        $setup->createExports($updateContext->getContext());
+        $filtersSetup = new FilterRestrictionsSetup($this->container);
+        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install(self::CUSTOM_FIELDS);
@@ -159,6 +163,9 @@ class FactFinder extends Plugin
     {
         $setup = new ExportSetup($this->container);
         $setup->createExports($activateContext->getContext());
+
+        $filtersSetup = new FilterRestrictionsSetup($this->container);
+        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install(self::CUSTOM_FIELDS);

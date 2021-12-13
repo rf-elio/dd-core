@@ -163,6 +163,13 @@
                                                            @click="onDownloadExport">
                                                     {{ $tc('ff-export.detail.status.notExists') }}
                                                 </sw-button>
+                                                <sw-button class="ff-export-button-generate"
+                                                           variant="primary"
+                                                           size="small"
+                                                           :disabled="isGenerating"
+                                                           @click="onGenerate">
+                                                    {{ isGenerating?$tc('ff-export.detail.buttonGenerateInProgress'):$tc('ff-export.detail.buttonGenerate') }}
+                                                </sw-button>
                                             </dd>
                                         {% endblock %}
 
@@ -179,13 +186,6 @@
                                                         type="switch"
                                                         :label="$tc('ff-export.detail.labelExportCommandForce')">
                                                 </sw-field>
-                                                <sw-button class="ff-export-button-generate"
-                                                           variant="primary"
-                                                           size="small"
-                                                           :disabled="isGenerating"
-                                                           @click="onGenerate">
-                                                        {{ isGenerating?$tc('ff-export.detail.buttonGenerateInProgress'):$tc('ff-export.detail.buttonGenerate') }}
-                                                </sw-button>
                                             </dd>
                                         {% endblock %}
                                     </sw-description-list>

@@ -144,7 +144,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
             }
 
             $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-                $productListingResponse, $criteria, $context
+                $productListingResponse, $criteria, $context, $resultCollection
             );
             $shopwareProductListingResult->addCurrentFilter('navigationId', $categoryId);
 

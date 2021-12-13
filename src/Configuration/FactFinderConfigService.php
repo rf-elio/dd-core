@@ -136,10 +136,12 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'suggestUseFactFinder', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,
             $this->getConfigWithLanguagePrefix($config, 'apiContentChannel', $languagePrefix) ?? '',
             $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
             $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
-            $this->prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix)
+            $this->prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix),
+            $this->getConfigWithLanguagePrefix($config, 'suggestProductNumberAttribute', $languagePrefix) ?? '',
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

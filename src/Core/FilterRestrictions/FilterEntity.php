@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions;
 
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -49,9 +50,14 @@ class FilterEntity extends Entity
     use EntityIdTrait;
 
     /**
+     * @var string|null
+     */
+    protected ?string $propertyName;
+
+    /**
      * @var string
      */
-    protected string $propertyName;
+    protected string $technicalName;
 
     /**
      * @var bool
@@ -74,17 +80,22 @@ class FilterEntity extends Entity
     protected $propertyId;
 
     /**
-     * @return string
+     * @var FilterDefinitionTranslationCollection|null
      */
-    public function getPropertyName(): string
+    protected $translations;
+
+    /**
+     * @return string|null
+     */
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
 
     /**
-     * @param string $propertyName
+     * @param string|null $propertyName
      */
-    public function setPropertyName(string $propertyName): void
+    public function setPropertyName(?string $propertyName): void
     {
         $this->propertyName = $propertyName;
     }
@@ -151,5 +162,37 @@ class FilterEntity extends Entity
     public function setPropertyId(string $propertyId): void
     {
         $this->propertyId = $propertyId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTechnicalName(): string
+    {
+        return $this->technicalName;
+    }
+
+    /**
+     * @param string $technicalName
+     */
+    public function setTechnicalName(string $technicalName): void
+    {
+        $this->technicalName = $technicalName;
+    }
+
+    /**
+     * @return FilterDefinitionTranslationCollection|null
+     */
+    public function getTranslations(): ?FilterDefinitionTranslationCollection
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param FilterDefinitionTranslationCollection|null $translations
+     */
+    public function setTranslations(?FilterDefinitionTranslationCollection $translations): void
+    {
+        $this->translations = $translations;
     }
 }

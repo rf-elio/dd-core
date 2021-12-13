@@ -29,7 +29,19 @@
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterSyncService">
             <argument type="service" id="property_group.repository" />
             <argument type="service" id="elio_ff_filter.repository" />
+            <argument type="service" id="elio_ff_filter_translation.repository" />
             <argument type="service" id="logger" />
+        </service>
+        <service id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService"
+                 decorates="Elio\FactFinder\Core\FilterRestrictions\FilterService">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService.inner" />
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+        </service>
+
+        <service id="Elio\FactFinder\Storefront\Subscriber\FilterRestrictionsSubscriber">
+            <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\CachedFilterService"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Elio\FactFinder\Command\SynchronizePropertiesToFiltersCommand">

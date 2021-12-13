@@ -5,21 +5,16 @@
     {% set elioFFPos = 3 %}
     {% set elioFFPage = 1 %}
     {% set elioFFPageSize = 2 %}
-{#    {% set elioFFCampaign = '' %}#}
-    {% set elioFFPath = path('widgets.elio-ff.tracking.product-detail') %}
+    {% set elioFFTrackProductDetailClickPath = path('widgets.elio-ff.tracking.product-detail') %}
     {{ parent() }}
 {% endblock %}
 
 {% block element_product_listing_row %}
-    {% set ffcampaigns = searchResult.aggregations.getExtension('ff-campaigns') %}
-
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaigns.html.twig' with {
-        campaigns: ffcampaigns.campaigns,
-        location: 'above search result',
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        label: 'above search result', container: searchResult
     } %}
     {{ parent() }}
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaigns.html.twig' with {
-        campaigns: ffcampaigns.campaigns,
-        location: 'below search result',
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        label: 'below search result', container: searchResult
     } %}
 {% endblock %}

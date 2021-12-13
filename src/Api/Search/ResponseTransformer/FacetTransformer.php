@@ -40,6 +40,7 @@ use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\FactFinder\Core\FilterRestrictions\FilterInterface;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\SliderResult;
@@ -74,18 +75,18 @@ use Elio\FactFinder\Core\FilterRestrictions\FilterService;
  */
 class FacetTransformer implements ResponseTransformerInterface
 {
-    private FilterService $filterService;
+    private FilterInterface $filterService;
     private NavigationLoader $navigationLoader;
     private EntityRepositoryInterface $categoryRepository;
 
     /**
      * ProductHandler constructor.
-     * @param FilterService $filterService
+     * @param FilterInterface $filterService
      * @param NavigationLoader $navigationLoader
      * @param EntityRepositoryInterface $categoryRepository
      */
     public function __construct(
-        FilterService $filterService,
+        FilterInterface $filterService,
         NavigationLoader $navigationLoader,
         EntityRepositoryInterface $categoryRepository
     ) {
@@ -140,8 +141,13 @@ class FacetTransformer implements ResponseTransformerInterface
                 continue;
             }
 
-            if (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true)) {
+            if (
+                (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true))
                 // isn't allowed
+                || in_array($facet->getName(), $filtersRestrictions[1], true)
+                // not allowed all, but blocked all
+                || ($filtersRestrictions[0] !== null && $filtersRestrictions[1] == null)
+            ) {
                 continue;
             }
 

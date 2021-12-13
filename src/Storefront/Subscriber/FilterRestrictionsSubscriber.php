@@ -30,49 +30,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\FactFinder\Storefront\Subscriber;
 
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
+use Elio\FactFinder\Core\FilterRestrictions\CachedFilterService;
+use Elio\FactFinder\Core\FilterRestrictions\FiltersEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class ExportGeneratedSubscriber
+ * Class FilterRestrictionsSubscriber
+ * @package Elio\FactFinder\Storefront\Subscriber
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratedSubscriber implements EventSubscriberInterface
+class FilterRestrictionsSubscriber implements EventSubscriberInterface
 {
-    private ImportServiceInterface $importService;
+    private CachedFilterService $cachedFilterService;
 
-    /**
-     * ExportGeneratedSubscriber constructor.
-     * @param ImportServiceInterface $importService
-     */
-    public function __construct(ImportServiceInterface $importService)
-    {
-        $this->importService = $importService;
+    public function __construct(CachedFilterService $cachedFilterService) {
+        $this->cachedFilterService = $cachedFilterService;
     }
 
     /**
      * @return string[]
      */
-    public static function getSubscribedEvents(): array
+    public static function getSubscribedEvents() : array
     {
         return [
-            ExportGeneratedEvent::class => 'onExportGenerated',
+            FiltersEvents::FILTER_WRITTEN_EVENT => 'onClearRestrictionsCache',
+            FiltersEvents::FILTER_RESTRICTION_WRITTEN_EVENT => 'onClearRestrictionsCache',
         ];
     }
 
     /**
-     * Triggers the ff api after every successful export generation
-     *
-     * @param ExportGeneratedEvent $event
+     * Clearing filter-restrictions cache
      */
-    public function onExportGenerated(ExportGeneratedEvent $event): void
-    {
-        $this->importService->import($event->getExport(), $event->getContext());
+    public function onClearRestrictionsCache() : void {
+        $this->cachedFilterService->clearCache();
     }
 }

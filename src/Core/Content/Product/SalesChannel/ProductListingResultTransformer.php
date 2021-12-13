@@ -32,10 +32,14 @@
 
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -54,12 +58,14 @@ class ProductListingResultTransformer
      * @param ProductListingResponse $productListingResponse
      * @param Criteria $criteria
      * @param SalesChannelContext $context
+     * @param ResponseCollection $resultCollection
      * @return ProductListingResult
      */
     public function transform(
         ProductListingResponse $productListingResponse,
         Criteria $criteria,
-        SalesChannelContext $context
+        SalesChannelContext $context,
+        ResponseCollection $resultCollection
     ) : ProductListingResult
     {
         $shopwareProductListingResult = new ProductListingResult(
@@ -73,6 +79,7 @@ class ProductListingResultTransformer
 
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
+        $this->addCampaigns($resultCollection, $shopwareProductListingResult);
         return $shopwareProductListingResult;
     }
 
@@ -115,5 +122,22 @@ class ProductListingResultTransformer
 
         $criteria->setLimit($limit);
         $criteria->setOffset($limit * ($page - 1));
+    }
+
+    /**
+     * Adds the present campaigns to the search result
+     *
+     * @param ResponseCollection $resultCollection
+     * @param EntitySearchResult $shopwareProductListingResult
+     */
+    protected function addCampaigns(ResponseCollection $resultCollection, EntitySearchResult $shopwareProductListingResult) : void
+    {
+        /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
+        $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
+        $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+
+        /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
+        $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
+        $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
     }
 }

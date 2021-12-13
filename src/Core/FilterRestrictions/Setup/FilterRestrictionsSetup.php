@@ -30,49 +30,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\FactFinder\Core\FilterRestrictions\Setup;
 
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ExportGeneratedSubscriber
+ * Class FilterRestrictionsSetup
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ExportGeneratedSubscriber implements EventSubscriberInterface
+class FilterRestrictionsSetup
 {
-    private ImportServiceInterface $importService;
+    private ?EntityRepository $filterRepository;
 
     /**
-     * ExportGeneratedSubscriber constructor.
-     * @param ImportServiceInterface $importService
+     * @param ContainerInterface $container
      */
-    public function __construct(ImportServiceInterface $importService)
+    public function __construct(ContainerInterface $container)
     {
-        $this->importService = $importService;
+        $this->filterRepository = $container->get('elio_ff_filter.repository');
     }
 
-    /**
-     * @return string[]
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ExportGeneratedEvent::class => 'onExportGenerated',
-        ];
-    }
+    public function createFilters(Context $context, ?array $filters = null) {
+        foreach ($filters as $filterName) {
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsFilter('technicalName', $filterName));
+            $criteria->addFilter(new EqualsFilter('isCustom', true));
 
-    /**
-     * Triggers the ff api after every successful export generation
-     *
-     * @param ExportGeneratedEvent $event
-     */
-    public function onExportGenerated(ExportGeneratedEvent $event): void
-    {
-        $this->importService->import($event->getExport(), $event->getContext());
+            if ($this->filterRepository->searchIds($criteria, $context)->getTotal() > 0) {
+                continue;
+            }
+
+            $newFilterId = Uuid::randomHex();
+            $this->filterRepository->create(
+                [[
+                    'id' => $newFilterId,
+                    'propertyName' => $filterName,
+                    'technicalName' => $filterName,
+                    'isCustom' => true
+                ]],
+                $context
+            );
+        }
     }
 }
