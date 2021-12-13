@@ -38,6 +38,7 @@ use Elio\FactFinder\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
+use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -147,9 +148,6 @@ class FactFinder extends Plugin
         if (!$this->isActive()) {
             return;
         }
-
-        $setup = new ExportSetup($this->container);
-        $setup->createExports($updateContext->getContext());
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
