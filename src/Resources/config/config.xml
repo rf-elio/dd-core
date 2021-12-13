@@ -133,6 +133,16 @@
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
             <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
+
+        <input-field type="text">
+            <name>suggestProductNumberAttribute</name>
+            <label>Mapping: Product number attribute</label>
+            <label lang="de-DE">Mapping: Produktnummer-Attribute</label>
+            <placeholder>MasterProductNumber</placeholder>
+            <defaultValue>MasterProductNumber</defaultValue>
+            <helpText>Defines which attribute contains the product number in the ff api response.</helpText>
+            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der FF Api Antwort enthält.</helpText>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>

@@ -3,6 +3,10 @@
 {% block base_content %}
     {% block page_search %}
         <div class="cms-page search-page e-search-page">
+            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+                label: 'above search result', container: page.listing
+            } %}
+
             {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}
                 {% block page_search_headline %}
@@ -59,5 +63,10 @@
                     </div>
                 </div>
             {% endif %}
+
+            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+                label: 'below search result', container: page.listing
+            } %}
+        </div>
     {% endblock %}
 {% endblock %}

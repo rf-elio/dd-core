@@ -70,6 +70,7 @@ class AggregationCollectionExtension extends Struct
     }
 
     /**
+     * @param string $label
      * @param array $campaign
      */
     public function addCampaign(string $label, array $campaign): void
