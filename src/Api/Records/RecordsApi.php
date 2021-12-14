@@ -34,12 +34,20 @@ namespace Elio\FactFinder\Api\Records;
 
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
 use Elio\FactFinder\Api\Records\Request\RecordRequest;
+use Elio\FactFinder\Api\Records\Request\SimilarRequest;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Transform\Transformer;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\FullRecordsResult;
+use Swagger\Client\Model\RecommendationResultWithFieldRoles;
+use Throwable;
 
 /**
  * Class RecordsApi
+ *
  * @package Elio\FactFinder\Api\Records
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
@@ -49,27 +57,75 @@ use Swagger\Client\Model\FullRecordsResult;
 class RecordsApi
 {
     private ApiClientFactoryInterface $apiFactory;
+    private Transformer $transformer;
 
     /**
-     * SearchApi constructor.
+     * RecordsApi constructor.
+     *
      * @param ApiClientFactoryInterface $apiFactory
+     * @param Transformer $transformer
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory
-    )
-    {
+        ApiClientFactoryInterface $apiFactory,
+        Transformer $transformer
+    ) {
         $this->apiFactory = $apiFactory;
+        $this->transformer = $transformer;
     }
 
     /**
      * @param RecordRequest $request
      * @param string $salesChannelId
+     *
      * @return FullRecordsResult
      * @throws ApiException
      */
-    public function getRecords(RecordRequest $request, string $salesChannelId) : FullRecordsResult
+    public function getRecords(RecordRequest $request, string $salesChannelId): FullRecordsResult
     {
         $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
         return $apiClient->getFullRecordsUsingGET($request->getChannel(), [$request->getId()], null, 'productNumber');
+    }
+
+    /**
+     * @param RecommendationRequest $request
+     * @param SalesChannelContext $context
+     *
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function getRecommendations(RecommendationRequest $request, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createRecordsApi($context);
+        $result = $apiClient->getRecommendationUsingGET(
+            $request->getChannel(),
+            $request->getIds(),
+            $request->getMaxResults(),
+            $request->getSessionId(),
+            null,
+            true
+        );
+        return $this->transformer->transformResponse($result, $context, $request);
+    }
+
+    /**
+     * @param SimilarRequest $request
+     * @param SalesChannelContext $context
+     *
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function getSimilar(SimilarRequest $request, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createRecordsApi($context);
+        $result = $apiClient->getSimilarProductsUsingGET(
+            $request->getChannel(),
+            $request->getId(),
+            'productNumber',
+            null,
+            true
+        );
+        return $this->transformer->transformResponse($result, $context, $request);
     }
 }
