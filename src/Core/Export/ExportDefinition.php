@@ -65,12 +65,14 @@ use Shopware\Core\System\Tag\TagDefinition;
  */
 class ExportDefinition extends EntityDefinition
 {
+    public const ENTITY_NAME = 'elio_ff_export';
+
     /**
      * @return string
      */
     public function getEntityName(): string
     {
-        return 'elio_ff_export';
+        return self::ENTITY_NAME;
     }
 
     /**
