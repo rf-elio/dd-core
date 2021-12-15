@@ -251,6 +251,9 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
                 if(!$item->hasUrl()) {
                     $url = $this->router->generate(NavigationPageSeoUrlRoute::ROUTE_NAME, ['navigationId' => $category->getId()]);
                     $item->setUrl($url);
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_NAME, NavigationPageSeoUrlRoute::ROUTE_NAME);
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_PARAM_NAME, 'navigationId');
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_PARAM_VALUE, $category->getId());
                 }
 
                 if (!$item->hasImage() && $category->getMedia()) {

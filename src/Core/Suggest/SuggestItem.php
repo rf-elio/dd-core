@@ -44,6 +44,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class SuggestItem
 {
+    const ATTRIBUTE_PATH_NAME = 'routeName';
+    const ATTRIBUTE_PATH_PARAM_NAME = 'routeParamName';
+    const ATTRIBUTE_PATH_PARAM_VALUE = 'routeParamValue';
+
     /**
      * @var string
      */

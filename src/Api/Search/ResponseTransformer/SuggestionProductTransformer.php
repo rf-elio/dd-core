@@ -179,6 +179,9 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
                 if(!$item->hasUrl()) {
                     $url = $this->router->generate(ProductPageSeoUrlRoute::ROUTE_NAME, ['productId' => $product->getId()]);
                     $item->setUrl($url);
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_NAME, ProductPageSeoUrlRoute::ROUTE_NAME);
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_PARAM_NAME, 'productId');
+                    $item->setAttribute(SuggestItem::ATTRIBUTE_PATH_PARAM_VALUE, $product->getId());
                 }
 
                 // add image
