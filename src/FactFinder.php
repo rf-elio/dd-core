@@ -72,7 +72,8 @@ class FactFinder extends Plugin
 
     public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
-    public const CUSTOM_FIELDS = [
+    public const CUSTOM_FIELDS
+        = [
             'FactFinderContentExportCategory' => [
                 'label' => [
                     'en-GB' => 'FactFinder content export',
@@ -149,14 +150,29 @@ class FactFinder extends Plugin
         $loader->load('services.xml');
     }
 
-
-    public function postInstall(InstallContext $installContext): void
+    public function activate(ActivateContext $activateContext): void
     {
         $setup = new ExportSetup($this->container);
-        $setup->createExports($installContext->getContext());
+        $setup->createExports($activateContext->getContext());
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($installContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
+        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS, true);
+
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install(self::CUSTOM_FIELDS);
+    }
+
+    /**
+     * @param UpdateContext $updateContext
+     */
+    public function postUpdate(UpdateContext $updateContext): void
+    {
+        if (!$this->isActive()) {
+            return;
+        }
+
+        $filtersSetup = new FilterRestrictionsSetup($this->container);
+        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install(self::CUSTOM_FIELDS);
@@ -178,24 +194,7 @@ class FactFinder extends Plugin
         $this->removeExportTable($connection);
         $this->removeFilterTables($connection);
 
-        $customFieldSetup = new CustomFieldSetup($this->container);
-        $customFieldSetup->uninstall(self::CUSTOM_FIELDS);
-    }
-
-    /**
-     * @param UpdateContext $updateContext
-     */
-    public function postUpdate(UpdateContext $updateContext): void
-    {
-        if (!$this->isActive()) {
-            return;
-        }
-
-        $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
-
-        $customFieldSetup = new CustomFieldSetup($this->container);
-        $customFieldSetup->install(self::CUSTOM_FIELDS);
+        (new CustomFieldSetup($this->container))->uninstall(self::CUSTOM_FIELDS);
     }
 
     /**

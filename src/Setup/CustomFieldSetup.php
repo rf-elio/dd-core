@@ -297,19 +297,19 @@ class CustomFieldSetup
 
     private function removeCustomFieldSets(array $customFields): void
     {
+        /** @var EntityRepositoryInterface $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
-
-        if (!$customFieldSetRepository) {
-            throw new RuntimeException('Service "custom_field_set.repository" not found');
-        }
 
         $context = Context::createDefaultContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('name', array_keys($customFields)));
 
-        /** @var EntityRepositoryInterface $customFieldSetRepository */
         $result = $customFieldSetRepository->searchIds($criteria, $context);
         $ids = array_map(static fn ($id) => ['id' => $id], $result->getIds());
+        if (empty($ids)) {
+            return;
+        }
+
         $customFieldSetRepository->delete($ids, $context);
     }
 }
