@@ -44,10 +44,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class SuggestItem
 {
-    const ATTRIBUTE_PATH_NAME = 'routeName';
-    const ATTRIBUTE_PATH_PARAM_NAME = 'routeParamName';
-    const ATTRIBUTE_PATH_PARAM_VALUE = 'routeParamValue';
-
     /**
      * @var string
      */
@@ -184,7 +180,7 @@ class SuggestItem
     /**
      * @return bool
      */
-    public function hasImage() : bool
+    public function hasImage(): bool
     {
         return !empty($this->imgUrl);
     }
@@ -219,11 +215,6 @@ class SuggestItem
     public function hasUrl(): bool
     {
         return !empty($this->url);
-    }
-
-    public function isRoute(): bool
-    {
-        
     }
 
     /**

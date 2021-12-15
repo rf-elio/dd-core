@@ -2,12 +2,7 @@
     <li class="search-suggest-product js-result">
         {% block layout_search_suggest_result_link %}
             {% if item.hasUrl %} {# meaningless because Suggestion_TYPE_Transformer.php removes results without urls #}
-                {{ dump(item) }}
-                {% if (item.attributes['routeName'] is defined) and item.attributes['routeParamName'] and item.attributes['routeParamValue'] %}
-                    {% set itemUrl = seoUrl(item.attributes['routeName'], {item.attributes['routeParamName']: item.attributes['routeParamValue']}) %}
-                {% else %}
-                    {% set itemUrl = item.url %}
-                {% endif %}
+                {% set itemUrl = item.url %}
             {% else %}
                 {% set itemUrl = path('frontend.search.page')~"?search="~item.name|url_encode %}
             {% endif %}
