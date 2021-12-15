@@ -41,6 +41,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FilterRestrictionsSetup
+ *
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -58,7 +59,12 @@ class FilterRestrictionsSetup
         $this->filterRepository = $container->get('elio_ff_filter.repository');
     }
 
-    public function createFilters(Context $context, ?array $filters = null) {
+    public function createFilters(Context $context, ?array $filters = null, $skipIfExists = false): void
+    {
+        if ($skipIfExists && $this->filterRepository->searchIds(new Criteria(), $context)->getTotal() > 0) {
+            return;
+        }
+
         foreach ($filters as $filterName) {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('technicalName', $filterName));
@@ -70,12 +76,14 @@ class FilterRestrictionsSetup
 
             $newFilterId = Uuid::randomHex();
             $this->filterRepository->create(
-                [[
-                    'id' => $newFilterId,
-                    'propertyName' => $filterName,
-                    'technicalName' => $filterName,
-                    'isCustom' => true
-                ]],
+                [
+                    [
+                        'id' => $newFilterId,
+                        'propertyName' => $filterName,
+                        'technicalName' => $filterName,
+                        'isCustom' => true
+                    ]
+                ],
                 $context
             );
         }

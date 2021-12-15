@@ -46,6 +46,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ExportSetup
+ *
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
@@ -72,6 +73,10 @@ class ExportSetup
      */
     public function createExports(Context $context, ?array $types = null, string $format = null): void
     {
+        if ($this->exportRepository->searchIds(new Criteria(), $context)->getTotal() > 0) {
+            return;
+        }
+
         $exportTypes = $types ?? [ProductExportDefaults::TYPE, ContentExportDefaults::TYPE];
         $exportFormat = $format ?? CSVFileWriter::TYPE;
         $criteria = new Criteria();
@@ -90,10 +95,6 @@ class ExportSetup
                     $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
                     $criteria->addFilter(new EqualsFilter('languageId', $language->getId()));
                     $criteria->addAssociation('salesChannel.domains');
-
-                    if ($this->exportRepository->searchIds($criteria, $context)->getTotal() > 0) {
-                        continue;
-                    }
 
                     $baseCategoryIds = [];
                     if ($exportType === ContentExportDefaults::TYPE) {
@@ -128,7 +129,7 @@ class ExportSetup
                 }
             }
         }
-        if (!empty($exports)){
+        if (!empty($exports)) {
             $this->exportRepository->create($exports, $context);
         }
     }
