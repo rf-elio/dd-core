@@ -1,7 +1,7 @@
 {% block e_layout_search_suggest_result_item %}
     <li class="search-suggest-product js-result">
         {% block layout_search_suggest_result_link %}
-            {% if item.hasUrl %}
+            {% if item.url %} {# meaningless because Suggestion_TYPE_Transformer.php removes results without urls #}
                 {% set itemUrl = item.url %}
             {% else %}
                 {% set itemUrl = path('frontend.search.page')~"?search="~item.name|url_encode %}
