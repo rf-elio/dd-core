@@ -221,6 +221,11 @@ class SuggestItem
         return !empty($this->url);
     }
 
+    public function isRoute(): bool
+    {
+        
+    }
+
     /**
      * @return string
      */
