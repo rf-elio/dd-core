@@ -250,7 +250,6 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
                 $category = $categories->get($categoryId);
 
                 if(!$item->hasUrl()) {
-                    //$url = $this->router->generate(NavigationPageSeoUrlRoute::ROUTE_NAME, ['navigationId' => $category->getId()]); // technical
                     $url = $this->categoryUrlGenerator->generate($category, $salesChannel); // seo_url
                     $item->setUrl($url);
                 }
