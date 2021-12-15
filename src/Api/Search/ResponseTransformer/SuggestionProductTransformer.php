@@ -41,6 +41,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -65,23 +66,23 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
     private const URL_ATTRIBUTE = 'ProductURL';
 
     private EntityRepositoryInterface $productRepository;
-    private RouterInterface $router;
     private FactFinderConfigServiceInterface $configService;
+    private SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler;
 
     /**
      * SuggestionTransformer constructor.
      * @param EntityRepositoryInterface $productRepository
-     * @param RouterInterface $router
+     * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
      * @param FactFinderConfigServiceInterface $configService
      */
     public function __construct(
         EntityRepositoryInterface $productRepository,
-        RouterInterface $router,
+        SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
         FactFinderConfigServiceInterface $configService
     ) {
         $this->productRepository = $productRepository;
-        $this->router = $router;
         $this->configService = $configService;
+        $this->seoUrlPlaceholderHandler = $seoUrlPlaceholderHandler;
     }
 
     /**
@@ -177,7 +178,7 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
                 $product = $products[$productNumber];
 
                 if(!$item->hasUrl()) {
-                    $url = $this->router->generate(ProductPageSeoUrlRoute::ROUTE_NAME, ['productId' => $product->getId()]);
+                    $url = $this->seoUrlPlaceholderHandler->generate(ProductPageSeoUrlRoute::ROUTE_NAME, ['productId' => $product->getId()]); // seo_url
                     $item->setUrl($url);
                 }
 

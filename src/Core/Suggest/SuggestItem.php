@@ -180,7 +180,7 @@ class SuggestItem
     /**
      * @return bool
      */
-    public function hasImage() : bool
+    public function hasImage(): bool
     {
         return !empty($this->imgUrl);
     }

@@ -81,13 +81,13 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionProductTransformer">
             <argument type="service" id="product.repository" />
-            <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <tag name="elio-ff.api.transformer.response" priority="49"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionCategoryTransformer">
             <argument type="service" id="category.repository" />
-            <argument type="service" id="router" />
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryUrlGenerator"/>
             <tag name="elio-ff.api.transformer.response" priority="49"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\CampaignTransformer">

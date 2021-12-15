@@ -40,6 +40,7 @@ use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
 use Elio\FactFinder\Core\Util\ArrayUtil;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -47,10 +48,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Enriches the category suggest group
@@ -66,16 +67,16 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
     private const URL_ATTRIBUTE = 'ProductURL';
 
     private EntityRepositoryInterface $categoryRepository;
-    private RouterInterface $router;
+    private AbstractCategoryUrlGenerator $categoryUrlGenerator;
 
     /**
      * SuggestionTransformer constructor.
      * @param EntityRepositoryInterface $categoryRepository
-     * @param RouterInterface $router
+     * @param AbstractCategoryUrlGenerator $categoryUrlGenerator
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, RouterInterface $router) {
+    public function __construct(EntityRepositoryInterface $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
         $this->categoryRepository = $categoryRepository;
-        $this->router = $router;
+        $this->categoryUrlGenerator = $categoryUrlGenerator;
     }
 
     /**
@@ -113,7 +114,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
         $categoryGroup = $suggestionResponse->getGroup(self::TYPE);
         $this->resolveCategoryId($categoryGroup, $context->getContext());
         $categories = $this->collect($categoryGroup, $context->getContext());
-        $this->enrich($categoryGroup, $categories);
+        $this->enrich($categoryGroup, $categories, $context->getSalesChannel());
     }
 
     /**
@@ -234,7 +235,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
      * @param SuggestGroup $group
      * @param EntityCollection $categories
      */
-    protected function enrich(SuggestGroup $group, EntityCollection $categories): void
+    protected function enrich(SuggestGroup $group, EntityCollection $categories, ?SalesChannelEntity $salesChannel): void
     {
         foreach ($group->getItems() as $item) {
             // add url
@@ -249,7 +250,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
                 $category = $categories->get($categoryId);
 
                 if(!$item->hasUrl()) {
-                    $url = $this->router->generate(NavigationPageSeoUrlRoute::ROUTE_NAME, ['navigationId' => $category->getId()]);
+                    $url = $this->categoryUrlGenerator->generate($category, $salesChannel); // seo_url
                     $item->setUrl($url);
                 }
 
