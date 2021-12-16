@@ -8,20 +8,20 @@ use Elio\FactFinder\Api\Request\ChannelRequest;
 
 class SimilarRequest extends ChannelRequest
 {
-    private int $id;
+    private string $id;
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      */
-    public function setId(int $id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }

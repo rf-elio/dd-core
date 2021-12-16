@@ -1,0 +1,89 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/index.html.twig' %}
+
+{% block page_product_detail_tabs %}
+    {{ parent() }}
+
+    {% set useRecommendations = config_by_lang("FactFinder.config.useProductDetailRecommendations") %}
+    {% set useSimilar = config_by_lang("FactFinder.config.useProductDetailSimilar") %}
+
+    {% if useRecommendations or useSimilar %}
+        <div class="ff-product-detail-sliders card card-tabs">
+            <div class="card-header">
+                <ul class="nav nav-tabs"
+                    id="ff-product-detail-sliders-tabs"
+                    role="tablist">
+                    {% if useRecommendations %}
+                        <li class="nav-item">
+                            <a class="nav-link active"
+                               id="recommendation-tab"
+                               data-toggle="tab"
+                               data-offcanvas-tabs="true"
+                               href="#recommendation-tab-pane"
+                               role="tab"
+                               aria-controls="recommendation-tab-pane"
+                               aria-selected="true">
+                                {{ 'elioFactFinder.productDetailSlider.recommendations'|trans }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if useSimilar %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if not useRecommendations %}active{% endif %}"
+                               id="similar-tab"
+                               data-toggle="tab"
+                               data-offcanvas-tabs="true"
+                               href="#similar-tab-pane"
+                               role="tab"
+                               aria-controls="similar-tab-pane"
+                               aria-selected="true">
+                                {{ 'elioFactFinder.productDetailSlider.similar'|trans }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content">
+                    {% if useRecommendations %}
+                        {% set recommendationOptions = {
+                            url: path('widgets.elio-ff.product-bundle.list', {type: 'recommendation'}),
+                            requestParams: {
+                                ids: [page.product.id],
+                                viewParams: {
+                                    layout: 'image'
+                                }
+                            }
+                        } %}
+                        <div class="tab-pane fade show active"
+                             id="recommendation-tab-pane"
+                             role="tabpanel"
+                             aria-labelledby="recommendation-tab">
+                            <div class="ff-products-slider"
+                                 data-ff-products-slider
+                                 data-ff-products-slider-options="{{ recommendationOptions|json_encode }}">
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+                    {% if useSimilar %}
+                        {% set similarOptions = {
+                            url: path('widgets.elio-ff.product-bundle.list', {type: 'similar'}),
+                            requestParams: { id: page.product.id }
+                        } %}
+                        <div class="tab-pane fade show {% if not useRecommendations %}active{% endif %}"
+                             id="similar-tab-pane"
+                             role="tabpanel"
+                             aria-labelledby="similar-tab">
+                            <div class="ff-products-slider"
+                                 data-ff-products-slider
+                                 data-ff-products-slider-options="{{ similarOptions|json_encode }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

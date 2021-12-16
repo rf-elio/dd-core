@@ -12,9 +12,17 @@ use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleException;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
+/**
+ * Class CartRecommendedBundle
+ *
+ * @package Elio\FactFinder\Core\ProductBundle
+ */
 class CartRecommendedBundle implements ProductBundleInterface
 {
     public const TYPE = 'cartRecommended';
@@ -23,6 +31,13 @@ class CartRecommendedBundle implements ProductBundleInterface
     private FactFinderConfigServiceInterface $configService;
     private CartService $cartService;
 
+    /**
+     * CartRecommendedBundle constructor.
+     *
+     * @param RecordsApi $recordsApi
+     * @param FactFinderConfigServiceInterface $configService
+     * @param CartService $cartService
+     */
     public function __construct(
         RecordsApi $recordsApi,
         FactFinderConfigServiceInterface $configService,
@@ -33,11 +48,24 @@ class CartRecommendedBundle implements ProductBundleInterface
         $this->cartService = $cartService;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
     public function supports(string $type): bool
     {
         return $type === self::TYPE;
     }
 
+    /**
+     * @param Request $request
+     * @param SalesChannelContext $salesChannelContext
+     *
+     * @return ProductCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
     public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
@@ -56,10 +84,18 @@ class CartRecommendedBundle implements ProductBundleInterface
         $resultCollection = $this->recordsApi->getRecommendations($recommendationRequest, $salesChannelContext);
         /** @var ProductsResponse $products */
         $products = $resultCollection->get(ProductsResponse::class);
+        $collection = $products->getProducts()->filter(
+            static fn (ProductEntity $product) => !in_array($product->getId(), $ids, true)
+        );
 
-        return $products->getProducts();
+        return Excluder::exclude($collection, $config);
     }
 
+    /**
+     * @param SalesChannelContext $salesChannelContext
+     *
+     * @return array
+     */
     private function getProductIdsFromCart(SalesChannelContext $salesChannelContext): array
     {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);

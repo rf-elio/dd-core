@@ -11,8 +11,15 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
+/**
+ * Class RecommendedBundle
+ *
+ * @package Elio\FactFinder\Core\ProductBundle
+ */
 class RecommendedBundle implements ProductBundleInterface
 {
     public const TYPE = 'recommendation';
@@ -20,25 +27,44 @@ class RecommendedBundle implements ProductBundleInterface
     private RecordsApi $recordsApi;
     private FactFinderConfigServiceInterface $configService;
 
+    /**
+     * RecommendedBundle constructor.
+     *
+     * @param RecordsApi $recordsApi
+     * @param FactFinderConfigServiceInterface $configService
+     */
     public function __construct(RecordsApi $recordsApi, FactFinderConfigServiceInterface $configService)
     {
         $this->recordsApi = $recordsApi;
         $this->configService = $configService;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
     public function supports(string $type): bool
     {
         return $type === self::TYPE;
     }
 
+    /**
+     * @param Request $request
+     * @param SalesChannelContext $salesChannelContext
+     *
+     * @return ProductCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
     public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        if (!$config->isActive() || !$config->recommendedProductsActive()) {
+        if (!$config->isActive() || !$config->isUseProductDetailRecommendations()) {
             throw new ProductBundleException('Recommended products are not active');
         }
         if (empty($request->get('ids'))) {
-            throw new ProductBundleException('Param ids does not exists');
+            throw new ProductBundleException('Param "ids" does not exists');
         }
 
         $recommendationRequest = new RecommendationRequest($config->getApiChannel());
@@ -49,6 +75,6 @@ class RecommendedBundle implements ProductBundleInterface
         /** @var ProductsResponse $products */
         $products = $resultCollection->get(ProductsResponse::class);
 
-        return $products->getProducts();
+        return Excluder::exclude($products->getProducts(), $config);
     }
 }

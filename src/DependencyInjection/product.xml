@@ -40,5 +40,16 @@
             <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
             <argument type="service" id="logger" />
         </service>
+
+        <service id="Elio\FactFinder\Core\ProductBundle\RecommendedBundle">
+            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <tag name="elio-ff.product-bundle"/>
+        </service>
+        <service id="Elio\FactFinder\Core\ProductBundle\SimilarBundle">
+            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <tag name="elio-ff.product-bundle"/>
+        </service>
     </services>
 </container>

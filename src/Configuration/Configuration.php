@@ -84,6 +84,10 @@ class Configuration extends Struct
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
 
+    private bool $useProductDetailRecommendations;
+    private bool $useProductDetailSimilar;
+    private array $recommendationExcludedProducts;
+
     /**
      * Configuration constructor.
      * @param bool $active
@@ -112,6 +116,9 @@ class Configuration extends Struct
      * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
+     * @param bool $useProductDetailRecommendations
+     * @param bool $useProductDetailSimilar
+     * @param array $recommendationExcludedProducts
      */
     public function __construct(
         bool $active,
@@ -139,7 +146,10 @@ class Configuration extends Struct
         string $apiContentChannel,
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
-        array $suggestAcceptedTypes
+        array $suggestAcceptedTypes,
+        bool $useProductDetailRecommendations,
+        bool $useProductDetailSimilar,
+        array $recommendationExcludedProducts
     )
     {
         $this->useAso = $useAso;
@@ -168,6 +178,9 @@ class Configuration extends Struct
         $this->suggestTypeLabels = $suggestTypeLabels;
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
+        $this->useProductDetailRecommendations = $useProductDetailRecommendations;
+        $this->useProductDetailSimilar = $useProductDetailSimilar;
+        $this->recommendationExcludedProducts = $recommendationExcludedProducts;
     }
 
     /**
@@ -385,5 +398,29 @@ class Configuration extends Struct
     public function getSuggestAcceptedTypes(): array
     {
         return $this->suggestAcceptedTypes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseProductDetailRecommendations(): bool
+    {
+        return $this->useProductDetailRecommendations;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseProductDetailSimilar(): bool
+    {
+        return $this->useProductDetailSimilar;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecommendationExcludedProducts(): array
+    {
+        return $this->recommendationExcludedProducts;
     }
 }
