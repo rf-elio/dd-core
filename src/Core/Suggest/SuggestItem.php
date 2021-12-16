@@ -32,6 +32,8 @@
 
 namespace Elio\FactFinder\Core\Suggest;
 
+use Shopware\Core\Framework\Uuid\Uuid;
+
 /**
  * Class SuggestItem
  * @package Elio\FactFinder\Core\Suggest
@@ -42,6 +44,10 @@ namespace Elio\FactFinder\Core\Suggest;
  */
 class SuggestItem
 {
+    /**
+     * @var string
+     */
+    private string $id;
     /**
      * @var string
      */
@@ -71,6 +77,14 @@ class SuggestItem
      * @var string
      */
     protected string $url = '';
+
+    /**
+     * SuggestItem constructor.
+     */
+    public function __construct()
+    {
+        $this->id = Uuid::randomHex();
+    }
 
     /**
      * @return string
@@ -113,11 +127,30 @@ class SuggestItem
     }
 
     /**
+     * @param string $name
+     * @param null|mixed $default
+     * @return mixed|null
+     */
+    public function getAttribute(string $name, $default = null)
+    {
+        return $this->attributes[$name] ?? $default;
+    }
+
+    /**
      * @param array $attributes
      */
     public function setAttributes(array $attributes): void
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setAttribute(string $name, $value): void
+    {
+        $this->attributes[$name] = $value;
     }
 
     /**
@@ -147,7 +180,7 @@ class SuggestItem
     /**
      * @return bool
      */
-    public function hasImage() : bool
+    public function hasImage(): bool
     {
         return !empty($this->imgUrl);
     }
@@ -182,5 +215,13 @@ class SuggestItem
     public function hasUrl(): bool
     {
         return !empty($this->url);
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 }

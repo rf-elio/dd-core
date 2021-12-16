@@ -1,0 +1,23 @@
+{% block ff_logging_list_page %}
+    <sw-page class="elio-ff-logging-list">
+        <sw-card-view slot="content">
+            <sw-card>
+                <sw-single-select
+                    v-if="logs.length"
+                    :options="logs"
+                    v-model="selectedLog"
+                    size="medium"
+                    :is-loading="isLoading"
+                ></sw-single-select>
+            </sw-card>
+            <sw-card :isLoading="isLoading" class="elio-ff-logging-list__content">
+                <template v-if="content">
+                    {{ content }}
+                </template>
+                <template v-else>
+                    {{ $tc('ff-logging.logIsEmpty') }}
+                </template>
+            </sw-card>
+        </sw-card-view>
+    </sw-page>
+{% endblock %}

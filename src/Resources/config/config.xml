@@ -133,6 +133,16 @@
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
             <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
+
+        <input-field type="text">
+            <name>suggestProductNumberAttribute</name>
+            <label>Mapping: Product number attribute</label>
+            <label lang="de-DE">Mapping: Produktnummer-Attribute</label>
+            <placeholder>MasterProductNumber</placeholder>
+            <defaultValue>MasterProductNumber</defaultValue>
+            <helpText>Defines which attribute contains the product number in the ff api response.</helpText>
+            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der FF Api Antwort enthält.</helpText>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>
@@ -356,14 +366,7 @@
             <helpText>log level</helpText>
             <helpText lang="de-DE">Log Level</helpText>
         </input-field>
-        <component name="sw-textarea-field">
-            <name>logDebugIpFilter</name>
-            <label>The debug log is only created if this field is empty or if this list contains the users ip address</label>
-            <label lang="de-DE">Falls befüllt, werden Debug-Logs nur für Benutzer mit diesen IP-Adressen erstellt</label>
-            <placeholder>1.1.1.1|2.2.2.2|3.3.3.3</placeholder>
-            <helpText>Ip addresses separated by pipes(|) </helpText>
-            <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
-        </component>
+
     </card>
     <card>
         <title>Advanced</title>
@@ -378,11 +381,20 @@
         </component>
 
         <input-field type="bool">
-            <name>apiDebugActive</name>
-            <label>Api debugging active</label>
-            <label lang="de-DE">API debugging aktiv</label>
+            <name>loggingDebugActive</name>
+            <label>Logging debugging: active</label>
+            <label lang="de-DE">Logging debugging: aktiv</label>
             <defaultValue>false</defaultValue>
-            <helpText>Activates the swagger api client debugging. Symfony's default log location (/var/log) will be used.</helpText>
+            <helpText>Activates the debug logging.</helpText>
         </input-field>
+
+        <component name="sw-textarea-field">
+            <name>loggingDebugIpFilter</name>
+            <label>Logging debugging: The debug log is only created if this field is empty or if this list contains the users ip address</label>
+            <label lang="de-DE">Logging debugging: Falls befüllt, werden Debug-Logs nur für Benutzer mit diesen IP-Adressen erstellt</label>
+            <placeholder>1.1.1.1|2.2.2.2|3.3.3.3</placeholder>
+            <helpText>Ip addresses separated by pipes(|) </helpText>
+            <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
+        </component>
     </card>
 </config>

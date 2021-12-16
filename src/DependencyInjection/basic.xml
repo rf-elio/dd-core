@@ -4,12 +4,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <!-- logger -->
-        <service id="Elio\FactFinder\Logger" class="Monolog\Logger">
-            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
-            <argument type="string">elio_fact_finder</argument>
-        </service>
-
         <!-- snippets -->
         <service id="Elio\FactFinder\Resources\snippet\de_DE\SnippetFile_de_DE">
             <tag name="shopware.snippet.file"/>

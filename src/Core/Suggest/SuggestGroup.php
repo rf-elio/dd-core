@@ -42,6 +42,14 @@ class SuggestGroup
     }
 
     /**
+     * @return bool
+     */
+    public function hasItems() : bool
+    {
+        return !empty($this->items);
+    }
+
+    /**
      * @return SuggestItem[]
      */
     public function getItems(): array
@@ -54,7 +62,10 @@ class SuggestGroup
      */
     public function setItems(array $items): void
     {
-        $this->items = $items;
+        $this->items = [];
+        foreach ($items as $item) {
+            $this->addItem($item);
+        }
     }
 
     /**
@@ -62,7 +73,7 @@ class SuggestGroup
      */
     public function addItem(SuggestItem $item): void
     {
-        $this->items[] = $item;
+        $this->items[$item->getId()] = $item;
     }
 
     /**
@@ -141,5 +152,13 @@ class SuggestGroup
     public function setPosition(int $position): void
     {
         $this->position = $position;
+    }
+
+    /**
+     * @param SuggestItem $item
+     */
+    public function remove(SuggestItem $item): void
+    {
+        unset($this->items[$item->getId()]);
     }
 }

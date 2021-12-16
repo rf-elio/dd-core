@@ -30,81 +30,73 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Framework\Cookie;
+namespace Elio\FactFinder\Core\Logging\Subscriber;
 
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Defaults;
+use Elio\FactFinder\Core\Logging\LogFilterContext;
+use Shopware\Core\Framework\Routing\KernelListenerPriorities;
 use Shopware\Core\PlatformRequest;
-use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Class FactFinderCookieProvider
- * @package Elio\FactFinder\Storefront\Framework\Cookie
+ * Class LogIpFilterSubscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FactFinderCookieProvider implements CookieProviderInterface
+class LogIpFilterSubscriber implements EventSubscriberInterface
 {
-    private CookieProviderInterface $cookieProvider;
-
-    private const TRACKING_COOKIE = [
-        'snippet_name' => 'elioFactFinder.cookies.tracking.name',
-        'snippet_description' => 'elioFactFinder.cookies.tracking.description',
-        'cookie' => 'elio_ff_tracking',
-        'value'=> '1',
-        'expiration' => '30'
-    ];
     private FactFinderConfigServiceInterface $configService;
-    private RequestStack $requestStack;
+    private LogFilterContext $logFilterContext;
 
     /**
-     * FactFinderCookieProvider constructor.
-     * @param CookieProviderInterface $cookieProvider
+     * LogIpFilterSubscriber constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param RequestStack $requestStack
+     * @param LogFilterContext $logFilterContext
      */
-    public function __construct(
-        CookieProviderInterface $cookieProvider,
-        FactFinderConfigServiceInterface $configService,
-        RequestStack $requestStack
-    )
+    public function __construct(FactFinderConfigServiceInterface $configService, LogFilterContext $logFilterContext)
     {
-        $this->cookieProvider = $cookieProvider;
         $this->configService = $configService;
-        $this->requestStack = $requestStack;
+        $this->logFilterContext = $logFilterContext;
+    }
+
+    public static function getSubscribedEvents() : array
+    {
+        return [
+            KernelEvents::CONTROLLER => ['onKernelController', KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_SCOPE_VALIDATE_POST]
+        ];
     }
 
     /**
-     * @return array<array>
+     * Activates / deactivates the logging based on the client ip address
      */
-    public function getCookieGroups(): array
+    public function onKernelController(ControllerEvent $event) : void
     {
-        $cookieGroups = $this->cookieProvider->getCookieGroups();
-        $masterRequest = $this->requestStack->getMasterRequest();
+        $request = $event->getRequest();
 
-        if($masterRequest === null) {
-            return $cookieGroups;
+        /** @var SalesChannelContext|null $context */
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+
+        if(!$context) {
+            return;
         }
 
-        $salesChannelContext = $masterRequest->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-        $config = $this->configService->getByContext($salesChannelContext);
-        if($config->isTrackRequireConsent()) {
-            foreach ($cookieGroups as &$cookieGroup) {
-                if($cookieGroup['snippet_name'] !== 'cookie.groupRequired') {
-                    continue;
-                }
+        $config = $this->configService->getByContext($context);
 
-                $cookieGroup['entries'] = array_merge(
-                    $cookieGroup['entries'],
-                    [self::TRACKING_COOKIE]
-                );
-
-                break;
-            }
+        if(!$config->isLoggingDebugActive()) {
+            $this->logFilterContext->setIsDebugLoggingActive(false);
+            return;
         }
 
-        return $cookieGroups;
+        $allowedClientIps = implode(Defaults::VALUE_SEPARATOR, $config->getLoggingDebugIpFilter());
+        $clientIp = $request->getClientIp();
+
+        $isApiLoggingActive = empty($allowedClientIps) || strpos($allowedClientIps, $clientIp) !== false;
+        $this->logFilterContext->setIsDebugLoggingActive($isApiLoggingActive);
     }
 }

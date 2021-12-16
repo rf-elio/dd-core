@@ -4,6 +4,12 @@ namespace Elio\FactFinder\Api;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+use Elio\FactFinder\Core\Logging\LoggingService;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
 use Swagger\Client\Api\ManagementApi;
@@ -28,20 +34,20 @@ use GuzzleHttp\Client;
 class ApiClientFactory implements ApiClientFactoryInterface
 {
     private FactFinderConfigServiceInterface $configService;
-    private string $logDir;
+    private LoggerInterface $logger;
 
     /**
      * ApiFactory constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param string $logDir
+     * @param LoggerInterface $logger
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
-        string $logDir
+        LoggerInterface $logger
     )
     {
         $this->configService = $configService;
-        $this->logDir = $logDir;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,7 +60,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new CampaignApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -68,7 +74,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new ImportApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -82,7 +88,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new ManagementApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -96,22 +102,22 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new PredbasketApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
     /**
      * Creates the records api to update data directly in ff.
      *
-     * @param SalesChannelContext $salesChannelContext
+     * @param string $salesChannelId
      *
      * @return RecordsApi
      */
-    public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi
+    public function createRecordsApi(string $salesChannelId): RecordsApi
     {
         return new RecordsApi(
-            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createClient($salesChannelId),
+            $this->createConfiguration($salesChannelId)
         );
     }
 
@@ -125,7 +131,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new SearchApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -145,49 +151,48 @@ class ApiClientFactory implements ApiClientFactoryInterface
 
     /**
      * Creates the api client wit the configured settings
-     *
      * @param string $salesChannelId
      * @param SalesChannelContext|null $salesChannelContext
+     * @param array $params
+     *
      * @return ClientInterface
      */
-    protected function createClient(string $salesChannelId, SalesChannelContext $salesChannelContext = null) : ClientInterface
+    protected function createClient(string $salesChannelId, SalesChannelContext $salesChannelContext = null, array $params = []) : ClientInterface
     {
         if ($salesChannelContext === null) {
             $configuration = $this->configService->get($salesChannelId);
         } else {
             $configuration = $this->configService->getByContext($salesChannelContext);
         }
-        return new Client([
-            'max' => $configuration->getApiTimeout()
-        ]);
+
+        $stack = HandlerStack::create();
+        $mapResponse = Middleware::mapResponse(function(ResponseInterface $response) { $response->getBody()->rewind(); return $response; } );
+        $stack->push($mapResponse);
+        $stack->push(Middleware::log($this->logger, new MessageFormatter(LoggingService::LOG_FORMAT)));
+
+        $config = [
+            'max' => $configuration->getApiTimeout(),
+            'handler' => $stack
+        ];
+
+        return new Client($config);
     }
 
     /**
      * Creates the configuration struct that contains the api address and credentials
      *
      * @param string $salesChannelId
-     * @param SalesChannelContext|null $salesChannelContext
      * @return Configuration
      */
-    protected function createConfiguration(string $salesChannelId, SalesChannelContext $salesChannelContext = null) : Configuration
+    protected function createConfiguration(string $salesChannelId) : Configuration
     {
         $credentials = $this->configService->getApiCredentials($salesChannelId);
-        if ($salesChannelContext === null) {
-            $configuration = $this->configService->get($salesChannelId);
-        } else {
-            $configuration = $this->configService->getByContext($salesChannelContext);
-        }
-
         $apiConfiguration = new Configuration();
         $apiConfiguration->setHost($credentials->getApiUrl());
         $apiConfiguration->setUsername($credentials->getApiUsername());
         $apiConfiguration->setPassword($credentials->getApiPassword());
         $apiConfiguration->setAccessToken(null);
         $apiConfiguration->setUserAgent($this->getUserAgent($salesChannelId));
-
-        $apiConfiguration->setDebug($configuration->isApiDebugActive());
-        $apiConfiguration->setDebugFile($this->logDir.'/elio_fact_finder-api-client.log');
-
         return $apiConfiguration;
     }
 

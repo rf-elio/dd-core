@@ -93,8 +93,12 @@ class ProductTransformer implements ResponseTransformerInterface
      */
     protected function extractProductNumbers(ModelInterface $result): array
     {
-        return array_map(static function (TypedFlatRecord $record) {
-            return $record->getId();
-        }, $result->getHits());
+        if ($result instanceof RecommendationResultWithFieldRoles ||
+            $result instanceof SimilarProductsWithFieldRoles) {
+            return array_map(static function (TypedFlatRecord $record) {
+                return $record->getId();
+            }, $result->getHits());
+        }
+        return [];
     }
 }

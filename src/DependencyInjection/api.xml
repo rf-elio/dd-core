@@ -7,7 +7,7 @@
         <!-- api -->
         <service id="Elio\FactFinder\Api\ApiClientFactory">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument>%kernel.logs_dir%</argument>
+            <argument type="service" id="elio.fact_finder.core.logging.debug"/>
         </service>
 
         <service id="Elio\FactFinder\Api\Campaign\CampaignApi">
@@ -37,14 +37,14 @@
         </service>
         <service id="Elio\FactFinder\Api\Tracking\TrackingApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
-            <argument type="service" id="Elio\FactFinder\Logger" />
+            <argument type="service" id="elio.fact_finder.core.logging.debug" />
         </service>
 
         <!-- transformer -->
         <service id="Elio\FactFinder\Api\Transform\Transformer">
             <argument type="tagged" tag="elio-ff.api.transformer.response"/>
             <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="Elio\FactFinder\Logger"/>
+            <argument type="service" id="elio.fact_finder.core.logging.default"/>
         </service>
 
         <!-- transformer / response / search -->
@@ -82,10 +82,13 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionProductTransformer">
             <argument type="service" id="product.repository" />
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <tag name="elio-ff.api.transformer.response" priority="49"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionCategoryTransformer">
             <argument type="service" id="category.repository" />
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryUrlGenerator"/>
             <tag name="elio-ff.api.transformer.response" priority="49"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\CampaignTransformer">

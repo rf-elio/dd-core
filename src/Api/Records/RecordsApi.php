@@ -76,14 +76,14 @@ class RecordsApi
 
     /**
      * @param RecordRequest $request
-     * @param SalesChannelContext $context
+     * @param string $salesChannelId
      *
      * @return FullRecordsResult
      * @throws ApiException
      */
-    public function getRecords(RecordRequest $request, SalesChannelContext $context): FullRecordsResult
+    public function getRecords(RecordRequest $request, string $salesChannelId): FullRecordsResult
     {
-        $apiClient = $this->apiFactory->createRecordsApi($context);
+        $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
         return $apiClient->getFullRecordsUsingGET($request->getChannel(), [$request->getId()], null, 'productNumber');
     }
 
@@ -97,7 +97,7 @@ class RecordsApi
      */
     public function getRecommendations(RecommendationRequest $request, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createRecordsApi($context);
+        $apiClient = $this->apiFactory->createRecordsApi($context->getSalesChannelId());
         $result = $apiClient->getRecommendationUsingGET(
             $request->getChannel(),
             $request->getIds(),
@@ -119,7 +119,7 @@ class RecordsApi
      */
     public function getSimilar(SimilarRequest $request, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createRecordsApi($context);
+        $apiClient = $this->apiFactory->createRecordsApi($context->getSalesChannelId());
         $result = $apiClient->getSimilarProductsUsingGET(
             $request->getChannel(),
             $request->getId(),

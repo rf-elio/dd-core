@@ -38,13 +38,18 @@ use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\Suggest\SuggestGroup;
+use Elio\FactFinder\Core\Util\ArrayUtil;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
 
@@ -57,18 +62,21 @@ use Swagger\Client\Model\SuggestionResult;
  */
 class SuggestionCategoryTransformer implements ResponseTransformerInterface
 {
-    private const TYPE = 'category';
+    public const TYPE = 'category';
     private const CATEGORY_ID_ATTRIBUTE = 'CategoryID';
     private const URL_ATTRIBUTE = 'ProductURL';
 
     private EntityRepositoryInterface $categoryRepository;
+    private AbstractCategoryUrlGenerator $categoryUrlGenerator;
 
     /**
      * SuggestionTransformer constructor.
      * @param EntityRepositoryInterface $categoryRepository
+     * @param AbstractCategoryUrlGenerator $categoryUrlGenerator
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository) {
+    public function __construct(EntityRepositoryInterface $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
         $this->categoryRepository = $categoryRepository;
+        $this->categoryUrlGenerator = $categoryUrlGenerator;
     }
 
     /**
@@ -104,8 +112,96 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
         }
 
         $categoryGroup = $suggestionResponse->getGroup(self::TYPE);
+        $this->resolveCategoryId($categoryGroup, $context->getContext());
         $categories = $this->collect($categoryGroup, $context->getContext());
-        $this->enrich($categoryGroup, $categories);
+        $this->enrich($categoryGroup, $categories, $context->getSalesChannel());
+    }
+
+    /**
+     * Resolves the category by the given name and parent category
+     *
+     * @param SuggestGroup $group
+     * @param Context $context
+     */
+    protected function resolveCategoryId(SuggestGroup $group, Context $context) : void
+    {
+        // extract all category names by the given items
+        $categoryNames = [];
+        $itemsWithoutCategoryId = [];
+        foreach ($group->getItems() as $item) {
+            if($this->getCategoryId($item)) {
+                continue;
+            }
+
+            $categoryPath = $item->getAttribute('parentCategory', '').'/'.$item->getName();
+            $categoryPath = explode('/', ltrim($categoryPath, '/'));
+            $item->setAttribute('categoryPath', $categoryPath);
+            $categoryNames[] = $categoryPath;
+            $itemsWithoutCategoryId[] = $item;
+        }
+
+        $categoryNames = !empty($categoryNames) ? array_merge(...$categoryNames) : [];
+        $categoryNames = array_unique($categoryNames);
+
+        if(empty($categoryNames)) {
+            return;
+        }
+
+        // lookup all categories we have in the group
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('name', $categoryNames));
+        $categories = $this->categoryRepository->search($criteria, $context);
+
+        /** @var CategoryEntity[][] $categoriesByName */
+        $categoriesByName = [];
+        /** @var CategoryEntity $category */
+        foreach ($categories as $category) {
+            ArrayUtil::arrayKeyPush($categoriesByName, $category, $category->getName());
+        }
+
+        // find valid paths
+        foreach ($itemsWithoutCategoryId as $item) {
+            $categoryPath = $item->getAttribute('categoryPath');
+            $categoryPath = array_reverse($categoryPath);
+            $categoryName = array_shift($categoryPath);
+            $candidates = $categoriesByName[$categoryName] ?? [];
+            foreach ($candidates as $candidate) {
+                if($candidate->getActive() && $this->isValidParentCategory($categoriesByName, $categoryPath, $candidate->getParentId())) {
+                    $item->setAttribute(self::CATEGORY_ID_ATTRIBUTE, $candidate->getId());
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * The given category path ['measuring sensors', 'optical sensors', 'sensors'] will be used to find a valid
+     * category path. The 'measuring sensors' could exist multiple times. To find the correct category, we now check the
+     * parent categories to only allow the 'measuring sensors' which has the parent category 'optical sensors'. The same
+     * check is applied to 'optical sensors', here we use the category which has 'sensors' as parent.
+     *
+     * @param CategoryEntity[][] $categoriesByName
+     * @param array $categoryPath
+     * @param string|null $parentId
+     * @return bool
+     */
+    protected function isValidParentCategory(array $categoriesByName, array $categoryPath, ?string $parentId = null): bool
+    {
+        $pathPart = array_shift($categoryPath);
+        $endOfPath = count($categoryPath) <= 0;
+        $categories = $categoriesByName[$pathPart] ?? [];
+
+        foreach ($categories as $category) {
+            if(!$endOfPath && !$this->isValidParentCategory($categoriesByName, $categoryPath, $category->getParentId())) {
+                return false;
+            }
+
+            if($parentId && $category->getId() === $parentId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -119,8 +215,8 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
     {
         $categoryIds = [];
         foreach ($group->getItems() as $item) {
-            if($productNumber = $this->getCategoryId($item)) {
-                $categoryIds[] = $productNumber;
+            if($categoryId = $this->getCategoryId($item)) {
+                $categoryIds[] = $categoryId;
             }
         }
 
@@ -139,7 +235,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
      * @param SuggestGroup $group
      * @param EntityCollection $categories
      */
-    protected function enrich(SuggestGroup $group, EntityCollection $categories): void
+    protected function enrich(SuggestGroup $group, EntityCollection $categories, ?SalesChannelEntity $salesChannel): void
     {
         foreach ($group->getItems() as $item) {
             // add url
@@ -150,12 +246,21 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
 
             // add image
             $categoryId = $this->getCategoryId($item);
-            if(!$item->hasImage() && $categories->has($categoryId)) {
+            if($categories->has($categoryId)) {
                 $category = $categories->get($categoryId);
 
-                if ($category->getMedia()) {
-                    $item->setUrl($category->getMedia()->getUrl());
+                if(!$item->hasUrl()) {
+                    $url = $this->categoryUrlGenerator->generate($category, $salesChannel); // seo_url
+                    $item->setUrl($url);
                 }
+
+                if (!$item->hasImage() && $category->getMedia()) {
+                    $item->setImgUrl($category->getMedia()->getUrl());
+                }
+            }
+
+            if(!$item->hasUrl()) {
+                $group->remove($item);
             }
         }
     }

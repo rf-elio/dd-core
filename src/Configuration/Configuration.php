@@ -47,7 +47,11 @@ class Configuration extends Struct
 {
     protected string $apiChannel;
     protected bool $useAso;
-    protected bool $apiDebugActive;
+    protected bool $loggingDebugActive;
+    /**
+     * @var array<string>
+     */
+    private array $loggingDebugIpFilter;
     private bool $searchUseFactFinder;
     private int $apiTimeout;
     private bool $trackCheckout;
@@ -83,6 +87,7 @@ class Configuration extends Struct
     private array $suggestTypeLabels;
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
+    private string $suggestProductNumberAttribute;
 
     private bool $useProductDetailRecommendations;
     private bool $useProductDetailSimilar;
@@ -94,7 +99,8 @@ class Configuration extends Struct
      * @param string $apiChannel
      * @param int $apiTimeout
      * @param bool $useAso
-     * @param bool $apiDebugActive
+     * @param bool $loggingDebugActive
+     * @param array<string> $loggingDebugIpFilter
      * @param bool $searchUseFactFinder
      * @param bool $trackRequireConsent
      * @param bool $trackCart
@@ -119,13 +125,15 @@ class Configuration extends Struct
      * @param bool $useProductDetailRecommendations
      * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
+     * @param string $suggestProductNumberAttribute
      */
     public function __construct(
         bool $active,
         string $apiChannel,
         int $apiTimeout,
         bool $useAso,
-        bool $apiDebugActive,
+        bool $loggingDebugActive,
+        array $loggingDebugIpFilter,
         bool $searchUseFactFinder,
         bool $trackRequireConsent,
         bool $trackCart,
@@ -149,11 +157,13 @@ class Configuration extends Struct
         array $suggestAcceptedTypes,
         bool $useProductDetailRecommendations,
         bool $useProductDetailSimilar,
-        array $recommendationExcludedProducts
+        array $recommendationExcludedProducts,
+        string $suggestProductNumberAttribute
     )
     {
         $this->useAso = $useAso;
-        $this->apiDebugActive = $apiDebugActive;
+        $this->loggingDebugActive = $loggingDebugActive;
+        $this->loggingDebugIpFilter = $loggingDebugIpFilter;
         $this->apiChannel = $apiChannel;
         $this->searchUseFactFinder = $searchUseFactFinder;
         $this->apiTimeout = $apiTimeout;
@@ -181,6 +191,7 @@ class Configuration extends Struct
         $this->useProductDetailRecommendations = $useProductDetailRecommendations;
         $this->useProductDetailSimilar = $useProductDetailSimilar;
         $this->recommendationExcludedProducts = $recommendationExcludedProducts;
+        $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
     }
 
     /**
@@ -195,9 +206,17 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isApiDebugActive(): bool
+    public function isLoggingDebugActive(): bool
     {
-        return $this->apiDebugActive;
+        return $this->loggingDebugActive;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLoggingDebugIpFilter(): array
+    {
+        return $this->loggingDebugIpFilter;
     }
 
     /**
@@ -337,14 +356,6 @@ class Configuration extends Struct
     }
 
     /**
-     * @param bool $suggestUseFactFinder
-     */
-    public function setSuggestUseFactFinder(bool $suggestUseFactFinder): void
-    {
-        $this->suggestUseFactFinder = $suggestUseFactFinder;
-    }
-
-    /**
      * @return bool
      */
     public function isRestrictionsParentCategories(): bool
@@ -422,5 +433,13 @@ class Configuration extends Struct
     public function getRecommendationExcludedProducts(): array
     {
         return $this->recommendationExcludedProducts;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuggestProductNumberAttribute(): string
+    {
+        return $this->suggestProductNumberAttribute;
     }
 }
