@@ -45,6 +45,7 @@ use Swagger\Client\ApiException;
 use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\FullRecordsResult;
 use Swagger\Client\Model\RecommendationResultWithFieldRoles;
+use Swagger\Client\Model\SimilarProductsWithFieldRoles;
 use Throwable;
 
 /**
@@ -78,14 +79,14 @@ class RecordsApi
 
     /**
      * @param RecordRequest $request
-     * @param string $salesChannelId
+     * @param SalesChannelContext $context
      *
      * @return FullRecordsResult
      * @throws ApiException
      */
-    public function getRecords(RecordRequest $request, string $salesChannelId): FullRecordsResult
+    public function getRecords(RecordRequest $request, SalesChannelContext $context): FullRecordsResult
     {
-        $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
+        $apiClient = $this->apiFactory->createRecordsApi($context);
         return $apiClient->getFullRecordsUsingGET($request->getChannel(), [$request->getId()], null, 'productNumber');
     }
 
@@ -158,7 +159,7 @@ class RecordsApi
         $result = $apiClient->getSimilarProductsUsingGET(
             $request->getChannel(),
             $request->getId(),
-            'productNumber',
+            'id',
             null,
             true
         );

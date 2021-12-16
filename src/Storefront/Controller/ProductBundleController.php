@@ -5,6 +5,7 @@ namespace Elio\FactFinder\Storefront\Controller;
 
 
 use Elio\FactFinder\Core\ProductBundle\ProductBundleInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -12,6 +13,7 @@ use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * @RouteScope(scopes={"storefront"})
@@ -22,16 +24,25 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductBundleController extends StorefrontController
 {
     private iterable $productBundles;
+    private LoggerInterface $logger;
 
+    /**
+     * ProductBundleController constructor.
+     *
+     * @param iterable $productBundles
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        iterable $productBundles
+        iterable $productBundles,
+        LoggerInterface $logger
     )
     {
         $this->productBundles = $productBundles;
+        $this->logger = $logger;
     }
 
     /**
-     * @Route("/widgets/ff/product-bundle/{type}", name="widgets.elio-ff.product-bundle.list", methods={"POST"}, defaults={"XmlHttpRequest"=true})
+     * @Route("/widgets/ff/product-bundle/{type}", name="widgets.elio-ff.product-bundle.list", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param string $type
      * @param Request $request
@@ -41,13 +52,27 @@ class ProductBundleController extends StorefrontController
      */
     public function list(string $type, Request $request, SalesChannelContext $context): Response
     {
-        $productBundle = $this->getProductBundle($type);
-        $productBundle->getProducts($request, $context);
-        $view = $request->get('view', 'defaultView');
+        try {
+            $productBundle = $this->getProductBundle($type);
+            $productBundle->getProducts($request, $context);
+            $view = $request->get('view', '@Storefront/storefront/component/product/slider/default.html.twig');
+            $viewParams = $request->get('viewParams', []);
 
-        return $this->render($view, [
-            'products' => $productBundle->getProducts($request, $context)
-        ]);
+            $rendered = $this->renderStorefront($view, $viewParams + [
+                'products' => $productBundle->getProducts($request, $context)
+            ]);
+
+            return $this->json([
+               'success' => true,
+               'data' => $rendered
+            ]);
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     /**

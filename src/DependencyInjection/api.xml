@@ -104,6 +104,12 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 
+        <!-- transformer / response / records -->
+        <service id="Elio\FactFinder\Api\Records\ResponseTransformer\ProductTransformer">
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <tag name="elio-ff.api.transformer.response"/>
+        </service>
+
         <!-- commands -->
         <service id="Elio\FactFinder\Command\RecordsGetCommand">
             <argument id="Elio\FactFinder\Api\Records\RecordsApi" type="service"/>

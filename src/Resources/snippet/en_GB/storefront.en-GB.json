@@ -17,6 +17,11 @@
                 "category": "Categories",
                 "page": "Contents"
             }
+        },
+        "productDetailSlider": {
+            "recommendations": "Recommendations",
+            "similar": "Similar products",
+            "empty": "Slider is empty"
         }
     }
 }

@@ -19,20 +19,43 @@ use Swagger\Client\Model\RecommendationResultWithFieldRoles;
 use Swagger\Client\Model\SimilarProductsWithFieldRoles;
 use Swagger\Client\Model\TypedFlatRecord;
 
+/**
+ * Class ProductTransformer
+ *
+ * @package Elio\FactFinder\Api\Records\ResponseTransformer
+ */
 class ProductTransformer implements ResponseTransformerInterface
 {
     private ProductListingLoader $listingLoader;
 
+    /**
+     * ProductTransformer constructor.
+     *
+     * @param ProductListingLoader $listingLoader
+     */
     public function __construct(ProductListingLoader $listingLoader)
     {
         $this->listingLoader = $listingLoader;
     }
 
+    /**
+     * @param ModelInterface $model
+     * @param ApiRequest $request
+     * @param SalesChannelContext $context
+     *
+     * @return bool
+     */
     public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
         return $model instanceof RecommendationResultWithFieldRoles || $model instanceof SimilarProductsWithFieldRoles;
     }
 
+    /**
+     * @param ModelInterface $model
+     * @param ResponseCollection $responseCollection
+     * @param SalesChannelContext $context
+     * @param ApiRequest $request
+     */
     public function transform(
         ModelInterface $model,
         ResponseCollection $responseCollection,
@@ -63,6 +86,11 @@ class ProductTransformer implements ResponseTransformerInterface
         $listing->setProducts($products);
     }
 
+    /**
+     * @param ModelInterface $result
+     *
+     * @return array
+     */
     protected function extractProductNumbers(ModelInterface $result): array
     {
         return array_map(static function (TypedFlatRecord $record) {

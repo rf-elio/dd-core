@@ -110,14 +110,15 @@ class ApiClientFactory implements ApiClientFactoryInterface
     /**
      * Creates the records api to update data directly in ff.
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
+     *
      * @return RecordsApi
      */
-    public function createRecordsApi(string $salesChannelId): RecordsApi
+    public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi
     {
         return new RecordsApi(
-            $this->createClient($salesChannelId),
-            $this->createConfiguration($salesChannelId)
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
         );
     }
 

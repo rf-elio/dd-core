@@ -4,6 +4,7 @@ import FactFinderFilterRangePlugin from "./plugin/tracking/ff-filter-range.plugi
 import FactFinderFilterTreeSelectPlugin from "./plugin/tracking/ff-filter-tree-select.plugin";
 import ElioSuggestAutocompletePlugin from "./plugin/elio-suggest-autocomplete/elio-suggest-autocomplete.plugin";
 import ElioSearchWidgetPlugin from "./plugin/header/elio-search-widget.plugin";
+import FfProductsSliderPlugin from "./plugin/slider/ff-products-slider.plugin";
 import ElioSearchHistoryPlugin from "./plugin/elio-search-history/elio-search-history.plugin";
 import ElioSearchTrackerPlugin from "./plugin/elio-search-tracker/elio-search-tracker.plugin";
 
@@ -16,3 +17,4 @@ PluginManager.register('ElioSuggestAutocompletePlugin', ElioSuggestAutocompleteP
 PluginManager.register('ElioSearchTrackerPlugin', ElioSearchTrackerPlugin, '[data-search-tracker]');
 PluginManager.register('ElioSearchHistory', ElioSearchHistoryPlugin, '.e-search-history');
 PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-form]');
+PluginManager.register('FfProductsSlider', FfProductsSliderPlugin, '[data-ff-products-slider]');

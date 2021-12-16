@@ -29,5 +29,13 @@
         <service id="Elio\FactFinder\Storefront\Subscriber\CampaignRedirectionSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Elio\FactFinder\Storefront\Controller\ProductBundleController" public="true">
+            <argument type="tagged" tag="elio-ff.product-bundle" />
+            <argument type="service" id="logger" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>

@@ -87,7 +87,7 @@ interface ApiClientFactoryInterface
      * @param string $salesChannelId
      * @return RecordsApi
      */
-    public function createRecordsApi(string $salesChannelId): RecordsApi;
+    public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi;
 
     /**
      * Creates the search api instance, configured for the given sales channel.
