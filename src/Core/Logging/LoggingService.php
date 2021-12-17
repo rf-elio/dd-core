@@ -15,7 +15,14 @@ use Symfony\Component\Finder\SplFileInfo;
 class LoggingService
 {
     public const FILE_NAME = 'elio_fact_finder';
-    public const LOG_FORMAT = "method: {method}, uri: {uri}, req_body: {req_body}, res_body: {res_body}";
+    public const LOG_FORMAT = <<<EOT
+    {
+        method: {method}
+        uri: {uri}
+        req_body: {req_body}
+        res_body: {res_body}
+    }
+EOT;
 
     private string $logDir;
     private Finder $finder;
@@ -44,7 +51,15 @@ class LoggingService
         if (!isset($this->logs[$log])) {
             return '';
         }
-        return file_get_contents($this->logDir . '/' . $this->logs[$log]);
+        $content = file_get_contents($this->logDir . '/' . $this->logs[$log]);
+        return $this->prepareContent($content);
+    }
+
+    private function prepareContent(string $content): string
+    {
+        $prepared = htmlspecialchars($content);
+        $prepared = str_replace(["\n", '\n'], '<br>', $prepared);
+        return preg_replace('/\s/', '&nbsp;', $prepared);
     }
 
     private function fillLogs(): void

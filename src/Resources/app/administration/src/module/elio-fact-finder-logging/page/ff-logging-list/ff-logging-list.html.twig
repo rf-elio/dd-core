@@ -12,7 +12,8 @@
             </sw-card>
             <sw-card :isLoading="isLoading" class="elio-ff-logging-list__content">
                 <template v-if="content">
-                    {{ content }}
+                    <div v-html="content">
+                    </div>
                 </template>
                 <template v-else>
                     {{ $tc('ff-logging.logIsEmpty') }}
