@@ -1,6 +1,6 @@
 .elio-ff-logging-list {
     &__content {
-        overflow-wrap: break-word;
         line-height: 1.4;
+        word-break: break-word;
     }
 }

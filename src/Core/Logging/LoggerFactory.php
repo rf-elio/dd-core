@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Logging;
 
 
 use Elio\FactFinder\Core\Logging\Handler\FactFinderFilterHandler;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -85,6 +86,10 @@ class LoggerFactory
 
         $result = new Logger($filePrefix);
         $handler = new RotatingFileHandler($filepath, $fileRotationCount ?? $this->defaultFileRotationCount, $loggerLevel);
+
+        $formatter = new JsonFormatter();
+        $formatter->setJsonPrettyPrint(true);
+        $handler->setFormatter($formatter);
 
         if ($useLogFilter) {
             $result->pushHandler(new FactFinderFilterHandler($handler, $this->logFilterContext));
