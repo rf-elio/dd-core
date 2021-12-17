@@ -54,16 +54,20 @@ export default class FfProductsSliderPlugin extends Plugin {
 
         this._setLoading(true);
         this._client.post(this.options.url, JSON.stringify(this.options.requestParams), response => {
-            response = JSON.parse(response);
+            try {
+                response = JSON.parse(response);
 
-            this._setLoading(false);
-            this._isLoaded = true;
-
-            if (response.success) {
-                this.el.innerHTML = response.data.content;
-                PluginManager.initializePlugin(this.options.pluginSliderName, this.options.sliderSelector);
-            } else {
-                console.log(response.message);
+                if (response.success) {
+                    this.el.innerHTML = response.data;
+                    PluginManager.initializePlugin(this.options.pluginSliderName, this.options.sliderSelector);
+                } else {
+                    console.error(response.message);
+                }
+            } catch (e) {
+                console.error(e)
+            } finally {
+                this._setLoading(false);
+                this._isLoaded = true;
             }
         });
     }

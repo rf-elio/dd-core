@@ -54,17 +54,16 @@ class ProductBundleController extends StorefrontController
     {
         try {
             $productBundle = $this->getProductBundle($type);
-            $productBundle->getProducts($request, $context);
-            $view = $request->get('view', '@Storefront/storefront/component/product/slider/default.html.twig');
+            $view = $request->get('view', 'storefront/component/product/slider/default.html.twig');
             $viewParams = $request->get('viewParams', []);
 
-            $rendered = $this->renderStorefront($view, $viewParams + [
+            $response = $this->renderStorefront($view, $viewParams + [
                 'products' => $productBundle->getProducts($request, $context)
             ]);
 
             return $this->json([
                'success' => true,
-               'data' => $rendered
+               'data' => $response->getContent()
             ]);
         } catch (Throwable $e) {
             $this->logger->error($e->getMessage(), $e->getTrace());
