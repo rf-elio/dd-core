@@ -21,6 +21,8 @@
     }
 } %}
 
+{% set layout = layout|default('minimal') %}
+
 {% if products|length > 0 %}
     <div class="base-slider product-slider"
          data-product-slider="true"

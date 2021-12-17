@@ -142,6 +142,7 @@ class RecordsApi
             null,
             true
         );
+
         return $this->transformer->transformResponse($result, $context, $request);
     }
 
@@ -159,10 +160,13 @@ class RecordsApi
         $result = $apiClient->getSimilarProductsUsingGET(
             $request->getChannel(),
             $request->getId(),
-            'id',
+            'productNumber',
             null,
-            true
+            true,
+            null,
+            $request->getMaxResults()
         );
+
         return $this->transformer->transformResponse($result, $context, $request);
     }
 }

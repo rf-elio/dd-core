@@ -9,20 +9,20 @@ use Shopware\Core\Content\Product\ProductCollection;
 
 class ProductsResponse extends Response
 {
-    protected ?ProductCollection $products = null;
+    protected ProductCollection $products;
 
     /**
-     * @return ProductCollection|null
+     * @return ProductCollection
      */
-    public function getProducts(): ?ProductCollection
+    public function getProducts(): ProductCollection
     {
         return $this->products;
     }
 
     /**
-     * @param ProductCollection|null $products
+     * @param ProductCollection $products
      */
-    public function setProducts(?ProductCollection $products): void
+    public function setProducts(ProductCollection $products): void
     {
         $this->products = $products;
     }
