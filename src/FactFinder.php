@@ -150,6 +150,9 @@ class FactFinder extends Plugin
         $loader->load('services.xml');
     }
 
+    /**
+     * @param ActivateContext $activateContext
+     */
     public function activate(ActivateContext $activateContext): void
     {
         $setup = new ExportSetup($this->container);
@@ -188,40 +191,9 @@ class FactFinder extends Plugin
         if ($uninstallContext->keepUserData()) {
             return;
         }
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
 
-        $this->removeExportTable($connection);
-        $this->removeFilterTables($connection);
-
+        (new ExportSetup($this->container))->removeTables();
+        (new FilterRestrictionsSetup($this->container))->removeTables();
         (new CustomFieldSetup($this->container))->uninstall(self::CUSTOM_FIELDS);
-    }
-
-    /**
-     * @param Connection $connection
-     *
-     * @throws Exception
-     */
-    private function removeExportTable(Connection $connection): void
-    {
-        $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', ExportDefinition::ENTITY_NAME));
-    }
-
-    /**
-     * @param Connection $connection
-     *
-     * @throws Exception
-     */
-    private function removeFilterTables(Connection $connection): void
-    {
-        $tables = [
-            FilterDefinitionTranslationDefinition::ENTITY_NAME,
-            FilterRestrictionsFilterMapping::ENTITY_NAME,
-            FilterRestrictionsDefinition::ENTITY_NAME,
-            FilterDefinition::ENTITY_NAME
-        ];
-        foreach ($tables as $table) {
-            $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', $table));
-        }
     }
 }

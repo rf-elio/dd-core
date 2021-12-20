@@ -81,6 +81,11 @@ class CustomFieldSetup
         $this->addCustomFieldSets($customFields);
     }
 
+    /**
+     * Deletes custom fields
+     *
+     * @param array $customFields
+     */
     public function uninstall(array $customFields): void
     {
         $this->removeCustomFieldSets($customFields);
@@ -295,6 +300,9 @@ class CustomFieldSetup
         return !$field ? null : $field->getId();
     }
 
+    /**
+     * @param array $customFields
+     */
     private function removeCustomFieldSets(array $customFields): void
     {
         /** @var EntityRepositoryInterface $customFieldSetRepository */
