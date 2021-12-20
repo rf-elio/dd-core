@@ -99,20 +99,20 @@ class RecordsApi
             $request->getChannel(),
             $request->getId(),
             $request->getIdType(),
-            $request->isIdsOnly(),
+            $request->getIdsOnly(),
             $request->getMaxResultsRecommendations(),
             $request->getMaxResultsSimilarProducts(),
-            $request->isUsePersonalization(),
+            $request->getUsePersonalization(),
             $request->getSessionId(),
             $request->getPurchaserId(),
             $request->getLatitude(),
             $request->getLongitude(),
             $request->getMarketIds(),
             $request->getMaxCountVariants(),
-            $request->isWithCampaigns(),
-            $request->isWithRecommendations(),
-            $request->isWithSimilarProducts(),
-            $request->isWithRecord()
+            $request->getWithCampaigns(),
+            $request->getWithRecommendations(),
+            $request->getWithSimilarProducts(),
+            $request->getWithRecord()
         );
         return $this->transformer->transformResponse($result, $context, $request);
     }

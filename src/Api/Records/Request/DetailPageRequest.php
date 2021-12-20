@@ -6,24 +6,29 @@ namespace Elio\FactFinder\Api\Records\Request;
 
 use Elio\FactFinder\Api\Request\ChannelRequest;
 
+/**
+ * Class DetailPageRequest
+ *
+ * @package Elio\FactFinder\Api\Records\Request
+ */
 class DetailPageRequest extends ChannelRequest
 {
     private string $id;
-    private bool $idsOnly = false;
+    private string $idsOnly = 'false';
     private string $idType = 'productNumber';
     private int $maxResultsRecommendations = 0;
     private int $maxResultsSimilarProducts = 10;
-    private bool $usePersonalization = true;
+    private string $usePersonalization = 'true';
     private ?string $sessionId = null;
     private ?string $purchaserId = null;
     private ?float $latitude = null;
     private ?float $longitude = null;
     private ?array $marketIds = null;
     private ?int $maxCountVariants = null;
-    private bool $withCampaigns = true;
-    private bool $withRecommendations = true;
-    private bool $withSimilarProducts = true;
-    private bool $withRecord = true;
+    private string $withCampaigns = 'true';
+    private string $withRecommendations = 'true';
+    private string $withSimilarProducts = 'true';
+    private string $withRecord = 'true';
 
     /**
      * @return string
@@ -41,25 +46,6 @@ class DetailPageRequest extends ChannelRequest
     public function setId(string $id): self
     {
         $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isIdsOnly(): bool
-    {
-        return $this->idsOnly;
-    }
-
-    /**
-     * @param bool $idsOnly
-     *
-     * @return $this
-     */
-    public function setIdsOnly(bool $idsOnly): self
-    {
-        $this->idsOnly = $idsOnly;
         return $this;
     }
 
@@ -117,25 +103,6 @@ class DetailPageRequest extends ChannelRequest
     public function setMaxResultsSimilarProducts(int $maxResultsSimilarProducts): self
     {
         $this->maxResultsSimilarProducts = $maxResultsSimilarProducts;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUsePersonalization(): bool
-    {
-        return $this->usePersonalization;
-    }
-
-    /**
-     * @param bool $usePersonalization
-     *
-     * @return $this
-     */
-    public function setUsePersonalization(bool $usePersonalization): self
-    {
-        $this->usePersonalization = $usePersonalization;
         return $this;
     }
 
@@ -254,76 +221,114 @@ class DetailPageRequest extends ChannelRequest
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isWithCampaigns(): bool
+    public function getIdsOnly(): string
+    {
+        return $this->idsOnly;
+    }
+
+    /**
+     * @param string $idsOnly
+     *
+     * @return $this
+     */
+    public function setIdsOnly(string $idsOnly): self
+    {
+        $this->idsOnly = $idsOnly;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsePersonalization(): string
+    {
+        return $this->usePersonalization;
+    }
+
+    /**
+     * @param string $usePersonalization
+     *
+     * @return $this
+     */
+    public function setUsePersonalization(string $usePersonalization): self
+    {
+        $this->usePersonalization = $usePersonalization;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWithCampaigns(): string
     {
         return $this->withCampaigns;
     }
 
     /**
-     * @param bool $withCampaigns
+     * @param string $withCampaigns
      *
      * @return $this
      */
-    public function setWithCampaigns(bool $withCampaigns): self
+    public function setWithCampaigns(string $withCampaigns): self
     {
         $this->withCampaigns = $withCampaigns;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isWithRecommendations(): bool
+    public function getWithRecommendations(): string
     {
         return $this->withRecommendations;
     }
 
     /**
-     * @param bool $withRecommendations
+     * @param string $withRecommendations
      *
      * @return $this
      */
-    public function setWithRecommendations(bool $withRecommendations): self
+    public function setWithRecommendations(string $withRecommendations): self
     {
         $this->withRecommendations = $withRecommendations;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isWithSimilarProducts(): bool
+    public function getWithSimilarProducts(): string
     {
         return $this->withSimilarProducts;
     }
 
     /**
-     * @param bool $withSimilarProducts
+     * @param string $withSimilarProducts
      *
      * @return $this
      */
-    public function setWithSimilarProducts(bool $withSimilarProducts): self
+    public function setWithSimilarProducts(string $withSimilarProducts): self
     {
         $this->withSimilarProducts = $withSimilarProducts;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isWithRecord(): bool
+    public function getWithRecord(): string
     {
         return $this->withRecord;
     }
 
     /**
-     * @param bool $withRecord
+     * @param string $withRecord
      *
      * @return $this
      */
-    public function setWithRecord(bool $withRecord): self
+    public function setWithRecord(string $withRecord): self
     {
         $this->withRecord = $withRecord;
         return $this;
