@@ -32,7 +32,10 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\FactFinder\Core\Export\ExportConfig;
+use Elio\FactFinder\Core\Export\ExportDefinition;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
@@ -56,6 +59,7 @@ class ExportSetup
 {
     private ?EntityRepository $exportRepository;
     private ?EntityRepository $salesChannelRepository;
+    private ?Connection $connection;
 
     /**
      * @param ContainerInterface $container
@@ -64,6 +68,7 @@ class ExportSetup
     {
         $this->exportRepository = $container->get('elio_ff_export.repository');
         $this->salesChannelRepository = $container->get('sales_channel.repository');
+        $this->connection = $container->get(Connection::class);
     }
 
     /**
@@ -132,5 +137,13 @@ class ExportSetup
         if (!empty($exports)) {
             $this->exportRepository->create($exports, $context);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function removeTables(): void
+    {
+        $this->connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', ExportDefinition::ENTITY_NAME));
     }
 }

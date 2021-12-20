@@ -32,6 +32,12 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions\Setup;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -50,6 +56,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FilterRestrictionsSetup
 {
     private ?EntityRepository $filterRepository;
+    private ?Connection $connection;
 
     /**
      * @param ContainerInterface $container
@@ -57,6 +64,7 @@ class FilterRestrictionsSetup
     public function __construct(ContainerInterface $container)
     {
         $this->filterRepository = $container->get('elio_ff_filter.repository');
+        $this->connection = $container->get(Connection::class);
     }
 
     public function createFilters(Context $context, ?array $filters = null, $skipIfExists = false): void
@@ -86,6 +94,22 @@ class FilterRestrictionsSetup
                 ],
                 $context
             );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function removeTables(): void
+    {
+        $tables = [
+            FilterDefinitionTranslationDefinition::ENTITY_NAME,
+            FilterRestrictionsFilterMapping::ENTITY_NAME,
+            FilterRestrictionsDefinition::ENTITY_NAME,
+            FilterDefinition::ENTITY_NAME
+        ];
+        foreach ($tables as $table) {
+            $this->connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', $table));
         }
     }
 }
