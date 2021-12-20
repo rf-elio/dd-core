@@ -10,8 +10,9 @@ Shopware.Component.register('ff-logging-list', {
         return {
             logs: [],
             selectedLog: 0,
-            content: null,
-            isLoading: false
+            contents: [],
+            isLoading: false,
+            showDeleteModal: false
         }
     },
 
@@ -27,6 +28,13 @@ Shopware.Component.register('ff-logging-list', {
         }
     },
 
+    computed: {
+        selectedLogName () {
+            const selectedLog =  this.logs.find(item => item.value === this.selectedLog);
+            return selectedLog ? selectedLog.label : '';
+        }
+    },
+
     created () {
         this.load();
     },
@@ -39,10 +47,24 @@ Shopware.Component.register('ff-logging-list', {
                     this.logs = result.data.logs.map((item, idx) => {
                         return { label: item, value: idx }
                     });
-                    this.content = result.data.logContent;
+                    this.contents = result.data.logContents;
                 }
+
                 this.isLoading = false;
             });
+        },
+
+        closeDeleteModal () {
+            this.showDeleteModal = false;
+        },
+
+        openDeleteModal () {
+            this.showDeleteModal = true;
+        },
+
+        onDeleted () {
+            this.closeDeleteModal();
+            this.selectedLog = 0;
         }
     }
 })

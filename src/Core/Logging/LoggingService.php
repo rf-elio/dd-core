@@ -4,6 +4,7 @@
 namespace Elio\FactFinder\Core\Logging;
 
 
+use RuntimeException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -41,20 +42,66 @@ EOT;
         $this->fillLogs();
     }
 
+    /**
+     * @return array
+     */
     public function getLogs(): array
     {
         return $this->logs;
     }
 
-    public function getLogContent(string $log): string
+    /**
+     * @param int $index
+     *
+     * @return array
+     */
+    public function getLogContents(int $index): array
     {
-        if (!isset($this->logs[$log])) {
-            return '';
+        $content = $this->getLogContent($index);
+        if (empty($content)) {
+            return [];
         }
-        $content = file_get_contents($this->logDir . '/' . $this->logs[$log]);
+
+        return $this->contentToArray($content);
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return string
+     */
+    public function getLogContent(int $index): string
+    {
+        $content = file_get_contents($this->getFilepath($index));
+
         return $this->prepareContent($content);
     }
 
+    /**
+     * @param int $index
+     */
+    public function delete(int $index): void
+    {
+        $filePath = $this->getFilepath($index);
+        unlink($filePath);
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return array
+     */
+    private function contentToArray(string $content): array
+    {
+        $content = preg_replace('/<br>\}<br>\{<br>/', '<br>}###{<br>', $content);
+        return array_reverse(explode('###', $content));
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
     private function prepareContent(string $content): string
     {
         $prepared = htmlspecialchars($content);
@@ -75,5 +122,24 @@ EOT;
         foreach ($files as $file) {
             $this->logs[] = $file->getFilename();
         }
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return string
+     */
+    private function getFilepath(int $index): string
+    {
+        if (!isset($this->logs[$index])) {
+            throw new RuntimeException("Log with index {$index} does not exist");
+        }
+
+        $filePath = $this->logDir . '/' . $this->logs[$index];
+        if (!file_exists($filePath)) {
+            throw new RuntimeException("Log {$filePath} does not exist");
+        }
+
+        return $filePath;
     }
 }

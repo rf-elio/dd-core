@@ -1,5 +1,6 @@
 import LoggingService from "./service/logging.service";
 
+import './component/ff-modal-delete-log'
 import './page/ff-logging-list';
 
 import deDE from './snippet/de-DE.json';
