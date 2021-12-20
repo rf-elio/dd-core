@@ -69,9 +69,9 @@ class FactFinderProductDetailRoute extends AbstractProductDetailRoute
         try {
             $detailPageRequest = (new DetailPageRequest($config->getApiChannel()))
                 ->setId($productDetailResponse->getProduct()->getProductNumber())
-                ->setWithSimilarProducts(false)
-                ->setWithRecommendations(false)
-                ->setWithRecord(false);
+                ->setWithSimilarProducts('false')
+                ->setWithRecommendations('false')
+                ->setWithRecord('false');
 
             $responseCollection = $this->recordsApi->getDetailPage($detailPageRequest, $context);
 
