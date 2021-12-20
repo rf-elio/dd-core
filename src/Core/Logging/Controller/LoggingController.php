@@ -32,22 +32,42 @@ class LoggingController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/ff/logging/show", name="api.action.elio-ff.logging.show", methods={"GET"})
-     * @param Request $request
+     * @Route("/api/_action/ff/logging/{index}", name="api.action.elio-ff.logging.index", methods={"GET"})
+     * @param int $index
      *
      * @return JsonResponse
      */
-    public function show(Request $request): JsonResponse
+    public function index(int $index = 0): JsonResponse
     {
         try {
-            $logIndex = $request->get('log', 0);
-
             return $this->json([
                 'success' => true,
                 'data' => [
                     'logs' => $this->loggingService->getLogs(),
-                    'logContent' => $this->loggingService->getLogContent($logIndex)
+                    'logContents' => $this->loggingService->getLogContents($index)
                 ]
+            ]);
+        } catch (Throwable $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * @Route("/api/_action/ff/logging/{index}", name="api.action.elio-ff.logging.delete", methods={"DELETE"})
+     * @param int $index
+     *
+     * @return JsonResponse
+     */
+    public function delete(int $index): JsonResponse
+    {
+        try {
+            $this->loggingService->delete($index);
+
+            return $this->json([
+                'success' => true
             ]);
         } catch (Throwable $e) {
             return $this->json([

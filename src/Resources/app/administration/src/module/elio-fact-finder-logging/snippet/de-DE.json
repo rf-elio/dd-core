@@ -3,6 +3,14 @@
         "title": "Logging",
         "description": "",
         "logIsEmpty": "Log is empty",
-        "LogsNotFound": "Logs not found"
+        "LogsNotFound": "Logs not found",
+        "reload": "Reload",
+        "remove": "Remove",
+        "modal": {
+            "title": "Deleting",
+            "body": "Are you sure you want to delete the file \"{name}\"",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        }
     }
 }
