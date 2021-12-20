@@ -46,6 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Class ExportSetup
@@ -66,7 +67,11 @@ class ExportSetup
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->exportRepository = $container->get('elio_ff_export.repository');
+        try {
+            $this->exportRepository = $container->get('elio_ff_export.repository');
+        } catch (ServiceNotFoundException $e) {
+        }
+
         $this->salesChannelRepository = $container->get('sales_channel.repository');
         $this->connection = $container->get(Connection::class);
     }
