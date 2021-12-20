@@ -44,6 +44,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Class FilterRestrictionsSetup
@@ -63,7 +64,11 @@ class FilterRestrictionsSetup
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->filterRepository = $container->get('elio_ff_filter.repository');
+        try {
+            $this->filterRepository = $container->get('elio_ff_filter.repository');
+        } catch (ServiceNotFoundException $e) {
+        }
+
         $this->connection = $container->get(Connection::class);
     }
 

@@ -32,19 +32,12 @@
 
 namespace Elio\FactFinder;
 
-use Doctrine\DBAL\Connection;
-use Elio\FactFinder\Core\Export\ExportDefinition;
 use Elio\FactFinder\Core\Export\Setup\ExportSetup;
-use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Elio\FactFinder\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
 use Elio\FactFinder\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
-use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
