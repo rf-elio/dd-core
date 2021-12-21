@@ -18,16 +18,17 @@
         </template>
 
         <sw-card-view slot="content">
+            <sw-loader v-if="isLoading" size="50px">
+            </sw-loader>
             <sw-card>
                 <sw-single-select
                         v-if="logs.length"
                         :options="logs"
                         v-model="selectedLog"
                         size="medium"
-                        :is-loading="isLoading"
                 ></sw-single-select>
             </sw-card>
-            <div :isLoading="isLoading" class="elio-ff-logging-list__content">
+            <div class="elio-ff-logging-list__content">
                 <template v-if="contents.length">
                     <template v-for="content in contents">
                         <sw-card>
