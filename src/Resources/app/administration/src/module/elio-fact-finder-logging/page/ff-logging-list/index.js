@@ -12,7 +12,10 @@ Shopware.Component.register('ff-logging-list', {
             selectedLog: 0,
             contents: [],
             isLoading: false,
-            showDeleteModal: false
+            showDeleteModal: false,
+            contentsOffset: 0,
+            contentsLimit: 10,
+            contentsTotal: 0
         }
     },
 
@@ -24,30 +27,49 @@ Shopware.Component.register('ff-logging-list', {
 
     watch: {
         selectedLog () {
-            this.load();
+            this.loadInitial();
         }
     },
 
     computed: {
         selectedLogName () {
-            const selectedLog =  this.logs.find(item => item.value === this.selectedLog);
+            const selectedLog = this.logs.find(item => item.value === this.selectedLog);
             return selectedLog ? selectedLog.label : '';
         }
     },
 
     created () {
-        this.load();
+        this.loadInitial();
+
+        window.addEventListener('scroll', this.onScroll, true);
+    },
+
+    beforeDestroy () {
+        window.removeEventListener('scroll', this.onScroll, true);
     },
 
     methods: {
+        loadInitial () {
+            this.contentsOffset = 0;
+            this.load();
+        },
+
         load () {
             this.isLoading = true;
-            this.ffLogging.getContent(this.selectedLog).then(result => {
+            this.ffLogging.getContent(this.selectedLog, {
+                offset: this.contentsOffset,
+                limit: this.contentsLimit
+            }).then(result => {
                 if (result.success) {
                     this.logs = result.data.logs.map((item, idx) => {
                         return { label: item, value: idx }
                     });
-                    this.contents = result.data.logContents;
+                    if (this.contentsOffset > 0) {
+                        this.contents = this.contents.concat(result.data.contents);
+                    } else {
+                        this.contents = result.data.contents;
+                    }
+                    this.contentsTotal = result.data.contentsTotal
                 }
 
                 this.isLoading = false;
@@ -65,6 +87,30 @@ Shopware.Component.register('ff-logging-list', {
         onDeleted () {
             this.closeDeleteModal();
             this.selectedLog = 0;
+        },
+
+        onScroll () {
+            const pagination = this.$refs.pagination;
+
+            if (this.isLoading || !this.inViewport(pagination)) {
+                return;
+            }
+
+            if (((this.contentsOffset + 1) * this.contentsLimit) < this.contentsTotal) {
+                this.contentsOffset++;
+                this.load();
+            }
+        },
+
+        inViewport (element) {
+            const rect = element.getBoundingClientRect();
+
+            return rect.top > 0 &&
+                rect.left > 0 &&
+                rect.bottom > 0 &&
+                rect.right > 0 &&
+                rect.bottom <= window.innerHeight &&
+                rect.right <= window.innerWidth;
         }
     }
 })

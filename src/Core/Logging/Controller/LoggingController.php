@@ -33,18 +33,25 @@ class LoggingController extends AbstractController
 
     /**
      * @Route("/api/_action/ff/logging/{index}", name="api.action.elio-ff.logging.index", methods={"GET"})
+     * @param Request $request
      * @param int $index
      *
      * @return JsonResponse
      */
-    public function index(int $index = 0): JsonResponse
+    public function index(Request $request, int $index = 0): JsonResponse
     {
+        $offset = $request->get('offset', 0);
+        $limit = $request->get('limit', 10);
+
         try {
+            $contents = $this->loggingService->getLogContents($index);
+
             return $this->json([
                 'success' => true,
                 'data' => [
                     'logs' => $this->loggingService->getLogs(),
-                    'logContents' => $this->loggingService->getLogContents($index)
+                    'contents' => array_slice($contents, $offset * $limit, $limit),
+                    'contentsTotal' => count($contents)
                 ]
             ]);
         } catch (Throwable $e) {

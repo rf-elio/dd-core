@@ -5,8 +5,9 @@ export default class LoggingService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    getContent (index = 0) {
-        const apiRoute = `_action/${this.getApiBasePath()}/${index}`;
+    getContent (index = 0, params) {
+        const query = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+        const apiRoute = `_action/${this.getApiBasePath()}/${index}?${query}`;
 
         return this.httpClient.get(
             apiRoute,
