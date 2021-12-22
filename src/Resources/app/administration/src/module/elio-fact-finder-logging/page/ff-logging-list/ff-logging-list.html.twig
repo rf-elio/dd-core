@@ -4,7 +4,7 @@
             <sw-button
                     size="small"
                     variant="primary"
-                    @click="load"
+                    @click="loadInitial"
             >
                 &nbsp;<sw-icon name="small-arrow-360-left" :small="true"></sw-icon>&nbsp;
             </sw-button>
@@ -35,6 +35,7 @@
                             <div v-html="content"></div>
                         </sw-card>
                     </template>
+                    <div ref="pagination"></div>
                 </template>
                 <template v-else>
                     <sw-card>{{ $tc('ff-logging.logIsEmpty') }}</sw-card>
