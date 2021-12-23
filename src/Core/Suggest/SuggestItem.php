@@ -74,6 +74,11 @@ class SuggestItem
     protected float $score;
 
     /**
+     * @var bool
+     */
+    protected bool $isTop = false;
+
+    /**
      * @var string
      */
     protected string $url = '';
@@ -223,5 +228,21 @@ class SuggestItem
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTop(): bool
+    {
+        return $this->isTop;
+    }
+
+    /**
+     * @param bool $isTop
+     */
+    public function setIsTop(bool $isTop): void
+    {
+        $this->isTop = $isTop;
     }
 }
