@@ -133,6 +133,13 @@
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
             <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
+
+        <input-field type="bool">
+            <name>suggestShowSearchHistory</name>
+            <label>Enable search history</label>
+            <label lang="de-DE">Suchverlauf aktivieren</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>

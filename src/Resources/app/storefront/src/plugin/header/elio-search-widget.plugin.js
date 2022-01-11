@@ -13,6 +13,28 @@ export default class ElioSearchWidgetPlugin extends SearchWidgetPlugin {
     }
 
     /**
+     * Close/remove the search/search history results from DOM if user
+     * clicks outside the form or the results popover
+     * @param {Event} e
+     * @private
+     */
+    _onBodyClick(e) {
+        // early return if click target is the search form or any of it's children
+        if (e.target.closest(this.options.searchWidgetSelector)) {
+            return;
+        }
+
+        // early return if click target is the search result or any of it's children
+        if (e.target.closest(this.options.searchWidgetResultSelector) || e.target.closest('.js-search-history')) {
+            return;
+        }
+        // remove existing search results popover
+        this._clearSuggestResults();
+
+        this.$emitter.publish('onBodyClick', { e });
+    }
+
+    /**
      * Process the AJAX suggest and show results
      * @param {string} value
      * @private

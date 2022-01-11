@@ -1,0 +1,37 @@
+.history-remove {
+	vertical-align: middle;
+	border: none;
+	color: inherit;
+	border-radius: 50%;
+	background: transparent;
+	position: relative;
+	width: 20px;
+	height: 20px;
+	opacity: 0.6;
+
+	&:focus, &:hover {
+		opacity: 1;
+
+		&::before, &::after {
+			background-color: $sw-color-brand-primary;
+		}
+	}
+
+	&::before, &::after {
+		content: " ";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		height: 12px;
+		width: 1px;
+		background-color: $sw-text-color;
+	}
+
+	&::before {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	&::after {
+		transform: translate(-50%, -50%) rotate(-45deg);
+	}
+}
