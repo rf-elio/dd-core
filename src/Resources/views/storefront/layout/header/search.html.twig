@@ -5,15 +5,16 @@
         suggestAutocompleteType: config_by_lang("FactFinder.config.suggestAutocompleteType")
     } %}
 
-    <div class="collapse"
-         id="searchCollapse">
+    {% set showSearchHistory = config_by_lang("FactFinder.config.suggestShowSearchHistory") %}
+
+    <div class="collapse" id="searchCollapse">
         <div class="header-search">
             <form action="{{ path('frontend.search.page') }}"
                   method="get"
                   data-search-form="true"
                   data-search-widget-options='{{ searchOptions|json_encode }}'
                   data-url="{{ path('frontend.search.suggest') }}?search="
-                  class="header-search-form e-header-search-form">
+                  class="header-search-form e-header-search-form {% if showSearchHistory %}e-search-history{% endif %}">
                 {% block layout_header_search_input_group %}
                     {{ parent() }}
 
