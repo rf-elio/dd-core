@@ -64,7 +64,7 @@ class ContentTransformer implements ResponseTransformerInterface
             $masterValues = $hit->getMasterValues();
             $content = new ContentItem(
                 $hit->getId(),
-                $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TYPE) ?? ContentExportDefaults::TYPE,
+                $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TYPE) ?? '',
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_CONTENT_STRUCTURE) ?? '',
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TITLE) ?? '',
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_DESCRIPTION) ?? '',
@@ -125,9 +125,24 @@ class ContentTransformer implements ResponseTransformerInterface
     protected function createContentGroups(ContentListingResponse $listing): void
     {
         $contentGroups = [];
+        $topContentGroups = [];
 
         foreach ($listing->getContentItems() as $contentItem) {
             $type = $contentItem->getType();
+
+            if (empty($type)) {
+                continue;
+            }
+
+            if (preg_match('/^top-(\S)+$/', $type)) {
+                // to topContentGroups
+                if(!isset($topContentGroups[$type])) {
+                    $topContentGroups[$type] = new ContentGroup($type, $type);
+                }
+
+                $topContentGroups[$type]->addContentItem($contentItem);
+                continue;
+            }
 
             if(!isset($contentGroups[$type])) {
                 $contentGroups[$type] = new ContentGroup($type, $type);
@@ -137,5 +152,6 @@ class ContentTransformer implements ResponseTransformerInterface
         }
 
         $listing->setContentGroups($contentGroups);
+        $listing->setTopContentGroups($topContentGroups);
     }
 }
