@@ -64,7 +64,7 @@ class ContentTransformer implements ResponseTransformerInterface
             $masterValues = $hit->getMasterValues();
             $content = new ContentItem(
                 $hit->getId(),
-                $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TYPE) ?? '',
+                $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TYPE) ?? ContentExportDefaults::TYPE,
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_CONTENT_STRUCTURE) ?? '',
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_TITLE) ?? '',
                 $this->getFirstValue($masterValues, ContentExportDefaults::FIELD_DESCRIPTION) ?? '',
