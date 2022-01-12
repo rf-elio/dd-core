@@ -13,6 +13,11 @@
     {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
         label: 'above search result', container: searchResult
     } %}
+
+    {% sw_include '@Storefront/storefront/component/content/listing.html.twig' with {
+        listing: topProductsContentGroup
+    } %}
+
     {{ parent() }}
     {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
         label: 'below search result', container: searchResult
