@@ -36,13 +36,15 @@
                         {% endif %}
 
                         {% for contentGroup in contentListingResponse.contentGroups %}
-                            <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
-                                <a data-toggle="pill"
-                                   class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
-                                   href="#{{ contentGroup.type }}">
-                                    {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
-                                </a>
-                            </li>
+                            {% if contentGroup.type matches '{^top-[\\S]+$}' == 0 %}
+                                <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
+                                    <a data-toggle="pill"
+                                       class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
+                                       href="#{{ contentGroup.type }}">
+                                        {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
+                                    </a>
+                                </li>
+                            {% endif %}
                         {% endfor %}
                     </ul>
 
@@ -53,8 +55,14 @@
                             </div>
                         {% endif %}
 
-                        {% for contentGroup in contentListingResponse.contentGroups %}
+                        {% for groupName,contentGroup in contentListingResponse.contentGroups %}
                             <div id="{{ contentGroup.type }}" class="tab-pane fade {% if not hasProducts and loop.first %} show active{% endif %}">
+                                {% set topGroupKey = "top-" ~ groupName %}
+                                {% if topGroupKey in contentListingResponse.contentGroups|keys %}
+                                    {% sw_include '@Storefront/storefront/component/content/listing.html.twig' with {
+                                        listing: contentListingResponse.contentGroups[topGroupKey]
+                                    } %}
+                                {% endif %}
                                 {% sw_include '@Storefront/storefront/component/content/listing.html.twig' with {
                                     listing: contentGroup
                                 } %}
