@@ -48,7 +48,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
-use Swagger\Client\Model\SearchRecord;
 
 /**
  * Class ProductTransformer
@@ -92,7 +91,8 @@ class ProductTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $productNumbers = $this->extractProductNumbers($model);
+        $groupProductNumbers = $this->extractGroupProductNumbers($model);
+        $productNumbers = array_merge([], ...array_values($groupProductNumbers));
         $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
@@ -102,8 +102,8 @@ class ProductTransformer implements ResponseTransformerInterface
 
         // sorts the product collection based on the original ff result order
         $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
-            $aPosition = $productNumberSort[$a->getProductNumber()];
-            $bPosition = $productNumberSort[$b->getProductNumber()];
+            $aPosition = $productNumberSort[$a->getProductNumber()] ?? 0;
+            $bPosition = $productNumberSort[$b->getProductNumber()] ?? 0;
 
             if ($aPosition === $bPosition) {
                 return 0;
@@ -116,7 +116,7 @@ class ProductTransformer implements ResponseTransformerInterface
         $listing->setProducts($products);
 
         // total count must be corrected by the difference we have for the found products
-        $shouldCount = count($productNumbers);
+        $shouldCount = count($groupProductNumbers);
         $isCount = $products->count();
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
@@ -128,10 +128,14 @@ class ProductTransformer implements ResponseTransformerInterface
      * @param Result $result
      * @return array
      */
-    protected function extractProductNumbers(Result $result): array
+    protected function extractGroupProductNumbers(Result $result): array
     {
-        return array_map(static function (SearchRecord $searchRecord) {
-            return $searchRecord->getId();
-        }, $result->getHits());
+        $groups = [];
+        foreach ($result->getHits() as $searchRecord) {
+            foreach ($searchRecord->getVariantValues() as $variantValue) {
+                $groups[$searchRecord->getId()][] = $variantValue->getProductId();
+            }
+        }
+        return $groups;
     }
 }
