@@ -7,7 +7,7 @@
     {% if showSearchHistory %}
         {% set searchTermObject = {
             searchTerm: searchTerm,
-            searchPageUrl: path('frontend.search.page')~"?search="~searchTerm|url_encode
+            channel: context.salesChannel.id
         } %}
 
         <div data-search-tracker="true" data-elio-search-tracker-plugin-options='{{ searchTermObject|json_encode }}' />

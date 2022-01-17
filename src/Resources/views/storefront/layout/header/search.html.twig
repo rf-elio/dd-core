@@ -6,14 +6,19 @@
     } %}
 
     {% set showSearchHistory = config_by_lang("FactFinder.config.suggestShowSearchHistory") %}
+    {% set searchHistoryOptions = {
+        channel: context.salesChannel.id,
+        searchPageUrl: path('frontend.search.page')~"?search="
+    } %}
 
     <div class="collapse" id="searchCollapse">
         <div class="header-search">
             <form action="{{ path('frontend.search.page') }}"
                   method="get"
                   data-search-form="true"
-                  data-search-widget-options='{{ searchOptions|json_encode }}'
                   data-url="{{ path('frontend.search.suggest') }}?search="
+                  data-search-widget-options='{{ searchOptions|json_encode }}'
+                  {% if showSearchHistory %}data-elio-search-history-options='{{ searchHistoryOptions|json_encode }}'{% endif %}
                   class="header-search-form e-header-search-form {% if showSearchHistory %}e-search-history{% endif %}">
                 {% block layout_header_search_input_group %}
                     {{ parent() }}
