@@ -14,5 +14,5 @@ PluginManager.register('FactFinderFilterRange', FactFinderFilterRangePlugin, '[d
 PluginManager.register('FactFinderFilterTreeSelect', FactFinderFilterTreeSelectPlugin, '[data-fact-finder-filter-tree-select]');
 PluginManager.register('ElioSuggestAutocompletePlugin', ElioSuggestAutocompletePlugin, '.e-header-search-form');
 PluginManager.register('ElioSearchTrackerPlugin', ElioSearchTrackerPlugin, '[data-search-tracker]');
-PluginManager.register('ElioSearchHistoryPlugin', ElioSearchHistoryPlugin, '.e-search-history .header-search-input');
+PluginManager.register('ElioSearchHistory', ElioSearchHistoryPlugin, '.e-search-history');
 PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-form]');

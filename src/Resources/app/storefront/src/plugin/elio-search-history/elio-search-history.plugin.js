@@ -1,6 +1,7 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import ArrowNavigationHelper from 'src/helper/arrow-navigation.helper';
 import Debouncer from 'src/helper/debouncer.helper';
+import DomAccess from 'src/helper/dom-access.helper';
 
 export default class ElioSearchHistoryPlugin extends Plugin {
     static options = {
@@ -8,15 +9,17 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         searchHistoryResultItemClassName: 'js-result',
         searchHistoryInputFieldSelector: 'input[type=search]',
         searchHistoryButtonFieldSelector: 'button[type=submit]',
-        searchHistoryCollapseButtonSelector: '.js-search-toggle-btn'
+        searchHistoryCollapseButtonSelector: '.js-search-toggle-btn',
+        channel: '',
+        searchPageUrl: ''
     };
 
     init() {
-        this._form = document.querySelector('[data-search-form]');
+        this._input = DomAccess.querySelector(this.el, '.header-search-input');
 
         // initialize the arrow navigation
         this._navigationHelper = new ArrowNavigationHelper(
-            this.el,
+            this._input,
             `.${this.options.searchHistoryResultClassName}`,
             `.${this.options.searchHistoryResultItemClassName}`,
             true,
@@ -27,9 +30,9 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     }
 
     registerEvents() {
-        this.el.addEventListener('click', event => this._onFocus(event));
+        this._input.addEventListener('click', event => this._onFocus(event));
 
-        this.el.addEventListener(
+        this._input.addEventListener(
             'input',
             Debouncer.debounce(this._handleInputEvent.bind(this), 250),
             {
@@ -40,12 +43,12 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     }
 
     registerSubscribers() {
-        const plugin = window.PluginManager.getPluginInstanceFromElement(this._form, 'SearchWidget');
+        const plugin = window.PluginManager.getPluginInstanceFromElement(this.el, 'SearchWidget');
         plugin.$emitter.subscribe('onBodyClick', (event) => this._onFocusOut(event));
     }
 
     _handleInputEvent() {
-        if (this.el.value) {
+        if (this._input.value) {
             this._clearSearchHistory();
         }
         else {
@@ -73,7 +76,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     }
 
     _showSearchHistory() {
-        if (!this.el.value) {
+        if (!this._input.value) {
             this._clearSearchHistory();
 
             let searchHistory = this._getSearchHistoryReversed();
@@ -92,13 +95,25 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     }
 
     _getSearchHistory() {
-        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || {};
 
         return searchHistory;
     }
 
+    _getSearchHistoryForChannel() {
+        let channel = this.options.channel;
+
+        if (channel) {
+            let searchHistory = this._getSearchHistory();
+
+            return searchHistory[channel] || [];
+        }        
+
+        return [];        
+    }
+
     _getSearchHistoryReversed() {
-        let searchHistory = this._getSearchHistory();
+        let searchHistory = this._getSearchHistoryForChannel();
         let searchHistoryReversed = searchHistory.reverse();
 
         return searchHistoryReversed;
@@ -111,7 +126,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         let eSearchHistoryContainer = document.createElement('ul');
         eSearchHistoryContainer.classList.add("col-12", "col-md", "search-suggest-container");
 
-        searchHistory.forEach(searchTermObject => {
+        searchHistory.forEach(searchTerm => {
             let searchTermListItem = document.createElement('li');
             searchTermListItem.classList.add("search-suggest-product", this.options.searchHistoryResultItemClassName);
 
@@ -120,14 +135,16 @@ export default class ElioSearchHistoryPlugin extends Plugin {
 
             let searchTermRowSearchTerm = document.createElement('a');
             let searchTermLinkHref = document.createAttribute('href');
-            searchTermLinkHref.value = searchTermObject.searchPageUrl;
+
+            let hrefValue = `${this.options.searchPageUrl}${encodeURIComponent(searchTerm)}`;
+            searchTermLinkHref.value = hrefValue;
             searchTermRowSearchTerm.setAttributeNode(searchTermLinkHref);
             let searchTermLinkTitle = document.createAttribute('title');
-            searchTermLinkTitle.value = searchTermObject.searchTerm;
+            searchTermLinkTitle.value = searchTerm;
             searchTermRowSearchTerm.setAttributeNode(searchTermLinkTitle);
             searchTermRowSearchTerm.classList.add("col", "search-suggest-product-name", "text-truncate", "search-suggest-product-link", "js-history-term");
 
-            let searchTermTextNode = document.createTextNode(searchTermObject.searchTerm);
+            let searchTermTextNode = document.createTextNode(searchTerm);
             searchTermRowSearchTerm.appendChild(searchTermTextNode);
 
             let searchTermRowRemoveSearchTerm = document.createElement('a');
@@ -144,12 +161,11 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         });
 
         searchHistoryJSResult.appendChild(eSearchHistoryContainer);
-        this._form.appendChild(searchHistoryJSResult);
+        this.el.appendChild(searchHistoryJSResult);
 
         this._wrapper = document.querySelector('.e-search-history');
         this._wrapper.addEventListener('click', event => {
             let target = event.target;
-            // check also if parent has history-remove class - when you click on span or svg thic condition is false
             if (target.classList.contains('history-remove')) {
                 event.preventDefault();
 
@@ -164,10 +180,15 @@ export default class ElioSearchHistoryPlugin extends Plugin {
 
     _removeFromHistory(searchText) {
         let searchHistory = this._getSearchHistory();
+        let channel = this.options.channel;
+        if (channel) {
+            let searchHistoryForChannel = searchHistory[channel];
 
-        searchHistory = searchHistory.filter(searchTermObject => searchTermObject.searchTerm != searchText);
-        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            searchHistoryForChannel = searchHistoryForChannel.filter(searchTerm => searchTerm != searchText);
+            searchHistory[channel] = searchHistoryForChannel;
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
 
-        this._showSearchHistory();
+            this._showSearchHistory();
+        }
     }
 }
