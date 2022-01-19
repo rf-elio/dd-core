@@ -6,7 +6,7 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class AdvisorQuestion
 {
-    private ?int $id = null;
+    private ?string $id = null;
     private ?string $text = null;
     private ?bool $visible = null;
     /**
@@ -15,19 +15,19 @@ class AdvisorQuestion
     private array $answers = [];
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      *
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
         return $this;

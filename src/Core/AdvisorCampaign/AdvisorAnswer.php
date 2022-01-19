@@ -5,7 +5,7 @@ namespace Elio\FactFinder\Core\AdvisorCampaign;
 
 class AdvisorAnswer
 {
-    private ?int $id = null;
+    private ?string $id = null;
     private ?string $text = null;
     private ?bool $selected = null;
     /**
@@ -14,19 +14,19 @@ class AdvisorAnswer
     private array $questions = [];
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      *
      * @return $this
      */
-    public function setId(int $id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
         return $this;
