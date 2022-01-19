@@ -1,7 +1,7 @@
 {% block sw_cms_el_config_ff_advisor_campaign %}
     <div class="sw-cms-el-config-ff-advisor-campaign">
         <sw-text-field
-            label="Campaign name"
+            :label="$tc('sw-cms.elements.advisorCampaign.config.campaignName')"
             v-model="element.config.campaignName.value"
             @element-update="onElementUpdate">
         </sw-text-field>

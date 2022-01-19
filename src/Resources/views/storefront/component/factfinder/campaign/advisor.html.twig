@@ -7,16 +7,15 @@
             productsUrl: path('frontend.elio-ff.advisor-products'),
             campaignId: campaign.getId(),
             token: sw_csrf('frontend.elio-ff.advisor-products', {'mode': 'token'}),
-            questions: campaign.questionsToArray(),
-            filters: container.currentFilters
+            questions: campaign.questionsToArray()
         } %}
 
-        <div class="advisor"
+        <div class="elio-ff-advisor-campaign"
              data-fact-finder-advisor-campaign
-            data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
-            <div data-elio-ff-advisor-questions class=""></div>
+             data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
 
-            <div data-elio-ff-advisor-products class="products"></div>
+            <div data-elio-ff-advisor-questions class="elio-ff-advisor-questions"></div>
+            <div data-elio-ff-advisor-products class="elio-ff-advisor-products"></div>
         </div>
     {% endif %}
 {% endif %}

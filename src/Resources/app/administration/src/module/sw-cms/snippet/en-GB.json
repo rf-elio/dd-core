@@ -9,7 +9,16 @@
         },
         "elements": {
             "advisorCampaign": {
-                "label": "Advisor campaign"
+                "label": "Advisor campaign",
+                "config": {
+                    "campaignName": "Campaign name"
+                },
+                "content": {
+                    "question": "Advisor's question?",
+                    "firstAnswer": "First answer",
+                    "secondAnswer": "Second answer",
+                    "thirdAnswer": "Third answer"
+                }
             }
         }
     }

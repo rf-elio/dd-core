@@ -31,6 +31,12 @@ class AdvisorCampaignController extends StorefrontController
     private ProductSearchRequestBuilder $searchRequestBuilder;
     private LoggerInterface $logger;
 
+    /**
+     * @param FactFinderConfigServiceInterface $configService
+     * @param SearchApi $searchApi
+     * @param ProductSearchRequestBuilder $searchRequestBuilder
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
         SearchApi $searchApi,
@@ -66,8 +72,8 @@ class AdvisorCampaignController extends StorefrontController
             /** @var AdvisorCampaignResponseCollection $advisorCampaignResponseCollection */
             $advisorCampaignResponseCollection = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
 
-            $campaign = $request->get('campaign_name') !== null ?
-                        $advisorCampaignResponseCollection->getByName($request->get('campaign_name')) :
+            $campaign = !empty($request->get('campaignName')) ?
+                        $advisorCampaignResponseCollection->getByName($request->get('campaignName')) :
                         $advisorCampaignResponseCollection->getFirstCampaign();
 
             return $this->json([
