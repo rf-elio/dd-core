@@ -1,0 +1,16 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "advisorCampaign": {
+                    "label": "Advisor campaign"
+                }
+            }
+        },
+        "elements": {
+            "advisorCampaign": {
+                "label": "Advisor campaign"
+            }
+        }
+    }
+}

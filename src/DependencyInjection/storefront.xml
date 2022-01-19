@@ -29,5 +29,16 @@
         <service id="Elio\FactFinder\Storefront\Subscriber\CampaignRedirectionSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Elio\FactFinder\Core\AdvisorCampaign\Controller\AdvisorCampaignController" public="true">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="logger" />
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>

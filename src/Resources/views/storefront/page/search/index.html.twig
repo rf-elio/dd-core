@@ -7,6 +7,10 @@
                 label: 'above search result', container: page.listing
             } %}
 
+            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/advisor.html.twig' with {
+                container: page.listing
+            } %}
+
             {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}
                 {% block page_search_headline %}

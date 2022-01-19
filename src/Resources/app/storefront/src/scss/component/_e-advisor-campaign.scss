@@ -1,0 +1,23 @@
+.elio-ff-advisor {
+  &__question-container {
+    padding: 10px;
+  }
+
+  &__question {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  &__answers {
+    display: flex;
+    align-items: flex-start;
+    background-color: #fff;
+    padding: 15px;
+  }
+
+  &__answer {
+    cursor: pointer;
+    line-height: 1.5;
+  }
+}

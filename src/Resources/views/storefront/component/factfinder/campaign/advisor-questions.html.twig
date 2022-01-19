@@ -1,0 +1,28 @@
+<div class="elio-ff-advisor__questions-container">
+    {% for question in questions %}
+        <div class="elio-ff-advisor__question-container {% if activeQuestions %}active{% endif %}" data-question-id="{{ question.getId() }}">
+            <div class="elio-ff-advisor__question">
+                {{ question.getText() }}
+            </div>
+
+            <div class="elio-ff-advisor__answers-container">
+                {% for answer in question.getAnswers() %}
+                    <div class="answer-container">
+                        <button class="answer"
+                                data-elio-ff-advisor-answer
+                                data-parent-question-id="{{ question.getId() }}"
+                                data-answer-id="{{ answer.getId() }}"
+                                data-question-index="{{ loop.parent.loop.index0 }}"
+                                data-answer-index="{{ loop.index0 }}"
+                        >{{ answer.getText() }}</button>
+
+                        {% sw_include '@ElioFactFinder/storefront/component/factfinder/campaign/advisor-questions.html.twig' with {
+                            questions: answer.getQuestions(),
+                            activeQuestions: false
+                        } %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

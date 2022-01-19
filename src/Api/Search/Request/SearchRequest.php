@@ -26,6 +26,8 @@ abstract class SearchRequest extends ChannelRequest
     protected ?array $sort = null;
     protected array $filter = [];
     protected ?array $additionalRequestParameters = null;
+    protected ?AdvisorStatus $advisorStatus = null;
+    protected ?int $hitsPerPage = null;
 
     /**
      * @return string
@@ -127,5 +129,37 @@ abstract class SearchRequest extends ChannelRequest
             ];
         }
         $this->filter[$name]['values'][] = $value;
+    }
+
+    /**
+     * @return AdvisorStatus|null
+     */
+    public function getAdvisorStatus(): ?AdvisorStatus
+    {
+        return $this->advisorStatus;
+    }
+
+    /**
+     * @param AdvisorStatus|null $advisorStatus
+     */
+    public function setAdvisorStatus(?AdvisorStatus $advisorStatus): void
+    {
+        $this->advisorStatus = $advisorStatus;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHitsPerPage(): ?int
+    {
+        return $this->hitsPerPage;
+    }
+
+    /**
+     * @param int|null $hitsPerPage
+     */
+    public function setHitsPerPage(?int $hitsPerPage): void
+    {
+        $this->hitsPerPage = $hitsPerPage;
     }
 }

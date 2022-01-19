@@ -1,0 +1,17 @@
+{% block element_ff_advisor_campaign %}
+    {% set options = {
+        productsUrl: path('frontend.elio-ff.advisor-products'),
+        campaignUrl: path('frontend.elio-ff.advisor-campaign'),
+        productsToken: sw_csrf('frontend.elio-ff.advisor-products', {'mode': 'token'}),
+        campaignToken: sw_csrf('frontend.elio-ff.advisor-campaign', {'mode': 'token'})
+    } %}
+
+    <div class="advisor"
+         data-fact-finder-advisor-campaign
+         data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
+
+        <div data-elio-ff-advisor-questions class=""></div>
+
+        <div data-elio-ff-advisor-products class="products"></div>
+    </div>
+{% endblock %}

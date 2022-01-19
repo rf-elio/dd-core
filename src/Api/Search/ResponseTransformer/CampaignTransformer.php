@@ -34,14 +34,20 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponse;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponse;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\AdvisorCampaign\AdvisorAnswer;
+use Elio\FactFinder\Core\AdvisorCampaign\AdvisorQuestion;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
+use Swagger\Client\Model\Question;
 use Swagger\Client\Model\Result;
 
 /**
@@ -56,6 +62,7 @@ use Swagger\Client\Model\Result;
 class CampaignTransformer implements ResponseTransformerInterface
 {
     private CONST FLAVOR_REDIRECT = 'REDIRECT';
+    private CONST FLAVOR_ADVISOR = 'ADVISOR';
 
     /**
      * @inheritDoc
@@ -88,6 +95,9 @@ class CampaignTransformer implements ResponseTransformerInterface
         $campaignFeedbackResponseCollection = new CampaignFeedbackResponseCollection();
         $responseCollection->set(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
 
+        $advisorCampaignResponseCollection = new AdvisorCampaignResponseCollection();
+        $responseCollection->set(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponseCollection);
+
         foreach ($model->getCampaigns() as $campaign) {
             if ($campaign->getFlavour() === self::FLAVOR_REDIRECT) {
                 $responseCollection->set(CampaignRedirectionResponse::class, new CampaignRedirectionResponse(
@@ -103,6 +113,42 @@ class CampaignTransformer implements ResponseTransformerInterface
                     $feedbackText->getHtml()
                 ));
             }
+
+            if ($campaign->getFlavour() === self::FLAVOR_ADVISOR) {
+                $questions = [];
+                foreach ($campaign->getAdvisorTree() as $question) {
+                    $questions[] = $this->questionWalk($question);
+                }
+
+                $advisorCampaignResponseCollection->addAdvisorCampaignResponse(new AdvisorCampaignResponse(
+                    $campaign->getId(),
+                    $campaign->getName(),
+                    $questions
+                ));
+            }
         }
+    }
+
+    private function questionWalk(Question $question): AdvisorQuestion
+    {
+        $advisorQuestion = (new AdvisorQuestion())
+            ->setId($question->getId())
+            ->setText($question->getText())
+            ->setVisible($question->getVisible());
+
+        foreach ($question->getAnswers() as $answer) {
+            $advisorAnswer = (new AdvisorAnswer())
+                ->setId($answer->getId())
+                ->setText($answer->getText())
+                ->setSelected($answer->getSelected());
+
+            foreach ($answer->getQuestions() as $subQuestion) {
+                $advisorAnswer->addQuestion($this->questionWalk($subQuestion));
+            }
+
+            $advisorQuestion->addAnswer($advisorAnswer);
+        }
+
+        return $advisorQuestion;
     }
 }

@@ -88,6 +88,8 @@ class Configuration extends Struct
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
     private string $suggestProductNumberAttribute;
+    private int $maxAdvisorProducts;
+    private string $searchTermForAdvisorCmsElement;
 
     /**
      * Configuration constructor.
@@ -119,6 +121,8 @@ class Configuration extends Struct
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
      * @param string $suggestProductNumberAttribute
+     * @param int $maxAdvisorProducts
+     * @param string $searchTermForAdvisorCmsElement
      */
     public function __construct(
         bool $active,
@@ -148,7 +152,9 @@ class Configuration extends Struct
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
-        string $suggestProductNumberAttribute
+        string $suggestProductNumberAttribute,
+        int $maxAdvisorProducts,
+        string $searchTermForAdvisorCmsElement
     )
     {
         $this->useAso = $useAso;
@@ -179,6 +185,8 @@ class Configuration extends Struct
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
+        $this->maxAdvisorProducts = $maxAdvisorProducts;
+        $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
     }
 
     /**
@@ -404,5 +412,21 @@ class Configuration extends Struct
     public function getSuggestProductNumberAttribute(): string
     {
         return $this->suggestProductNumberAttribute;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxAdvisorProducts(): int
+    {
+        return $this->maxAdvisorProducts;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchTermForAdvisorCmsElement(): string
+    {
+        return $this->searchTermForAdvisorCmsElement;
     }
 }

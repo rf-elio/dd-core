@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
@@ -139,5 +140,8 @@ class ProductListingResultTransformer
         /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
         $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
         $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+
+        $advisorCampaignResponse = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
+        $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
     }
 }
