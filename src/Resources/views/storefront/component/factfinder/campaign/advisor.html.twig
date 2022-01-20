@@ -1,21 +1,27 @@
-{% if container and container.hasExtension('AdvisorCampaignResponseCollection') %}
-    {% set campaign = container.getExtension('AdvisorCampaignResponseCollection').getFirstCampaign() %}
+{% block elio_factfinder_advisor_campaign %}
+    {% if container and container.hasExtension('AdvisorCampaignResponseCollection') %}
+        {% set campaign = container.getExtension('AdvisorCampaignResponseCollection').getFirstCampaign() %}
 
-    {% if campaign %}
-        {% set options = {
-            url: '',
-            productsUrl: path('frontend.elio-ff.advisor-products'),
-            campaignId: campaign.getId(),
-            token: sw_csrf('frontend.elio-ff.advisor-products', {'mode': 'token'}),
-            questions: campaign.questionsToArray()
-        } %}
+        {% if campaign %}
+            {% set options = {
+                productsUrl: path('frontend.elio-ff.advisor-products'),
+                campaignUrl: path('frontend.elio-ff.advisor-campaign'),
+                productsToken: sw_csrf('frontend.elio-ff.advisor-products', {'mode': 'token'}),
+                campaignToken: sw_csrf('frontend.elio-ff.advisor-campaign', {'mode': 'token'}),
+                campaignId: campaign.getId(),
+                questions: campaign.questionsToArray(),
+                showPassedAfterDays: config_by_lang("FactFinder.config.showPassedAdvisorAfterDays")
+            } %}
 
-        <div class="elio-ff-advisor-campaign"
-             data-fact-finder-advisor-campaign
-             data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
+            <div class="elio-ff-advisor"
+                 data-fact-finder-advisor-campaign
+                 data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
 
-            <div data-elio-ff-advisor-questions class="elio-ff-advisor-questions"></div>
-            <div data-elio-ff-advisor-products class="elio-ff-advisor-products"></div>
-        </div>
+                <div data-elio-ff-advisor-questions class="elio-ff-advisor__questions"></div>
+                <div class="elio-ff-advisor__products-container">
+                    <div data-elio-ff-advisor-products class="elio-ff-advisor__products"></div>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
-{% endif %}
+{% endblock %}

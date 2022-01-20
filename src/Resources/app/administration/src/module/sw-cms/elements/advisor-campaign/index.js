@@ -12,6 +12,10 @@ Shopware.Service('cmsService').registerCmsElement({
         campaignName: {
             source: 'static',
             value: ''
+        },
+        productsTitle: {
+            source: 'static',
+            value: ''
         }
     }
 })

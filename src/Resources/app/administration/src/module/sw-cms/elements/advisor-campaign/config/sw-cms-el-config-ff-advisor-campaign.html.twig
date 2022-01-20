@@ -5,5 +5,10 @@
             v-model="element.config.campaignName.value"
             @element-update="onElementUpdate">
         </sw-text-field>
+        <sw-text-field
+            :label="$tc('sw-cms.elements.advisorCampaign.config.productsTitle')"
+            v-model="element.config.productsTitle.value"
+            @element-update="onElementUpdate">
+        </sw-text-field>
     </div>
 {% endblock %}

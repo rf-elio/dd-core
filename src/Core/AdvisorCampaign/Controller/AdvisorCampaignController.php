@@ -17,7 +17,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
@@ -123,7 +122,7 @@ class AdvisorCampaignController extends StorefrontController
 
             return $this->json([
                 'success' => true,
-                'data' => $this->renderStorefront('storefront/component/factfinder/campaign/products.html.twig', [
+                'data' => $this->renderStorefront('storefront/component/factfinder/campaign/advisor-products.html.twig', [
                     'products' => $products
                 ])->getContent(),
                 'productsCount' => $products->count()

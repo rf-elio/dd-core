@@ -2,15 +2,18 @@ import Plugin from 'src/plugin-system/plugin.class';
 import PluginManager from 'src/plugin-system/plugin.manager';
 import HttpClient from 'src/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
+import Debouncer from 'src/helper/debouncer.helper';
 import storage from 'src/helper/storage/storage.helper';
 
 const STORAGE_ITEM_NAME = 'elio-ff-advisor-is-completed';
 const ANSWER_DATA_ATTR = 'data-elio-ff-advisor-answer';
-const QUESTION_DATA_ATTR = 'data-elio-ff-advisor-question'
+const QUESTION_DATA_ATTR = 'data-elio-ff-advisor-question';
+const SCROLL_DEBOUNCE = 50;
 
 export default class AdvisorCampaignPlugin extends Plugin {
     static options = {
         productsContainerSelector: '[data-elio-ff-advisor-products]',
+        productsTitleSelector: '[data-elio-ff-advisor-products-title]',
         questionsContainerSelector: '[data-elio-ff-advisor-questions]',
         sliderSelector: '[data-product-slider]',
         pluginSliderName: 'ProductSlider',
@@ -20,7 +23,8 @@ export default class AdvisorCampaignPlugin extends Plugin {
         campaignId: null,
         productsToken: null,
         campaignToken: null,
-        questions: []
+        questions: [],
+        showPassedAfterDays: 0
     }
 
     init () {
@@ -32,12 +36,13 @@ export default class AdvisorCampaignPlugin extends Plugin {
         this._answerPath = [];
         this._questionsContainer = this.el.querySelector(this.options.questionsContainerSelector);
         this._productsContainer = this.el.querySelector(this.options.productsContainerSelector);
+        this._productsTitle = this.el.querySelector(this.options.productsTitleSelector);
 
         this._registerEvents();
         if (this.options.questions.length > 0) {
             this._showQuestions(this.options.questions);
         } else if (!this.options.campaignId) {
-            this._loadCampaign();
+            this._lazyLoadCampaign();
         }
     }
 
@@ -65,6 +70,7 @@ export default class AdvisorCampaignPlugin extends Plugin {
 
             if (response.productsCount > 0) {
                 this._productsContainer.innerHTML = response.data;
+                if (this._productsTitle) this._productsTitle.classList.add('active');
                 PluginManager.initializePlugin(this.options.pluginSliderName, this.options.sliderSelector);
                 this._setAdvisorCompleted();
             } else {
@@ -72,6 +78,22 @@ export default class AdvisorCampaignPlugin extends Plugin {
                 this._showQuestions(questions);
             }
         });
+    }
+
+    _lazyLoadCampaign () {
+        document.addEventListener(
+            'scroll',
+            Debouncer.debounce(this._onScrollEnd.bind(this), SCROLL_DEBOUNCE),
+            true
+        );
+        document.dispatchEvent(new Event('scroll'));
+    }
+
+    _onScrollEnd () {
+        if (!this._campaignIsLoaded && this._isElInViewport()) {
+            this._campaignIsLoaded = true;
+            this._loadCampaign();
+        }
     }
 
     _loadCampaign () {
@@ -103,7 +125,7 @@ export default class AdvisorCampaignPlugin extends Plugin {
                     reject(response);
                 }
                 ElementLoadingIndicatorUtil.remove(this.el);
-            })
+            });
         });
     }
 
@@ -143,10 +165,25 @@ export default class AdvisorCampaignPlugin extends Plugin {
     }
 
     _setAdvisorCompleted () {
-        storage.setItem(STORAGE_ITEM_NAME + '_' + this.options.campaignId, true);
+        const expire = Date.now() + ((60 * 60 * 24 * this.options.showPassedAfterDays) * 1000);
+        storage.setItem(STORAGE_ITEM_NAME + '_' + this.options.campaignId, expire);
     }
 
     _isAdvisorCompleted () {
-        return this.options.campaignId && storage.getItem(STORAGE_ITEM_NAME + '_' + this.options.campaignId);
+        if (!this.options.campaignId) {
+            return false;
+        }
+        const expire = storage.getItem(STORAGE_ITEM_NAME + '_' + this.options.campaignId);
+        return expire && parseInt(expire) > Date.now();
+    }
+
+    _isElInViewport () {
+        const rect = this.el.getBoundingClientRect();
+        return rect.top > 0 &&
+            rect.left > 0 &&
+            rect.bottom > 0 &&
+            rect.right > 0 &&
+            rect.bottom <= window.innerHeight &&
+            rect.right <= window.innerWidth;
     }
 }

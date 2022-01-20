@@ -324,6 +324,12 @@
             <label lang="de-DE">Search term for the "Advisor campaign" cms element</label>
             <defaultValue>cms_element</defaultValue>
         </input-field>
+        <input-field type="text">
+            <name>showPassedAdvisorAfterDays</name>
+            <label>Show passed advisor after (days)</label>
+            <label lang="de-DE">Show passed advisor after (days)</label>
+            <defaultValue>7</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Logging and Report</title>

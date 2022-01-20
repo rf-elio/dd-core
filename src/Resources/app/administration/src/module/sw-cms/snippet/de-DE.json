@@ -11,7 +11,8 @@
             "advisorCampaign": {
                 "label": "Advisor campaign",
                 "config": {
-                    "campaignName": "Campaign name"
+                    "campaignName": "Campaign name",
+                    "productsTitle": "Products title"
                 },
                 "content": {
                     "question": "Advisor's question?",

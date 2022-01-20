@@ -90,6 +90,7 @@ class Configuration extends Struct
     private string $suggestProductNumberAttribute;
     private int $maxAdvisorProducts;
     private string $searchTermForAdvisorCmsElement;
+    private int $showPassedAdvisorAfterDays;
 
     /**
      * Configuration constructor.
@@ -123,6 +124,7 @@ class Configuration extends Struct
      * @param string $suggestProductNumberAttribute
      * @param int $maxAdvisorProducts
      * @param string $searchTermForAdvisorCmsElement
+     * @param int $showPassedAdvisorAfterDays
      */
     public function __construct(
         bool $active,
@@ -154,7 +156,8 @@ class Configuration extends Struct
         array $suggestAcceptedTypes,
         string $suggestProductNumberAttribute,
         int $maxAdvisorProducts,
-        string $searchTermForAdvisorCmsElement
+        string $searchTermForAdvisorCmsElement,
+        int $showPassedAdvisorAfterDays
     )
     {
         $this->useAso = $useAso;
@@ -187,6 +190,7 @@ class Configuration extends Struct
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
         $this->maxAdvisorProducts = $maxAdvisorProducts;
         $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
+        $this->showPassedAdvisorAfterDays = $showPassedAdvisorAfterDays;
     }
 
     /**
@@ -428,5 +432,13 @@ class Configuration extends Struct
     public function getSearchTermForAdvisorCmsElement(): string
     {
         return $this->searchTermForAdvisorCmsElement;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShowPassedAdvisorAfterDays(): int
+    {
+        return $this->showPassedAdvisorAfterDays;
     }
 }
