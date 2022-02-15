@@ -29,6 +29,7 @@
         <service id="Elio\FactFinder\Api\Search\SearchApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
             <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
+            <argument type="service" id="elio.fact_finder.core.logging.debug"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\SuggestApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>

@@ -4,6 +4,7 @@ namespace Elio\FactFinder\Api;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+use Elio\FactFinder\Core\Logging\GuzzleLogWrapper;
 use Elio\FactFinder\Core\Logging\LoggingService;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
@@ -167,7 +168,10 @@ class ApiClientFactory implements ApiClientFactoryInterface
         $stack = HandlerStack::create();
         $mapResponse = Middleware::mapResponse(function(ResponseInterface $response) { $response->getBody()->rewind(); return $response; } );
         $stack->push($mapResponse);
-        $stack->push(Middleware::log($this->logger, new MessageFormatter(LoggingService::LOG_FORMAT)));
+        $stack->push(Middleware::log(
+            new GuzzleLogWrapper($this->logger, $this, ['context' => $salesChannelContext, 'params' => $params]),
+            new MessageFormatter(LoggingService::LOG_FORMAT))
+        );
 
         $config = [
             'max' => $configuration->getApiTimeout(),
