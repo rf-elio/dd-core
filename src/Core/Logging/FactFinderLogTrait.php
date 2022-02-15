@@ -129,12 +129,12 @@ trait FactFinderLogTrait
     /**
      * Creates enhanced log messages
      *
-     * @param $level
+     * @param int $level
      * @param string $message
      * @param object $sender
      * @param array $context
      */
-    protected function ffLog($level, string $message, object $sender, array $context) : void {
+    protected function ffLog(int $level, string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
         $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
         $this->logger->log($level, $message, $context);
@@ -153,9 +153,7 @@ trait FactFinderLogTrait
                 $context[LoggingServiceInterface::LOG_ENTRY_SALES_CHANNEL_ID] = $item->getSalesChannelId();
                 $context[LoggingServiceInterface::LOG_ENTRY_SALES_CHANNEL_DOMAIN_ID] = $item->getDomainId();
                 $context[LoggingServiceInterface::LOG_ENTRY_SCOPE] = $item->getContext()->getScope();
-                if ($item->getCurrentCustomerGroup()) {
-                    $context[LoggingServiceInterface::LOG_ENTRY_SALES_CHANNEL_CUSTOMER_GROUP] = $item->getCurrentCustomerGroup()->getName();
-                }
+                $context[LoggingServiceInterface::LOG_ENTRY_SALES_CHANNEL_CUSTOMER_GROUP] = $item->getCurrentCustomerGroup()->getName();
                 unset($context[$key]);
 
             } elseif ($item instanceof Context) {
