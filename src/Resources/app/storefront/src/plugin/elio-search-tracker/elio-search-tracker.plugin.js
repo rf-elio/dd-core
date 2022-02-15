@@ -2,54 +2,82 @@ import Plugin from 'src/plugin-system/plugin.class';
 
 export default class ElioSearchTrackerPlugin extends Plugin {
     static options = {
-        maxHistoryLength: 10
+        maxHistoryLength: 10,
+        localStorageKey: 'eff-search-history'
     };
 
     init() {
         let searchTermObject = this._getSearchTermObject();
 
         if (searchTermObject) {
-            let { channel, searchTerm } = searchTermObject;
-            this._storeSearchTerm(searchTerm, channel);
+            let { searchTermId, channel, searchTerm } = searchTermObject;
+            this._storeSearchTerm(channel, searchTermId, searchTerm);
         }
     }
 
+    /**
+     * Fetches the currently present search term
+     * @returns {null|{searchTerm: *, channel: (string|RTCDataChannel|*), key: *}}
+     * @private
+     */
     _getSearchTermObject() {
-        let searchTermObject = {};
         let options = this.options;
         
-        if (options) {
-            searchTermObject = {
-                searchTerm: options.searchTerm && options.searchTerm.toLowerCase(),
-                channel: options.channel
-            };
+        if (!options || !options.searchTerm || !options.channel) {
+            return null;
         }
 
-        return searchTermObject;
+        return  {
+            searchTermId: options.searchTerm.toLowerCase(),
+            searchTerm: options.searchTerm,
+            channel: options.channel
+        };
     }
 
-    _storeSearchTerm(searchTerm, channel) {
-        if (channel) {
-            let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || {};
+    /**
+     * Saves the used search term in the users local storage
+     * @param searchTerm
+     * @param channel
+     * @param searchTermId
+     * @private
+     */
+    _storeSearchTerm(channel, searchTermId, searchTerm) {
+        let searchHistory = JSON.parse(localStorage.getItem(this.options.localStorageKey) || null) || {};
 
-            let sHistoryForChannel = searchHistory[channel] || [];
-            let searchedBefore = sHistoryForChannel.some(oldSearchTerm => this._areSearchTermsEqual(oldSearchTerm, searchTerm));
-            if (searchedBefore)
-                sHistoryForChannel = sHistoryForChannel.filter(oldSearchTerm => !this._areSearchTermsEqual(oldSearchTerm, searchTerm));
+        if (!searchHistory.hasOwnProperty(channel)) {
+            searchHistory[channel] = [];
+        }
 
-            sHistoryForChannel.push(searchTerm);
-            let searchHistoryLength = sHistoryForChannel.length;
-            let maxLength = this.options.maxHistoryLength;
-            if (searchHistoryLength > maxLength) {
-                sHistoryForChannel = sHistoryForChannel.slice(searchHistoryLength-maxLength, searchHistoryLength);
+        let searchTermIdPresent = false;
+        for (const searchHistoryEntry of searchHistory[channel]) {
+            if (
+                typeof (searchHistoryEntry) === 'object' &&
+                searchHistoryEntry.hasOwnProperty('searchTermId') &&
+                searchHistoryEntry.searchTermId === searchTermId
+            ) {
+                searchHistoryEntry.lastOccurrence = new Date().toISOString();
+                searchTermIdPresent = true;
             }
-            searchHistory[channel] = sHistoryForChannel;
-
-            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
         }
-    }
 
-    _areSearchTermsEqual(term1, term2) {
-        return term1 == term2;
+        if (!searchTermIdPresent) {
+            searchHistory[channel].push({
+                searchTermId: searchTermId,
+                searchTerm: searchTerm,
+                lastOccurrence: new Date().toISOString()
+            });
+        }
+
+        searchHistory[channel].sort(function compareFn(firstEl, secondEl) {
+            const firstElDate = new Date(firstEl.lastOccurrence);
+            const secondElDate = new Date(secondEl.lastOccurrence);
+            return firstElDate > secondElDate ? -1 : 1;
+        })
+
+        if(searchHistory[channel].length > this.options.maxHistoryLength) {
+            searchHistory[channel] = searchHistory[channel].slice(0, this.options.maxHistoryLength);
+        }
+
+        localStorage.setItem(this.options.localStorageKey, JSON.stringify(searchHistory));
     }
 }

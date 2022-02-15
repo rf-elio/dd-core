@@ -5,6 +5,7 @@ import DomAccess from 'src/helper/dom-access.helper';
 
 export default class ElioSearchHistoryPlugin extends Plugin {
     static options = {
+        localStorageKey: 'eff-search-history',
         searchHistoryResultClassName: 'js-search-history-result',
         searchHistoryResultItemClassName: 'js-result',
         searchHistoryInputFieldSelector: 'input[type=search]',
@@ -29,6 +30,9 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         this.registerSubscribers();
     }
 
+    /**
+     * Registers the events to show the search history
+     */
     registerEvents() {
         this._input.addEventListener('click', event => this._onFocus(event));
 
@@ -42,11 +46,18 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         );
     }
 
+    /**
+     * Registers the events to hide the history if the whitespace was clicked
+     */
     registerSubscribers() {
         const plugin = window.PluginManager.getPluginInstanceFromElement(this.el, 'SearchWidget');
         plugin.$emitter.subscribe('onBodyClick', (event) => this._onFocusOut(event));
     }
 
+    /**
+     * Shows or hides the search history depending on the search term
+     * @private
+     */
     _handleInputEvent() {
         if (this._input.value) {
             this._clearSearchHistory();
@@ -56,10 +67,19 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         }
     }
 
+    /**
+     * Shows the search history if the focus is in the search field
+     * @private
+     */
     _onFocus() {
         this._showSearchHistory();
     }
 
+    /**
+     * Hides the history if the search input forcus got lost
+     * @param event
+     * @private
+     */
     _onFocusOut(event) {
         let initialEvent = (event.detail && event.detail['e']) || event;
         // early return if click target is the search form or any of it's children or search history dropdown
@@ -71,21 +91,41 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         this._clearSearchHistory();
     }
 
+    /**
+     * Reacting to empty value
+     * @private
+     */
     _onInput() {
         this._showSearchHistory();
     }
 
+    /**
+     * Shows the search history
+     * @private
+     */
     _showSearchHistory() {
-        if (!this._input.value) {
-            this._clearSearchHistory();
+        if (this._input.value) {
+            return;
+        }
 
-            let searchHistory = this._getSearchHistoryReversed();
-            if (searchHistory.length) {
-                this._appendSearchHistory(searchHistory);
-            }
+        this._clearSearchHistory();
+        let channel = this.options.channel;
+        let searchHistory = this._getSearchHistory();
+        let searchHistoryForChannel = [];
+
+        if (channel && searchHistory.hasOwnProperty(channel)) {
+            searchHistoryForChannel = searchHistory[channel];
+        }
+
+        if (searchHistoryForChannel.length > 0) {
+            this._appendSearchHistory(searchHistoryForChannel);
         }
     }
 
+    /**
+     * Removes the search history view
+     * @private
+     */
     _clearSearchHistory() {
         const results = document.querySelector(`.${this.options.searchHistoryResultClassName}`);
 
@@ -94,31 +134,20 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         }
     }
 
+    /**
+     * Loads the search history from local storage
+     * @returns {*[]}
+     * @private
+     */
     _getSearchHistory() {
-        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || {};
-
-        return searchHistory;
+        return JSON.parse(localStorage.getItem(this.options.localStorageKey)) || {};
     }
 
-    _getSearchHistoryForChannel() {
-        let channel = this.options.channel;
-
-        if (channel) {
-            let searchHistory = this._getSearchHistory();
-
-            return searchHistory[channel] || [];
-        }        
-
-        return [];        
-    }
-
-    _getSearchHistoryReversed() {
-        let searchHistory = this._getSearchHistoryForChannel();
-        let searchHistoryReversed = searchHistory.reverse();
-
-        return searchHistoryReversed;
-    }
-
+    /**
+     * Appends the search history from local storage
+     * @param searchHistory
+     * @private
+     */
     _appendSearchHistory(searchHistory) {
         let searchHistoryJSResult = document.createElement('div');
         searchHistoryJSResult.classList.add("search-suggest", "e-search-history", this.options.searchHistoryResultClassName);
@@ -126,7 +155,13 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         let eSearchHistoryContainer = document.createElement('ul');
         eSearchHistoryContainer.classList.add("col-12", "col-md", "search-suggest-container");
 
-        searchHistory.forEach(searchTerm => {
+        searchHistory.forEach((searchHistory, searchHistoryIndex) => {
+            if(!searchHistory.hasOwnProperty('searchTerm')) {
+                return;
+            }
+
+            const searchTerm = searchHistory.searchTerm;
+
             let searchTermListItem = document.createElement('li');
             searchTermListItem.classList.add("search-suggest-product", this.options.searchHistoryResultItemClassName);
 
@@ -136,8 +171,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
             let searchTermRowSearchTerm = document.createElement('a');
             let searchTermLinkHref = document.createAttribute('href');
 
-            let hrefValue = `${this.options.searchPageUrl}${encodeURIComponent(searchTerm)}`;
-            searchTermLinkHref.value = hrefValue;
+            searchTermLinkHref.value = `${this.options.searchPageUrl}${encodeURIComponent(searchTerm)}`;
             searchTermRowSearchTerm.setAttributeNode(searchTermLinkHref);
             let searchTermLinkTitle = document.createAttribute('title');
             searchTermLinkTitle.value = searchTerm;
@@ -148,7 +182,8 @@ export default class ElioSearchHistoryPlugin extends Plugin {
             searchTermRowSearchTerm.appendChild(searchTermTextNode);
 
             let searchTermRowRemoveSearchTerm = document.createElement('a');
-            searchTermRowRemoveSearchTerm.classList.add("history-remove");
+            searchTermRowRemoveSearchTerm.setAttribute('searchHistoryIndex', searchHistoryIndex);
+            searchTermRowRemoveSearchTerm.classList.add('history-remove');
             let searchTermRowRemoveSearchTermHref = document.createAttribute('href');
             searchTermRowRemoveSearchTermHref.value = `#`;
             searchTermRowRemoveSearchTerm.setAttributeNode(searchTermRowRemoveSearchTermHref);
@@ -166,29 +201,32 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         this._wrapper = document.querySelector('.e-search-history');
         this._wrapper.addEventListener('click', event => {
             let target = event.target;
-            if (target.classList.contains('history-remove')) {
-                event.preventDefault();
-
-                let searchTermElement = target.previousElementSibling;
-                if (searchTermElement) {
-                    let searchText = searchTermElement.getAttribute('title');
-                    this._removeFromHistory(searchText);
-                }
+            if (
+                !target.classList.contains('history-remove') ||
+                !target.hasAttribute('searchHistoryIndex')
+            ) {
+                return;
             }
+
+            event.preventDefault();
+            this._removeFromHistory(target.getAttribute('searchHistoryIndex'));
         });
     }
 
-    _removeFromHistory(searchText) {
+    /**
+     * Removes a specific item from the search history
+     * @param searchHistoryIndex
+     * @private
+     */
+    _removeFromHistory(searchHistoryIndex) {
         let searchHistory = this._getSearchHistory();
         let channel = this.options.channel;
-        if (channel) {
-            let searchHistoryForChannel = searchHistory[channel];
-
-            searchHistoryForChannel = searchHistoryForChannel.filter(searchTerm => searchTerm != searchText);
-            searchHistory[channel] = searchHistoryForChannel;
-            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
-
-            this._showSearchHistory();
+        if (!channel) {
+            return;
         }
+
+        searchHistory[channel].splice(searchHistoryIndex, 1);
+        localStorage.setItem(this.options.localStorageKey, JSON.stringify(searchHistory));
+        this._showSearchHistory();
     }
 }

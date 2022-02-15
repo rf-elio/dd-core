@@ -10,7 +10,9 @@
             channel: context.salesChannel.id
         } %}
 
-        <div data-search-tracker="true" data-elio-search-tracker-plugin-options='{{ searchTermObject|json_encode }}' />
+        <div data-search-tracker="true"
+             data-elio-search-tracker-plugin-options='{{ searchTermObject|json_encode }}'>
+        </div>
     {% endif %}
 
     {% block page_search %}
