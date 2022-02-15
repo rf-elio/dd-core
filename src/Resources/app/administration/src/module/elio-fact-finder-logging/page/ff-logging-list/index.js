@@ -3,7 +3,6 @@ import './ff-logging-list.scss';
 
 Shopware.Component.register('ff-logging-list', {
     template,
-
     inject: ['ffLogging'],
 
     data () {
@@ -14,7 +13,7 @@ Shopware.Component.register('ff-logging-list', {
             isLoading: false,
             showDeleteModal: false,
             contentsOffset: 0,
-            contentsLimit: 10,
+            contentsLimit: 5,
             contentsTotal: 0
         }
     },
@@ -27,7 +26,7 @@ Shopware.Component.register('ff-logging-list', {
 
     watch: {
         selectedLog () {
-            this.loadInitial();
+            this.load();
         }
     },
 
@@ -35,12 +34,14 @@ Shopware.Component.register('ff-logging-list', {
         selectedLogName () {
             const selectedLog = this.logs.find(item => item.value === this.selectedLog);
             return selectedLog ? selectedLog.label : '';
+        },
+        hasLogs () {
+            return this.logs.length > 0;
         }
     },
 
     created () {
         this.loadInitial();
-
         window.addEventListener('scroll', this.onScroll, true);
     },
 
@@ -50,6 +51,9 @@ Shopware.Component.register('ff-logging-list', {
 
     methods: {
         loadInitial () {
+            this.logs = [];
+            this.contents = [];
+            this.selectedLog = 0;
             this.contentsOffset = 0;
             this.load();
         },
@@ -87,6 +91,7 @@ Shopware.Component.register('ff-logging-list', {
         onDeleted () {
             this.closeDeleteModal();
             this.selectedLog = 0;
+            this.loadInitial();
         },
 
         onScroll () {

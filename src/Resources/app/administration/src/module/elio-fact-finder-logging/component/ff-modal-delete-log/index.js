@@ -2,9 +2,7 @@ import template from './ff-modal-delete-log.html.twig';
 
 Shopware.Component.register('ff-modal-delete-log', {
     template,
-
     inject: ['ffLogging'],
-
     data () {
         return {
             isLoading: false
@@ -29,9 +27,8 @@ Shopware.Component.register('ff-modal-delete-log', {
 
         deleteLog (event) {
             this.isLoading = true;
-            this.ffLogging.deleteLog(this.logIndex).then(result => {
+            this.ffLogging.deleteLog(this.logIndex).then(() => {
                 this.$emit('ff-log-deleted', event);
-
                 this.isLoading = false;
             });
         }

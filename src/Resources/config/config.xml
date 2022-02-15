@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
-
     <card>
         <title>API configuration</title>
         <title lang="de-DE">API-Einstellungen</title>
+
         <input-field>
             <name>apiUrl</name>
             <label>API Url</label>
@@ -12,6 +12,7 @@
             <placeholder>example.FACT-Finder.de</placeholder>
             <helpText>Die URL des FACT-Finders Servers</helpText>
         </input-field>
+
         <input-field>
             <name>apiUsername</name>
             <label>API user name</label>
@@ -20,6 +21,7 @@
             <helpText>FACT-Finder API user with the necessary rights</helpText>
             <helpText lang="de-DE">FACT-Finder API-Benutzer mit der nötigen Berechtigung</helpText>
         </input-field>
+
         <input-field type="password">
             <name>apiPassword</name>
             <label>API password</label>
@@ -28,6 +30,7 @@
             <helpText>Password of FACT-Finder API user</helpText>
             <helpText lang="de-DE">Passwort des FACT-Finder API-Benutzers</helpText>
         </input-field>
+
         <input-field>
             <name>apiChannel</name>
             <label>API channel</label>
@@ -35,6 +38,7 @@
             <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
             <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
+
         <input-field>
             <name>apiContentChannel</name>
             <label>API channel for contents</label>
@@ -42,6 +46,7 @@
             <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
             <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
+
         <input-field type="int">
             <name>apiTimeout</name>
             <label>API request timeout</label>
@@ -54,24 +59,28 @@
     <card>
         <title>Basic configuration</title>
         <title lang="de-DE">Grundeinstellungen</title>
+
         <input-field type="bool">
             <name>active</name>
             <label>FACT-Finder active</label>
             <label lang="de-DE">FACT-Finder benutzen</label>
             <defaultValue>false</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useAso</name>
             <label>After search optimization active</label>
             <label lang="de-DE">After Search Optimization benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useABTests</name>
             <label>FACT-Finder AB-Tests active</label>
             <label lang="de-DE">FACT-Finder AB-Tests benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useCache</name>
             <label>FACT-Finder Cache active</label>
@@ -82,12 +91,14 @@
     <card>
         <title>Search configuration</title>
         <title lang="de-DE">Such-Einstellungen</title>
+
         <input-field type="bool">
             <name>searchUseFactFinder</name>
             <label>Replace shopware search by FACTFinder search</label>
             <label lang="de-DE">Shopware Suche durch die FACTFinder-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>searchUseContentChannel</name>
             <label>Show contents from content channel to search result page</label>
@@ -98,6 +109,7 @@
     <card>
         <title>Suggest configuration</title>
         <title lang="de-DE">Suggest-Einstellungen</title>
+
         <input-field type="bool">
             <name>suggestUseFactFinder</name>
             <label>Replace shopware suggest by FACTFinder suggest</label>
@@ -154,12 +166,14 @@
     <card>
         <title>Listing configuration</title>
         <title lang="de-DE">Listing-Einstellungen</title>
+
         <input-field type="bool">
             <name>listingUseFactFinder</name>
             <label>Replace shopware listing by FACTFinder listing</label>
             <label lang="de-DE">Shopware Listing durch das FACTFinder-Listing ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>listingShowFacetResultCount</name>
             <label>Facet: Show result count in facet name</label>
@@ -168,12 +182,14 @@
             <helpText lang="de-DE">Zeigt die Anzahl der Ergebnisse nach dem Filterwert an</helpText>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>replaceSimilarProducts</name>
             <label>Replaces or adds a product slider to show similar products</label>
             <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useCategoryFilterLists</name>
             <label>Apply lists of blocked and allowed filter lists in categories</label>
@@ -184,6 +200,7 @@
     <card>
         <title>Filter Restrictions</title>
         <title lang="de-DE">Filter Restrictions</title>
+
         <input-field type="bool">
             <name>restrictionsParentCategories</name>
             <label>Parent Categories giving impacts</label>
@@ -191,6 +208,7 @@
             <defaultValue>true</defaultValue>
             <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
         </input-field>
+
         <input-field type="bool">
             <name>restrictionsOverridingTopToDown</name>
             <label>Restriction rules overriding from top to down</label>
@@ -198,6 +216,7 @@
             <defaultValue>true</defaultValue>
             <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
         </input-field>
+
         <input-field type="int">
             <name>restrictionsCacheTime</name>
             <label>Restrictions cacheable time</label>
@@ -210,30 +229,35 @@
     <card>
         <title>Recommendations</title>
         <title lang="de-DE">Recommendations</title>
+
         <input-field type="bool">
             <name>useProductDetailRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on product detail pages</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useCartRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on the cart page</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Warenkorb anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useOffCanvasRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider inside the offcanvas-cart</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>useConfirmRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider in the checkout confirm page</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Checkout anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <component name="sw-entity-multi-id-select">
             <name>recommendationExcludedProducts</name>
             <label>exclude selected products from recommendations</label>
@@ -244,30 +268,35 @@
     <card>
         <title>Tracking</title>
         <title lang="de-DE">Tracking</title>
+
         <input-field type="bool">
             <name>trackRequireConsent</name>
             <label>Request tracking permissions via consent manager</label>
             <label lang="de-DE">Erlaubnis über den Consent-Manager vom User anfordern</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>trackCart</name>
             <label>Tracking of the shopware cart</label>
             <label lang="de-DE">Shopware-Warenkorb tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>trackCheckout</name>
             <label>Tracking of the shopware checkout</label>
             <label lang="de-DE">Shopware-Bestellabschluss tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>trackLogin</name>
             <label>Tracks the customer login</label>
             <label lang="de-DE">Kundenlogin tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>trackProductView</name>
             <label>Tracks the view of a product (detail page)</label>
@@ -278,12 +307,14 @@
     <card>
         <title>Bot-Protection</title>
         <title lang="de-DE">Bot-Protection</title>
+
         <input-field type="bool">
             <name>botProtectionActive</name>
             <label>Activates the bot protection</label>
             <label lang="de-DE">Bot-Schutz aktivieren</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <input-field type="bool">
             <name>botProtectionUseBadBotList</name>
             <label>Use bad bot list</label>
@@ -292,6 +323,7 @@
             <helpText lang="de-DE">Die Bad-Bot Liste von (https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list) wird eingesetzt, um nicht erlaubte Bots zu erkennen.</helpText>
             <defaultValue>true</defaultValue>
         </input-field>
+
         <component name="sw-textarea-field">
             <name>botProtectionSearchTermFilter</name>
             <label>If one of the strings configured here, appear in the search term, the request will be blocked</label>
@@ -300,6 +332,7 @@
             <helpText>search strings separated by pipes(|) </helpText>
             <helpText lang="de-DE">Suchbegriffe jeweils durch Pipes(|) getrennt</helpText>
         </component>
+
         <component name="sw-textarea-field">
             <name>botProtectionUserAgentFilter</name>
             <label>If one of the configured strings can be found in the user agent, the request will be blocked</label>
@@ -308,6 +341,7 @@
             <helpText>user agent separated by pipes(|) </helpText>
             <helpText lang="de-DE">User Agents jeweils durch Pipes(|) getrennt</helpText>
         </component>
+
         <component name="sw-textarea-field">
             <name>botProtectionIpFilter</name>
             <label>If one of the configured ip addresses can be found in the requested ip address, the request will be blocked</label>
@@ -320,18 +354,21 @@
     <card>
         <title>Logging and Report</title>
         <title lang="de-DE">Logging und Reporting</title>
+
         <input-field type="int">
             <name>reportMaxAgeSuccess</name>
             <label>Max age in days for successful reports (when is a cleanup performed)</label>
             <label lang="de-DE">Zeitraum in Tagen bis Reports ohne Fehler gelöscht werden</label>
             <defaultValue>3</defaultValue>
         </input-field>
+
         <input-field type="int">
             <name>reportMaxAgeError</name>
             <label>Max age in days for reports that contains errors (when is a cleanup performed)</label>
             <label lang="de-DE">Zeitraum in Tagen bis Reports mit Fehlern gelöscht werden</label>
             <defaultValue>30</defaultValue>
         </input-field>
+
         <input-field type="text">
             <name>reportEmailSuccess</name>
             <label>Email addresses for reports without errors</label>
@@ -340,6 +377,7 @@
             <helpText>Multiple email addresses separated by pipes(|) </helpText>
             <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </input-field>
+
         <input-field type="text">
             <name>reportEmailError</name>
             <label>Email addresses for reports with errors</label>
@@ -348,6 +386,7 @@
             <helpText>Multiple email addresses separated by pipes(|) </helpText>
             <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </input-field>
+
         <input-field type="single-select">
             <name>logLevel</name>
             <label>Log level</label>
@@ -372,6 +411,7 @@
     <card>
         <title>Advanced</title>
         <title lang="de-DE">Advanced</title>
+
         <component name="sw-textarea-field">
             <name>additionalRequestParameters</name>
             <label>Additional parameters for request to FACT-Finder</label>
@@ -380,6 +420,10 @@
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
+    </card>
+    <card>
+        <title>Debugging</title>
+        <title lang="de-DE">Debugging</title>
 
         <input-field type="bool">
             <name>loggingDebugActive</name>

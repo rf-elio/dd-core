@@ -33,6 +33,8 @@
 namespace Elio\FactFinder\Api\Request;
 
 
+use JsonSerializable;
+
 /**
  * Class ApiRequest
  * @package Elio\FactFinder\Api\Request
@@ -41,7 +43,7 @@ namespace Elio\FactFinder\Api\Request;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest
+class ApiRequest implements JsonSerializable
 {
     /**
      * @return array<string|array>
@@ -49,5 +51,13 @@ class ApiRequest
     public function toArray() : array
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * @return array[]|mixed|string[]
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

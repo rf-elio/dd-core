@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Api\Transform;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Transform\Event\TransformResponseEvent;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -52,12 +53,13 @@ use Throwable;
  */
 class Transformer
 {
+    use FactFinderLogTrait;
+
     /**
      * @var iterable|ResponseTransformerInterface[]
      */
     private iterable $responseTransformer;
     private EventDispatcherInterface $eventDispatcher;
-    private LoggerInterface $logger;
 
     /**
      * Transformer constructor.
@@ -94,10 +96,10 @@ class Transformer
                 }
             }
             catch (Throwable $ex) {
-                $this->logger->error('Response transformer caused an error during transform', [
-                    'message' => $ex->getMessage(),
-                    'transformer' => get_class($responseTransformer),
-                    'model' => get_class($model)
+                $this->ffError('Response transformer caused an error during transform', $this, [
+                    'exception' => $ex,
+                    'transformer' => $responseTransformer,
+                    'model' => $model
                 ]);
                 throw $ex;
             }

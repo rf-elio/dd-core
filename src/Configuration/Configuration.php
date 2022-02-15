@@ -371,7 +371,7 @@ class Configuration extends Struct
      */
     public function isSearchUseContentChannel(): bool
     {
-        return $this->searchUseContentChannel;
+        return $this->searchUseContentChannel && !empty($this->apiContentChannel);
     }
 
     /**

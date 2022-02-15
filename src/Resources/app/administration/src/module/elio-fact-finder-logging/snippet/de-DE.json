@@ -2,15 +2,15 @@
     "ff-logging": {
         "title": "Logging",
         "description": "",
-        "logIsEmpty": "Log is empty",
-        "LogsNotFound": "Logs not found",
-        "reload": "Reload",
-        "remove": "Remove",
+        "logIsEmpty": "Keine Einträge im Log. Aktiviere Debug-Logging in der Plugin-Konfiguration für mehr Details.",
+        "LogsNotFound": "Keine Logs vorhanden",
+        "reload": "Aktualisieren",
+        "remove": "Löschen",
         "modal": {
-            "title": "Deleting",
-            "body": "Are you sure you want to delete the file \"{name}\"",
-            "cancel": "Cancel",
-            "delete": "Delete"
+            "title": "Löschen",
+            "body": "Sind sie sicher, dass Sie die Datei \"{name}\" löschen möchten?",
+            "cancel": "Abbrechen",
+            "delete": "Löschen"
         }
     }
 }

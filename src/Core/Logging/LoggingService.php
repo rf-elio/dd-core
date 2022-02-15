@@ -13,7 +13,7 @@ use Symfony\Component\Finder\SplFileInfo;
  *
  * @package Elio\FactFinder\Core\Logging
  */
-class LoggingService
+class LoggingService implements LoggingServiceInterface
 {
     public const FILE_NAME = 'elio_fact_finder';
     public const LOG_FORMAT = <<<EOT
@@ -38,7 +38,6 @@ EOT;
     {
         $this->logDir = $logDir;
         $this->finder = new Finder();
-
         $this->fillLogs();
     }
 
@@ -73,7 +72,6 @@ EOT;
     public function getLogContent(int $index): string
     {
         $content = file_get_contents($this->getFilepath($index));
-
         return $this->prepareContent($content);
     }
 
@@ -109,6 +107,9 @@ EOT;
         return preg_replace('/\s/', '&nbsp;', $prepared);
     }
 
+    /**
+     * Collects all logs created by ff
+     */
     private function fillLogs(): void
     {
         $files = $this->finder
@@ -132,12 +133,12 @@ EOT;
     private function getFilepath(int $index): string
     {
         if (!isset($this->logs[$index])) {
-            throw new RuntimeException("Log with index {$index} does not exist");
+            throw new RuntimeException(sprintf('Log with index %s does not exist', $index));
         }
 
         $filePath = $this->logDir . '/' . $this->logs[$index];
         if (!file_exists($filePath)) {
-            throw new RuntimeException("Log {$filePath} does not exist");
+            throw new RuntimeException(sprintf('Log %s does not exist"', $index));
         }
 
         return $filePath;

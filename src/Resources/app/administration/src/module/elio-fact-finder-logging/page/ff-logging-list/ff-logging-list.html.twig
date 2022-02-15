@@ -8,30 +8,30 @@
             >
                 &nbsp;<sw-icon name="small-arrow-360-left" :small="true"></sw-icon>&nbsp;
             </sw-button>
-            <sw-button
-                    size="small"
-                    variant="danger"
-                    @click="openDeleteModal"
+            <sw-button size="small"
+                       variant="danger"
+                       @click="openDeleteModal"
+                       v-if="hasLogs"
             >
                 &nbsp;<sw-icon name="small-trash" :small="true"></sw-icon>&nbsp;
             </sw-button>
         </template>
 
         <sw-card-view slot="content">
-            <sw-loader v-if="isLoading" size="50px">
-            </sw-loader>
-            <sw-card>
+            <sw-loader v-if="isLoading" size="50px"></sw-loader>
+            {{ selectedLog }}
+            <sw-card v-if="hasLogs">
                 <sw-single-select
-                        v-if="logs.length"
                         :options="logs"
                         v-model="selectedLog"
                         size="medium"
                 ></sw-single-select>
             </sw-card>
+
             <div class="elio-ff-logging-list__content">
                 <template v-if="contents.length">
-                    <template v-for="content in contents">
-                        <sw-card>
+                    <template v-for="(content, index) in contents">
+                        <sw-card :title="index + 1">
                             <div v-html="content"></div>
                         </sw-card>
                     </template>

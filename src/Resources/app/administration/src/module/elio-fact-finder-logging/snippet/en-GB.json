@@ -2,13 +2,13 @@
     "ff-logging": {
         "title": "Logging",
         "description": "",
-        "logIsEmpty": "Log is empty",
+        "logIsEmpty": "Log is empty. Enable debug logging in your plugin configuration to get more details.",
         "LogsNotFound": "Logs not found",
         "reload": "Reload",
         "remove": "Remove",
         "modal": {
             "title": "Deleting",
-            "body": "Are you sure you want to delete the file \"{name}\"",
+            "body": "Are you sure you want to delete the file \"{name}\"?",
             "cancel": "Cancel",
             "delete": "Delete"
         }

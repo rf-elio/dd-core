@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\Logging\Controller;
+namespace Elio\FactFinder\Core\Logging\Api\Controller;
 
 use Elio\FactFinder\Core\Logging\LoggingService;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -15,7 +15,7 @@ use Throwable;
  * @RouteScope(scopes={"api"})
  * Class LoggingController
  *
- * @package Elio\FactFinder\Core\Logging\Controller
+ * @package Elio\FactFinder\Core\Logging\Api\Controller
  */
 class LoggingController extends AbstractController
 {
