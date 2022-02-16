@@ -4,6 +4,7 @@
 namespace Elio\FactFinder\Storefront\Controller;
 
 
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Elio\FactFinder\Core\ProductBundle\ProductBundleInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -23,8 +24,8 @@ use Throwable;
  */
 class ProductBundleController extends StorefrontController
 {
+    use FactFinderLogTrait;
     private iterable $productBundles;
-    private LoggerInterface $logger;
 
     /**
      * ProductBundleController constructor.
@@ -66,7 +67,7 @@ class ProductBundleController extends StorefrontController
                'data' => $response->getContent()
             ]);
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), $e->getTrace());
+            $this->ffError($e->getMessage(), $this, [$e]);
             return $this->json([
                 'success' => false,
                 'message' => $e->getMessage()
