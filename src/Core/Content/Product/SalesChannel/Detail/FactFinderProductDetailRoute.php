@@ -8,6 +8,7 @@ use Elio\FactFinder\Api\Records\RecordsApi;
 use Elio\FactFinder\Api\Records\Request\DetailPageRequest;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRouteResponse;
@@ -23,10 +24,10 @@ use Throwable;
  */
 class FactFinderProductDetailRoute extends AbstractProductDetailRoute
 {
+    use FactFinderLogTrait;
     private AbstractProductDetailRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
     private RecordsApi $recordsApi;
-    private LoggerInterface $logger;
 
     /**
      * FactFinderProductDetailRoute constructor.
@@ -53,6 +54,15 @@ class FactFinderProductDetailRoute extends AbstractProductDetailRoute
         return $this->decorated;
     }
 
+    /**
+     * Sends the detail page request to be able to show campaigns or feedback texts
+     *
+     * @param string $productId
+     * @param Request $request
+     * @param SalesChannelContext $context
+     * @param Criteria $criteria
+     * @return ProductDetailRouteResponse
+     */
     public function load(
         string $productId,
         Request $request,
@@ -62,27 +72,28 @@ class FactFinderProductDetailRoute extends AbstractProductDetailRoute
         $config = $this->configService->getByContext($context);
         $productDetailResponse = $this->decorated->load($productId, $request, $context, $criteria);
 
-        if (!$config->isActive()) {
+        if (!$config->isActive() || !$config->isProductDetailPageCampaignsActive()) {
             return $productDetailResponse;
         }
 
+        $detailPageRequest = (new DetailPageRequest($config->getApiChannel()))
+            ->setId($productDetailResponse->getProduct()->getProductNumber())
+            ->setWithSimilarProducts('false')
+            ->setWithRecommendations('false')
+            ->setWithRecord('false');
+
         try {
-            $detailPageRequest = (new DetailPageRequest($config->getApiChannel()))
-                ->setId($productDetailResponse->getProduct()->getProductNumber())
-                ->setWithSimilarProducts('false')
-                ->setWithRecommendations('false')
-                ->setWithRecord('false');
-
             $responseCollection = $this->recordsApi->getDetailPage($detailPageRequest, $context);
-
-            $productDetailResponse->getProduct()->addExtension(
-                CampaignFeedbackResponseCollection::KEY,
-                $responseCollection->get(CampaignFeedbackResponseCollection::KEY)
-            );
+            if($responseCollection->has(CampaignFeedbackResponseCollection::KEY)) {
+                $productDetailResponse->getProduct()->addExtension(
+                    CampaignFeedbackResponseCollection::KEY,
+                    $responseCollection->get(CampaignFeedbackResponseCollection::KEY)
+                );
+            }
 
             return $productDetailResponse;
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage());
+            $this->ffError($e->getMessage(), $this, [$context, $detailPageRequest]);
             return $productDetailResponse;
         }
     }

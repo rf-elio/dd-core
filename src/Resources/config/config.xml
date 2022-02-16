@@ -227,6 +227,17 @@
         </input-field>
     </card>
     <card>
+        <title>Product detail page configuration</title>
+        <title lang="de-DE">Produkt-Detailseite-Einstellungen</title>
+
+        <input-field type="bool">
+            <name>productDetailPageCampaignsActive</name>
+            <label>Product detail campaigns active</label>
+            <label lang="de-DE">Produkt-Detailseiten Kampagnen aktiv</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+    <card>
         <title>Recommendations</title>
         <title lang="de-DE">Recommendations</title>
 

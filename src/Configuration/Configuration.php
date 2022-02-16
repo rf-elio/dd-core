@@ -88,7 +88,7 @@ class Configuration extends Struct
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
     private string $suggestProductNumberAttribute;
-
+    private bool $productDetailPageCampaignsActive;
     private bool $useProductDetailRecommendations;
     private bool $useProductDetailSimilar;
     private array $recommendationExcludedProducts;
@@ -123,6 +123,7 @@ class Configuration extends Struct
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
      * @param string $suggestProductNumberAttribute
+     * @param bool $productDetailPageCampaignsActive
      * @param bool $useProductDetailRecommendations
      * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
@@ -156,6 +157,7 @@ class Configuration extends Struct
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
         string $suggestProductNumberAttribute,
+        bool $productDetailPageCampaignsActive,
         bool $useProductDetailRecommendations,
         bool $useProductDetailSimilar,
         array $recommendationExcludedProducts
@@ -189,6 +191,7 @@ class Configuration extends Struct
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
+        $this->productDetailPageCampaignsActive = $productDetailPageCampaignsActive;
         $this->useProductDetailRecommendations = $useProductDetailRecommendations;
         $this->useProductDetailSimilar = $useProductDetailSimilar;
         $this->recommendationExcludedProducts = $recommendationExcludedProducts;
@@ -417,6 +420,14 @@ class Configuration extends Struct
     public function getSuggestProductNumberAttribute(): string
     {
         return $this->suggestProductNumberAttribute;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProductDetailPageCampaignsActive(): bool
+    {
+        return $this->productDetailPageCampaignsActive;
     }
 
     /**

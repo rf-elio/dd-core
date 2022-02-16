@@ -40,6 +40,7 @@ use Elio\FactFinder\Api\Search\SearchApi;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
@@ -61,6 +62,7 @@ use Throwable;
  */
 class FactFinderProductListingRoute extends AbstractProductListingRoute
 {
+    use FactFinderLogTrait;
     private AbstractProductListingRoute $decorated;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
@@ -68,7 +70,6 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private ProductListingResultTransformer $productListingResultTransformer;
     private EntityRepositoryInterface $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
-    private LoggerInterface $logger;
 
     /**
      * FactFinderProductListingRoute constructor.
@@ -154,7 +155,13 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
 
             return new ProductListingRouteResponse($shopwareProductListingResult);
         } catch (Throwable $e) {
-            $this->logger->error($e->getMessage());
+            $this->ffError($e->getMessage(), $this, [
+                'exception' => $e,
+                'categoryId' => $categoryId,
+                'request' => $request,
+                'context' => $context,
+                'criteria' => $criteria
+            ]);
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
     }
