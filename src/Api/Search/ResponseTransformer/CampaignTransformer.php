@@ -41,6 +41,7 @@ use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 
@@ -62,7 +63,7 @@ class CampaignTransformer implements ResponseTransformerInterface
      */
     public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
-        return $model instanceof Result;
+        return $model instanceof Result || $model instanceof DetailPage;
     }
 
     /**
@@ -78,7 +79,7 @@ class CampaignTransformer implements ResponseTransformerInterface
         ApiRequest $request
     ): void
     {
-        if (!$model instanceof Result) {
+        if (!$model instanceof Result && !$model instanceof DetailPage) {
             throw new InvalidTypeException($model, Result::class);
         }
 

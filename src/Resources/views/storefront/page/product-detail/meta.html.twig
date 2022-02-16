@@ -1,0 +1,9 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/meta.html.twig' %}
+
+{% block layout_head_meta_tags_opengraph %}
+    {{ parent() }}
+
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-header-campaign-feedback.html.twig' with {
+        label: 'html header', container: page.product
+    } %}
+{% endblock %}

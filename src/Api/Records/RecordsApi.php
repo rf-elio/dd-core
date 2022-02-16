@@ -34,9 +34,15 @@ namespace Elio\FactFinder\Api\Records;
 
 
 use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\FactFinder\Api\Records\Request\DetailPageRequest;
 use Elio\FactFinder\Api\Records\Request\RecordRequest;
+use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Transform\Transformer;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
+use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\FullRecordsResult;
+use Throwable;
 
 /**
  * Class RecordsApi
@@ -49,16 +55,21 @@ use Swagger\Client\Model\FullRecordsResult;
 class RecordsApi
 {
     private ApiClientFactoryInterface $apiFactory;
+    private Transformer $transformer;
 
     /**
-     * SearchApi constructor.
+     * RecordsApi constructor.
+     *
      * @param ApiClientFactoryInterface $apiFactory
+     * @param Transformer $transformer
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory
+        ApiClientFactoryInterface $apiFactory,
+        Transformer $transformer
     )
     {
         $this->apiFactory = $apiFactory;
+        $this->transformer = $transformer;
     }
 
     /**
@@ -71,5 +82,38 @@ class RecordsApi
     {
         $apiClient = $this->apiFactory->createRecordsApi($salesChannelId);
         return $apiClient->getFullRecordsUsingGET($request->getChannel(), [$request->getId()], null, 'productNumber');
+    }
+
+    /**
+     * @param DetailPageRequest $request
+     * @param SalesChannelContext $context
+     *
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function getDetailPage(DetailPageRequest $request, SalesChannelContext $context): ResponseCollection
+    {
+        $apiClient = $this->apiFactory->createRecordsApi($context->getSalesChannelId());
+        $result = $apiClient->getDetailPageUsingGET(
+            $request->getChannel(),
+            $request->getId(),
+            $request->getIdType(),
+            $request->getIdsOnly(),
+            $request->getMaxResultsRecommendations(),
+            $request->getMaxResultsSimilarProducts(),
+            $request->getUsePersonalization(),
+            $request->getSessionId(),
+            $request->getPurchaserId(),
+            $request->getLatitude(),
+            $request->getLongitude(),
+            $request->getMarketIds(),
+            $request->getMaxCountVariants(),
+            $request->getWithCampaigns(),
+            $request->getWithRecommendations(),
+            $request->getWithSimilarProducts(),
+            $request->getWithRecord()
+        );
+        return $this->transformer->transformResponse($result, $context, $request);
     }
 }

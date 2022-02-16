@@ -18,3 +18,7 @@ parameters:
         -
             message: '#Parameter \#3 \$level of class Monolog\\Handler\\RotatingFileHandler constructor expects#'
             path: src/Core/Logging/LoggerFactory.php
+
+        -
+            message: '# expects bool, string given#'
+            path: src/Api/*

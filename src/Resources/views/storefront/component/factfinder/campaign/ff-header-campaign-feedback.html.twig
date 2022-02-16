@@ -2,13 +2,7 @@
     {% if container and container.hasExtension('CampaignFeedbackResponseCollection') %}
         {% set campaignFeedbackResponseCollection = container.getExtension('CampaignFeedbackResponseCollection') %}
         {% for feedbackText in campaignFeedbackResponseCollection.getByLabel(label) %}
-            <div class="elio-ff-campaign-feedback-{{ location }}">
-                {% if feedbackText.html %}
-                    {{ feedbackText.text|raw }}
-                {% else %}
-                    {{ feedbackText.text }}
-                {% endif %}
-            </div>
+            {{ feedbackText.text|raw }}
         {% endfor %}
     {% endif %}
 {% endblock %}

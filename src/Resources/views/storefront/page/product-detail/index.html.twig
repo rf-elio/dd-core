@@ -1,0 +1,17 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/index.html.twig' %}
+
+{% block page_product_detail_headline %}
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        label: 'product detail - above product', container: page.product
+    } %}
+
+    {{ parent() }}
+{% endblock %}
+
+{% block page_product_detail_inner %}
+    {{ parent() }}
+
+    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        label: 'product detail - below product', container: page.product
+    } %}
+{% endblock %}
