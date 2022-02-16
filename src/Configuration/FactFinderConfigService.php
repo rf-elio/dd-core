@@ -142,6 +142,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
             $this->prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix),
             $this->getConfigWithLanguagePrefix($config, 'suggestProductNumberAttribute', $languagePrefix) ?? '',
+            $this->getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
