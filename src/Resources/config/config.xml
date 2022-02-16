@@ -244,6 +244,12 @@
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
+            <name>useProductDetailSimilar</name>
+            <label>Display the FACT-Finder similar slider on product detail pages</label>
+            <label lang="de-DE">FACT-Finder ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>useCartRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on the cart page</label>
             <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Warenkorb anzeigen</label>
