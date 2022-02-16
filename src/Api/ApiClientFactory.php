@@ -118,7 +118,7 @@ class ApiClientFactory implements ApiClientFactoryInterface
     {
         return new RecordsApi(
             $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
-            $this->createConfiguration($salesChannelContext->getSalesChannelId(), $salesChannelContext)
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 

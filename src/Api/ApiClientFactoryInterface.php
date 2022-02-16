@@ -84,7 +84,7 @@ interface ApiClientFactoryInterface
     /**
      * Creates the records api to update data directly in ff.
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      * @return RecordsApi
      */
     public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi;

@@ -100,7 +100,7 @@ class RecordsApi
      */
     public function getDetailPage(DetailPageRequest $request, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createRecordsApi($context->getSalesChannelId());
+        $apiClient = $this->apiFactory->createRecordsApi($context);
         $result = $apiClient->getDetailPageUsingGET(
             $request->getChannel(),
             $request->getId(),

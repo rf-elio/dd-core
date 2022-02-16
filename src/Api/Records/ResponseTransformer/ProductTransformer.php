@@ -8,6 +8,7 @@ use Elio\FactFinder\Api\Records\Response\ProductsResponse;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -93,6 +94,13 @@ class ProductTransformer implements ResponseTransformerInterface
      */
     protected function extractProductNumbers(ModelInterface $result): array
     {
+        if (!$result instanceof RecommendationResultWithFieldRoles && !$result instanceof SimilarProductsWithFieldRoles) {
+            throw new InvalidTypeException(
+                $result,
+                sprintf('%s or %s', RecommendationResultWithFieldRoles::class, SimilarProductsWithFieldRoles::class)
+            );
+        }
+
         return array_map(static function (TypedFlatRecord $record) {
             return $record->getId();
         }, $result->getHits());
