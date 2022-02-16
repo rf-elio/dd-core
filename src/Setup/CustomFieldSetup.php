@@ -35,7 +35,9 @@ namespace Elio\FactFinder\Setup;
 
 use RuntimeException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetEntity;
@@ -45,6 +47,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class CustomFieldSetup
+ *
  * @package Elio\FactFinder\Setup
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
@@ -60,6 +63,7 @@ class CustomFieldSetup
 
     /**
      * PaymentSetup constructor.
+     *
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
@@ -69,6 +73,7 @@ class CustomFieldSetup
 
     /**
      * Creates all required custom fields
+     *
      * @param array $customFields
      */
     public function install(array $customFields): void
@@ -77,9 +82,19 @@ class CustomFieldSetup
     }
 
     /**
+     * Deletes custom fields
+     *
      * @param array $customFields
      */
-    private function addCustomFieldSets(array $customFields) : void
+    public function uninstall(array $customFields): void
+    {
+        $this->removeCustomFieldSets($customFields);
+    }
+
+    /**
+     * @param array $customFields
+     */
+    private function addCustomFieldSets(array $customFields): void
     {
         $upsets = [];
         foreach ($customFields as $customFieldSetName => $fieldSetConfiguration) {
@@ -93,7 +108,7 @@ class CustomFieldSetup
                 ]
             ];
 
-            if(isset($fieldSetConfiguration['label'])) {
+            if (isset($fieldSetConfiguration['label'])) {
                 $upsert['config']['label'] = $fieldSetConfiguration['label'];
             }
 
@@ -114,7 +129,7 @@ class CustomFieldSetup
 
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        if(!$customFieldSetRepository) {
+        if (!$customFieldSetRepository) {
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
@@ -126,17 +141,17 @@ class CustomFieldSetup
      *
      * @param array $fieldSetRelations
      * @param string|null $fieldSetId
+     *
      * @return array
      */
     private function prepareRelations(array $fieldSetRelations, ?string $fieldSetId): array
     {
 
         $relations = [];
-        foreach ($fieldSetRelations as $fieldSetRelation)
-        {
+        foreach ($fieldSetRelations as $fieldSetRelation) {
             $relation = ['entityName' => $fieldSetRelation];
 
-            if($relationId = $this->getFieldSetRelationId($fieldSetId, $fieldSetRelation)) {
+            if ($relationId = $this->getFieldSetRelationId($fieldSetId, $fieldSetRelation)) {
                 $relation['id'] = $relationId;
             }
 
@@ -150,9 +165,10 @@ class CustomFieldSetup
      *
      * @param array $fieldSetFields
      * @param string|null $fieldSetId
+     *
      * @return array
      */
-    private function prepareCustomFields(array $fieldSetFields, ?string $fieldSetId) : array
+    private function prepareCustomFields(array $fieldSetFields, ?string $fieldSetId): array
     {
         $customFields = [];
         $position = 1;
@@ -164,13 +180,13 @@ class CustomFieldSetup
             $label = $customFieldProperties['label'];
             $placeholder = $customFieldProperties['placeholder'] ?? $label;
 
-            if($configType === 'bool') {
+            if ($configType === 'bool') {
                 $configType = 'checkbox';
             }
 
             $customField = [
-                'name'   => $customFieldName,
-                'type'   => $type,
+                'name' => $customFieldName,
+                'type' => $type,
                 'config' => [
                     'type' => $configType,
                     'label' => $label,
@@ -181,19 +197,19 @@ class CustomFieldSetup
                 ]
             ];
 
-            if(isset($customFieldProperties['options'])) {
+            if (isset($customFieldProperties['options'])) {
                 $customField['config']['options'] = $customFieldProperties['options'];
             }
 
-            if(isset($customFieldProperties['dateType'])) {
+            if (isset($customFieldProperties['dateType'])) {
                 $customField['config']['dateType'] = $customFieldProperties['dateType'];
             }
 
-            if(isset($customFieldProperties['config'])) {
+            if (isset($customFieldProperties['config'])) {
                 $customField['config']['config'] = $customFieldProperties['config'];
             }
 
-            if($customFieldId = $this->getFieldSetFieldId($fieldSetId, $customFieldName)) {
+            if ($customFieldId = $this->getFieldSetFieldId($fieldSetId, $customFieldName)) {
                 $customField['id'] = $customFieldId;
             }
 
@@ -207,6 +223,7 @@ class CustomFieldSetup
      * Fetches the custom field set id for existing sets
      *
      * @param string $customFieldName
+     *
      * @return string|null
      * @noinspection PhpInternalEntityUsedInspection
      */
@@ -214,7 +231,7 @@ class CustomFieldSetup
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        if(!$customFieldSetRepository) {
+        if (!$customFieldSetRepository) {
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
@@ -230,18 +247,19 @@ class CustomFieldSetup
      *
      * @param string|null $customFieldSetId
      * @param string $relationName
+     *
      * @return string|null
      * @noinspection PhpInternalEntityUsedInspection
      */
     private function getFieldSetRelationId(?string $customFieldSetId, string $relationName): ?string
     {
-        if(!$customFieldSetId) {
+        if (!$customFieldSetId) {
             return null;
         }
 
         $customFieldSetRelationRepository = $this->container->get('custom_field_set_relation.repository');
 
-        if(!$customFieldSetRelationRepository) {
+        if (!$customFieldSetRelationRepository) {
             throw new RuntimeException('Service "custom_field_set_relation.repository" not found');
         }
 
@@ -258,18 +276,19 @@ class CustomFieldSetup
      *
      * @param string|null $customFieldSetId
      * @param string $name
+     *
      * @return string|null
      * @noinspection PhpInternalEntityUsedInspection
      */
     private function getFieldSetFieldId(?string $customFieldSetId, string $name): ?string
     {
-        if(!$customFieldSetId) {
+        if (!$customFieldSetId) {
             return null;
         }
 
         $customFieldRepository = $this->container->get('custom_field.repository');
 
-        if(!$customFieldRepository) {
+        if (!$customFieldRepository) {
             throw new RuntimeException('Service "custom_field.repository" not found');
         }
 
@@ -279,5 +298,26 @@ class CustomFieldSetup
         /** @var CustomFieldEntity|null $field */
         $field = $customFieldRepository->search($criteria, Context::createDefaultContext())->first();
         return !$field ? null : $field->getId();
+    }
+
+    /**
+     * @param array $customFields
+     */
+    private function removeCustomFieldSets(array $customFields): void
+    {
+        /** @var EntityRepositoryInterface $customFieldSetRepository */
+        $customFieldSetRepository = $this->container->get('custom_field_set.repository');
+
+        $context = Context::createDefaultContext();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('name', array_keys($customFields)));
+
+        $result = $customFieldSetRepository->searchIds($criteria, $context);
+        $ids = array_map(static fn ($id) => ['id' => $id], $result->getIds());
+        if (empty($ids)) {
+            return;
+        }
+
+        $customFieldSetRepository->delete($ids, $context);
     }
 }

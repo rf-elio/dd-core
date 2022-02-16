@@ -32,7 +32,10 @@
 
 namespace Elio\FactFinder\Core\Export\Setup;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\FactFinder\Core\Export\ExportConfig;
+use Elio\FactFinder\Core\Export\ExportDefinition;
 use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
@@ -43,9 +46,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Class ExportSetup
+ *
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
@@ -55,14 +60,20 @@ class ExportSetup
 {
     private ?EntityRepository $exportRepository;
     private ?EntityRepository $salesChannelRepository;
+    private ?Connection $connection;
 
     /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->exportRepository = $container->get('elio_ff_export.repository');
+        try {
+            $this->exportRepository = $container->get('elio_ff_export.repository');
+        } catch (ServiceNotFoundException $e) {
+        }
+
         $this->salesChannelRepository = $container->get('sales_channel.repository');
+        $this->connection = $container->get(Connection::class);
     }
 
     /**
@@ -72,6 +83,10 @@ class ExportSetup
      */
     public function createExports(Context $context, ?array $types = null, string $format = null): void
     {
+        if ($this->exportRepository->searchIds(new Criteria(), $context)->getTotal() > 0) {
+            return;
+        }
+
         $exportTypes = $types ?? [ProductExportDefaults::TYPE, ContentExportDefaults::TYPE];
         $exportFormat = $format ?? CSVFileWriter::TYPE;
         $criteria = new Criteria();
@@ -90,10 +105,6 @@ class ExportSetup
                     $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannel->getId()));
                     $criteria->addFilter(new EqualsFilter('languageId', $language->getId()));
                     $criteria->addAssociation('salesChannel.domains');
-
-                    if ($this->exportRepository->searchIds($criteria, $context)->getTotal() > 0) {
-                        continue;
-                    }
 
                     $baseCategoryIds = [];
                     if ($exportType === ContentExportDefaults::TYPE) {
@@ -128,8 +139,16 @@ class ExportSetup
                 }
             }
         }
-        if (!empty($exports)){
+        if (!empty($exports)) {
             $this->exportRepository->create($exports, $context);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function removeTables(): void
+    {
+        $this->connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', ExportDefinition::ENTITY_NAME));
     }
 }
