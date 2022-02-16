@@ -88,6 +88,7 @@ class Configuration extends Struct
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
     private string $suggestProductNumberAttribute;
+    private bool $productDetailPageCampaignsActive;
 
     /**
      * Configuration constructor.
@@ -119,6 +120,7 @@ class Configuration extends Struct
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
      * @param string $suggestProductNumberAttribute
+     * @param bool $productDetailPageCampaignsActive
      */
     public function __construct(
         bool $active,
@@ -148,7 +150,8 @@ class Configuration extends Struct
         bool $searchUseContentChannel,
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
-        string $suggestProductNumberAttribute
+        string $suggestProductNumberAttribute,
+        bool $productDetailPageCampaignsActive
     )
     {
         $this->useAso = $useAso;
@@ -179,6 +182,7 @@ class Configuration extends Struct
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
+        $this->productDetailPageCampaignsActive = $productDetailPageCampaignsActive;
     }
 
     /**
@@ -404,5 +408,13 @@ class Configuration extends Struct
     public function getSuggestProductNumberAttribute(): string
     {
         return $this->suggestProductNumberAttribute;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProductDetailPageCampaignsActive(): bool
+    {
+        return $this->productDetailPageCampaignsActive;
     }
 }

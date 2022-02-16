@@ -39,6 +39,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
@@ -57,13 +58,13 @@ use Throwable;
  */
 class FactFinderSearchRoute extends AbstractProductSearchRoute
 {
+    use FactFinderLogTrait;
     private AbstractProductSearchRoute $decorated;
     private ProductSearchRequestBuilder $productSearchRequestBuilder;
     private ContentSearchRequestBuilder $contentSearchRequestBuilder;
     private FactFinderConfigServiceInterface $configService;
     private SearchApi $searchApi;
     private ProductListingResultTransformer $productListingResultTransformer;
-    private LoggerInterface $logger;
 
     /**
      * FactFinderSearchRoute constructor.
@@ -136,13 +137,23 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
                     $shopwareProductListingResult->addExtension(ContentListingResponse::class, $contentListingResponse);
                 }
             } catch (Throwable $e) {
-                $this->logger->error($e->getMessage());
+                $this->ffError($e->getMessage(), $this, [
+                    'exception' => $e,
+                    'request' => $request,
+                    'context' => $context,
+                    'criteria' => $criteria
+                ]);
             }
 
             return new ProductSearchRouteResponse($shopwareProductListingResult);
         }
         catch (Throwable $e) {
-            $this->logger->error($e->getMessage());
+            $this->ffError($e->getMessage(), $this, [
+                'exception' => $e,
+                'request' => $request,
+                'context' => $context,
+                'criteria' => $criteria
+            ]);
             return $this->getDecorated()->load($request, $context, $criteria);
         }
     }
