@@ -1,0 +1,8 @@
+{% block elio_factfinder_campaign_feedback %}
+    {% if container and container.hasExtension('CampaignFeedbackResponseCollection') %}
+        {% set campaignFeedbackResponseCollection = container.getExtension('CampaignFeedbackResponseCollection') %}
+        {% for feedbackText in campaignFeedbackResponseCollection.getByLabel(label) %}
+            {{ feedbackText.text|raw }}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
