@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\FactFinder\Core\ProductBundle\ProductBundleService">
+            <argument type="tagged" tag="elio-ff.product-bundle" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler">
+            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <tag name="elio-ff.product-bundle"/>
+        </service>
+
+        <service id="Elio\FactFinder\Core\ProductBundle\Handler\SimilarBundleHandlerHandler">
+            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <tag name="elio-ff.product-bundle"/>
+        </service>
+    </services>
+</container>

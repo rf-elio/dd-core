@@ -31,8 +31,8 @@
         </service>
 
         <service id="Elio\FactFinder\Storefront\Controller\ProductBundleController" public="true">
-            <argument type="tagged" tag="elio-ff.product-bundle" />
-            <argument type="service" id="logger" />
+            <argument type="service" id="Elio\FactFinder\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="elio.fact_finder.core.logging.default" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

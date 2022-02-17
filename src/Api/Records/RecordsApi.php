@@ -42,10 +42,7 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
-use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\FullRecordsResult;
-use Swagger\Client\Model\RecommendationResultWithFieldRoles;
-use Swagger\Client\Model\SimilarProductsWithFieldRoles;
 use Throwable;
 
 /**
@@ -160,7 +157,7 @@ class RecordsApi
         $result = $apiClient->getSimilarProductsUsingGET(
             $request->getChannel(),
             $request->getId(),
-            'productNumber',
+            $request->getIdType(),
             null,
             true,
             null,

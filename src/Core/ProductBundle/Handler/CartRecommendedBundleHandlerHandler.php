@@ -1,32 +1,31 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\ProductBundle;
+namespace Elio\FactFinder\Core\ProductBundle\Handler;
 
 
 use Elio\FactFinder\Api\Records\RecordsApi;
 use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
-use Elio\FactFinder\Api\Records\Response\ProductsResponse;
+use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleException;
+use Elio\FactFinder\Core\ProductBundle\Excluder;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 /**
- * Class CartRecommendedBundle
+ * Class CartRecommendedBundleHandler
  *
  * @package Elio\FactFinder\Core\ProductBundle
  */
-class CartRecommendedBundle implements ProductBundleInterface
+class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'cartRecommended';
 
@@ -41,6 +40,7 @@ class CartRecommendedBundle implements ProductBundleInterface
      * @param RecordsApi $recordsApi
      * @param FactFinderConfigServiceInterface $configService
      * @param CartService $cartService
+     * @param EntityRepositoryInterface $productRepository
      */
     public function __construct(
         RecordsApi $recordsApi,
@@ -75,9 +75,7 @@ class CartRecommendedBundle implements ProductBundleInterface
     public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        if (!$config->isActive()) {
-            throw new ProductBundleException('Cart recommended products are not active');
-        }
+
         $productNumbers = $this->getProductNumbersFromCart($salesChannelContext);
         if (empty($productNumbers)) {
             return new ProductCollection();
@@ -88,10 +86,8 @@ class CartRecommendedBundle implements ProductBundleInterface
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
 
         $resultCollection = $this->recordsApi->getRecommendations($recommendationRequest, $salesChannelContext);
-        /** @var ProductsResponse $products */
-        $products = $resultCollection->get(ProductsResponse::class);
-
-        return Excluder::exclude($products->getProducts(), $config);
+        $productListing = $resultCollection->get(ProductListingResponse::class);
+        return Excluder::exclude($productListing->getProducts(), $config);
     }
 
     /**

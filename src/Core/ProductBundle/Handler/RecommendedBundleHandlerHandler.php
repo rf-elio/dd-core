@@ -1,14 +1,15 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\ProductBundle;
+namespace Elio\FactFinder\Core\ProductBundle\Handler;
 
 
 use Elio\FactFinder\Api\Records\RecordsApi;
 use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
-use Elio\FactFinder\Api\Records\Response\ProductsResponse;
+use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleException;
+use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
+use Elio\FactFinder\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
@@ -20,7 +21,7 @@ use Throwable;
  *
  * @package Elio\FactFinder\Core\ProductBundle
  */
-class RecommendedBundle implements ProductBundleInterface
+class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'recommendation';
 
@@ -60,11 +61,13 @@ class RecommendedBundle implements ProductBundleInterface
     public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        if (!$config->isActive() || !$config->isUseProductDetailRecommendations()) {
-            throw new ProductBundleException('Recommended products are not active');
+
+        if (!$config->isUseProductDetailRecommendations()) {
+            return new ProductCollection();
         }
+
         if (empty($request->get('ids'))) {
-            throw new ProductBundleException('Param "ids" does not exists');
+            throw new ProductBundleInvalidRequestException('Param "ids" does not exists');
         }
 
         $recommendationRequest = new RecommendationRequest($config->getApiChannel());
@@ -72,9 +75,7 @@ class RecommendedBundle implements ProductBundleInterface
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
 
         $resultCollection = $this->recordsApi->getRecommendations($recommendationRequest, $salesChannelContext);
-        /** @var ProductsResponse $products */
-        $products = $resultCollection->get(ProductsResponse::class);
-
-        return Excluder::exclude($products->getProducts(), $config);
+        $productListing = $resultCollection->get(ProductListingResponse::class);
+        return Excluder::exclude($productListing->getProducts(), $config);
     }
 }

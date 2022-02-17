@@ -9,6 +9,7 @@ use Elio\FactFinder\Api\Request\ChannelRequest;
 class SimilarRequest extends ChannelRequest
 {
     private string $id;
+    private string $idType = 'productNumber';
     private int $maxResults = 10;
 
     /**
@@ -41,5 +42,21 @@ class SimilarRequest extends ChannelRequest
     public function setMaxResults(int $maxResults): void
     {
         $this->maxResults = $maxResults;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdType(): string
+    {
+        return $this->idType;
+    }
+
+    /**
+     * @param string $idType
+     */
+    public function setIdType(string $idType): void
+    {
+        $this->idType = $idType;
     }
 }

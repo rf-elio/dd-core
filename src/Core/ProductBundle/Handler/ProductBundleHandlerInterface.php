@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\ProductBundle;
+namespace Elio\FactFinder\Core\ProductBundle\Handler;
 
 
 use Shopware\Core\Content\Product\ProductCollection;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Elio\FactFinder\Core\ProductBundle
  */
-interface ProductBundleInterface
+interface ProductBundleHandlerInterface
 {
     /**
      * @param string $type

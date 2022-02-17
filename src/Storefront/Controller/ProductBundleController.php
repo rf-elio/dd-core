@@ -5,9 +5,8 @@ namespace Elio\FactFinder\Storefront\Controller;
 
 
 use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
-use Elio\FactFinder\Core\ProductBundle\ProductBundleInterface;
+use Elio\FactFinder\Core\ProductBundle\ProductBundleService;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -25,20 +24,21 @@ use Throwable;
 class ProductBundleController extends StorefrontController
 {
     use FactFinderLogTrait;
-    private iterable $productBundles;
+
+    private ProductBundleService $productBundleService;
 
     /**
      * ProductBundleController constructor.
      *
-     * @param iterable $productBundles
+     * @param ProductBundleService $productBundleService
      * @param LoggerInterface $logger
      */
     public function __construct(
-        iterable $productBundles,
-        LoggerInterface $logger
+        ProductBundleService $productBundleService,
+        LoggerInterface   $logger
     )
     {
-        $this->productBundles = $productBundles;
+        $this->productBundleService = $productBundleService;
         $this->logger = $logger;
     }
 
@@ -54,17 +54,13 @@ class ProductBundleController extends StorefrontController
     public function list(string $type, Request $request, SalesChannelContext $context): Response
     {
         try {
-            $productBundle = $this->getProductBundle($type);
-            $view = $request->get('view', 'storefront/component/product/slider/default.html.twig');
-            $viewParams = $request->get('viewParams', []);
-
-            $response = $this->renderStorefront($view, $viewParams + [
-                'products' => $productBundle->getProducts($request, $context)
+            $response = $this->renderStorefront('storefront/component/product/slider/default.html.twig', [
+                'products' => $this->productBundleService->getProducts($type, $request, $context)
             ]);
 
             return $this->json([
-               'success' => true,
-               'data' => $response->getContent()
+                'success' => true,
+                'data' => $response->getContent()
             ]);
         } catch (Throwable $e) {
             $this->ffError($e->getMessage(), $this, [$e]);
@@ -73,21 +69,5 @@ class ProductBundleController extends StorefrontController
                 'message' => $e->getMessage()
             ]);
         }
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return ProductBundleInterface
-     */
-    private function getProductBundle(string $type): ProductBundleInterface
-    {
-        /** @var ProductBundleInterface $productBundle */
-        foreach ($this->productBundles as $productBundle) {
-            if ($productBundle->supports($type)) {
-                return $productBundle;
-            }
-        }
-        throw new RuntimeException(sprintf('Product bundle with type "%s" does not exist', $type));
     }
 }

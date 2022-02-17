@@ -4,9 +4,9 @@
 namespace Elio\FactFinder\Api\Records\ResponseTransformer;
 
 
-use Elio\FactFinder\Api\Records\Response\ProductsResponse;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -82,8 +82,11 @@ class ProductTransformer implements ResponseTransformerInterface
             return ($aPosition < $bPosition) ? -1 : 1;
         });
 
-        $listing = $responseCollection->get(ProductsResponse::class) ?? new ProductsResponse();
-        $responseCollection->set(ProductsResponse::class, $listing);
+        $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
+        $responseCollection->set(ProductListingResponse::class, $listing);
+        $listing->setCurrentPage(0);
+        $listing->setHitsPerPage($products->count());
+        $listing->setPageCount(1);
         $listing->setProducts($products);
     }
 
