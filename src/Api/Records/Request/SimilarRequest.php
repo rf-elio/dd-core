@@ -10,7 +10,7 @@ class SimilarRequest extends ChannelRequest
 {
     private string $id;
     private string $idType = 'productNumber';
-    private int $maxResults = 10;
+    private int $maxResults;
 
     /**
      * @return string

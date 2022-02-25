@@ -11,6 +11,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
 use Elio\FactFinder\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,13 +53,14 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 
     /**
      * @param Request $request
+     * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
      *
      * @return ProductCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
+    public function getProducts(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
 
@@ -66,13 +68,14 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
             return new ProductCollection();
         }
 
-        if (empty($request->get('ids'))) {
-            throw new ProductBundleInvalidRequestException('Param "ids" does not exists');
+        if (empty($request->get('productIds'))) {
+            throw new ProductBundleInvalidRequestException('Param "productIds" does not exists');
         }
 
         $recommendationRequest = new RecommendationRequest($config->getApiChannel());
-        $recommendationRequest->setIds($request->get('ids'));
+        $recommendationRequest->setIds($request->get('productIds'));
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
+        $recommendationRequest->setMaxResults($criteria->getLimit());
 
         $resultCollection = $this->recordsApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);

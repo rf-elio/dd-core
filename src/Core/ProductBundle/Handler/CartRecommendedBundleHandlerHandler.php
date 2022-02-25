@@ -66,13 +66,14 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
 
     /**
      * @param Request $request
+     * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
      *
      * @return ProductCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
+    public function getProducts(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
 

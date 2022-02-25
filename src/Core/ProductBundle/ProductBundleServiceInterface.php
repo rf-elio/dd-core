@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Elio\FactFinder\Core\ProductBundle\Handler;
+namespace Elio\FactFinder\Core\ProductBundle;
 
 
 use Shopware\Core\Content\Product\ProductCollection;
@@ -10,25 +9,20 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Interface ProductBundleInterface
- *
+ * Class ProductBundleService
  * @package Elio\FactFinder\Core\ProductBundle
+ * @author Ralf Frommherz
  */
-interface ProductBundleHandlerInterface
+interface ProductBundleServiceInterface
 {
     /**
-     * @param string $type
+     * Fetches product bundles for the given bundle type
      *
-     * @return bool
-     */
-    public function supports(string $type): bool;
-
-    /**
+     * @param string $type
      * @param Request $request
      * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
-     *
      * @return ProductCollection
      */
-    public function getProducts(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection;
+    public function getProducts(string $type, Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection;
 }

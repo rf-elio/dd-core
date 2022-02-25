@@ -11,6 +11,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
 use Elio\FactFinder\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,13 +53,14 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 
     /**
      * @param Request $request
+     * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
      *
      * @return ProductCollection
      * @throws ApiException
      * @throws Throwable
      */
-    public function getProducts(Request $request, SalesChannelContext $salesChannelContext): ProductCollection
+    public function getProducts(Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
 
@@ -66,12 +68,13 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
             return new ProductCollection();
         }
 
-        if ($request->get('id') === null) {
+        if ($request->get('productId') === null) {
             throw new ProductBundleInvalidRequestException('Param "id" does not exists');
         }
 
         $similarRequest = new SimilarRequest($config->getApiChannel());
-        $similarRequest->setId($request->get('id'));
+        $similarRequest->setId($request->get('productId'));
+        $similarRequest->setMaxResults($criteria->getLimit());
 
         $resultCollection = $this->recordsApi->getSimilar($similarRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);

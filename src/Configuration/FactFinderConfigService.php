@@ -145,7 +145,8 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations',  $languagePrefix) ?? false,
             $this->getConfigWithLanguagePrefix($config, 'useProductDetailSimilar',  $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? []
+            $this->getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
+            $this->getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

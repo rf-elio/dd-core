@@ -18,10 +18,9 @@
                 "page": "Contents"
             }
         },
-        "productDetailSlider": {
+        "cross-selling": {
             "recommendations": "Recommendations",
-            "similar": "Similar products",
-            "empty": "Slider is empty"
+            "similar": "Similar"
         }
     }
 }

@@ -255,6 +255,13 @@
             <defaultValue>true</defaultValue>
         </input-field>
 
+        <input-field type="int">
+            <name>productDetailSliderLimit</name>
+            <label>Max number of products in product detail similar or reco slider</label>
+            <label lang="de-DE">Maximale Anzahl von Produkten im Ähnlicheartikel- oder Empfehlungs-Slider</label>
+            <defaultValue>24</defaultValue>
+        </input-field>
+
         <input-field type="bool">
             <name>useCartRecommendations</name>
             <label>Display the FACT-Finder product recommendation slider on the cart page</label>

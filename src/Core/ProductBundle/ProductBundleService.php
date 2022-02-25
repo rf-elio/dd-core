@@ -7,6 +7,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
 use Elio\FactFinder\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package Elio\FactFinder\Core\ProductBundle
  * @author Ralf Frommherz
  */
-class ProductBundleService
+class ProductBundleService implements ProductBundleServiceInterface
 {
     /**
      * @var iterable|ProductBundleHandlerInterface[]
@@ -37,10 +38,11 @@ class ProductBundleService
      *
      * @param string $type
      * @param Request $request
+     * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
      * @return ProductCollection
      */
-    public function getProducts(string $type, Request $request, SalesChannelContext $salesChannelContext): ProductCollection
+    public function getProducts(string $type, Request $request, Criteria $criteria, SalesChannelContext $salesChannelContext): ProductCollection
     {
         $config = $this->configService->getByContext($salesChannelContext);
 
@@ -50,7 +52,7 @@ class ProductBundleService
 
         foreach ($this->productBundles as $productBundle) {
             if($productBundle->supports($type)) {
-                return $productBundle->getProducts($request, $salesChannelContext);
+                return $productBundle->getProducts($request, $criteria, $salesChannelContext);
             }
         }
 

@@ -12,7 +12,7 @@ class RecommendationRequest extends ChannelRequest
      * @var string[]
      */
     private array $ids;
-    private int $maxResults = 10;
+    private int $maxResults;
     private ?string $sessionId = null;
 
 

@@ -92,6 +92,7 @@ class Configuration extends Struct
     private bool $useProductDetailRecommendations;
     private bool $useProductDetailSimilar;
     private array $recommendationExcludedProducts;
+    private int $productDetailSliderLimit;
 
     /**
      * Configuration constructor.
@@ -127,6 +128,7 @@ class Configuration extends Struct
      * @param bool $useProductDetailRecommendations
      * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
+     * @param int $productDetailSliderLimit
      */
     public function __construct(
         bool $active,
@@ -160,7 +162,8 @@ class Configuration extends Struct
         bool $productDetailPageCampaignsActive,
         bool $useProductDetailRecommendations,
         bool $useProductDetailSimilar,
-        array $recommendationExcludedProducts
+        array $recommendationExcludedProducts,
+        int $productDetailSliderLimit
     )
     {
         $this->useAso = $useAso;
@@ -195,6 +198,7 @@ class Configuration extends Struct
         $this->useProductDetailRecommendations = $useProductDetailRecommendations;
         $this->useProductDetailSimilar = $useProductDetailSimilar;
         $this->recommendationExcludedProducts = $recommendationExcludedProducts;
+        $this->productDetailSliderLimit = $productDetailSliderLimit;
     }
 
     /**
@@ -452,5 +456,13 @@ class Configuration extends Struct
     public function getRecommendationExcludedProducts(): array
     {
         return $this->recommendationExcludedProducts;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProductDetailSliderLimit(): int
+    {
+        return $this->productDetailSliderLimit;
     }
 }
