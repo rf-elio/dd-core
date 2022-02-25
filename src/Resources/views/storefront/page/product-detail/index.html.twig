@@ -1,5 +1,6 @@
 {% sw_extends '@Storefront/storefront/page/product-detail/index.html.twig' %}
 
+{# adds a feedback text label #}
 {% block page_product_detail_headline %}
     {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
         label: 'product detail - above product', container: page.product
@@ -7,10 +8,24 @@
     {{ parent() }}
 {% endblock %}
 
+{# adds a feedback text label #}
 {% block page_product_detail_inner %}
     {{ parent() }}
 
     {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
         label: 'product detail - below product', container: page.product
     } %}
+{% endblock %}
+
+{# adds the lazy loaded product cross selling sliders #}
+{% block page_product_detail_cross_selling %}
+    {% set useRecommendations = config_by_lang("FactFinder.config.useProductDetailRecommendations") %}
+    {% set useSimilar = config_by_lang("FactFinder.config.useProductDetailSimilar") %}
+    {% if useRecommendations or useSimilar %}
+        <div data-e-ff-product-detail-cross-selling-url="{{ path('widgets.e-ff.product-cross-selling.detail', {productId: page.product.id}) }}">
+            {{ parent() }}
+        </div>
+    {% else %}
+            {{ parent() }}
+    {% endif %}
 {% endblock %}

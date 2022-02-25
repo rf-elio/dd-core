@@ -33,7 +33,6 @@
 namespace Elio\FactFinder\Api;
 
 
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Api\CampaignApi;
 use Swagger\Client\Api\ImportApi;
@@ -84,10 +83,10 @@ interface ApiClientFactoryInterface
     /**
      * Creates the records api to update data directly in ff.
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      * @return RecordsApi
      */
-    public function createRecordsApi(string $salesChannelId): RecordsApi;
+    public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi;
 
     /**
      * Creates the search api instance, configured for the given sales channel.

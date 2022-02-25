@@ -17,6 +17,10 @@
                 "category": "Kategorien",
                 "page": "Inhalte"
             }
+        },
+        "cross-selling": {
+            "tab-recommendations": "Empfehlungen",
+            "tab-similar": "Ähnliche Artikel"
         }
     }
 }
