@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\FactFinder\Core\AdvisorCampaign\Controller;
+namespace Elio\FactFinder\Storefront\Controller;
 
 use Elio\FactFinder\Api\Search\Request\AdvisorStatus;
 use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
