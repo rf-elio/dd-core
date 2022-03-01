@@ -40,6 +40,8 @@ use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Transform\Transformer;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\SortItem;
@@ -55,6 +57,7 @@ use Throwable;
  */
 class SearchApi
 {
+    use FactFinderLogTrait;
     private ApiClientFactoryInterface $apiFactory;
     private Transformer $transformer;
 
@@ -62,14 +65,17 @@ class SearchApi
      * SearchApi constructor.
      * @param ApiClientFactoryInterface $apiFactory
      * @param Transformer $transformer
+     * @param LoggerInterface $logger
      */
     public function __construct(
         ApiClientFactoryInterface $apiFactory,
-        Transformer $transformer
+        Transformer $transformer,
+        LoggerInterface $logger
     )
     {
         $this->apiFactory = $apiFactory;
         $this->transformer = $transformer;
+        $this->logger = $logger;
     }
 
     /**
@@ -83,6 +89,7 @@ class SearchApi
      */
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
+        $this->ffDebug('search', $this, [$searchRequest, $context]);
         $apiClient = $this->apiFactory->createSearchApi($context);
         $params = [
             'query' => $searchRequest->getQuery(),

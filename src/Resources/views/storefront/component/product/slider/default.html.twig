@@ -1,0 +1,57 @@
+{% set elioFFQuery = 'main' %}
+{% set elioFFPos = 3 %}
+{% set elioFFPage = 1 %}
+{% set elioFFPageSize = 2 %}
+{% set elioFFTrackProductDetailClickPath = path('widgets.elio-ff.tracking.product-detail') %}
+
+{% set sliderOptions = {
+    slider: {
+        gutter: 10,
+        responsive: {
+            xs: {
+                items: 1
+            },
+            sm: {
+                items: 1
+            },
+            md: {
+                items: 2
+            },
+            lg: {
+                items: 3
+            },
+            xl: {
+                items: 4
+            }
+        },
+    }
+} %}
+
+{% set layout = layout|default('minimal') %}
+
+{% if products|length > 0 %}
+    <div class="base-slider product-slider"
+         data-product-slider="true"
+         data-product-slider-options="{{ sliderOptions|json_encode }}">
+        <div class="product-slider-container"
+             data-product-slider-container="true">
+            {% for product in products %}
+                <div class="product-slider-item">
+                    {% sw_include '@Storefront/storefront/component/product/card/box.html.twig' %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="product-slider-controls-container">
+            <div class="base-slider-controls"
+                 data-product-slider-controls="true">
+                <button class="base-slider-controls-prev product-slider-controls-prev">
+                    {% sw_icon 'arrow-head-left' %}
+                </button>
+                <button class="base-slider-controls-next product-slider-controls-next">
+                    {% sw_icon 'arrow-head-right' %}
+                </button>
+            </div>
+        </div>
+    </div>
+{% endif %}

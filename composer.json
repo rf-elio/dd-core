@@ -44,8 +44,8 @@
             "en-GB": "ElioFactFinder"
         },
         "description": {
-            "de-DE": "Deutsche Beschreibung des Plugins",
-            "en-GB": "English description of the plugin"
+            "de-DE": "Shopware FACTFinder NG Integrations-Plugin",
+            "en-GB": "Shopware FACTFinder NG ingegration plugin"
         }
     },
     "autoload": {

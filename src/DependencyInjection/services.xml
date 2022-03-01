@@ -10,6 +10,7 @@
         <import resource="bot-protection.xml"/>
         <import resource="api.xml"/>
         <import resource="product.xml"/>
+        <import resource="product-bundle.xml"/>
         <import resource="tracking.xml"/>
         <import resource="storefront.xml"/>
         <import resource="export.xml"/>

@@ -26,11 +26,21 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
                             let suggestName = DomAccess.querySelector(mutation.target, '.search-suggest-product-name');
 
                             if (suggestName) {
-                                let text = this._createAutocompleteText(suggestName);
-                                if (text)
-                                    this._autoCompleteEl.innerHTML = text;
-                                else
-                                    this._removeAutoComplete();
+                                let text = '';
+
+                                if (suggestName.classList.contains('js-history-term')) {
+                                    // autocompletion from search history when input field is empty
+                                    text = suggestName.innerText;
+                                    this._inputField.value = text;
+                                }
+                                else {
+                                    // autocompletion when user typed something in search field
+                                    text = this._createAutocompleteText(suggestName);
+                                    if (text)
+                                        this._autoCompleteEl.innerHTML = text;
+                                    else
+                                        this._removeAutoComplete();
+                                }
                             }
                         }
                         catch(err) {
@@ -92,9 +102,12 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
 
             let autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete').getInnerHTML().trim();
 
-            // remove span tag
-            let newSearch = autoCompleteEl.replace(/<[^>]*>/g, '');
-            this._inputField.value = newSearch;
+            if (autoCompleteEl) {
+                // remove span tag
+                let newSearch = autoCompleteEl.replace(/<[^>]*>/g, '');
+                this._inputField.value = newSearch;
+            }
+
             this._inputField.dispatchEvent(new Event('input'));
         }
     }

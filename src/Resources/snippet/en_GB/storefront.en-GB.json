@@ -17,6 +17,10 @@
                 "category": "Categories",
                 "page": "Contents"
             }
+        },
+        "cross-selling": {
+            "recommendations": "Recommendations",
+            "similar": "Similar"
         }
     }
 }

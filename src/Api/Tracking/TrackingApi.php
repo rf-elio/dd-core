@@ -40,6 +40,7 @@ use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
+use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\CartOrCheckoutEvent;
@@ -57,7 +58,7 @@ use Swagger\Client\Model\LoginEvent;
 class TrackingApi
 {
     private ApiClientFactoryInterface $apiFactory;
-    private LoggerInterface $logger;
+    use FactFinderLogTrait;
 
     /**
      * SearchApi constructor.
@@ -79,7 +80,11 @@ class TrackingApi
      */
     public function track(TrackingRequest $request, string $salesChannelId) : void
     {
-        $this->logger->debug('track received', ['request' => get_class($request), 'events' => $request->getEvents()]);
+        $this->ffDebug(
+            'track received',
+            $this,
+            ['request' => $request, 'events' => $request->getEvents()]
+        );
         if(!$request->hasEvents()) {
             return;
         }
@@ -100,7 +105,7 @@ class TrackingApi
             return;
         }
 
-        $this->logger->error('Not supported tracking request received', ['request' => get_class($request)]);
+        $this->ffError('Not supported tracking request received', $this, ['request' => $request]);
         throw new TrackingRequestNotSupportedException(sprintf(
             'Tracking request "%s" is not supported by "%s".',
             get_class($request), self::class

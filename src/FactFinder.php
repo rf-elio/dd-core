@@ -38,7 +38,7 @@ use Elio\FactFinder\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
-use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -46,6 +46,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
  * Class FactFinder
+ *
  * @category  Bootstrap
  * @package   Shopware\Plugins\FactFinder
  * @author    Raoul Yemetio <ry@elio-systems.com>
@@ -64,73 +65,75 @@ class FactFinder extends Plugin
 
     public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
-    public const CUSTOM_FIELDS = [
-        'FactFinderContentExportCategory' => [
-            'label' => [
-                'en-GB' => 'FactFinder content export',
-                'de-DE' => 'FactFinder Content Export'
-            ],
-            'fields' => [
-                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
-                    'type' => 'text',
-                    'componentName' => 'sw-field',
-                    'placeholder' => 'category',
-                    'label' => [
-                        'en-GB' => 'Type',
-                        'de-DE' => 'Typ'
+    public const CUSTOM_FIELDS
+        = [
+            'FactFinderContentExportCategory' => [
+                'label' => [
+                    'en-GB' => 'FactFinder content export',
+                    'de-DE' => 'FactFinder Content Export'
+                ],
+                'fields' => [
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => 'category',
+                        'label' => [
+                            'en-GB' => 'Type',
+                            'de-DE' => 'Typ'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => 'category',
+                        'label' => [
+                            'en-GB' => 'Type for sub categories',
+                            'de-DE' => 'Typ für Unterkategorien'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude in content export',
+                            'de-DE' => 'Aus dem Content Export ausschließen'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude sub categories in content export',
+                            'de-DE' => 'Unterkategorien vom Content Export ausschließen'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude product info in keywords',
+                            'de-DE' => 'Produktinformationen in den Keywords ausschließen'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => '50',
+                        'label' => [
+                            'en-GB' => 'Priority',
+                            'de-DE' => 'Priorität'
+                        ]
                     ]
                 ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED => [
-                    'type' => 'text',
-                    'componentName' => 'sw-field',
-                    'placeholder' => 'category',
-                    'label' => [
-                        'en-GB' => 'Type for sub categories',
-                        'de-DE' => 'Typ für Unterkategorien'
-                    ]
-                ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
-                    'type' => 'bool',
-                    'componentName' => 'sw-field',
-                    'label' => [
-                        'en-GB' => 'Exclude in content export',
-                        'de-DE' => 'Aus dem Content Export ausschließen'
-                    ]
-                ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
-                    'type' => 'bool',
-                    'componentName' => 'sw-field',
-                    'label' => [
-                        'en-GB' => 'Exclude sub categories in content export',
-                        'de-DE' => 'Unterkategorien vom Content Export ausschließen'
-                    ]
-                ],
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
-                    'type' => 'bool',
-                    'componentName' => 'sw-field',
-                    'label' => [
-                        'en-GB' => 'Exclude product info in keywords',
-                        'de-DE' => 'Produktinformationen in den Keywords ausschließen'
-                    ]
-                ],
-                self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
-                    'type' => 'text',
-                    'componentName' => 'sw-field',
-                    'placeholder' => '50',
-                    'label' => [
-                        'en-GB' => 'Priority',
-                        'de-DE' => 'Priorität'
-                    ]
-                ]
-            ],
-            'relations' => ['category', 'landing_page']
-        ]
-    ];
+                'relations' => ['category', 'landing_page']
+            ]
+        ];
 
     /**
      * Adds the additional service definitions
      *
      * @param ContainerBuilder $container
+     *
      * @throws Exception
      */
     public function build(ContainerBuilder $container): void
@@ -138,6 +141,21 @@ class FactFinder extends Plugin
         parent::build($container);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
         $loader->load('services.xml');
+    }
+
+    /**
+     * @param ActivateContext $activateContext
+     */
+    public function activate(ActivateContext $activateContext): void
+    {
+        $setup = new ExportSetup($this->container);
+        $setup->createExports($activateContext->getContext());
+
+        $filtersSetup = new FilterRestrictionsSetup($this->container);
+        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS, true);
+
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install(self::CUSTOM_FIELDS);
     }
 
     /**
@@ -157,17 +175,18 @@ class FactFinder extends Plugin
     }
 
     /**
-     * @param ActivateContext $activateContext
+     * @param UninstallContext $uninstallContext
+     *
+     * @throws Exception
      */
-    public function activate(ActivateContext $activateContext): void
+    public function uninstall(UninstallContext $uninstallContext): void
     {
-        $setup = new ExportSetup($this->container);
-        $setup->createExports($activateContext->getContext());
+        if ($uninstallContext->keepUserData()) {
+            return;
+        }
 
-        $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
-
-        $customFieldSetup = new CustomFieldSetup($this->container);
-        $customFieldSetup->install(self::CUSTOM_FIELDS);
+        (new ExportSetup($this->container))->removeTables();
+        (new FilterRestrictionsSetup($this->container))->removeTables();
+        (new CustomFieldSetup($this->container))->uninstall(self::CUSTOM_FIELDS);
     }
 }

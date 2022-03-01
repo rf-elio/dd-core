@@ -32,15 +32,23 @@
 
 namespace Elio\FactFinder\Core\FilterRestrictions\Setup;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Class FilterRestrictionsSetup
+ *
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -49,16 +57,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FilterRestrictionsSetup
 {
     private ?EntityRepository $filterRepository;
+    private ?Connection $connection;
 
     /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->filterRepository = $container->get('elio_ff_filter.repository');
+        try {
+            $this->filterRepository = $container->get('elio_ff_filter.repository');
+        } catch (ServiceNotFoundException $e) {
+        }
+
+        $this->connection = $container->get(Connection::class);
     }
 
-    public function createFilters(Context $context, ?array $filters = null) {
+    public function createFilters(Context $context, ?array $filters = null, $skipIfExists = false): void
+    {
+        if ($skipIfExists && $this->filterRepository->searchIds(new Criteria(), $context)->getTotal() > 0) {
+            return;
+        }
+
         foreach ($filters as $filterName) {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('technicalName', $filterName));
@@ -70,14 +89,32 @@ class FilterRestrictionsSetup
 
             $newFilterId = Uuid::randomHex();
             $this->filterRepository->create(
-                [[
-                    'id' => $newFilterId,
-                    'propertyName' => $filterName,
-                    'technicalName' => $filterName,
-                    'isCustom' => true
-                ]],
+                [
+                    [
+                        'id' => $newFilterId,
+                        'propertyName' => $filterName,
+                        'technicalName' => $filterName,
+                        'isCustom' => true
+                    ]
+                ],
                 $context
             );
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function removeTables(): void
+    {
+        $tables = [
+            FilterDefinitionTranslationDefinition::ENTITY_NAME,
+            FilterRestrictionsFilterMapping::ENTITY_NAME,
+            FilterRestrictionsDefinition::ENTITY_NAME,
+            FilterDefinition::ENTITY_NAME
+        ];
+        foreach ($tables as $table) {
+            $this->connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', $table));
         }
     }
 }

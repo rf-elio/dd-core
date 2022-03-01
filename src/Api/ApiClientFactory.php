@@ -4,6 +4,7 @@ namespace Elio\FactFinder\Api;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+use Elio\FactFinder\Core\Logging\GuzzleLogWrapper;
 use Elio\FactFinder\Core\Logging\LoggingService;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
@@ -109,14 +110,15 @@ class ApiClientFactory implements ApiClientFactoryInterface
     /**
      * Creates the records api to update data directly in ff.
      *
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
+     *
      * @return RecordsApi
      */
-    public function createRecordsApi(string $salesChannelId): RecordsApi
+    public function createRecordsApi(SalesChannelContext $salesChannelContext): RecordsApi
     {
         return new RecordsApi(
-            $this->createClient($salesChannelId),
-            $this->createConfiguration($salesChannelId)
+            $this->createClient($salesChannelContext->getSalesChannelId(), $salesChannelContext),
+            $this->createConfiguration($salesChannelContext->getSalesChannelId())
         );
     }
 
@@ -167,7 +169,10 @@ class ApiClientFactory implements ApiClientFactoryInterface
         $stack = HandlerStack::create();
         $mapResponse = Middleware::mapResponse(function(ResponseInterface $response) { $response->getBody()->rewind(); return $response; } );
         $stack->push($mapResponse);
-        $stack->push(Middleware::log($this->logger, new MessageFormatter(LoggingService::LOG_FORMAT)));
+        $stack->push(Middleware::log(
+            new GuzzleLogWrapper($this->logger, $this, ['context' => $salesChannelContext, 'params' => $params]),
+            new MessageFormatter(LoggingService::LOG_FORMAT))
+        );
 
         $config = [
             'max' => $configuration->getApiTimeout(),

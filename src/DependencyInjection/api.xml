@@ -25,10 +25,12 @@
         </service>
         <service id="Elio\FactFinder\Api\Records\RecordsApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
+            <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\SearchApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
             <argument type="service" id="Elio\FactFinder\Api\Transform\Transformer"/>
+            <argument type="service" id="elio.fact_finder.core.logging.debug"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\SuggestApi">
             <argument type="service" id="Elio\FactFinder\Api\ApiClientFactory"/>
@@ -102,12 +104,10 @@
             <tag name="elio-ff.api.transformer.response"/>
         </service>
 
-        <!-- commands -->
-        <service id="Elio\FactFinder\Command\RecordsGetCommand">
-            <argument id="Elio\FactFinder\Api\Records\RecordsApi" type="service"/>
-            <argument id="Elio\FactFinder\Configuration\FactFinderConfigService" type="service"/>
-            <argument id="sales_channel.repository" type="service"/>
-            <tag name="console.command"/>
+        <!-- transformer / response / records -->
+        <service id="Elio\FactFinder\Api\Records\ResponseTransformer\ProductTransformer">
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <tag name="elio-ff.api.transformer.response"/>
         </service>
     </services>
 </container>

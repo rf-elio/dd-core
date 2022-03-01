@@ -23,7 +23,7 @@
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
             <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
-            <argument type="service" id="logger" />
+            <argument type="service" id="elio.fact_finder.core.logging.default" />
         </service>
 
         <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute"
@@ -38,7 +38,29 @@
             <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
-            <argument type="service" id="logger" />
+            <argument type="service" id="elio.fact_finder.core.logging.default" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute.inner" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="elio.fact_finder.core.logging.default" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute.inner" />
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\FactFinder\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="translator" />
         </service>
     </services>
 </container>

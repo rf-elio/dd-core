@@ -88,6 +88,11 @@ class Configuration extends Struct
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
     private string $suggestProductNumberAttribute;
+    private bool $productDetailPageCampaignsActive;
+    private bool $useProductDetailRecommendations;
+    private bool $useProductDetailSimilar;
+    private array $recommendationExcludedProducts;
+    private int $productDetailSliderLimit;
     private int $maxAdvisorProducts;
     private string $searchTermForAdvisorCmsElement;
     private int $showPassedAdvisorAfterDays;
@@ -122,6 +127,11 @@ class Configuration extends Struct
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
      * @param string $suggestProductNumberAttribute
+     * @param bool $productDetailPageCampaignsActive
+     * @param bool $useProductDetailRecommendations
+     * @param bool $useProductDetailSimilar
+     * @param array $recommendationExcludedProducts
+     * @param int $productDetailSliderLimit
      * @param int $maxAdvisorProducts
      * @param string $searchTermForAdvisorCmsElement
      * @param int $showPassedAdvisorAfterDays
@@ -155,6 +165,11 @@ class Configuration extends Struct
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
         string $suggestProductNumberAttribute,
+        bool $productDetailPageCampaignsActive,
+        bool $useProductDetailRecommendations,
+        bool $useProductDetailSimilar,
+        array $recommendationExcludedProducts,
+        int $productDetailSliderLimit,
         int $maxAdvisorProducts,
         string $searchTermForAdvisorCmsElement,
         int $showPassedAdvisorAfterDays
@@ -188,6 +203,11 @@ class Configuration extends Struct
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
+        $this->productDetailPageCampaignsActive = $productDetailPageCampaignsActive;
+        $this->useProductDetailRecommendations = $useProductDetailRecommendations;
+        $this->useProductDetailSimilar = $useProductDetailSimilar;
+        $this->recommendationExcludedProducts = $recommendationExcludedProducts;
+        $this->productDetailSliderLimit = $productDetailSliderLimit;
         $this->maxAdvisorProducts = $maxAdvisorProducts;
         $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
         $this->showPassedAdvisorAfterDays = $showPassedAdvisorAfterDays;
@@ -383,7 +403,7 @@ class Configuration extends Struct
      */
     public function isSearchUseContentChannel(): bool
     {
-        return $this->searchUseContentChannel;
+        return $this->searchUseContentChannel && !empty($this->apiContentChannel);
     }
 
     /**
@@ -416,6 +436,46 @@ class Configuration extends Struct
     public function getSuggestProductNumberAttribute(): string
     {
         return $this->suggestProductNumberAttribute;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProductDetailPageCampaignsActive(): bool
+    {
+        return $this->productDetailPageCampaignsActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseProductDetailRecommendations(): bool
+    {
+        return $this->useProductDetailRecommendations;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseProductDetailSimilar(): bool
+    {
+        return $this->useProductDetailSimilar;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecommendationExcludedProducts(): array
+    {
+        return $this->recommendationExcludedProducts;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProductDetailSliderLimit(): int
+    {
+        return $this->productDetailSliderLimit;
     }
 
     /**

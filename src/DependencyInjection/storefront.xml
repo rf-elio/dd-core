@@ -30,6 +30,14 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Elio\FactFinder\Storefront\Controller\ProductDetailCrossSellingController" public="true">
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute" />
+            <argument type="service" id="elio.fact_finder.core.logging.default" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="Elio\FactFinder\Core\AdvisorCampaign\Controller\AdvisorCampaignController" public="true">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
             <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
