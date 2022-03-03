@@ -1,0 +1,10 @@
+{% block e_ff_advisor_campaign %}
+<div class="e-ff-advisor-campaign"
+     data-fact-finder-advisor-campaign-id="{{ advisorCampaign.id }}"
+>
+    {% sw_include '@FactFinder/storefront/component/factfinder/advisor-campaign/advisor-item.html.twig' with {
+        advisorCampaign: advisorCampaign,
+        searchResult: searchResult
+    } %}
+</div>
+{% endblock %}

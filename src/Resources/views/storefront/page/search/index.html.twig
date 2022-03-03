@@ -17,13 +17,11 @@
 
     {% block page_search %}
         <div class="cms-page search-page e-search-page">
-            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
-                label: 'above search result', container: page.listing
-            } %}
-
-            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/advisor.html.twig' with {
-                container: page.listing
-            } %}
+            {% block e_ff_page_search_feedback_text_above_search_result %}
+                {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+                    label: 'above search result', container: page.listing
+                } %}
+            {% endblock %}
 
             {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}

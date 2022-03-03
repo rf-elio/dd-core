@@ -3,22 +3,23 @@
         "blocks": {
             "commerce": {
                 "advisorCampaign": {
-                    "label": "Advisor campaign"
+                    "label": "Berater Kampagne"
                 }
             }
         },
         "elements": {
             "advisorCampaign": {
-                "label": "Advisor campaign",
+                "label": "Berater Kampagne",
                 "config": {
-                    "campaignName": "Campaign name",
-                    "productsTitle": "Products title"
+                    "campaignParameterName": "Kampagnen Parameter: Name",
+                    "campaignParameterValue": "Kampagnen Parameter: Wert",
+                    "productsTitle": "Produkt-Titel"
                 },
                 "content": {
-                    "question": "Advisor's question?",
-                    "firstAnswer": "First answer",
-                    "secondAnswer": "Second answer",
-                    "thirdAnswer": "Third answer"
+                    "question": "Frage?",
+                    "firstAnswer": "Erste Antwort",
+                    "secondAnswer": "Zweite Antwort",
+                    "thirdAnswer": "Dritte Antwort"
                 }
             }
         }

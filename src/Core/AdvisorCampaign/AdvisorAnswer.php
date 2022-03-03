@@ -3,15 +3,23 @@
 namespace Elio\FactFinder\Core\AdvisorCampaign;
 
 
-class AdvisorAnswer
+use Shopware\Core\Framework\Struct\Struct;
+
+/**
+ * Class AdvisorAnswer
+ * @package Elio\FactFinder\Core\AdvisorCampaign
+ * @author Ralf Frommherz
+ */
+class AdvisorAnswer extends Struct
 {
-    private ?string $id = null;
-    private ?string $text = null;
-    private ?bool $selected = null;
+    protected ?string $id = null;
+    protected ?string $text = null;
+    protected bool $selected = false;
+    protected string $answerPath = '';
     /**
      * @var AdvisorQuestion[]
      */
-    private array $questions = [];
+    protected array $questions = [];
 
     /**
      * @return string
@@ -100,20 +108,20 @@ class AdvisorAnswer
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function toArray(): array
+    public function getAnswerPath(): string
     {
-        $questions = [];
-        foreach ($this->questions as $question) {
-            $questions[] = $question->toArray();
-        }
+        return $this->answerPath;
+    }
 
-        return [
-            'id' => $this->id,
-            'text' => $this->text,
-            'selected' => $this->selected,
-            'questions' => $questions
-        ];
+    /**
+     * @param string $answerPath
+     * @return AdvisorAnswer
+     */
+    public function setAnswerPath(string $answerPath): self
+    {
+        $this->answerPath = $answerPath;
+        return $this;
     }
 }

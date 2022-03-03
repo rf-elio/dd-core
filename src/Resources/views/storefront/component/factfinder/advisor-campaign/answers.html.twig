@@ -1,0 +1,13 @@
+{% block page_advisor_campaign_answers %}
+    <div class="e-ff-advisor-campaign-answers">
+        {% for answer in answers %}
+            {% block page_advisor_campaign_answer %}
+                <button class="btn {% if mode == 'history' and answer.selected %}btn-primary{% else %}btn-light{% endif %} e-ff-advisor-campaign-answer"
+                        {% if mode == 'histjhkory' %}disabled="disabled"{% endif %}
+                        data-e-ff-advisor-campaign-answer-path="{{ answer.answerPath }}">
+                    {{ answer.text }}
+                </button>
+            {% endblock %}
+        {% endfor %}
+    </div>
+{% endblock %}

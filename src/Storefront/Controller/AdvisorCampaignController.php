@@ -2,138 +2,82 @@
 
 namespace Elio\FactFinder\Storefront\Controller;
 
-use Elio\FactFinder\Api\Search\Request\AdvisorStatus;
-use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\SearchApi;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AbstractAdvisorCampaignRoute;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use JsonException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Throwable;
 
 /**
  * @RouteScope(scopes={"storefront"})
  */
 class AdvisorCampaignController extends StorefrontController
 {
-    private FactFinderConfigServiceInterface $configService;
-    private SearchApi $searchApi;
-    private ProductSearchRequestBuilder $searchRequestBuilder;
-    private LoggerInterface $logger;
+    private AbstractAdvisorCampaignRoute $advisorCampaignRoute;
 
     /**
-     * @param FactFinderConfigServiceInterface $configService
-     * @param SearchApi $searchApi
-     * @param ProductSearchRequestBuilder $searchRequestBuilder
-     * @param LoggerInterface $logger
+     * @param AbstractAdvisorCampaignRoute $advisorCampaignRoute
      */
-    public function __construct(
-        FactFinderConfigServiceInterface $configService,
-        SearchApi $searchApi,
-        ProductSearchRequestBuilder $searchRequestBuilder,
-        LoggerInterface $logger
-    ) {
-        $this->configService = $configService;
-        $this->searchApi = $searchApi;
-        $this->searchRequestBuilder = $searchRequestBuilder;
-        $this->logger = $logger;
+    public function __construct(AbstractAdvisorCampaignRoute $advisorCampaignRoute) {
+        $this->advisorCampaignRoute = $advisorCampaignRoute;
     }
 
     /**
-     * @Route("/elio-ff-advisor-campaign", name="frontend.elio-ff.advisor-campaign", methods={"POST"}, defaults={"XmlHttpRequest"=true})
+     * @Route("/widgets/ff/campaign/advisor", name="frontend.e-ff.campaign.advisor", methods={"POST", "GET"}, defaults={"csrf_protected"=false, "XmlHttpRequest"=true})
      *
      * @param Request $request
      * @param SalesChannelContext $context
      *
-     * @return JsonResponse
+     * @return Response
+     * @throws JsonException
      */
-    public function campaign(Request $request, SalesChannelContext $context): JsonResponse
+    public function campaign(Request $request, SalesChannelContext $context): Response
     {
-        try {
-            $config = $this->configService->getByContext($context);
-            if (!$config->isActive()) {
-                throw new RuntimeException('FactFinder is not active');
-            }
+        $this->injectParametersByRequestContent($request);
+        $result = $this->advisorCampaignRoute->load($request, $context);
 
-            $criteria = new Criteria();
-            $searchRequest = $this->searchRequestBuilder->build($request, $criteria, $context);
-            $searchRequest->setQuery($config->getSearchTermForAdvisorCmsElement());
-            $resultCollection = $this->searchApi->search($searchRequest, $context);
-            /** @var AdvisorCampaignResponseCollection $advisorCampaignResponseCollection */
-            $advisorCampaignResponseCollection = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
+        $result->getListingResult()->getCriteria()->setLimit(1);
+        $result->getListingResult()->clear();
 
-            $campaign = !empty($request->get('campaignName')) ?
-                        $advisorCampaignResponseCollection->getByName($request->get('campaignName')) :
-                        $advisorCampaignResponseCollection->getFirstCampaign();
+        $parameterName = $request->request->get('parameterName', '');
+        $parameterValue = $request->request->get('parameterValue', '');
 
-            return $this->json([
-                'success' => true,
-                'data' => $campaign !== null ? [
-                    'id' => $campaign->getId(),
-                    'questions' => $campaign->questionsToArray()
-                ] : null
-            ]);
-        } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), $e->getTrace());
-            return $this->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+        return $this->renderStorefront(
+            '@Storefront/storefront/page/elio-advisor-campaign/index.html.twig',
+            [
+                'productListing' => $result->getListingResult(),
+                'searchParams' => [
+                    'search' => '*',
+                    ProductSearchRequestBuilder::ADDITIONAL_REQUEST_PARAM_PREFIX.$parameterName => $parameterValue
+                ]
+            ]
+        );
+    }
+
+    /**
+     * Injects the parameters required by the core api by the request content
+     *
+     * @param Request $request
+     * @throws JsonException
+     */
+    private function injectParametersByRequestContent(Request $request): void
+    {
+        if (empty($request->getContent())) {
+            return;
         }
-    }
 
-    /**
-     * @Route("/elio-ff-advisor-products", name="frontend.elio-ff.advisor-products", methods={"POST"}, defaults={"XmlHttpRequest"=true})
-     *
-     * @param Request $request
-     * @param SalesChannelContext $context
-     *
-     * @return JsonResponse
-     */
-    public function products(Request $request, SalesChannelContext $context): JsonResponse
-    {
-        try {
-            $config = $this->configService->getByContext($context);
-            if (!$config->isActive()) {
-                throw new RuntimeException('FactFinder is not active');
-            }
+        $params = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-            $criteria = new Criteria();
-            $searchRequest = $this->searchRequestBuilder->build($request, $criteria, $context);
-            if (($advisorStatus = $request->get('advisorStatus')) !== null) {
-                $searchRequest->setAdvisorStatus(new AdvisorStatus($advisorStatus['answerPath'], $advisorStatus['id']));
-                $searchRequest->setHitsPerPage($config->getMaxAdvisorProducts());
-                $resultCollection = $this->searchApi->search($searchRequest, $context);
-                /** @var ProductListingResponse $productListingResponse */
-                $productListingResponse = $resultCollection->get(ProductListingResponse::class);
-                $products = $productListingResponse->getProducts();
-            } else {
-                $products = new ProductCollection();
-            }
+        if (isset($params['parameterName']) && is_string($params['parameterName'])) {
+            $request->request->set('parameterName', $params['parameterName']);
+        }
 
-            return $this->json([
-                'success' => true,
-                'data' => $this->renderStorefront('storefront/component/factfinder/campaign/advisor-products.html.twig', [
-                    'products' => $products
-                ])->getContent(),
-                'productsCount' => $products->count()
-            ]);
-
-        } catch (Throwable $e) {
-            $this->logger->error($e->getMessage(), $e->getTrace());
-            return $this->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+        if (isset($params['parameterValue']) && is_string($params['parameterValue'])) {
+            $request->request->set('parameterValue', $params['parameterValue']);
         }
     }
 }

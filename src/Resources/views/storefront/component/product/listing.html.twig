@@ -1,5 +1,20 @@
 {% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
 
+{% block element_product_listing_wrapper_content %}
+    {% block element_product_listing_advisor %}
+        {% if searchResult and searchResult.hasExtension('AdvisorCampaignResponseCollection') %}
+            {% set advisorCampaignResponseCollection = searchResult.getExtension('AdvisorCampaignResponseCollection') %}
+            {% for advisorCampaign in advisorCampaignResponseCollection.advisorCampaignResponses %}
+                {% sw_include '@FactFinder/storefront/component/factfinder/advisor-campaign/index.html.twig' with {
+                    advisorCampaign: advisorCampaign,
+                    searchResult: searchResult
+                } %}
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
+    {{ parent() }}
+{% endblock %}
+
 {% block product_listing %}
     {% set elioFFQuery = 'main' %}
     {% set elioFFPos = 3 %}
@@ -9,6 +24,7 @@
     {{ parent() }}
 {% endblock %}
 
+{# feedback text integration #}
 {% block element_product_listing_row %}
     {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
         label: 'above search result', container: searchResult

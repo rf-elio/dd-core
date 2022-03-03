@@ -1,35 +1,5 @@
-.elio-ff-advisor {
-  &__question-container {
-    padding: 10px;
-  }
-
-  &__question {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-  }
-
-  &__answers {
-    display: flex;
-    align-items: flex-start;
-    background-color: #fff;
-    padding: 15px;
-  }
-
-  &__answer {
-    cursor: pointer;
-    line-height: 1.5;
-    height: 100%;
-    padding: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    border-radius: 5px;
-  }
-
-  &__products-title {
-    display: none;
-
-    &.active {
-      display: inline-block;
-    }
+.e-ff-advisor-campaign {
+  .e-ff-advisor-campaign-questions-question {
+    margin-bottom: 1rem;
   }
 }

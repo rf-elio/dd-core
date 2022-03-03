@@ -9,7 +9,11 @@ Shopware.Service('cmsService').registerCmsElement({
     configComponent: 'sw-cms-el-config-ff-advisor-campaign',
     previewComponent: 'sw-cms-el-preview-ff-advisor-campaign',
     defaultConfig: {
-        campaignName: {
+        campaignParameterName: {
+            source: 'static',
+            value: 'campaignId'
+        },
+        campaignParameterValue: {
             source: 'static',
             value: ''
         },

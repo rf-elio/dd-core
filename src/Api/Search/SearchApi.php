@@ -90,7 +90,7 @@ class SearchApi
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         $this->ffDebug('search', $this, [$searchRequest, $context]);
-        $apiClient = $this->apiFactory->createSearchApi($context);
+
         $params = [
             'query' => $searchRequest->getQuery(),
             'channel' => $searchRequest->getChannel(),
@@ -99,15 +99,19 @@ class SearchApi
             'customParameters' => $this->getCustomParameters($searchRequest),
             'filters' => $this->getFilters($searchRequest)
         ];
+
         if ($searchRequest->getAdvisorStatus() !== null) {
             $params['advisorStatus'] = [
                 'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
                 'id' => $searchRequest->getAdvisorStatus()->getId()
             ];
         }
+
         if ($searchRequest->getHitsPerPage() !== null) {
             $params['hitsPerPage'] = $searchRequest->getHitsPerPage();
         }
+
+        $apiClient = $this->apiFactory->createSearchApi($context);
         $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => $params]));
         return $this->transformer->transformResponse($result, $context, $searchRequest);
     }

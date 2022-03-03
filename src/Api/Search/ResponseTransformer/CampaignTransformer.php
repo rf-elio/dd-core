@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
+use ArrayObject;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponse;
@@ -44,12 +45,12 @@ use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\AdvisorCampaign\AdvisorAnswer;
 use Elio\FactFinder\Core\AdvisorCampaign\AdvisorQuestion;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Question;
 use Swagger\Client\Model\Result;
+use function _PHPStan_68495e8a9\React\Promise\Stream\first;
 
 /**
  * Converts the campaigns to the internal campaign objects
@@ -121,16 +122,42 @@ class CampaignTransformer implements ResponseTransformerInterface
                     $questions[] = $this->questionWalk($question);
                 }
 
+                $questionPath = new ArrayObject();
+                $this->buildAnswerPath($questions, $questionPath);
+                $questionPath = $questionPath->getArrayCopy();
+
+                $answerPath = '';
+                /** @var AdvisorQuestion[] $questionPath */
+                if (!empty($questionPath)) {
+                    $latestQuestion = current($questionPath);
+                    if($latestSelectedAnswer = $latestQuestion->getSelectedAnswer()) {
+                        $answerPath = $latestSelectedAnswer->getAnswerPath();
+                    }
+                }
+
+                $activeQuestions = [];
+                foreach ($campaign->getActiveQuestions() as $activeQuestion) {
+                    $activeQuestions[] = $this->questionWalk($activeQuestion);
+                }
+
                 $advisorCampaignResponseCollection->addAdvisorCampaignResponse(new AdvisorCampaignResponse(
                     $campaign->getId(),
                     $campaign->getName(),
-                    $questions
+                    $activeQuestions,
+                    $questionPath,
+                    $answerPath
                 ));
             }
         }
     }
 
-    private function questionWalk(Question $question): AdvisorQuestion
+    /**
+     * Creates the advisor tree based on the given ff response
+     *
+     * @param Question $question
+     * @return AdvisorQuestion
+     */
+    protected function questionWalk(Question $question): AdvisorQuestion
     {
         $advisorQuestion = (new AdvisorQuestion())
             ->setId($question->getId())
@@ -141,6 +168,7 @@ class CampaignTransformer implements ResponseTransformerInterface
             $advisorAnswer = (new AdvisorAnswer())
                 ->setId($answer->getId())
                 ->setText($answer->getText())
+                ->setAnswerPath($answer->getSearchParams()->getAdvisorStatus()->getAnswerPath())
                 ->setSelected($answer->getSelected());
 
             foreach ($answer->getQuestions() as $subQuestion) {
@@ -151,5 +179,29 @@ class CampaignTransformer implements ResponseTransformerInterface
         }
 
         return $advisorQuestion;
+    }
+
+    /**
+     * Creates a list of selected questions and sets the parent question / answer as selected (ff set's only the last
+     * question as selected).
+     *
+     * @param AdvisorQuestion[] $questions
+     */
+    protected function buildAnswerPath(array $questions, ArrayObject $questionPath): bool
+    {
+        foreach ($questions as $question) {
+            foreach ($question->getAnswers() as $answer) {
+                if ($this->buildAnswerPath($answer->getQuestions(), $questionPath)) {
+                    $answer->setSelected(true);
+                }
+
+                if ($answer->isSelected()) {
+                    $questionPath->append($question);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

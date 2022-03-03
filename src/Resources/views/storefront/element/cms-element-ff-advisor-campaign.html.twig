@@ -1,26 +1,15 @@
-{% block element_ff_advisor_campaign %}
+{% block element_e_ff_advisor_campaign %}
     {% set config = element.fieldConfig.elements %}
-    {% set options = {
-        productsUrl: path('frontend.elio-ff.advisor-products'),
-        campaignUrl: path('frontend.elio-ff.advisor-campaign'),
-        productsToken: sw_csrf('frontend.elio-ff.advisor-products', {'mode': 'token'}),
-        campaignToken: sw_csrf('frontend.elio-ff.advisor-campaign', {'mode': 'token'}),
-        campaignName: config.campaignName.value,
-        showPassedAfterDays: config_by_lang("FactFinder.config.showPassedAdvisorAfterDays")
-    } %}
 
-    <div class="elio-ff-advisor"
-         data-fact-finder-advisor-campaign
-         data-fact-finder-advisor-campaign-options="{{ options|json_encode }}">
+    <div class="e-ff-advisor-campaign-lazy"
+         data-fact-finder-advisor-campaign-url="{{ path('frontend.e-ff.campaign.advisor') }}"
+         data-fact-finder-advisor-campaign-parameter-name="{{ config.campaignParameterName.value|escape }}"
+         data-fact-finder-advisor-campaign-parameter-value="{{ config.campaignParameterValue.value|escape }}"
+    >
+        {% if config.productsTitle.value %}
+            <h3>{{ config.productsTitle.value }}</h3>
+        {% endif %}
 
-        <div data-elio-ff-advisor-questions class="elio-ff-advisor__questions"></div>
-        <div class="elio-ff-advisor__products-container">
-            {% if config.productsTitle.value %}
-                <h3 data-elio-ff-advisor-products-title class="elio-ff-advisor__products-title">
-                    {{ config.productsTitle.value }}
-                </h3>
-            {% endif %}
-            <div data-elio-ff-advisor-products class="elio-ff-advisor__products"></div>
-        </div>
+        <div class="e-ff-advisor-campaign-lazy-container"></div>
     </div>
 {% endblock %}

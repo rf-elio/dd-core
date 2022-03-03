@@ -11,7 +11,7 @@ class AdvisorCampaignResponseCollection extends Response
     /**
      * @var AdvisorCampaignResponse[]
      */
-    protected array $advisorCampaignResponse = [];
+    protected array $advisorCampaignResponses = [];
 
     /**
      * @param AdvisorCampaignResponse $advisorResponse
@@ -20,37 +20,14 @@ class AdvisorCampaignResponseCollection extends Response
      */
     public function addAdvisorCampaignResponse(AdvisorCampaignResponse $advisorResponse): void
     {
-        $this->advisorCampaignResponse[] = $advisorResponse;
+        $this->advisorCampaignResponses[] = $advisorResponse;
     }
 
     /**
      * @return AdvisorCampaignResponse[]
      */
-    public function getAdvisorCampaignResponse(): array
+    public function getAdvisorCampaignResponses(): array
     {
-        return $this->advisorCampaignResponse;
-    }
-
-    /**
-     * @param string|null $name
-     *
-     * @return AdvisorCampaignResponse|null
-     */
-    public function getByName(?string $name): ?AdvisorCampaignResponse
-    {
-        foreach ($this->advisorCampaignResponse as $advisorResponse) {
-            if ($advisorResponse->getName() === $name) {
-                return $advisorResponse;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return AdvisorCampaignResponse|null
-     */
-    public function getFirstCampaign(): ?AdvisorCampaignResponse
-    {
-        return $this->advisorCampaignResponse[0] ?? null;
+        return $this->advisorCampaignResponses;
     }
 }

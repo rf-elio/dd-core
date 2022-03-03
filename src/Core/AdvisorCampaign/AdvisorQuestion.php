@@ -4,15 +4,20 @@ namespace Elio\FactFinder\Core\AdvisorCampaign;
 
 use Shopware\Core\Framework\Struct\Struct;
 
-class AdvisorQuestion
+/**
+ * Class AdvisorQuestion
+ * @package Elio\FactFinder\Core\AdvisorCampaign
+ * @author Ralf Frommherz
+ */
+class AdvisorQuestion extends Struct
 {
-    private ?string $id = null;
-    private ?string $text = null;
-    private ?bool $visible = null;
+    protected ?string $id = null;
+    protected ?string $text = null;
+    protected ?bool $visible = null;
     /**
      * @var AdvisorAnswer[]
      */
-    private array $answers = [];
+    protected array $answers = [];
 
     /**
      * @return string
@@ -95,18 +100,19 @@ class AdvisorQuestion
         $this->answers[] = $answer;
     }
 
-    public function toArray(): array
+    /**
+     * Returns the selected answer
+     *
+     * @return AdvisorAnswer|null
+     */
+    public function getSelectedAnswer(): ?AdvisorAnswer
     {
-        $answers = [];
         foreach ($this->answers as $answer) {
-            $answers[] = $answer->toArray();
+            if ($answer->isSelected()) {
+                return $answer;
+            }
         }
 
-        return [
-            'id' => $this->id,
-            'text' => $this->text,
-            'visible' => $this->visible,
-            'answers' => $answers
-        ];
+        return null;
     }
 }
