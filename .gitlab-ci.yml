@@ -19,8 +19,10 @@ build:
     - bash .gitlab/scripts/composer_install.sh > /dev/null
   script:
     - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
-    - cp -r prepare build/dev
-    - cp -r prepare build/prod
+    - cp -r ./prepare ./build/dev
+    - cd ./build/dev && make dev && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ../../
+
+    - cp -r ./prepare ./build/prod
     - cd ./build/dev && make dev && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ..
     - cd ./build/prod && make prod && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ..
     - zip -r ./build/dev.zip ./build/dev
