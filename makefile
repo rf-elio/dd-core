@@ -22,6 +22,9 @@ test: ## Starts all Tests
 stan: ## Starts the PHPStan Analyser
 	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon
 
+stan-gitlab: ## Starts the PHPStan Analyser
+	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon --error-format=gitlab
+
 update: ## Executes the plugin migrations
 	../../../bin/console database:migrate FactFinder --all
 	../../../bin/console plugin:update FactFinder
