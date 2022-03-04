@@ -44,13 +44,12 @@ test:phpstan:
     reports:
       codequality: phpstan-report.json
   script:
-    - touch phpstan-report.json
     - mkdir -p /var/www/html/custom/plugins/ElioFactFinder
     - cp -r ./build/dev/* /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
+    - cat phpstan-report.json
     - cp phpstan-report.json /var/www/html/phpstan-report.json
-    - ls -la
     - cd /var/www/html/
     - ls -la
 
