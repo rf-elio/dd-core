@@ -13,21 +13,21 @@ build:
     - tags
   image: php:8.0
   artifacts:
-    paths:
-      - dev
-      - prod
-      - build
+    paths: ["build"]
     expire_in: 1 hour
   before_script:
-    - bash .gitlab/scripts/docker_install.sh > /dev/null
+    - bash .gitlab/scripts/composer_install.sh > /dev/null
   script:
-    - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
-    - cp -r prepare dev
-    - cp -r prepare prod
-    - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
-    - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
-    - zip -r ./build/dev.zip ./dev
-    - zip -r ./build/prod.zip ./prod
+    - bash .gitlab/scripts/build/prepare_dir.sh > /dev/null
+    # build dev
+    - cp -r ./prepare/* ./build/dev
+    - cd ./build/dev && make dev && cd ../../
+    - zip -r ./build/ElioFactFinder-dev.zip ./build/dev
+    # build prod
+    - ls -la
+    - cp -r ./prepare/* ./build/prod
+    - cd ./build/prod && make prod && cd ../../
+    - zip -r ./build/ElioFactFinder-prod.zip ./build/prod
 
 test:phpstan:
   stage: test
@@ -39,42 +39,49 @@ test:phpstan:
   variables:
     PHP_VERSION: '8.0'
   artifacts:
-    paths:
-      - dev
+    paths: ["build", "codequality", "phpstan-report.json"]
+    when: always
+    reports:
+      codequality: phpstan-report.json
   script:
-    - cp -r dev /var/www/html/custom/plugins/ElioFactFinder
+    - BUILD_DIR=$(realpath .)
+    - mkdir codequality
+    - mkdir -p /var/www/html/custom/plugins/ElioFactFinder
+    - cp -r ./build/dev/* /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
-    - make stan
+    - make stan-gitlab
+    - cp phpstan-report.json $BUILD_DIR/codequality/phpstan-report.json
+    - cp phpstan-report.json $BUILD_DIR/phpstan-report.json
 
-test:php8.0:
-  stage: test
-  needs: ['build']
-  only:
-    - merge_requests
-    - tags
-  image: dockware/dev:latest
-  variables:
-    PHP_VERSION: '8.0'
-  artifacts:
-    paths:
-      - dev
-  script:
-    - bash .gitlab/scripts/test_phpunit.sh
-
-test:php7.4:
-  stage: test
-  needs: ['build']
-  only:
-    - merge_requests
-    - tags
-  image: dockware/dev:latest
-  variables:
-    PHP_VERSION: '7.4'
-  artifacts:
-    paths:
-      - dev
-  script:
-    - bash .gitlab/scripts/test_phpunit.sh
+#test:php8.0:
+#  stage: test
+#  needs: ['build']
+#  only:
+#    - merge_requests
+#    - tags
+#  image: dockware/dev:latest
+#  variables:
+#    PHP_VERSION: '8.0'
+#  artifacts:
+#    paths:
+#      - dev
+#  script:
+#    - bash .gitlab/scripts/test_phpunit.sh
+#
+#test:php7.4:
+#  stage: test
+#  needs: ['build']
+#  only:
+#    - merge_requests
+#    - tags
+#  image: dockware/dev:latest
+#  variables:
+#    PHP_VERSION: '7.4'
+#  artifacts:
+#    paths:
+#      - dev
+#  script:
+#    - bash .gitlab/scripts/test_phpunit.sh
 
 upload:
   stage: release
