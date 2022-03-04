@@ -42,7 +42,7 @@ test:phpstan:
     paths: ["build", "codequality", "phpstan-report.json"]
     when: always
     reports:
-      codequality: codequality/phpstan-report.json
+      codequality: phpstan-report.json
   script:
     - BUILD_DIR=$(realpath .)
     - mkdir codequality
