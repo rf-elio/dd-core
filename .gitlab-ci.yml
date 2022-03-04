@@ -22,12 +22,12 @@ build:
     # build dev
     - cp -r ./prepare/* ./build/dev
     - cd ./build/dev && make dev && cd ../../
+    - zip -r ./build/ElioFactFinder-dev.zip ./build/dev
     # build prod
     - ls -la
     - cp -r ./prepare/* ./build/prod
     - cd ./build/prod && make prod && cd ../../
-    - zip -r ./build/dev.zip ./build/dev
-    - zip -r ./build/prod.zip ./build/prod
+    - zip -r ./build/ElioFactFinder-dev.zip ./build/prod
 
 test:phpstan:
   stage: test
