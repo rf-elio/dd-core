@@ -50,7 +50,7 @@ test:phpstan:
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
     - cat phpstan-report.json
-    - cp phpstan-report.json /var/www/html/codequality/phpstan-report.json
+    - cp phpstan-report.json /var/www/codequality/phpstan-report.json
     - cd /var/www/html/
     - ls -la
 
