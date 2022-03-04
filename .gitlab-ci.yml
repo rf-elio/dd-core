@@ -50,6 +50,9 @@ test:phpstan:
     - cp -r dev /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
+    - ls -la
+    - cd /var/www/html/
+    - ls -la
 
 #test:php8.0:
 #  stage: test
