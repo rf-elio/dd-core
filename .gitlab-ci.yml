@@ -46,7 +46,7 @@ test:phpstan:
   script:
     - mkdir codequality
     - ls -la
-    - realpath
+    - realpath .
     - mkdir -p /var/www/html/custom/plugins/ElioFactFinder
     - cp -r ./build/dev/* /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
