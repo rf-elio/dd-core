@@ -19,7 +19,7 @@ build:
     - bash .gitlab/scripts/composer_install.sh > /dev/null
   script:
     - bash .gitlab/scripts/build/prepare_dir.sh > /dev/null
-    - cp -r ./prepare ./build/dev/
+    - cp -r ./prepare/ ./build/dev
     - ls -la
     - ls -la prepare
     - ls -la build
