@@ -45,6 +45,7 @@ test:phpstan:
       codequality: codequality/phpstan-report.json
   script:
     - mkdir codequality
+    - BUILD_DIR=$(realpath .)
     - ls -la
     - realpath .
     - mkdir -p /var/www/html/custom/plugins/ElioFactFinder
@@ -52,7 +53,7 @@ test:phpstan:
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
     - cat phpstan-report.json
-    - cp phpstan-report.json /var/www/codequality/phpstan-report.json
+    - cp phpstan-report.json $BUILD_DIR/codequality/phpstan-report.json
     - cd /var/www/html/
     - ls -la
 
