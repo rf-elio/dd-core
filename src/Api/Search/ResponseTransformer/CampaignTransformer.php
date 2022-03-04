@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 use ArrayObject;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponse;
 use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponse;
@@ -50,7 +51,6 @@ use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Question;
 use Swagger\Client\Model\Result;
-use function _PHPStan_68495e8a9\React\Promise\Stream\first;
 
 /**
  * Converts the campaigns to the internal campaign objects
@@ -117,6 +117,15 @@ class CampaignTransformer implements ResponseTransformerInterface
             }
 
             if ($campaign->getFlavour() === self::FLAVOR_ADVISOR) {
+                // if a campaign is answered, we return only this campaign in the response
+                if (
+                    $request instanceof SearchRequest &&
+                    $request->getAdvisorStatus() &&
+                    $request->getAdvisorStatus()->getCampaignId() !== $campaign->getId()
+                ) {
+                    continue;
+                }
+
                 $questions = [];
                 foreach ($campaign->getAdvisorTree() as $question) {
                     $questions[] = $this->questionWalk($question);
@@ -144,7 +153,7 @@ class CampaignTransformer implements ResponseTransformerInterface
                     $campaign->getId(),
                     $campaign->getName(),
                     $activeQuestions,
-                    $questionPath,
+                    array_reverse($questionPath),
                     $answerPath
                 ));
             }

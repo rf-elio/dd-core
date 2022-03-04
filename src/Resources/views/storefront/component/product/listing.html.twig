@@ -1,5 +1,6 @@
 {% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
 
+{# advisor campaigns #}
 {% block element_product_listing_wrapper_content %}
     {% block element_product_listing_advisor %}
         {% if searchResult and searchResult.hasExtension('AdvisorCampaignResponseCollection') %}
@@ -24,13 +25,45 @@
     {{ parent() }}
 {% endblock %}
 
-{# feedback text integration #}
+{# feedback text integration + cms advisor campaign handling #}
 {% block element_product_listing_row %}
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
-        label: 'above search result', container: searchResult
-    } %}
-    {{ parent() }}
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
-        label: 'below search result', container: searchResult
-    } %}
+    {% set showListing = true %}
+    {# we don't show the listing for cms campaigns if there is no selection done yet #}
+    {% if searchResult.hasExtension('ff-advisor-listing') %}
+        {% set showListing = searchResult.getExtension('ff-advisor-listing').showListing %}
+    {% endif %}
+
+    {% if showListing %}
+        {# feedback text #}
+        {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+            label: 'above search result', container: searchResult
+        } %}
+
+        {{ parent() }}
+
+        {# feedback text #}
+        {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+            label: 'below search result', container: searchResult
+        } %}
+    {% endif %}
 {% endblock %}
+
+{# we don't show the no products message for cms advisor campaigns #}
+{% block element_product_listing_col_empty %}
+    {% if not searchResult.hasExtension('ff-advisor-listing') %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{# we hide the sorting if we are on a cms advisor campaign and no selection was made by the user #}
+{% block element_product_listing_sorting %}
+    {% set showListing = true %}
+    {% if searchResult.hasExtension('ff-advisor-listing') %}
+        {% set showListing = searchResult.getExtension('ff-advisor-listing').showListing %}
+    {% endif %}
+
+    {% if showListing %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+

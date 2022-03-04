@@ -103,7 +103,7 @@ class SearchApi
         if ($searchRequest->getAdvisorStatus() !== null) {
             $params['advisorStatus'] = [
                 'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
-                'id' => $searchRequest->getAdvisorStatus()->getId()
+                'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
             ];
         }
 
@@ -160,7 +160,7 @@ class SearchApi
         if ($searchRequest->getAdvisorStatus() !== null) {
             $params['advisorStatus'] = [
                 'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
-                'id' => $searchRequest->getAdvisorStatus()->getId()
+                'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
             ];
         }
         $result = $apiClient->navigationUsingPOST(new \Swagger\Client\Model\NavigationRequest([

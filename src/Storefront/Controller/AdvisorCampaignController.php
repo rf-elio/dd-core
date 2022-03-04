@@ -3,6 +3,7 @@
 namespace Elio\FactFinder\Storefront\Controller;
 
 use Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AbstractAdvisorCampaignRoute;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use JsonException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -38,9 +39,10 @@ class AdvisorCampaignController extends StorefrontController
     public function campaign(Request $request, SalesChannelContext $context): Response
     {
         $this->injectParametersByRequestContent($request);
+        $request->request->set(ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER, ProductListingResultTransformer::FF_LISTING_ADVISOR);
         $result = $this->advisorCampaignRoute->load($request, $context);
 
-        $result->getListingResult()->getCriteria()->setLimit(1);
+        $result->getListingResult()->getCriteria()->setLimit(-1);
         $result->getListingResult()->clear();
 
         $parameterName = $request->request->get('parameterName', '');
@@ -52,7 +54,8 @@ class AdvisorCampaignController extends StorefrontController
                 'productListing' => $result->getListingResult(),
                 'searchParams' => [
                     'search' => '*',
-                    ProductSearchRequestBuilder::ADDITIONAL_REQUEST_PARAM_PREFIX.$parameterName => $parameterValue
+                    ProductSearchRequestBuilder::ADDITIONAL_REQUEST_PARAM_PREFIX.$parameterName => $parameterValue,
+                    ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER => ProductListingResultTransformer::FF_LISTING_ADVISOR
                 ]
             ]
         );

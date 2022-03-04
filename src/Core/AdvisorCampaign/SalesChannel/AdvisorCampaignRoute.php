@@ -107,7 +107,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
         $productListingResponse = $resultCollection->get(ProductListingResponse::class);
 
         $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-            $productListingResponse, $criteria, $context, $resultCollection
+            $productListingResponse, $criteria, $context, $resultCollection, $searchRequest, $request
         );
 
         return new ProductSearchRouteResponse($shopwareProductListingResult);

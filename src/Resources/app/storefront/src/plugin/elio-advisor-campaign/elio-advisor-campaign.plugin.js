@@ -11,6 +11,7 @@ import deepmerge from 'deepmerge'
  */
 export default class ElioAdvisorCampaignPlugin extends Plugin {
     static options = deepmerge(FilterBasePlugin.options, {
+        advisorSelector: '#e-ff-advisor-campaign-',
         advisorIdAttribute: 'data-fact-finder-advisor-campaign-id',
         answerSelector: '.e-ff-advisor-campaign-answer',
         answerPathAttribute: 'data-e-ff-advisor-campaign-answer-path'
@@ -21,6 +22,7 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
             campaignId: this.el.getAttribute(this.options.advisorIdAttribute),
             answerPath: ''
         }
+        this._advisorSelector = this.options.advisorSelector + this._values.campaignId
 
         const parentFilterPanelElement = DomAccess.querySelector(document, this.options.parentFilterPanelSelector)
 
@@ -31,6 +33,9 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
 
         this.listing.registerFilter(this)
         this._registerEvents()
+        this.listing.$emitter.subscribe('Listing/afterRenderResponse', (event) => {
+            this._updateAdvisorByListingResponse(event.detail.response)
+        })
     }
 
     /**
@@ -50,8 +55,9 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
      */
     getValues() {
         const values = {}
-        // values['ff-campaignId'] = this._values.campaignId
-        values['ff-answerPath-' + this._values.campaignId] = this._values.answerPath
+        if (this._values.answerPath) {
+            values['ff-answer-path-' + this._values.campaignId] = this._values.answerPath
+        }
         return values
     }
 
@@ -78,10 +84,6 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
                 me.onSelectAnswer(answerPath)
             })
         }
-
-        this.listing.$emitter.subscribe('Listing/afterRenderResponse', (event) => {
-            this._updateAdvisorByListingResponse(event.detail.response)
-        })
     }
 
     /**
@@ -89,7 +91,14 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
      * @private
      */
     _updateAdvisorByListingResponse (response) {
-        ElementReplaceHelper.replaceFromMarkup(response, '.e-ff-advisor-campaign', false)
+        const doc = new DOMParser().parseFromString(response, 'text/html');
+        if (doc.querySelectorAll(this._advisorSelector).length <= 0) {
+            this.el.style.display = 'none'
+            return;
+        }
+
+        this.el.style.display = 'block'
+        ElementReplaceHelper.replaceFromMarkup(response, this._advisorSelector, false)
         this._registerEvents()
     }
 

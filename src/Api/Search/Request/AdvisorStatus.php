@@ -2,19 +2,24 @@
 
 namespace Elio\FactFinder\Api\Search\Request;
 
+/**
+ * Class AdvisorStatus
+ * @package Elio\FactFinder\Api\Search\Request
+ * @author Ralf Frommherz
+ */
 class AdvisorStatus
 {
     private string $answerPath;
-    private string $id;
+    private string $campaignId;
 
     /**
      * @param string $answerPath
-     * @param string $id
+     * @param string $campaignId
      */
-    public function __construct(string $answerPath, string $id)
+    public function __construct(string $answerPath, string $campaignId)
     {
         $this->answerPath = $answerPath;
-        $this->id = $id;
+        $this->campaignId = $campaignId;
     }
 
     /**
@@ -28,8 +33,8 @@ class AdvisorStatus
     /**
      * @return string
      */
-    public function getId(): string
+    public function getCampaignId(): string
     {
-        return $this->id;
+        return $this->campaignId;
     }
 }

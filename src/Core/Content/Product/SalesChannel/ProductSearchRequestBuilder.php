@@ -56,6 +56,7 @@ class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
+    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'ff-answer-path-';
     public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'ff_additional_request_parameter_';
 
     private FactFinderConfigServiceInterface $configService;
@@ -193,8 +194,8 @@ class ProductSearchRequestBuilder
         $answerPath = null;
 
         foreach ($payload as $key => $value) {
-            if (strpos($key, 'ff-answerPath-') === 0) {
-                $campaignId = str_replace('ff-answerPath-', '', $key);
+            if (strpos($key, self::ANSWER_PATH_REQUEST_PARAM_PREFIX) === 0) {
+                $campaignId = str_replace(self::ANSWER_PATH_REQUEST_PARAM_PREFIX, '', $key);
                 $answerPath = $value;
             }
         }

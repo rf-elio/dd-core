@@ -123,7 +123,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             }
 
             $shopwareProductListingResult = $this->productListingResultTransformer->transform(
-                $productListingResponse, $criteria, $context, $resultCollection
+                $productListingResponse, $criteria, $context, $resultCollection, $searchRequest, $request
             );
             $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
 
