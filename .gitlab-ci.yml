@@ -21,11 +21,11 @@ build:
     - bash .gitlab/scripts/build/prepare_dir.sh > /dev/null
     # build dev
     - cp -r ./prepare/* ./build/dev
-    - cd ./build/dev && make dev && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ../../
+    - cd ./build/dev && make dev && cd ../../
     # build prod
     - ls -la
     - cp -r ./prepare/* ./build/prod
-    - cd ./build/prod && make prod && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ../../
+    - cd ./build/prod && make prod && cd ../../
     - zip -r ./build/dev.zip ./build/dev
     - zip -r ./build/prod.zip ./build/prod
 
