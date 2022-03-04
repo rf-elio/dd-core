@@ -19,7 +19,7 @@ build:
       - build
     expire_in: 1 hour
   before_script:
-    - bash .gitlab/scripts/docker_install.sh > /dev/null
+    - bash .gitlab/scripts/composer_install.sh > /dev/null
   script:
     - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
     - cp -r prepare dev
@@ -50,6 +50,7 @@ test:phpstan:
     - cp -r dev /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
+    - cp phpstan-report.json /var/www/html/phpstan-report.json
     - ls -la
     - cd /var/www/html/
     - ls -la
