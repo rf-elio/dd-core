@@ -45,7 +45,7 @@ test:phpstan:
       codequality: phpstan-report.json
   script:
     - ls -la
-    - mkdir -R /var/www/html/custom/plugins/ElioFactFinder
+    - mkdir -p /var/www/html/custom/plugins/ElioFactFinder
     - cp -r ./build/dev/* /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
