@@ -13,7 +13,7 @@ build:
     - tags
   image: php:8.0
   artifacts:
-    paths: ["dev", "prod", "build"]
+    paths: ["build"]
     expire_in: 1 hour
   before_script:
     - bash .gitlab/scripts/composer_install.sh > /dev/null
@@ -45,6 +45,7 @@ test:phpstan:
       codequality: phpstan-report.json
   script:
     - ls -la
+    - mkdir -R /var/www/html/custom/plugins/ElioFactFinder
     - cp -r ./build/dev/* /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
