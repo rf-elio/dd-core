@@ -93,6 +93,9 @@ class Configuration extends Struct
     private bool $useProductDetailSimilar;
     private array $recommendationExcludedProducts;
     private int $productDetailSliderLimit;
+    private int $maxAdvisorProducts;
+    private string $searchTermForAdvisorCmsElement;
+    private int $showPassedAdvisorAfterDays;
 
     /**
      * Configuration constructor.
@@ -129,6 +132,9 @@ class Configuration extends Struct
      * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
      * @param int $productDetailSliderLimit
+     * @param int $maxAdvisorProducts
+     * @param string $searchTermForAdvisorCmsElement
+     * @param int $showPassedAdvisorAfterDays
      */
     public function __construct(
         bool $active,
@@ -163,7 +169,10 @@ class Configuration extends Struct
         bool $useProductDetailRecommendations,
         bool $useProductDetailSimilar,
         array $recommendationExcludedProducts,
-        int $productDetailSliderLimit
+        int $productDetailSliderLimit,
+        int $maxAdvisorProducts,
+        string $searchTermForAdvisorCmsElement,
+        int $showPassedAdvisorAfterDays
     )
     {
         $this->useAso = $useAso;
@@ -199,6 +208,9 @@ class Configuration extends Struct
         $this->useProductDetailSimilar = $useProductDetailSimilar;
         $this->recommendationExcludedProducts = $recommendationExcludedProducts;
         $this->productDetailSliderLimit = $productDetailSliderLimit;
+        $this->maxAdvisorProducts = $maxAdvisorProducts;
+        $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
+        $this->showPassedAdvisorAfterDays = $showPassedAdvisorAfterDays;
     }
 
     /**
@@ -464,5 +476,29 @@ class Configuration extends Struct
     public function getProductDetailSliderLimit(): int
     {
         return $this->productDetailSliderLimit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxAdvisorProducts(): int
+    {
+        return $this->maxAdvisorProducts;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchTermForAdvisorCmsElement(): string
+    {
+        return $this->searchTermForAdvisorCmsElement;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShowPassedAdvisorAfterDays(): int
+    {
+        return $this->showPassedAdvisorAfterDays;
     }
 }

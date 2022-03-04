@@ -21,6 +21,10 @@
         "cross-selling": {
             "tab-recommendations": "Empfehlungen",
             "tab-similar": "Ähnliche Artikel"
+        },
+        "advisor-campaign": {
+            "reset-btn": "Zurücksetzten",
+            "no-products-found": "Für Ihre Auswahl wurden keine Produkte gefunden"
         }
     }
 }

@@ -1,0 +1,15 @@
+{% block element_e_ff_advisor_campaign %}
+    {% set config = element.fieldConfig.elements %}
+
+    <div class="e-ff-advisor-campaign-lazy"
+         data-fact-finder-advisor-campaign-url="{{ path('frontend.e-ff.campaign.advisor') }}"
+         data-fact-finder-advisor-campaign-parameter-name="{{ config.campaignParameterName.value|escape }}"
+         data-fact-finder-advisor-campaign-parameter-value="{{ config.campaignParameterValue.value|escape }}"
+    >
+        {% if config.productsTitle.value %}
+            <h3>{{ config.productsTitle.value }}</h3>
+        {% endif %}
+
+        <div class="e-ff-advisor-campaign-lazy-container"></div>
+    </div>
+{% endblock %}

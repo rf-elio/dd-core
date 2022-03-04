@@ -1,0 +1,86 @@
+<?php
+
+namespace Elio\FactFinder\Storefront\Controller;
+
+use Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AbstractAdvisorCampaignRoute;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use JsonException;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Controller\StorefrontController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @RouteScope(scopes={"storefront"})
+ */
+class AdvisorCampaignController extends StorefrontController
+{
+    private AbstractAdvisorCampaignRoute $advisorCampaignRoute;
+
+    /**
+     * @param AbstractAdvisorCampaignRoute $advisorCampaignRoute
+     */
+    public function __construct(AbstractAdvisorCampaignRoute $advisorCampaignRoute) {
+        $this->advisorCampaignRoute = $advisorCampaignRoute;
+    }
+
+    /**
+     * @Route("/widgets/ff/campaign/advisor", name="frontend.e-ff.campaign.advisor", methods={"POST", "GET"}, defaults={"csrf_protected"=false, "XmlHttpRequest"=true})
+     *
+     * @param Request $request
+     * @param SalesChannelContext $context
+     *
+     * @return Response
+     * @throws JsonException
+     */
+    public function campaign(Request $request, SalesChannelContext $context): Response
+    {
+        $this->injectParametersByRequestContent($request);
+        $request->request->set(ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER, ProductListingResultTransformer::FF_LISTING_ADVISOR);
+        $result = $this->advisorCampaignRoute->load($request, $context);
+
+        $result->getListingResult()->getCriteria()->setLimit(-1);
+        $result->getListingResult()->clear();
+
+        $parameterName = $request->request->get('parameterName', '');
+        $parameterValue = $request->request->get('parameterValue', '');
+
+        return $this->renderStorefront(
+            '@Storefront/storefront/page/elio-advisor-campaign/index.html.twig',
+            [
+                'productListing' => $result->getListingResult(),
+                'searchParams' => [
+                    'search' => '*',
+                    ProductSearchRequestBuilder::ADDITIONAL_REQUEST_PARAM_PREFIX.$parameterName => $parameterValue,
+                    ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER => ProductListingResultTransformer::FF_LISTING_ADVISOR
+                ]
+            ]
+        );
+    }
+
+    /**
+     * Injects the parameters required by the core api by the request content
+     *
+     * @param Request $request
+     * @throws JsonException
+     */
+    private function injectParametersByRequestContent(Request $request): void
+    {
+        if (empty($request->getContent())) {
+            return;
+        }
+
+        $params = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        if (isset($params['parameterName']) && is_string($params['parameterName'])) {
+            $request->request->set('parameterName', $params['parameterName']);
+        }
+
+        if (isset($params['parameterValue']) && is_string($params['parameterValue'])) {
+            $request->request->set('parameterValue', $params['parameterValue']);
+        }
+    }
+}

@@ -33,6 +33,8 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
@@ -40,7 +42,9 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductListingResultTransformer
@@ -52,6 +56,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ProductListingResultTransformer
 {
+    public const FF_LISTING_MODE_PARAMETER = 'ff_listing_mode';
+    public const FF_LISTING_ADVISOR = 'advisor';
+
     /**
      * Transforms the ProductListingResponse to an shopware ProductListingResult
      *
@@ -59,13 +66,17 @@ class ProductListingResultTransformer
      * @param Criteria $criteria
      * @param SalesChannelContext $context
      * @param ResponseCollection $resultCollection
+     * @param SearchRequest $searchRequest
+     * @param Request $request
      * @return ProductListingResult
      */
     public function transform(
         ProductListingResponse $productListingResponse,
         Criteria $criteria,
         SalesChannelContext $context,
-        ResponseCollection $resultCollection
+        ResponseCollection $resultCollection,
+        SearchRequest $searchRequest,
+        Request $request
     ) : ProductListingResult
     {
         $shopwareProductListingResult = new ProductListingResult(
@@ -80,6 +91,7 @@ class ProductListingResultTransformer
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
+        $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
         return $shopwareProductListingResult;
     }
 
@@ -139,5 +151,28 @@ class ProductListingResultTransformer
         /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
         $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
         $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+
+        $advisorCampaignResponse = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
+        $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+    }
+
+    private function handleListingMode(
+        ProductListingResult $shopwareProductListingResult,
+        SearchRequest $searchRequest,
+        Request $request
+    ): void
+    {
+        $listingMode = $request->get(self::FF_LISTING_MODE_PARAMETER);
+
+        if ($listingMode === self::FF_LISTING_ADVISOR) {
+            $showListing = false;
+            if ($searchRequest->getAdvisorStatus() && !empty($searchRequest->getAdvisorStatus()->getAnswerPath())) {
+                $showListing = true;
+            }
+
+            $shopwareProductListingResult->addExtension('ff-advisor-listing', new ArrayEntity([
+                'showListing' => $showListing
+            ]));
+        }
     }
 }

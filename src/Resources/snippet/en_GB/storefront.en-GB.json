@@ -21,6 +21,10 @@
         "cross-selling": {
             "recommendations": "Recommendations",
             "similar": "Similar"
+        },
+        "advisor-campaign": {
+            "reset-btn": "Reset",
+            "no-products-found": "No products found for your selection"
         }
     }
 }

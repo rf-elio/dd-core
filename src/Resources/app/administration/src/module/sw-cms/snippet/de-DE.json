@@ -1,0 +1,27 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "advisorCampaign": {
+                    "label": "Berater Kampagne"
+                }
+            }
+        },
+        "elements": {
+            "advisorCampaign": {
+                "label": "Berater Kampagne",
+                "config": {
+                    "campaignParameterName": "Kampagnen Parameter: Name",
+                    "campaignParameterValue": "Kampagnen Parameter: Wert",
+                    "productsTitle": "Produkt-Titel"
+                },
+                "content": {
+                    "question": "Frage?",
+                    "firstAnswer": "Erste Antwort",
+                    "secondAnswer": "Zweite Antwort",
+                    "thirdAnswer": "Dritte Antwort"
+                }
+            }
+        }
+    }
+}

@@ -6,6 +6,8 @@ import './module/elio-fact-finder-restrictions/index';
 import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';
 import './view/sw-category-detail-ruler/index';
+import './module/sw-cms/blocks/commerce/ff-advisor-campaign';
+import './module/sw-cms/elements/advisor-campaign'
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';

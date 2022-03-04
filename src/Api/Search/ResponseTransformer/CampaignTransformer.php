@@ -32,17 +32,24 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
+use ArrayObject;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponse;
+use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponse;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\AdvisorCampaign\AdvisorAnswer;
+use Elio\FactFinder\Core\AdvisorCampaign\AdvisorQuestion;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\ModelInterface;
+use Swagger\Client\Model\Question;
 use Swagger\Client\Model\Result;
 
 /**
@@ -57,6 +64,7 @@ use Swagger\Client\Model\Result;
 class CampaignTransformer implements ResponseTransformerInterface
 {
     private CONST FLAVOR_REDIRECT = 'REDIRECT';
+    private CONST FLAVOR_ADVISOR = 'ADVISOR';
 
     /**
      * @inheritDoc
@@ -89,6 +97,9 @@ class CampaignTransformer implements ResponseTransformerInterface
         $campaignFeedbackResponseCollection = new CampaignFeedbackResponseCollection();
         $responseCollection->set(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
 
+        $advisorCampaignResponseCollection = new AdvisorCampaignResponseCollection();
+        $responseCollection->set(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponseCollection);
+
         foreach ($model->getCampaigns() as $campaign) {
             if ($campaign->getFlavour() === self::FLAVOR_REDIRECT) {
                 $responseCollection->set(CampaignRedirectionResponse::class, new CampaignRedirectionResponse(
@@ -104,6 +115,102 @@ class CampaignTransformer implements ResponseTransformerInterface
                     $feedbackText->getHtml()
                 ));
             }
+
+            if ($campaign->getFlavour() === self::FLAVOR_ADVISOR) {
+                // if a campaign is answered, we return only this campaign in the response
+                if (
+                    $request instanceof SearchRequest &&
+                    $request->getAdvisorStatus() &&
+                    $request->getAdvisorStatus()->getCampaignId() !== $campaign->getId()
+                ) {
+                    continue;
+                }
+
+                $questions = [];
+                foreach ($campaign->getAdvisorTree() as $question) {
+                    $questions[] = $this->questionWalk($question);
+                }
+
+                $questionPath = new ArrayObject();
+                $this->buildAnswerPath($questions, $questionPath);
+                $questionPath = $questionPath->getArrayCopy();
+
+                $answerPath = '';
+                /** @var AdvisorQuestion[] $questionPath */
+                if (!empty($questionPath)) {
+                    $latestQuestion = current($questionPath);
+                    if($latestSelectedAnswer = $latestQuestion->getSelectedAnswer()) {
+                        $answerPath = $latestSelectedAnswer->getAnswerPath();
+                    }
+                }
+
+                $activeQuestions = [];
+                foreach ($campaign->getActiveQuestions() as $activeQuestion) {
+                    $activeQuestions[] = $this->questionWalk($activeQuestion);
+                }
+
+                $advisorCampaignResponseCollection->addAdvisorCampaignResponse(new AdvisorCampaignResponse(
+                    $campaign->getId(),
+                    $campaign->getName(),
+                    $activeQuestions,
+                    array_reverse($questionPath),
+                    $answerPath
+                ));
+            }
         }
+    }
+
+    /**
+     * Creates the advisor tree based on the given ff response
+     *
+     * @param Question $question
+     * @return AdvisorQuestion
+     */
+    protected function questionWalk(Question $question): AdvisorQuestion
+    {
+        $advisorQuestion = (new AdvisorQuestion())
+            ->setId($question->getId())
+            ->setText($question->getText())
+            ->setVisible($question->getVisible());
+
+        foreach ($question->getAnswers() as $answer) {
+            $advisorAnswer = (new AdvisorAnswer())
+                ->setId($answer->getId())
+                ->setText($answer->getText())
+                ->setAnswerPath($answer->getSearchParams()->getAdvisorStatus()->getAnswerPath())
+                ->setSelected($answer->getSelected());
+
+            foreach ($answer->getQuestions() as $subQuestion) {
+                $advisorAnswer->addQuestion($this->questionWalk($subQuestion));
+            }
+
+            $advisorQuestion->addAnswer($advisorAnswer);
+        }
+
+        return $advisorQuestion;
+    }
+
+    /**
+     * Creates a list of selected questions and sets the parent question / answer as selected (ff set's only the last
+     * question as selected).
+     *
+     * @param AdvisorQuestion[] $questions
+     */
+    protected function buildAnswerPath(array $questions, ArrayObject $questionPath): bool
+    {
+        foreach ($questions as $question) {
+            foreach ($question->getAnswers() as $answer) {
+                if ($this->buildAnswerPath($answer->getQuestions(), $questionPath)) {
+                    $answer->setSelected(true);
+                }
+
+                if ($answer->isSelected()) {
+                    $questionPath->append($question);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

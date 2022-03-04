@@ -8,6 +8,7 @@
         <import resource="configuration.xml"/>
         <import resource="consent.xml"/>
         <import resource="bot-protection.xml"/>
+        <import resource="advisor-campaign.xml"/>
         <import resource="api.xml"/>
         <import resource="product.xml"/>
         <import resource="product-bundle.xml"/>

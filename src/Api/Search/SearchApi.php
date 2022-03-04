@@ -90,15 +90,29 @@ class SearchApi
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         $this->ffDebug('search', $this, [$searchRequest, $context]);
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
+
+        $params = [
             'query' => $searchRequest->getQuery(),
             'channel' => $searchRequest->getChannel(),
             'sortItems' => $this->getSorting($searchRequest),
             'page' => $searchRequest->getPage(),
             'customParameters' => $this->getCustomParameters($searchRequest),
             'filters' => $this->getFilters($searchRequest)
-        ]]));
+        ];
+
+        if ($searchRequest->getAdvisorStatus() !== null) {
+            $params['advisorStatus'] = [
+                'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
+                'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
+            ];
+        }
+
+        if ($searchRequest->getHitsPerPage() !== null) {
+            $params['hitsPerPage'] = $searchRequest->getHitsPerPage();
+        }
+
+        $apiClient = $this->apiFactory->createSearchApi($context);
+        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => $params]));
         return $this->transformer->transformResponse($result, $context, $searchRequest);
     }
 
@@ -136,14 +150,21 @@ class SearchApi
     {
         $apiClient = $this->apiFactory->createSearchApi($context);
         $filters = $this->getNavigationFilters($searchRequest);
+        $params = [
+            'channel' => $searchRequest->getChannel(),
+            'sortItems' => $this->getSorting($searchRequest),
+            'page' => $searchRequest->getPage(),
+            'customParameters' => $this->getCustomParameters($searchRequest),
+            'filters' => $filters
+        ];
+        if ($searchRequest->getAdvisorStatus() !== null) {
+            $params['advisorStatus'] = [
+                'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
+                'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
+            ];
+        }
         $result = $apiClient->navigationUsingPOST(new \Swagger\Client\Model\NavigationRequest([
-            'params' => [
-                'channel' => $searchRequest->getChannel(),
-                'sortItems' => $this->getSorting($searchRequest),
-                'page' => $searchRequest->getPage(),
-                'customParameters' => $this->getCustomParameters($searchRequest),
-                'filters' => $filters
-            ]
+            'params' => $params
         ]));
         return $this->transformer->transformResponse($result, $context, $searchRequest);
     }

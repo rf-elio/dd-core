@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
 
+use Elio\FactFinder\Api\Search\Request\AdvisorStatus;
 use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Configuration\Configuration;
@@ -55,6 +56,8 @@ class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
+    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'ff-answer-path-';
+    public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'ff_additional_request_parameter_';
 
     private FactFinderConfigServiceInterface $configService;
 
@@ -94,7 +97,9 @@ class ProductSearchRequestBuilder
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
+        $this->addAdvisorCampaignFilter($payload, $searchRequest);
         $this->addCustomParameters($searchRequest, $config);
+        $this->addAdditionalRequestParameters($payload, $searchRequest);
 
         return $searchRequest;
     }
@@ -178,6 +183,28 @@ class ProductSearchRequestBuilder
     }
 
     /**
+     * Adds the advisor campaign filters to the ff request
+     *
+     * @param array $payload
+     * @param ProductSearchRequest $searchRequest
+     */
+    protected function addAdvisorCampaignFilter(array $payload, ProductSearchRequest $searchRequest): void
+    {
+        $campaignId = null;
+        $answerPath = null;
+
+        foreach ($payload as $key => $value) {
+            if (strpos($key, self::ANSWER_PATH_REQUEST_PARAM_PREFIX) === 0) {
+                $campaignId = str_replace(self::ANSWER_PATH_REQUEST_PARAM_PREFIX, '', $key);
+                $answerPath = $value;
+            }
+        }
+        if (!empty($campaignId) && !empty($answerPath)) {
+            $searchRequest->setAdvisorStatus(new AdvisorStatus($answerPath, $campaignId));
+        }
+    }
+
+    /**
      * Adds the additional request params to the ff request
      *
      * @param SearchRequest $searchRequest
@@ -186,5 +213,25 @@ class ProductSearchRequestBuilder
     protected function addCustomParameters(SearchRequest $searchRequest, Configuration $config) : void
     {
         $searchRequest->setAdditionalRequestParameters($config->getAdditionalRequestParameters());
+    }
+
+    /**
+     * Adds additional parameters provided by the request
+     *
+     * @param array $payload
+     *
+     * @param ProductSearchRequest $searchRequest
+     */
+    protected function addAdditionalRequestParameters(array $payload, ProductSearchRequest $searchRequest) : void
+    {
+        $additionalParameters = $searchRequest->getAdditionalRequestParameters();
+        foreach ($payload as $key => $value) {
+            if (strpos($key, self::ADDITIONAL_REQUEST_PARAM_PREFIX) === 0) {
+                $parameterName = str_replace(self::ADDITIONAL_REQUEST_PARAM_PREFIX, '', $key);
+                $additionalParameters[$parameterName] = $value;
+            }
+        }
+
+        $searchRequest->setAdditionalRequestParameters($additionalParameters);
     }
 }
