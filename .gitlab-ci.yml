@@ -13,21 +13,18 @@ build:
     - tags
   image: php:8.0
   artifacts:
-    paths:
-      - dev
-      - prod
-      - build
+    paths: ["dev", "prod", "build"]
     expire_in: 1 hour
   before_script:
     - bash .gitlab/scripts/composer_install.sh > /dev/null
   script:
     - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
-    - cp -r prepare dev
-    - cp -r prepare prod
-    - cd ./dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
-    - cd ./prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
-    - zip -r ./build/dev.zip ./dev
-    - zip -r ./build/prod.zip ./prod
+    - cp -r prepare build/dev
+    - cp -r prepare build/prod
+    - cd ./build/dev && make dev && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - cd ./build/prod && make prod && bash ../.gitlab/scripts/build_clean_dir.sh && cd ..
+    - zip -r ./build/dev.zip ./build/dev
+    - zip -r ./build/prod.zip ./build/prod
 
 test:phpstan:
   stage: test
