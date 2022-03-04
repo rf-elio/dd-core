@@ -20,6 +20,8 @@ build:
   script:
     - bash .gitlab/scripts/build_prepare_dir.sh > /dev/null
     - cp -r ./prepare ./build/dev
+    - ls -la
+    - ls -la build
     - cd ./build/dev && ls -la && make dev && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ../../
 
     - cp -r ./prepare ./build/prod
