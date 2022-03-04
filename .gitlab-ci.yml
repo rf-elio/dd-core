@@ -41,7 +41,12 @@ test:phpstan:
   artifacts:
     paths:
       - dev
+      - "./phpstan-report.json"
+    when: always
+    reports:
+      codequality: phpstan-report.json
   script:
+    - ls -la
     - cp -r dev /var/www/html/custom/plugins/ElioFactFinder
     - cd /var/www/html/custom/plugins/ElioFactFinder
     - make stan-gitlab
