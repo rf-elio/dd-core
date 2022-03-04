@@ -22,6 +22,7 @@ build:
     - cp -r ./prepare ./build/dev
     - ls -la
     - ls -la build
+    - ls -la build/dev
     - cd ./build/dev && ls -la && make dev && bash ../../.gitlab/scripts/build_clean_dir.sh && cd ../../
 
     - cp -r ./prepare ./build/prod
