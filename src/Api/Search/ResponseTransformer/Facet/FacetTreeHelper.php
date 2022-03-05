@@ -1,0 +1,161 @@
+<?php
+/**
+ * Copyright (c) 2022, elio GmbH.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+namespace Elio\FactFinder\Api\Search\ResponseTransformer\Facet;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\FactFinder\Core\Util\Tree\Node;
+use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Swagger\Client\Model\Facet;
+use Swagger\Client\Model\FacetElement;
+
+/**
+ * Class FacetTreeHelper
+ * @package Elio\FactFinder\Api\Search\ResponseTransformer\Facet
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2022, elio GmbH (https://www.elio-systems.com)
+ */
+class FacetTreeHelper
+{
+    /**
+     * Converts the facet elements to a tree. Facet elements will just contain a simple path (root/products/someCat,
+     * root/products/otherCat) that must be split up at the char "/" to build a virtual tree for them.
+     *
+     * root
+     * - products
+     *    - someCat
+     *    - otherCat
+     * @param Facet $facet
+     * @return Node[]
+     */
+    public static function transformTreeFacet(Facet $facet): array
+    {
+        $randomAddTree = new RandomAddTree();
+        foreach (array_merge($facet->getSelectedElements(), $facet->getElements()) as $element) {
+            $labels = explode('/', $element->getText());
+
+            $parent = null;
+            $value = [];
+            foreach ($labels as $label) {
+                $value[] = $label;
+                $randomAddTree->add($label, $parent, [$label, implode('/', $value), $element]);
+                $parent = $label;
+            }
+        }
+
+        return $randomAddTree->create();
+    }
+
+    /**
+     * Converts the random add tree nodes to shopware tree items that can be used in the template to render the tree.
+     *
+     * @param Facet $facet
+     * @param Node[] $nodes
+     * @return TreeItem[]
+     */
+    public static function convertNodesToTreeItems(Facet $facet, array $nodes): array
+    {
+        $treeItems = [];
+        foreach ($nodes as $node) {
+            /** @var FacetElement $element */
+            [$label, $value, $element] = $node->getValue();
+
+            $treeItemCategory = new CategoryEntity();
+            $treeItemCategory->setId(Uuid::randomHex());
+            $treeItemCategory->setName($label);
+            $treeItemCategory->setTranslated(['name' => $label]);
+
+            $treeItem = new TreeItem($treeItemCategory, self::convertNodesToTreeItems($facet, $node->getChildNodes()));
+            $treeItem->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
+                $facet->getName(),
+                $value,
+                $element->getTotalHits()
+            ));
+
+            $treeItems[] = $treeItem;
+        }
+
+        return $treeItems;
+    }
+
+    /**
+     * Calculates the tree hits for each level.
+     *
+     * @param TreeItem[] $treeItems
+     */
+    public static function calculateTreeHits(array $treeItems): int
+    {
+        $levelHits = 0;
+        foreach ($treeItems as $treeItem) {
+            $children = $treeItem->getChildren();
+            $childrenHits = self::calculateTreeHits($children);
+
+            if (!$treeItem->hasExtension(DefaultFacetExtension::KEY)) {
+                continue;
+            }
+
+            /** @var DefaultFacetExtension $ffExtension */
+            $ffExtension = $treeItem->getExtension(DefaultFacetExtension::KEY);
+
+            if (!empty($children)) {
+                $ffExtension->setTotalHits($childrenHits);
+            }
+
+            $levelHits += $ffExtension->getTotalHits();
+        }
+
+        return $levelHits;
+    }
+
+    /**
+     * @param TreeItem[] $treeItems
+     * @param Collection|null $flattTree
+     * @return Collection
+     */
+    public static function flattenTree(array $treeItems, ?Collection $flattTree = null) : Collection
+    {
+        $flattTree = $flattTree ?? new ArrayCollection();
+        foreach ($treeItems as $treeItem) {
+            $flattTree->add($treeItem);
+            self::flattenTree($treeItem->getChildren(), $flattTree);
+        }
+
+        return $flattTree;
+    }
+}

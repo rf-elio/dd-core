@@ -73,18 +73,12 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
             this.enableFilter();
         }
 
-        // if(actualProperties.length > 0) {
-        //     return;
-        // }
-
         this.activeItemsTotalHits = [];
         var activeItemsTotalHits = [];
         activeItems.forEach( (item) => {
             activeItemsTotalHits[item.extensions.ff_facet_extension.key] = item.extensions.ff_facet_extension.totalHits
         });
         this.activeItemsTotalHits = activeItemsTotalHits;
-        console.log(this.activeItemsTotalHits);
-
         this._disableInactiveFilterOptions(activeItems.map(entity => entity.extensions.ff_facet_extension.key));
     }
 
@@ -107,7 +101,7 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
         const listItem = input.closest(this.options.listItemSelector);
         listItem.removeAttribute('title', 'hidden');
         listItem.classList.remove('disabled', 'hidden');
-        input.disabled = false;
+        input.disabled = input.classList.contains('e-ff-not-selectable');
         listItem.hidden = false;
 
         const label = listItem.querySelector('label');
@@ -121,11 +115,10 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
         const checkboxes = DomAccess.querySelectorAll(this.el, this.options.checkboxSelector);
         Iterator.iterate(checkboxes, (checkbox) => {
             if (checkbox.checked === true) {
+                this.enableOption(checkbox);
                 return;
             }
 
-            console.log(checkbox.id);
-            console.log(activeItemIds.includes(checkbox.id));
             if (activeItemIds.includes(checkbox.id)) {
                 this.enableOption(checkbox);
             } else {

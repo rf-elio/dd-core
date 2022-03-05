@@ -53,6 +53,14 @@ class DefaultFacetExtension extends Struct
     protected int $totalHits;
 
     /**
+     * @param int $totalHits
+     */
+    public function setTotalHits(int $totalHits): void
+    {
+        $this->totalHits = $totalHits;
+    }
+
+    /**
      * FactFinderDefaultFacetExtension constructor.
      * @param string $name
      * @param string $value
