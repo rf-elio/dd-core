@@ -9,6 +9,7 @@ use Elio\FactFinder\Core\Export\SeoRoute;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -68,6 +69,8 @@ class SeoUrlWriter implements FileWriterInterface
                 break;
             }
         }
+
+        $this->router->setContext(RequestContext::fromUri($this->baseUrl));
 
         return $this->decorated->open($context);
     }
