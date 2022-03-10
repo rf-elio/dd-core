@@ -38,14 +38,14 @@
             {% elseif style == 'TREE' %}
                 {% for property in ffAggregation.entities %}
                     {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select.html.twig' with {
-                        elements: ffAggregation.entities.extensions.fftree.tree,
+                        elements: ffAggregation.entities.extensions.ffTree.tree,
                         sidebar: sidebar,
                         name: parameterName,
                         displayName: parameterName,
                         displayType: 'text',
                         pluginSelector: 'fact-finder-filter-tree-select',
                         propertyName: parameterName,
-                        fftree: ffAggregation.entities.extensions.fftree
+                        ffTree: ffAggregation.entities.extensions.ffTree
                     } %}
                 {% endfor %}
             {% endif %}

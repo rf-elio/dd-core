@@ -72,8 +72,6 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\FacetTransformer">
             <argument type="service" id="Elio\FactFinder\Core\FilterRestrictions\FilterService" />
-            <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
-            <argument type="service" id="category.repository" />
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\SuggestionTransformer">

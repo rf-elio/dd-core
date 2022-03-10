@@ -38,24 +38,23 @@ use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
+use Elio\FactFinder\Api\Search\ResponseTransformer\Facet\FacetTreeHelper;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Elio\FactFinder\Core\FilterRestrictions\FilterInterface;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\SliderResult;
-use Shopware\Core\Content\Category\Service\NavigationLoader;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\Tree;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\Facet;
@@ -76,23 +75,15 @@ use Elio\FactFinder\Core\FilterRestrictions\FilterService;
 class FacetTransformer implements ResponseTransformerInterface
 {
     private FilterInterface $filterService;
-    private NavigationLoader $navigationLoader;
-    private EntityRepositoryInterface $categoryRepository;
 
     /**
      * ProductHandler constructor.
      * @param FilterInterface $filterService
-     * @param NavigationLoader $navigationLoader
-     * @param EntityRepositoryInterface $categoryRepository
      */
     public function __construct(
-        FilterInterface $filterService,
-        NavigationLoader $navigationLoader,
-        EntityRepositoryInterface $categoryRepository
+        FilterInterface $filterService
     ) {
         $this->filterService = $filterService;
-        $this->navigationLoader = $navigationLoader;
-        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -169,15 +160,14 @@ class FacetTransformer implements ResponseTransformerInterface
                     );
                     break;
                 case 'TREE':
-                    $tree = $this->transformCategoryTree($facet, $context);
-                    $group = $this->transformTree($facet);
+                    $tree = $this->transformTreeFacet($facet);
                     $defaultCollection = new PropertyGroupCollection();
-                    $defaultCollection->add($group);
+                    $defaultCollection->add($this->transformTree($facet, FacetTreeHelper::flattenTree($tree->getTree())));
+                    $defaultCollection->addExtension('ffTree', $tree);
                     $facetCollection->addAggregation(
                         new EntityResult($facet->getName(), $defaultCollection),
                         $style
                     );
-                    $defaultCollection->addExtension('fftree', $tree);
                     break;
             }
         }
@@ -250,60 +240,25 @@ class FacetTransformer implements ResponseTransformerInterface
 
     /**
      * @param Facet $facet
-     * @param SalesChannelContext $salesChannelContext
      * @return Tree
      */
-    protected function transformCategoryTree(Facet $facet, SalesChannelContext $salesChannelContext): Tree
+    protected function transformTreeFacet(Facet $facet): Tree
     {
-        $category = null;
-        foreach (array_reverse($facet->getSelectedElements()) as $element) {
+        $nodes = FacetTreeHelper::transformTreeFacet($facet);
+        $treeItems = FacetTreeHelper::convertNodesToTreeItems($facet, $nodes);
+        FacetTreeHelper::calculateTreeHits($treeItems);
 
-            $elementLabel = $element->getText();
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('name', $elementLabel));
-            $category = $this->categoryRepository->search($criteria, $salesChannelContext->getContext())->first();
-            if ($category !== null) {
-                break;
-            }
-        }
-        $tree = $this->navigationLoader->load(
-            $category ? $category->getId() : $salesChannelContext->getSalesChannel()->getNavigationCategoryId(),
-            $salesChannelContext,
-            $salesChannelContext->getSalesChannel()->getNavigationCategoryId(),
-            $salesChannelContext->getSalesChannel()->getNavigationCategoryDepth()
-        );
-        $counts = [];
-        foreach (array_merge($facet->getSelectedElements(), $facet->getElements()) as $element){
-            $counts[$element->getText()] = $element->getTotalHits();
-        }
-        foreach ($tree->getTree() as $treeItem){
-            $this->recursiveAddTreeItemExtension($facet, $treeItem, $counts);
-        }
-        return $tree;
+        $treeRoot = new CategoryEntity();
+        $treeRoot->setId(Uuid::randomHex());
+        return new Tree($treeRoot, $treeItems);
     }
 
     /**
      * @param Facet $facet
-     * @param TreeItem $treeItem
-     * @param array $counts
-     */
-    protected function recursiveAddTreeItemExtension(Facet $facet, TreeItem $treeItem, array $counts): void
-    {
-        $itemCategory = $treeItem->getCategory();
-        $treeItem->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-            $facet->getName(), $itemCategory->getName(),
-            $counts[$itemCategory->getName()] ?? 0
-        ));
-        foreach ($treeItem->getChildren() as $childItem) {
-            $this->recursiveAddTreeItemExtension($facet, $childItem, $counts);
-        }
-    }
-
-    /**
-     * @param Facet $facet
+     * @param \Doctrine\Common\Collections\Collection $items
      * @return PropertyGroupEntity
      */
-    protected function transformTree(Facet $facet): PropertyGroupEntity
+    protected function transformTree(Facet $facet, \Doctrine\Common\Collections\Collection $items): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $group = new PropertyGroupEntity();
@@ -314,32 +269,18 @@ class FacetTransformer implements ResponseTransformerInterface
         $group->setTranslated(['name' => $facet->getName()]);
         $group->setDisplayType('text');
 
-        foreach ($facet->getSelectedElements() as $element) {
-            $elementLabel = $element->getText();
+        /** @var TreeItem $element */
+        foreach ($items as $element) {
+            $category = $element->getCategory();
             $option = new PropertyGroupOptionEntity();
-            $option->setId(Uuid::randomHex());
-            $option->setUniqueIdentifier(Uuid::randomHex());
-            $option->setName($elementLabel);
-            $option->setTranslated(['name' => $elementLabel]);
-            $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(), $element->getText(),
-                $element->getTotalHits()
-            ));
+            $option->setId($category->getId());
+            $option->setUniqueIdentifier($category->getId());
+            $option->setName($category->getName());
+            $option->setTranslated($category->getTranslated());
+            $option->addExtension(DefaultFacetExtension::KEY, $element->getExtension(DefaultFacetExtension::KEY));
             $options->add($option);
         }
-        foreach ($facet->getElements() as $element) {
-            $elementLabel = $element->getText();
-            $option = new PropertyGroupOptionEntity();
-            $option->setId(Uuid::randomHex());
-            $option->setUniqueIdentifier(Uuid::randomHex());
-            $option->setName($elementLabel);
-            $option->setTranslated(['name' => $elementLabel]);
-            $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(), $element->getText(),
-                $element->getTotalHits()
-            ));
-            $options->add($option);
-        }
+
         return $group;
     }
 }

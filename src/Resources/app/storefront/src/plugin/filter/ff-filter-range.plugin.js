@@ -1,5 +1,4 @@
 import FilterRangePlugin from 'src/plugin/listing/filter-range.plugin';
-import DomAccess from 'src/helper/dom-access.helper';
 import deepmerge from 'deepmerge';
 
 export default class FactFinderFilterRangePlugin extends FilterRangePlugin {
@@ -24,7 +23,7 @@ export default class FactFinderFilterRangePlugin extends FilterRangePlugin {
 
         return values;
     }
-    //
+
     /**
      * @return {boolean}
      * @private
