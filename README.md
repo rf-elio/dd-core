@@ -1,5 +1,4 @@
 # sw6-ElioFactFinder
-
 # Installation
 ## Commands
 The following commands must be configured to execute required background tasks

@@ -43,21 +43,21 @@ namespace Elio\FactFinder\Api\Search\Request;
  */
 class NavigationRequestProduct extends ProductSearchRequest
 {
-    protected string $categoryPath = '';
+    protected array $categoryPath = [];
     protected string $categoryId = '';
 
     /**
-     * @return string
+     * @return array
      */
-    public function getCategoryPath(): string
+    public function getCategoryPath(): array
     {
         return $this->categoryPath;
     }
 
     /**
-     * @param string $categoryPath
+     * @param array $categoryPath
      */
-    public function setCategoryPath(string $categoryPath): void
+    public function setCategoryPath(array $categoryPath): void
     {
         $this->categoryPath = $categoryPath;
     }

@@ -42,9 +42,11 @@ use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransf
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -124,8 +126,10 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
     {
+        $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
+
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isListingUseFactFinder()) {
+        if(!$config->isActive() || !$config->isListingUseFactFinder() || !$this->canLoadCategoryFromFactFinder($category)) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
@@ -134,12 +138,11 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
             $navigationRequest = $this->searchRequestBuilder->build(
                 $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
             );
-            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $categoryId, $context);
+            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $context);
 
             $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
             /** @var ProductListingResponse|null $productListingResponse */
             $productListingResponse = $resultCollection->get(ProductListingResponse::class);
-
             if(!$productListingResponse) {
                 return $this->decorated->load($categoryId, $request, $context, $criteria);
             }
@@ -167,18 +170,33 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     }
 
     /**
+     * Checks if the category can be loaded via ff.
+     * Not allowed is:
+     * - Category with product stream
+     *
+     * @param CategoryEntity $category
+     * @return bool
+     */
+    protected function canLoadCategoryFromFactFinder(CategoryEntity $category) : bool
+    {
+        if (!empty($category->getProductStreamId())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Adds the path to the current category and the id to the ff api request to filter for that category.
      *
      * @param NavigationRequestProduct $navigationRequest
-     * @param string $categoryId
+     * @param CategoryEntity $category
      * @param SalesChannelContext $context
      */
-    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, string $categoryId, SalesChannelContext $context): void
+    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, SalesChannelContext $context): void
     {
-        $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
-        $path = implode('/', array_values($path));
         $navigationRequest->setCategoryPath($path);
-        $navigationRequest->setCategoryId($categoryId);
+        $navigationRequest->setCategoryId($category->getId());
     }
 }

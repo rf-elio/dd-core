@@ -39,6 +39,9 @@
             label: 'above search result', container: searchResult
         } %}
 
+        {% sw_include '@Storefront/storefront/component/content/listing.html.twig' with {
+            listing: topProductsContentGroup
+        } %}
         {{ parent() }}
 
         {# feedback text #}

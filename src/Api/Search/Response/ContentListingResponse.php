@@ -25,6 +25,10 @@ class ContentListingResponse extends Response
      * @var array<ContentGroup>
      */
     protected array $contentGroups = [];
+    /**
+     * @var array<ContentGroup>
+     */
+    protected array $topContentGroups = [];
 
     /**
      * @param ContentItem $contentItem
@@ -47,7 +51,7 @@ class ContentListingResponse extends Response
      */
     public function isEmpty() : bool
     {
-        return empty($this->contentItems);
+        return empty($this->contentGroups);
     }
 
     /**
@@ -64,5 +68,21 @@ class ContentListingResponse extends Response
     public function setContentGroups(array $contentGroups): void
     {
         $this->contentGroups = $contentGroups;
+    }
+
+    /**
+     * @return ContentGroup[]
+     */
+    public function getTopContentGroups(): array
+    {
+        return $this->topContentGroups;
+    }
+
+    /**
+     * @param ContentGroup[] $topContentGroups
+     */
+    public function setTopContentGroups(array $topContentGroups): void
+    {
+        $this->topContentGroups = $topContentGroups;
     }
 }

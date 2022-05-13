@@ -37,6 +37,7 @@ class ContentTransformer implements ResponseTransformerInterface
     protected const MASTER_VALUE_DESCRIPTION = 'Description';
     protected const MASTER_VALUE_URL = 'ProductURL';
     protected const MASTER_VALUE_IMAGE_URL = 'ImageURL';
+    protected const TOP_CONTENT_PREFIX = 'top-';
 
     public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
     {
@@ -124,18 +125,31 @@ class ContentTransformer implements ResponseTransformerInterface
      */
     protected function createContentGroups(ContentListingResponse $listing): void
     {
-        $contentGroups = [];
+        $regularContentGroups = [];
+        $topContentGroups = [];
 
         foreach ($listing->getContentItems() as $contentItem) {
             $type = $contentItem->getType();
 
-            if(!isset($contentGroups[$type])) {
-                $contentGroups[$type] = new ContentGroup($type, $type);
+            if (empty($type)) {
+                continue;
             }
 
-            $contentGroups[$type]->addContentItem($contentItem);
+            // top content
+            if (strpos($type, self::TOP_CONTENT_PREFIX) === 0) {
+                if(!isset($topContentGroups[$type])) {
+                    $topContentGroups[$type] = new ContentGroup($type, $type);
+                }
+                $topContentGroups[$type]->addContentItem($contentItem);
+            } else {
+                if(!isset($regularContentGroups[$type])) {
+                    $regularContentGroups[$type] = new ContentGroup($type, $type);
+                }
+                $regularContentGroups[$type]->addContentItem($contentItem);
+            }
         }
 
-        $listing->setContentGroups($contentGroups);
+        $listing->setContentGroups($regularContentGroups);
+        $listing->setTopContentGroups($topContentGroups);
     }
 }

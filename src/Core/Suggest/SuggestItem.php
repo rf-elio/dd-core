@@ -74,6 +74,11 @@ class SuggestItem
     protected float $score;
 
     /**
+     * @var bool
+     */
+    protected bool $isTop = false;
+
+    /**
      * @var string
      */
     protected string $url = '';
