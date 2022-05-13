@@ -229,20 +229,4 @@ class SuggestItem
     {
         return $this->id;
     }
-
-    /**
-     * @return bool
-     */
-    public function isTop(): bool
-    {
-        return $this->isTop;
-    }
-
-    /**
-     * @param bool $isTop
-     */
-    public function setIsTop(bool $isTop): void
-    {
-        $this->isTop = $isTop;
-    }
 }

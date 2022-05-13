@@ -36,9 +36,9 @@
         {% block e_listing_wrapper %}
             {% set topProductsGroup = [] %}
             {# topGroupKey can be seted up from plugin config #}
-            {% set topGroupKey = "top-products" %}
+            {% set topGroupKey = "top-product" %}
             {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
-            {% if not (contentListingResponse is null or contentListingResponse.topContentGroups is null) %}
+            {% if not (contentListingResponse is null and contentListingResponse.topContentGroups is not null) %}
                 {% if topGroupKey in contentListingResponse.topContentGroups|keys %}
                     {% set topProductsGroup = contentListingResponse.topContentGroups[topGroupKey] %}
                 {% endif %}

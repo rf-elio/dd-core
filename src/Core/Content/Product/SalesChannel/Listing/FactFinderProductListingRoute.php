@@ -143,7 +143,6 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
             $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
             /** @var ProductListingResponse|null $productListingResponse */
             $productListingResponse = $resultCollection->get(ProductListingResponse::class);
-
             if(!$productListingResponse) {
                 return $this->decorated->load($categoryId, $request, $context, $criteria);
             }
@@ -197,7 +196,6 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, SalesChannelContext $context): void
     {
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
-        $path = implode('/', array_values($path));
         $navigationRequest->setCategoryPath($path);
         $navigationRequest->setCategoryId($category->getId());
     }

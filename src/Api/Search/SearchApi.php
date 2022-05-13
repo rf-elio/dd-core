@@ -44,6 +44,7 @@ use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
+use Swagger\Client\Model\NavigationRequest;
 use Swagger\Client\Model\SortItem;
 use Throwable;
 
@@ -163,7 +164,7 @@ class SearchApi
                 'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
             ];
         }
-        $result = $apiClient->navigationUsingPOST(new \Swagger\Client\Model\NavigationRequest([
+        $result = $apiClient->navigationUsingPOST(new NavigationRequest([
             'params' => $params
         ]));
         return $this->transformer->transformResponse($result, $context, $searchRequest);
@@ -228,17 +229,19 @@ class SearchApi
     protected function getNavigationFilters(NavigationRequestProduct $navigationRequest): array
     {
         $filters = $this->getFilters($navigationRequest);
-        if(!empty($navigationRequest->getCategoryPath())){
-            $preparedFilter = [
+        $categoryPath = $navigationRequest->getCategoryPath();
+        if(!empty($categoryPath)){
+            $categoryPath = implode('/', array_values($categoryPath));
+            $categoryPath = strpos($categoryPath, ' ') === false ? $categoryPath : '"'.$categoryPath.'"';
+            $filters[] = [
                 'name' => 'CategoryPath',
                 'substring' => false,
                 'values' => [[
                     'exclude' => false,
                     'type' => 'or',
-                    'value' => explode('/', $navigationRequest->getCategoryPath())
-                ]],
+                    'value' => explode('/', $categoryPath)
+                ]]
             ];
-            $filters[] = $preparedFilter;
         }
         return $filters;
     }

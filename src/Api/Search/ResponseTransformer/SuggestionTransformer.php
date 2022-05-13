@@ -119,12 +119,6 @@ class SuggestionTransformer implements ResponseTransformerInterface
             }
 
             $type = $suggestItem->getType();
-            if (preg_match('/^top-(\S)+$/', $type)) {
-                // type is starting with 'top-'...
-                $type = substr($type, 4);
-                $suggestItem->setIsTop(true);
-            }
-
             $group = $suggestGroups[$type] ?? new SuggestGroup($type, $groupLabels[$type] ?? $type);
             $suggestGroups[$type] = $group;
             $group->addItem($suggestItem);

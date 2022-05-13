@@ -52,15 +52,13 @@
                         {% endif %}
 
                         {% for contentGroup in contentListingResponse.contentGroups %}
-                            {% if contentGroup.type matches '{^top-[\\S]+$}' == 0 %}
-                                <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
-                                    <a data-toggle="pill"
-                                       class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
-                                       href="#{{ contentGroup.type }}">
-                                        {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
-                                    </a>
-                                </li>
-                            {% endif %}
+                            <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
+                                <a data-toggle="pill"
+                                   class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
+                                   href="#{{ contentGroup.type }}">
+                                    {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
 
