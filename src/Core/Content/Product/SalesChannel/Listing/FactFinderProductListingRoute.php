@@ -41,6 +41,7 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\FactFinder\FactFinder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
@@ -52,6 +53,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Throwable;
 
 /**
@@ -139,6 +141,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
                 $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
             );
             $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $context);
+            $this->addCustomFiltersToNavigationRequest($navigationRequest, $category);
 
             $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
             /** @var ProductListingResponse|null $productListingResponse */
@@ -198,5 +201,62 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
         $navigationRequest->setCategoryPath($path);
         $navigationRequest->setCategoryId($category->getId());
+    }
+
+    /**
+     * Adds the custom filters configured in the current category
+     *
+     * In: brandline={category.name}&Manufacturer={category.parent.name}
+     * Out: {"brandline": "Some Category Name", "Manufacturer": "Some Manufacturer Name"}
+     *
+     * @param NavigationRequestProduct $navigationRequest
+     * @param CategoryEntity $category
+     */
+    protected function addCustomFiltersToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category): void
+    {
+        $customFields = $category->getCustomFields();
+        if (!isset($customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY]) || empty(FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY)) {
+            return;
+        }
+
+        $customFilters = $customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY];
+        parse_str($customFilters, $parsedCustomFilters);
+
+        // get parent category name by category path
+        $path = $navigationRequest->getCategoryPath();
+        $pathElements = count($path);
+        $parentCategoryName = $pathElements >= 2 ? array_values($path)[$pathElements - 2] : '';
+
+        // dataset that is used for the placeholders
+        $dataSet = [
+            'category' => [
+                'id' => $category->getId(),
+                'name' => $category->getName() ?? $category->getTranslation('name'),
+                'customFields' => $category->getCustomFields(),
+                'parent' => [
+                    'name' => $parentCategoryName
+                ]
+            ]
+        ];
+
+        foreach ($parsedCustomFilters as &$parsedCustomFilterValue) {
+            $re = '/{([a-zA-Z\d_\-"\."]+)}/m';
+            preg_match_all($re, $parsedCustomFilterValue, $matches, PREG_SET_ORDER, 0);
+            foreach ($matches as [$match, $capture]) {
+                $pa = new PropertyAccessor();
+
+                // prepare access string for property accessor (category.name -> [category][name])
+                $capture = implode('', array_map(static function ($a) {
+                    return '[' . $a . ']';
+                }, explode('.', $capture)));
+
+                if ($pa->isReadable($dataSet, $capture)) {
+                    $parsedCustomFilterValue = $pa->getValue($dataSet, $capture);
+                }
+            }
+        }
+
+        unset($parsedCustomFilterValue);
+        $navigationRequest->setCustomFilters($parsedCustomFilters);
     }
 }
