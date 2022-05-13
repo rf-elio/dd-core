@@ -34,6 +34,16 @@
         {% endblock %}
 
         {% block e_listing_wrapper %}
+            {% set topProductsGroup = [] %}
+            {# topGroupKey can be seted up from plugin config #}
+            {% set topGroupKey = "top-products" %}
+            {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
+            {% if not (contentListingResponse is null or contentListingResponse.topContentGroups is null) %}
+                {% if topGroupKey in contentListingResponse.topContentGroups|keys %}
+                    {% set topProductsGroup = contentListingResponse.topContentGroups[topGroupKey] %}
+                {% endif %}
+            {% endif %}
+
             <div class="e-search-result-wrapper col-lg-8 col-xl-9">
                 {% block e_listing %}
                     {% sw_include '@Storefront/storefront/component/product/listing.html.twig' with {
@@ -44,7 +54,8 @@
                         sidebar: 1,
                         boxLayout: 'standard',
                         displayMode: '',
-                        listingColumns: 'col-sm-6 col-lg-6 col-xl-4'
+                        listingColumns: 'col-sm-6 col-lg-6 col-xl-4',
+                        topProductsContentGroup: topProductsGroup
                     } %}
                 {% endblock %}
             </div>
