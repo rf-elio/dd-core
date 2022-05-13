@@ -45,6 +45,7 @@ class NavigationRequestProduct extends ProductSearchRequest
 {
     protected array $categoryPath = [];
     protected string $categoryId = '';
+    protected array $customFilters = [];
 
     /**
      * @return array
@@ -76,6 +77,22 @@ class NavigationRequestProduct extends ProductSearchRequest
     public function setCategoryId(string $categoryId): void
     {
         $this->categoryId = $categoryId;
+    }
+
+    /**
+     * @param array $customFilters
+     */
+    public function setCustomFilters(array $customFilters): void
+    {
+        $this->customFilters = $customFilters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomFilters(): array
+    {
+        return $this->customFilters;
     }
 
 

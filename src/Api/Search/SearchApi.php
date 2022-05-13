@@ -158,15 +158,18 @@ class SearchApi
             'customParameters' => $this->getCustomParameters($searchRequest),
             'filters' => $filters
         ];
+
         if ($searchRequest->getAdvisorStatus() !== null) {
             $params['advisorStatus'] = [
                 'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
                 'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
             ];
         }
+
         $result = $apiClient->navigationUsingPOST(new NavigationRequest([
             'params' => $params
         ]));
+
         return $this->transformer->transformResponse($result, $context, $searchRequest);
     }
 
@@ -229,10 +232,29 @@ class SearchApi
     protected function getNavigationFilters(NavigationRequestProduct $navigationRequest): array
     {
         $filters = $this->getFilters($navigationRequest);
+        $customFilters = $navigationRequest->getCustomFilters();
+
+        if (!empty($customFilters)) {
+            foreach ($customFilters as $name => $value) {
+                $filters[] = [
+                    'name' => $name,
+                    'substring' => false,
+                    'values' => [[
+                        'exclude' => false,
+                        'type' => 'or',
+                        'value' => $this->prepareFilterValue($value)
+                    ]]
+                ];
+            }
+
+            return $filters;
+        }
+
+
         $categoryPath = $navigationRequest->getCategoryPath();
         if(!empty($categoryPath)){
             $categoryPath = implode('/', array_values($categoryPath));
-            $categoryPath = strpos($categoryPath, ' ') === false ? $categoryPath : '"'.$categoryPath.'"';
+            $categoryPath = $this->prepareFilterValue($categoryPath);
             $filters[] = [
                 'name' => 'CategoryPath',
                 'substring' => false,
@@ -269,5 +291,16 @@ class SearchApi
         }
 
         return $customParameters;
+    }
+
+    /**
+     * Encloses the filter value in double quotes if it contains spaces
+     *
+     * @param string $value
+     * @return string
+     */
+    private function prepareFilterValue(string $value) : string
+    {
+        return strpos($value, ' ') === false ? $value : '"'.$value.'"';
     }
 }

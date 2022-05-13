@@ -62,6 +62,7 @@ class FactFinder extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = 'content_export_exclude_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
+    public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = 'category_custom_search_query';
 
     public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
@@ -122,6 +123,15 @@ class FactFinder extends Plugin
                         'label' => [
                             'en-GB' => 'Priority',
                             'de-DE' => 'Priorität'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => 'brandline={category.name}&Manufacturer={parent.name}',
+                        'label' => [
+                            'en-GB' => 'Custom search query',
+                            'de-DE' => 'Individuelle Suchanfrage'
                         ]
                     ]
                 ],
