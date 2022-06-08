@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.0 - 2022-06-09
+### Features (1 changes)
+- Dependencies updated to add variant support and to use same guzzle client version as shopware
+
 ## 2.1.1 - 2022-05-13
 ### Features (2 changes)
 - Top elements in product and content search result

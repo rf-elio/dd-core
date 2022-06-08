@@ -1,11 +1,12 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v2.1.1",
+    "version": "v2.2.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
-            "name": "ry/elio GmbH"
+            "name": "ry/elio GmbH",
+            "email": "ry@elio-systems.com"
         },
         {
             "name": "Andrey Baev",

@@ -49,6 +49,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 use Swagger\Client\Model\SearchRecord;
+use Swagger\Client\Model\VariantValues;
 
 /**
  * Class ProductTransformer
@@ -92,11 +93,13 @@ class ProductTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $productNumbers = $this->extractProductNumbers($model);
+        [$mainNumbers, $variantNumbers] = $this->extractProductNumbers($model);
+        $productNumbers = array_merge($mainNumbers, $variantNumbers);
         $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
+
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
 
@@ -116,8 +119,9 @@ class ProductTransformer implements ResponseTransformerInterface
         $listing->setProducts($products);
 
         // total count must be corrected by the difference we have for the found products
-        $shouldCount = count($productNumbers);
+        $shouldCount = count($mainNumbers);
         $isCount = $products->count();
+
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
     }
@@ -126,12 +130,25 @@ class ProductTransformer implements ResponseTransformerInterface
      * Extracts the product numbers from the given search result
      *
      * @param Result $result
-     * @return array
+     * @return string[][]
      */
     protected function extractProductNumbers(Result $result): array
     {
-        return array_map(static function (SearchRecord $searchRecord) {
-            return $searchRecord->getId();
-        }, $result->getHits());
+        $mainNumbers = [];
+        $variantNumbers = [];
+
+        foreach ($result->getHits() as $searchRecord) {
+            $mainNumbers[] = $searchRecord->getId();
+            /** @var VariantValues $variantValue */
+            foreach ($searchRecord->getVariantValues() as $variantValue) {
+                if (!empty($variantValue->getProductId())) {
+                    $variantNumbers[] = $variantValue->getProductId();
+                }
+            }
+        }
+
+        $mainNumbers = array_unique($mainNumbers);
+        $variantNumbers = array_unique($variantNumbers);
+        return [$mainNumbers, $variantNumbers];
     }
 }
