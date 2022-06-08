@@ -48,6 +48,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
+use Swagger\Client\Model\SearchRecord;
+use Swagger\Client\Model\VariantValues;
 
 /**
  * Class ProductTransformer
@@ -91,19 +93,20 @@ class ProductTransformer implements ResponseTransformerInterface
             throw new InvalidTypeException($model, Result::class);
         }
 
-        $groupProductNumbers = $this->extractGroupProductNumbers($model);
-        $productNumbers = array_merge([], ...array_values($groupProductNumbers));
+        [$mainNumbers, $variantNumbers] = $this->extractProductNumbers($model);
+        $productNumbers = array_merge($mainNumbers, $variantNumbers);
         $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
+
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
 
         // sorts the product collection based on the original ff result order
         $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
-            $aPosition = $productNumberSort[$a->getProductNumber()] ?? 0;
-            $bPosition = $productNumberSort[$b->getProductNumber()] ?? 0;
+            $aPosition = $productNumberSort[$a->getProductNumber()];
+            $bPosition = $productNumberSort[$b->getProductNumber()];
 
             if ($aPosition === $bPosition) {
                 return 0;
@@ -116,8 +119,9 @@ class ProductTransformer implements ResponseTransformerInterface
         $listing->setProducts($products);
 
         // total count must be corrected by the difference we have for the found products
-        $shouldCount = count($groupProductNumbers);
+        $shouldCount = count($mainNumbers);
         $isCount = $products->count();
+
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
     }
@@ -126,16 +130,25 @@ class ProductTransformer implements ResponseTransformerInterface
      * Extracts the product numbers from the given search result
      *
      * @param Result $result
-     * @return array
+     * @return string[][]
      */
-    protected function extractGroupProductNumbers(Result $result): array
+    protected function extractProductNumbers(Result $result): array
     {
-        $groups = [];
+        $mainNumbers = [];
+        $variantNumbers = [];
+
         foreach ($result->getHits() as $searchRecord) {
+            $mainNumbers[] = $searchRecord->getId();
+            /** @var VariantValues $variantValue */
             foreach ($searchRecord->getVariantValues() as $variantValue) {
-                $groups[$searchRecord->getId()][] = $variantValue->getProductId();
+                if (!empty($variantValue->getProductId())) {
+                    $variantNumbers[] = $variantValue->getProductId();
+                }
             }
         }
-        return $groups;
+
+        $mainNumbers = array_unique($mainNumbers);
+        $variantNumbers = array_unique($variantNumbers);
+        return [$mainNumbers, $variantNumbers];
     }
 }
