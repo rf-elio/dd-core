@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.1 - 2022-06-30
+### Bugfixes (1 changes)
+- Manufacturere was missing in product listings. Association was added in ProductTransformer.
+
 ## 2.2.0 - 2022-06-09
 ### Features (1 changes)
 - Dependencies updated to add variant support and to use same guzzle client version as shopware

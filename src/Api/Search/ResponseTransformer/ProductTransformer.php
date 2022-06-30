@@ -99,6 +99,7 @@ class ProductTransformer implements ResponseTransformerInterface
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
+        $criteria->addAssociation('manufacturer');
 
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
