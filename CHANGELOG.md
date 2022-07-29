@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.2 - 2022-07-29
+### Features (1 changes)
+- New fields to export added to optimize rating
+
 ## 2.2.1 - 2022-06-30
 ### Bugfixes (1 changes)
 - Manufacturere was missing in product listings. Association was added in ProductTransformer.

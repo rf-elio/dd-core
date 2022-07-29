@@ -44,13 +44,16 @@ namespace Elio\FactFinder\Core\Export\Generator\Product;
 abstract class ProductExportDefaults
 {
     public const TYPE = 'product';
+    public const FIELD_ID = 'ID';
     public const FIELD_PRODUCT_ID = 'ProductID';
     public const FIELD_MASTER_PRODUCT_NUMBER = 'MasterProductNumber';
     public const FIELD_MANUFACTURER_NUMBER = 'ManufacturerNumber';
     public const FIELD_NAME = 'Name';
     public const FIELD_DESCRIPTION = 'Description';
+    public const FIELD_META_TITLE = 'MetaTitle';
     public const FIELD_PRODUCT_URL = 'ProductURL';
     public const FIELD_PRICE = 'Price';
+    public const FIELD_RED_PRICE = 'RedPrice';
     public const FIELD_CURRENCY_PRICES = 'CurrencyPrices';
     public const FIELD_MANUFACTURER = 'Manufacturer';
     public const FIELD_CATEGORY_PATH = 'CategoryPath';
@@ -58,9 +61,14 @@ abstract class ProductExportDefaults
     public const FIELD_KEYWORDS = 'Keywords';
     public const FIELD_SEARCH_KEYWORDS = 'SearchKeywords';
     public const FIELD_STOCK = 'Stock';
+    public const FIELD_CLOSEOUT = 'Closeout';
     public const FIELD_RATING_AVERAGE = 'RatingAverage';
+    public const FIELD_RATING_COUNT = 'RatingCount';
     public const FIELD_SHIPPING_FREE = 'ShippingFree';
     public const FIELD_ATTRIBUTE = 'Attribute';
     public const FIELD_IMAGE_URL = 'ImageURL';
+    public const FIELD_THUMBNAIL_URL = 'ThumbnailURL';
     public const FIELD_TAGS = 'Tags';
+    public const FIELD_RELEASE_DATE = 'ReleaseDate';
+    public const FIELD_SALES_COUNT = 'SalesCount';
 }

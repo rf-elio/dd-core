@@ -119,4 +119,19 @@ class ValueUtil
         $value = $customFields[$key] ?? null;
         return empty($value) ? null : $value;
     }
+
+    /**
+     * Applies the default format for ff with two decimal chars
+     *
+     * @param float|null $price
+     * @return string
+     */
+    public static function formatPrice(?float $price) : string
+    {
+        if ($price === null) {
+            return '';
+        }
+
+        return number_format($price, 2);
+    }
 }

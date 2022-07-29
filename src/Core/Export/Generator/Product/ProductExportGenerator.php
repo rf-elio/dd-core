@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Core\Export\Generator\Product;
 use Elio\FactFinder\Core\Defaults;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductExportItemPrepareEvent;
 use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductModelEvent;
@@ -44,10 +45,14 @@ use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
 use Elio\FactFinder\Core\Features\FeatureServiceInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\FilterAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -67,6 +72,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class ProductExportGenerator implements ExportGeneratorInterface
 {
     private const PRODUCT_CHUNK_SIZE = 500;
+    private const PRODUCT_THUMBNAIL_SIZE = 200;
     private EntityRepositoryInterface $productRepository;
     private EventDispatcherInterface $eventDispatcher;
     private EntityRepositoryInterface $salesChannelRepository;
@@ -111,24 +117,32 @@ class ProductExportGenerator implements ExportGeneratorInterface
     public function getModel(ExportEntity $export): array
     {
         $model = [
+            ProductExportDefaults::FIELD_ID,
             ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER,
             ProductExportDefaults::FIELD_PRODUCT_ID,
             ProductExportDefaults::FIELD_MANUFACTURER_NUMBER,
             ProductExportDefaults::FIELD_NAME,
             ProductExportDefaults::FIELD_DESCRIPTION,
+            ProductExportDefaults::FIELD_META_TITLE,
             ProductExportDefaults::FIELD_PRODUCT_URL,
             ProductExportDefaults::FIELD_PRICE,
+            ProductExportDefaults::FIELD_RED_PRICE,
             ProductExportDefaults::FIELD_MANUFACTURER,
             ProductExportDefaults::FIELD_CATEGORY_PATH,
             ProductExportDefaults::FIELD_EAN,
             ProductExportDefaults::FIELD_KEYWORDS,
             ProductExportDefaults::FIELD_SEARCH_KEYWORDS,
             ProductExportDefaults::FIELD_STOCK,
+            ProductExportDefaults::FIELD_CLOSEOUT,
             ProductExportDefaults::FIELD_RATING_AVERAGE,
+            ProductExportDefaults::FIELD_RATING_COUNT,
             ProductExportDefaults::FIELD_SHIPPING_FREE,
             ProductExportDefaults::FIELD_ATTRIBUTE,
             ProductExportDefaults::FIELD_IMAGE_URL,
-            ProductExportDefaults::FIELD_TAGS
+            ProductExportDefaults::FIELD_THUMBNAIL_URL,
+            ProductExportDefaults::FIELD_TAGS,
+            ProductExportDefaults::FIELD_RELEASE_DATE,
+            ProductExportDefaults::FIELD_SALES_COUNT,
         ];
 
         if($this->featureService->getContext()->isEnabled('currency-specific-prices')) {
@@ -176,9 +190,23 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $iterator = new RepositoryIterator($this->productRepository, $context->getContext(), $criteria);
         while ($products = $iterator->fetch()) {
+            /** @var ProductEntity $product */
             foreach ($products as $product) {
+                // @todo: performance!
+                $criteria = new Criteria([$product->getId()]);
+                $criteria->addAggregation(new CountAggregation('rating-count', 'product.productReviews.id'));
+                $result = $this->productRepository->search($criteria, $context->getContext());
+                /** @var CountResult $ratingCountAggregation */
+                $ratingCountAggregation = $result->getAggregations()->get('rating-count');
+                $ratingCount = $ratingCountAggregation ? $ratingCountAggregation->getCount() : 0;
+
                 $item = new ExportItem();
-                $this->prepareExportItem($product, $item, $context);
+                $this->prepareExportItem(
+                    $product,
+                    $item,
+                    $ratingCount,
+                    $context
+                );
                 $this->addMappedPropertiesToExportItem($product, $item, $mappings, $propertyAccessor);
                 $this->eventDispatcher->dispatch(new FilterProductExportItemPrepareEvent($product, $item, $export, $context));
                 $output->write($item);
@@ -191,9 +219,10 @@ class ProductExportGenerator implements ExportGeneratorInterface
      *
      * @param ProductEntity $product
      * @param ExportItem $item
+     * @param int $ratingCount
      * @param SalesChannelContext $context
      */
-    private function prepareExportItem(ProductEntity $product, ExportItem $item, SalesChannelContext $context): void
+    private function prepareExportItem(ProductEntity $product, ExportItem $item, int $ratingCount, SalesChannelContext $context): void
     {
         $parentProduct = null;
         if($product->getParentId()) {
@@ -202,12 +231,17 @@ class ProductExportGenerator implements ExportGeneratorInterface
 
         $parentProduct = $parentProduct ?? $product;
         $translated = $product->getTranslated();
+        $item->set(ProductExportDefaults::FIELD_ID, $product->getId());
         $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct->getProductNumber());
         $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getProductNumber());
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_DESCRIPTION, $product->getDescription() ?? $translated['description'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_PRICE, $this->getProductPrice($product));
+        $item->set(ProductExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
+        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle']));
+
+        [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
+        $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));
+        $item->set(ProductExportDefaults::FIELD_RED_PRICE, ValueUtil::formatPrice($redPrice));
         if($this->featureService->getContext()->isEnabled('currency-specific-prices')) {
             $item->set(ProductExportDefaults::FIELD_CURRENCY_PRICES, $this->getProductPrices($product, $context));
         }
@@ -221,13 +255,21 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_KEYWORDS, $product->getKeywords() ?? $translated['keywords'] ?? '');
         $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
         $item->set(ProductExportDefaults::FIELD_STOCK, $product->getStock());
+        $item->set(ProductExportDefaults::FIELD_CLOSEOUT, $product->getIsCloseout() ? 1 : 0);
         $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
+        $item->set(ProductExportDefaults::FIELD_RATING_COUNT, $ratingCount);
         $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
         $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($product));
         $item->set(ProductExportDefaults::FIELD_TAGS, $this->getProductTags($product));
+        $item->set(ProductExportDefaults::FIELD_SALES_COUNT, $product->getSales());
+        $item->set(
+            ProductExportDefaults::FIELD_RELEASE_DATE,
+            $product->getReleaseDate() ? $product->getReleaseDate()->format(ExportDefaults::DATE_TIME_FORMAT) : ''
+        );
 
         if($product->getCover() && $product->getCover()->getMedia()) {
             $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()->getMedia()->getUrl());
+            $item->set(ProductExportDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()->getMedia()->getThumbnails()));
         }
 
         $item->set(ProductExportDefaults::FIELD_PRODUCT_URL, new SeoRoute(
@@ -345,15 +387,24 @@ class ProductExportGenerator implements ExportGeneratorInterface
      * Fetches the main product price
      *
      * @param ProductEntity $product
-     * @return float|null
+     * @return array|null
      */
-    protected function getProductPrice(ProductEntity $product) : ?float
+    protected function getProductPrice(ProductEntity $product) : ?array
     {
         if ($product->getPrice() === null || !$price = $product->getPrice()->first()) {
             return null;
         }
 
-        return $price->getGross();
+        $redPrice = null;
+        if (
+            $price->getListPrice() &&
+            $price->getListPrice()->getGross() &&
+            $price->getListPrice()->getGross() > $price->getGross()
+        ) {
+            $redPrice = $price->getListPrice()->getGross();
+        }
+
+        return [$price->getGross(), $redPrice];
     }
 
     /**
@@ -366,7 +417,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
      */
     protected function getProductPrices(ProductEntity $product, SalesChannelContext $context) : string
     {
-        $price = $this->getProductPrice($product);
+        [$price] = $this->getProductPrice($product) ?? [null];
         if (!$price) {
             return '';
         }
@@ -378,7 +429,12 @@ class ProductExportGenerator implements ExportGeneratorInterface
                 $currencyPrice *= $currency->getFactor();
             }
 
-            $prices[] = sprintf('%s~~%s=%s', $currency->getIsoCode(), $currency->getSymbol(), $currencyPrice);
+            $prices[] = sprintf(
+                '%s~~%s=%s',
+                $currency->getIsoCode(),
+                $currency->getSymbol(),
+                ValueUtil::formatPrice($currencyPrice)
+            );
         }
 
         return !empty($prices) ? sprintf(
@@ -387,5 +443,31 @@ class ProductExportGenerator implements ExportGeneratorInterface
             implode(Defaults::VALUE_SEPARATOR, $prices),
             Defaults::VALUE_SEPARATOR
         ) : '';
+    }
+
+    /**
+     * Searches for the best matching thumbnail
+     *
+     * @param MediaThumbnailCollection|null $thumbnailCollection
+     * @return string
+     */
+    protected function getThumbnailUrl(?MediaThumbnailCollection $thumbnailCollection): string
+    {
+        if (!$thumbnailCollection || $thumbnailCollection->count() <= 0) {
+            return '';
+        }
+
+        $targetSize = self::PRODUCT_THUMBNAIL_SIZE;
+        $bestMatching = null;
+        $bestMatchingSizeDifference = 0;
+        foreach ($thumbnailCollection as $thumbnail) {
+            $targetSizeDifference = abs($targetSize - $thumbnail->getWidth());
+            if (!$bestMatching || $targetSizeDifference < $bestMatchingSizeDifference) {
+                $bestMatching = $thumbnail;
+                $bestMatchingSizeDifference = $targetSizeDifference;
+            }
+        }
+
+        return $bestMatching ? $bestMatching->getUrl() : '';
     }
 }
