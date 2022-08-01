@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.3 - 2022-08-01
+### Fix (1 changes)
+- Export file name shortened to be able to use azure blob storage
+
 ## 2.2.2 - 2022-07-29
 ### Features (1 changes)
 - New fields to export added to optimize rating
