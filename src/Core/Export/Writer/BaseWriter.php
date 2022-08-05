@@ -109,7 +109,9 @@ abstract class BaseWriter
     public function abort($handle) : void
     {
         $this->model = [];
-        fclose($handle);
+        if (is_resource($handle)) {
+            fclose($handle);
+        }
     }
 
     /**
@@ -123,6 +125,8 @@ abstract class BaseWriter
     {
         $this->exportStorageService->write($export, $handle);
         $this->model = [];
-        fclose($handle);
+        if (is_resource($handle)) {
+            fclose($handle);
+        }
     }
 }

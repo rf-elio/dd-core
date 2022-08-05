@@ -57,6 +57,7 @@ abstract class ProductExportDefaults
     public const FIELD_CURRENCY_PRICES = 'CurrencyPrices';
     public const FIELD_MANUFACTURER = 'Manufacturer';
     public const FIELD_CATEGORY_PATH = 'CategoryPath';
+    public const FIELD_CATEGORY_IDS = 'CategoryIds';
     public const FIELD_EAN = 'EAN';
     public const FIELD_KEYWORDS = 'Keywords';
     public const FIELD_SEARCH_KEYWORDS = 'SearchKeywords';

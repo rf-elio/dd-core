@@ -129,6 +129,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
             ProductExportDefaults::FIELD_RED_PRICE,
             ProductExportDefaults::FIELD_MANUFACTURER,
             ProductExportDefaults::FIELD_CATEGORY_PATH,
+            ProductExportDefaults::FIELD_CATEGORY_IDS,
             ProductExportDefaults::FIELD_EAN,
             ProductExportDefaults::FIELD_KEYWORDS,
             ProductExportDefaults::FIELD_SEARCH_KEYWORDS,
@@ -251,6 +252,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
             $item->set(ProductExportDefaults::FIELD_MANUFACTURER, $manufacturer->getTranslation('name') ?? $manufacturer->getName());
         }
         $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH, $this->getCategoryPath($product));
+        $item->set(ProductExportDefaults::FIELD_CATEGORY_IDS, $this->getCategoryIds($product));
         $item->set(ProductExportDefaults::FIELD_EAN, $product->getEan());
         $item->set(ProductExportDefaults::FIELD_KEYWORDS, $product->getKeywords() ?? $translated['keywords'] ?? '');
         $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
@@ -335,6 +337,31 @@ class ProductExportGenerator implements ExportGeneratorInterface
         }
 
         return $path;
+    }
+
+    /**
+     * Builds the category path for ff
+     *
+     * @param ProductEntity $product
+     * @return string
+     */
+    protected function getCategoryIds(ProductEntity $product): string
+    {
+        if(!$product->getCategories()) {
+            return '';
+        }
+
+        $productCategoryIds = [];
+        $categories = $product->getCategories()->getElements();
+
+        foreach ($categories as $category) {
+            $path = $category->getPath();
+            $ids = explode('|', $path);
+            $ids = array_filter($ids);
+            $productCategoryIds[] = implode('/', $ids);
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $productCategoryIds);
     }
 
     /**
