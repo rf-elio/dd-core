@@ -10,6 +10,10 @@ export default class ElioSearchWidgetPlugin extends SearchWidgetPlugin {
 
     init() {
         super.init();
+        this.suggestOpenClass = 'suggest-open'
+        this.$emitter.subscribe('clearSuggestResults', ()=>{
+            this.el.parentNode.classList.remove(this.suggestOpenClass)
+        });
     }
 
     /**
@@ -71,7 +75,38 @@ export default class ElioSearchWidgetPlugin extends SearchWidgetPlugin {
                     console.warn('The search terms column is not configured in administration');
                 }
             }
+            this._modifyBounds(document.querySelector('.search-suggest-container'))
             this.$emitter.publish('afterSuggest', { firstElement });
         });
+    }
+    _modifyBounds(element){
+        if(!element){
+            return false
+        }
+        if(!this.el.parentNode.classList.contains(this.suggestOpenClass)){
+            this.el.parentNode.classList.add(this.suggestOpenClass)
+        }
+        //element is suggest result
+        element.style.transform = ''
+        var elmRects = element.getBoundingClientRect()
+        var searchRects = this.el.getBoundingClientRect()
+        var docRects = document.documentElement.getBoundingClientRect()
+        var offBound = 0
+        var halfWidth = Math.round(((elmRects.width/2)) - (searchRects.width/2));
+
+        if(elmRects.width > searchRects.width){
+            if (elmRects.left + elmRects.width + halfWidth > docRects.width) {
+                //off bounds right side
+                var topRight = elmRects.left + elmRects.width
+                var overhead = Math.round(topRight - docRects.width)
+                offBound = -1 * (elmRects.width / 2 + overhead + 10)
+            } else if (elmRects.left - halfWidth < 0) {
+                //get offbounds left side
+                offBound = halfWidth
+            }
+            if (offBound) {
+                element.style.transform = 'translateX(calc(-50% + ' + (offBound) +'px))'
+            }
+        }
     }
 }

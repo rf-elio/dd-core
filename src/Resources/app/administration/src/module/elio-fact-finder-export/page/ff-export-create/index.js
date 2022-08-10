@@ -1,3 +1,5 @@
+import uuid from 'src/../test/_helper_/uuid';
+
 Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
     data() {
         return {
@@ -24,6 +26,8 @@ Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
             this.ff_export.format = 'csv';
             this.ff_export.active = true;
             this.ff_export.mapping = {};
+            this.ff_export.downloadUsername = 'ff';
+            this.ff_export.downloadPassword = uuid.get('en-GB');
             this.isLoading = false;
         },
 

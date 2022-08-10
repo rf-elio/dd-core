@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.4 - 2022-08-10
+### Features (1 changes)
+- Export now supports basic auth
+
 ## 2.2.3 - 2022-08-01
 ### Fix (1 changes)
 - Export file name shortened to be able to use azure blob storage

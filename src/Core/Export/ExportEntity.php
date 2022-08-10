@@ -68,6 +68,40 @@ class ExportEntity extends Entity
     protected string $languageId;
     protected ?LanguageEntity $language;
     protected $baseCategoryIds;
+    protected $downloadUsername;
+    protected $downloadPassword;
+
+    /**
+     * @return mixed
+     */
+    public function getDownloadUsername()
+    {
+        return $this->downloadUsername;
+    }
+
+    /**
+     * @param mixed $downloadUsername
+     */
+    public function setDownloadUsername($downloadUsername): void
+    {
+        $this->downloadUsername = $downloadUsername;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDownloadPassword()
+    {
+        return $this->downloadPassword;
+    }
+
+    /**
+     * @param mixed $downloadPassword
+     */
+    public function setDownloadPassword($downloadPassword): void
+    {
+        $this->downloadPassword = $downloadPassword;
+    }
 
     /**
      * Returns an identifier that is unique for every channel and language

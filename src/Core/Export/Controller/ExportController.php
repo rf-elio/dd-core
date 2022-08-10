@@ -2,6 +2,7 @@
 
 namespace Elio\FactFinder\Core\Export\Controller;
 
+use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportGenerateMessage;
 use Elio\FactFinder\Core\Export\ExportService;
 use Elio\FactFinder\Core\Export\ExportStorageService;
@@ -10,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -70,7 +72,7 @@ class ExportController extends AbstractController
      * @Route("/api/_action/ff/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
      */
-    public function download(string $id, Context $context): Response
+    public function download(Request $request, string $id, Context $context): Response
     {
         $criteria = new Criteria([$id]);
         $export = $this->exportService->getExports($criteria, $context)->first();
@@ -79,7 +81,41 @@ class ExportController extends AbstractController
             throw new NotFoundHttpException(sprintf('Export "%s" does not exists', $id));
         }
 
+        if($response = $this->authenticate($request, $export)) {
+            return $response;
+        }
+
         return $this->exportStorageService->createFileResponse($export);
+    }
+
+    /**
+     * Validates the given auth set in the ff export
+     *
+     * @param Request $request
+     * @param ExportEntity $export
+     * @return Response|null
+     */
+    private function authenticate(Request $request, ExportEntity $export): ?Response
+    {
+        $givenUsername = $request->server->get('PHP_AUTH_USER');
+        $givenPassword = $request->server->get('PHP_AUTH_PW');
+        $requiredUsername = $export->getDownloadUsername();
+        $requiredPassword = $export->getDownloadPassword();
+
+        if (empty($requiredUsername) || empty($requiredPassword)) {
+            return null;
+        }
+
+        if ($givenUsername === $requiredUsername && $givenPassword === $requiredPassword) {
+            return null;
+        }
+
+        $response = new Response();
+        $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+        $response->headers->set('WWW-Authenticate', 'Basic realm="Site Administration Area"');
+        $response->headers->set('Status', '401 Unauthorized');
+        $response->headers->set('HTTP-Status' , '401 Unauthorized');
+        return $response;
     }
 
     /**

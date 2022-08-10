@@ -18,6 +18,8 @@
       "labelFormat": "Format",
       "labelInterval": "Interval",
       "helpTextInterval": "CRON-valid interval string example: 0 * * * *",
+      "downloadUsername": "Download Benutzername",
+      "downloadPassword": "Download Passwort",
       "labelSalesChannel": "Sales Channel",
       "labelLanguage": "Language",
       "baseCategoryLabel": "Base category",

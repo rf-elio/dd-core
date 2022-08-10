@@ -77,6 +77,7 @@
                                             :label="$tc('ff-export.detail.labelActive')"
                                             :helpText="$tc('ff-export.detail.helpTextActive')">
                                     </sw-field>
+
                                 </div>
                                 <sw-field
                                         v-model="ff_export.interval"
@@ -86,6 +87,26 @@
                                         placeholder="0 * * * *"
                                         :helpText="$tc('ff-export.detail.helpTextInterval')">
                                 </sw-field>
+
+                                {% block ff_export_detail_basic_info_download_protection %}
+
+                                    <sw-field
+                                        v-model="ff_export.downloadUsername"
+                                        type="text"
+                                        required
+                                        :label="$tc('ff-export.detail.downloadUsername')"
+                                        :placeholder="placeholder(ff_export, 'downloadUsername', $tc('ff-export.detail.downloadUsername'))">
+                                    </sw-field>
+
+                                    <sw-field
+                                        v-model="ff_export.downloadPassword"
+                                        type="password"
+                                        required
+                                        :label="$tc('ff-export.detail.downloadPassword')"
+                                        :placeholder="placeholder(ff_export, 'downloadPassword', $tc('ff-export.detail.downloadPassword'))">
+                                    </sw-field>
+
+                                {% endblock %}
 
                                 {% block ff_export_detail_basic_info_saleschannel_language %}
                                     <sw-field
