@@ -25,11 +25,21 @@ export default class ExportService {
     /**
      * Creates the url that can be used to download the export
      * @param exportId {string}
-     * @param salesChannelId {string}
-     * @param languageId {string}
+     * @param salesChannel
+     * @param language
+     * @param downloadUsername
+     * @param downloadPassword
      */
-    getDownloadUrl(exportId, salesChannel, language) {
-        return `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}/${salesChannel}_${language}`;
+    getDownloadUrl(exportId, salesChannel, language, downloadUsername, downloadPassword) {
+        let downloadUrl = `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}/${salesChannel}_${language}`;
+
+        if (downloadUsername && downloadPassword) {
+            const basicAuth = encodeURIComponent(downloadUsername) + ':' + encodeURIComponent(downloadPassword) + '@';
+            downloadUrl = downloadUrl.replace('http://', 'http://' + basicAuth);
+            downloadUrl = downloadUrl.replace('https://', 'https://' + basicAuth);
+        }
+
+        return downloadUrl;
     }
 
     /**

@@ -101,7 +101,13 @@ Shopware.Component.register('ff-export-detail', {
             return 'bin/console elio-ff:export:generate ' + (this.commandForce ? '-f ' : '') + this.ff_export.id;
         },
         getDownloadUrl() {
-            return this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code)
+            return this.ffExport.getDownloadUrl(
+                this.exportId,
+                this.ff_export.salesChannel.name,
+                this.ff_export.language.locale.code,
+                this.ff_export.downloadUsername,
+                this.ff_export.downloadPassword
+            )
         }
     },
 
@@ -331,7 +337,13 @@ Shopware.Component.register('ff-export-detail', {
          * Opens the download in a new window
          */
         onDownloadExport() {
-            window.open(this.ffExport.getDownloadUrl(this.exportId, this.ff_export.salesChannel.name, this.ff_export.language.locale.code), '_blank');
+            window.open(this.ffExport.getDownloadUrl(
+                this.exportId,
+                this.ff_export.salesChannel.name,
+                this.ff_export.language.locale.code,
+                this.ff_export.downloadUsername,
+                this.ff_export.downloadPassword
+            ), '_blank');
         },
 
         /**

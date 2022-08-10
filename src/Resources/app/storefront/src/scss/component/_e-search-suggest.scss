@@ -1,6 +1,9 @@
 .e-search-suggest {
 	.search-suggest-container {
-		padding: 0 0 .625rem 0;
+		padding: 1rem;
+        &:after{
+          display: none;
+        }
 	}
 
 	.empty {

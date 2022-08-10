@@ -1,3 +1,22 @@
+.e-header-search{
+  &.suggest-open{
+    &:after {
+      transform: rotate(135deg);
+      width: 12px;
+      height: 12px;
+      bottom: -32px;
+      content: '';
+      display: block;
+      position: absolute;
+      background: $white;
+      left: 50%;
+      border: 1px solid $border-color;
+      border-top: 0 none;
+      border-right: 0 none;
+      z-index:1010;
+    }
+  }
+}
 .e-header-search-form {
 	.e-autocomplete {
 		position: absolute;
