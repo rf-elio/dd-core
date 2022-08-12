@@ -1,8 +1,9 @@
 # CHANGELOG.md
 
 ## 2.2.4 - 2022-08-10
-### Features (1 changes)
+### Features (2 changes)
 - Export now supports basic auth
+- Export cleanup for line break and backspace added
 
 ## 2.2.3 - 2022-08-01
 ### Fix (1 changes)
@@ -42,7 +43,7 @@
 
 ### Fix (x changes)
 
-- changed... 
+- changed...
 
 ### Bugfixes (x changes)
 

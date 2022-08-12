@@ -51,10 +51,13 @@
             <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
         </service>
-        <service id="elio.fact_finder.core.export.writer.seo_url_writer.csv"
-                 class="Elio\FactFinder\Core\Export\Writer\SeoUrlWriter"
+        <service id="Elio\FactFinder\Core\Export\Writer\CleanupWriterDecorator"
                  decorates="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="elio.fact_finder.core.export.writer.seo_url_writer.csv.inner" />
+            <argument type="service" id="Elio\FactFinder\Core\Export\Writer\CleanupWriterDecorator.inner" />
+        </service>
+        <service id="Elio\FactFinder\Core\Export\Writer\SeoUrlWriterDecorator"
+                 decorates="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\FactFinder\Core\Export\Writer\SeoUrlWriterDecorator.inner" />
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="router"/>
         </service>

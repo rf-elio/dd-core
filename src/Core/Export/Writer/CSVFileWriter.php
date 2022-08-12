@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Core\Export\Writer;
 
 
+use Elio\FactFinder\Core\Export\Exception\ExportValidationException;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -89,6 +90,37 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
             $orderedOutput[] = $output[$key] ?? '';
         }
 
+        $this->validateRow($orderedOutput);
         fputcsv($handle, $orderedOutput, self::SEPARATOR);
+    }
+
+    /**
+     * Checks if the given row is valid. Performed validations:
+     * - Col count check
+     * - Line feed check
+     *
+     * @param $row
+     * @return void
+     */
+    protected function validateRow($row): void
+    {
+        $shouldColumnCount = count($this->model);
+        $isColumnCount = count($row);
+
+        if ($shouldColumnCount !== $isColumnCount) {
+            throw new ExportValidationException(sprintf(
+                'Export row has %s columns, but should have %d columns',
+                $isColumnCount, $shouldColumnCount
+            ));
+        }
+
+        foreach ($row as $key => $value) {
+            if (str_contains($value, PHP_EOL)) {
+                throw new ExportValidationException(sprintf(
+                    'Export row contains not allowed line feed in column "%s" (%s)',
+                    $key, json_encode($row)
+                ));
+            }
+        }
     }
 }
