@@ -1,9 +1,10 @@
 # CHANGELOG.md
 
 ## 2.2.4 - 2022-08-10
-### Features (2 changes)
+### Features (3 changes)
 - Export now supports basic auth
 - Export cleanup for line break and backspace added
+- Export date format changed to Y-m-d\TH:i:sp
 
 ## 2.2.3 - 2022-08-01
 ### Fix (1 changes)
@@ -15,7 +16,7 @@
 
 ## 2.2.1 - 2022-06-30
 ### Bugfixes (1 changes)
-- Manufacturere was missing in product listings. Association was added in ProductTransformer.
+- Manufacturer was missing in product listings. Association was added in ProductTransformer.
 
 ## 2.2.0 - 2022-06-09
 ### Features (1 changes)
@@ -27,24 +28,19 @@
 - Custom search query in categories
 
 ### Fix (1 change)
-
-- Categories with product stream are not longer loaded via ff
+- Categories with product stream aren't longer loaded via ff
 - Category names can now have spaces
 
+
 ## Template
-
 ### Security (x changes)
-
 - changed...
 
 ### Features (x changes)
-
 - changed...
 
 ### Fix (x changes)
-
 - changed...
 
 ### Bugfixes (x changes)
-
 - changed...
