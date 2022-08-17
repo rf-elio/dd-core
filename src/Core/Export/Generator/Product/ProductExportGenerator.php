@@ -209,7 +209,11 @@ class ProductExportGenerator implements ExportGeneratorInterface
                     $context
                 );
                 $this->addMappedPropertiesToExportItem($product, $item, $mappings, $propertyAccessor);
-                $this->eventDispatcher->dispatch(new FilterProductExportItemPrepareEvent($product, $item, $export, $context));
+                $event = new FilterProductExportItemPrepareEvent($product, $item, $export, $context);
+                $this->eventDispatcher->dispatch($event);
+                if ($event->isExclude()) {
+                    continue;
+                }
                 $output->write($item);
             }
         }
