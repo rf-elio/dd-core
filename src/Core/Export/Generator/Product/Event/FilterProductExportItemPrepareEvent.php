@@ -53,6 +53,7 @@ class FilterProductExportItemPrepareEvent extends Event
     private ExportItem $item;
     private ExportEntity $export;
     private SalesChannelContext $context;
+    private bool $exclude = false;
 
     public function __construct(ProductEntity $product, ExportItem $item, ExportEntity $export, SalesChannelContext $context)
     {
@@ -92,5 +93,21 @@ class FilterProductExportItemPrepareEvent extends Event
     public function getContext(): SalesChannelContext
     {
         return $this->context;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExclude(): bool
+    {
+        return $this->exclude;
+    }
+
+    /**
+     * @param bool $exclude
+     */
+    public function setExclude(bool $exclude): void
+    {
+        $this->exclude = $exclude;
     }
 }
