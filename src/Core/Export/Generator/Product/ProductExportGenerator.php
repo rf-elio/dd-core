@@ -197,7 +197,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
                 $criteria = new Criteria([$product->getId()]);
                 $criteria->addAggregation(new CountAggregation('rating-count', 'product.productReviews.id'));
                 $result = $this->productRepository->search($criteria, $context->getContext());
-                /** @var CountResult $ratingCountAggregation */
+                /** @var CountResult|null $ratingCountAggregation */
                 $ratingCountAggregation = $result->getAggregations()->get('rating-count');
                 $ratingCount = $ratingCountAggregation ? $ratingCountAggregation->getCount() : 0;
 

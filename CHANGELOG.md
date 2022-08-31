@@ -1,5 +1,12 @@
 # CHANGELOG.md
 
+## 2.2.5 - 2022-08-31
+### Bugfixes (1 change)
+- Category version id added to filter restriction table
+
+### Fix (1 change)
+- PHPStan corrections in ProductExportGenerator and CSVFileWriter
+
 ## 2.2.4 - 2022-08-10
 ### Features (3 changes)
 - Export now supports basic auth
