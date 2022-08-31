@@ -99,10 +99,10 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
      * - Col count check
      * - Line feed check
      *
-     * @param $row
+     * @param array $row
      * @return void
      */
-    protected function validateRow($row): void
+    protected function validateRow(array $row): void
     {
         $shouldColumnCount = count($this->model);
         $isColumnCount = count($row);

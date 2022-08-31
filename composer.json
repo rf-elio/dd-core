@@ -1,7 +1,7 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v2.2.4",
+    "version": "v2.2.5",
     "type": "shopware-platform-plugin",
     "authors": [
         {
