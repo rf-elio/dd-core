@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.6 - 2022-09-16
+### Fix (1 change)
+- API filter prepare method for category path is no longer using the prepareFilterValue method to escape spaces.
+
 ## 2.2.5 - 2022-08-31
 ### Bugfixes (1 change)
 - Category version id added to filter restriction table
