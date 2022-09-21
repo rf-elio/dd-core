@@ -59,6 +59,7 @@ class ValueUtil
     {
         $value = empty($value) ? "" : $value;
         $value = trim(strip_tags($value));
+        $value = str_replace(PHP_EOL, ' ', $value);
         return self::replaceCharReferences($value);
     }
 

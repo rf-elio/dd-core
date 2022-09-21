@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.2.7 - 2022-09-21
+### Fix (1 change)
+- Product export filter now removes line breaks
+
 ## 2.2.6 - 2022-09-16
 ### Fix (1 change)
 - API filter prepare method for category path is no longer using the prepareFilterValue method to escape spaces.
