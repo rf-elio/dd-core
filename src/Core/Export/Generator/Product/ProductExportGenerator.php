@@ -48,7 +48,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\FilterAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
@@ -73,22 +73,22 @@ class ProductExportGenerator implements ExportGeneratorInterface
 {
     private const PRODUCT_CHUNK_SIZE = 500;
     private const PRODUCT_THUMBNAIL_SIZE = 200;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private EventDispatcherInterface $eventDispatcher;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
     private FeatureServiceInterface $featureService;
 
     /**
      * ProductExportGenerator constructor.
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $salesChannelRepository
+     * @param EntityRepository $salesChannelRepository
      * @param FeatureServiceInterface $featureService
      */
     public function __construct(
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         FeatureServiceInterface $featureService
     )
     {

@@ -36,7 +36,7 @@ use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Elio\FactFinder\Core\Defaults;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
@@ -61,17 +61,17 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @var array<string>
      */
     private array $languagePrefixCache = [];
-    private EntityRepositoryInterface $languageRepository;
+    private EntityRepository $languageRepository;
 
     /**
      * @param SystemConfigService $systemConfigService
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $languageRepository
+     * @param EntityRepository $languageRepository
      */
     public function __construct(
         SystemConfigService $systemConfigService,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $languageRepository
+        EntityRepository $languageRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;

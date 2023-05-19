@@ -33,7 +33,7 @@
 namespace Elio\FactFinder\Storefront\TwigExtension;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -53,11 +53,11 @@ class ConfigLanguageBased extends AbstractExtension
 {
 
     private TemplateConfigAccessor $config;
-    private EntityRepositoryInterface $languageRepository;
+    private EntityRepository $languageRepository;
 
     public function __construct(
         TemplateConfigAccessor $config,
-        EntityRepositoryInterface $languageRepository
+        EntityRepository $languageRepository
     ) {
         $this->config = $config;
         $this->languageRepository = $languageRepository;

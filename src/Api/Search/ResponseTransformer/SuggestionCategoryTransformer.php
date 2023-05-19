@@ -43,7 +43,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -66,15 +66,15 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
     private const CATEGORY_ID_ATTRIBUTE = 'CategoryID';
     private const URL_ATTRIBUTE = 'ProductURL';
 
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
     private AbstractCategoryUrlGenerator $categoryUrlGenerator;
 
     /**
      * SuggestionTransformer constructor.
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $categoryRepository
      * @param AbstractCategoryUrlGenerator $categoryUrlGenerator
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
+    public function __construct(EntityRepository $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
         $this->categoryRepository = $categoryRepository;
         $this->categoryUrlGenerator = $categoryUrlGenerator;
     }

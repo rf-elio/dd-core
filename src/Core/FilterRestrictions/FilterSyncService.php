@@ -38,7 +38,7 @@ use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedExce
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -56,22 +56,22 @@ use Throwable;
  */
 class FilterSyncService
 {
-    private EntityRepositoryInterface $propertyRepository;
-    private EntityRepositoryInterface $filterRepository;
-    private EntityRepositoryInterface $filterTranslationRepository;
+    private EntityRepository $propertyRepository;
+    private EntityRepository $filterRepository;
+    private EntityRepository $filterTranslationRepository;
     private LoggerInterface $logger;
 
     /**
      * FilterService constructor.
-     * @param EntityRepositoryInterface $propertyRepository
-     * @param EntityRepositoryInterface $filterRepository
-     * @param EntityRepositoryInterface $filterTranslationRepository
+     * @param EntityRepository $propertyRepository
+     * @param EntityRepository $filterRepository
+     * @param EntityRepository $filterTranslationRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
-        EntityRepositoryInterface $propertyRepository,
-        EntityRepositoryInterface $filterRepository,
-        EntityRepositoryInterface $filterTranslationRepository,
+        EntityRepository $propertyRepository,
+        EntityRepository $filterRepository,
+        EntityRepository $filterTranslationRepository,
         LoggerInterface $logger
     ) {
         $this->propertyRepository = $propertyRepository;

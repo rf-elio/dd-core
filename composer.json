@@ -30,8 +30,8 @@
         }
     ],
     "require": {
-        "php": ">= 7.4",
-        "elio/fact-finder-api-client": "dev-master",
+        "php": ">= 8.1",
+        "elio/fact-finder-api-client": "^4.0",
         "dragonmantank/cron-expression": "^3.1"
     },
     "require-dev": {
@@ -62,7 +62,6 @@
     "config": {
         "gitlab-domains": ["git.elio-systems.io"]
     },
-
     "repositories": {
         "git.elio-systems.io/201": {
             "type": "composer",

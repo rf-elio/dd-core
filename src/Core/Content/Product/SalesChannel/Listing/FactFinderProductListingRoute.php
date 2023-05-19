@@ -47,8 +47,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
@@ -72,7 +71,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private SearchApi $searchApi;
     private ProductSearchRequestBuilder $searchRequestBuilder;
     private ProductListingResultTransformer $productListingResultTransformer;
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
 
     /**
@@ -82,7 +81,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformer $productListingResultTransformer
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
      * @param LoggerInterface $logger
      */
@@ -92,7 +91,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         FactFinderConfigServiceInterface $configService,
         SearchApi                        $searchApi,
         ProductListingResultTransformer  $productListingResultTransformer,
-        EntityRepositoryInterface        $categoryRepository,
+        EntityRepository        $categoryRepository,
         CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
         LoggerInterface                  $logger
     )

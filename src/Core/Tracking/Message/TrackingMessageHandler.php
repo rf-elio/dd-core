@@ -35,7 +35,7 @@ namespace Elio\FactFinder\Core\Tracking\Message;
 
 use Elio\FactFinder\Api\Tracking\TrackingApi;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Swagger\Client\ApiException;
 
 /**
@@ -46,7 +46,8 @@ use Swagger\Client\ApiException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class TrackingMessageHandler extends AbstractMessageHandler
+#[AsMessageHandler]
+class TrackingMessageHandler
 {
     private TrackingApi $trackingApi;
 
@@ -60,10 +61,10 @@ class TrackingMessageHandler extends AbstractMessageHandler
     }
 
     /**
-     * @param object $message
+     * @param TrackingMessage $message
      * @throws ApiException
      */
-    public function handle($message): void
+    public function __invoke(TrackingMessage $message): void
     {
         if(!$message instanceof TrackingMessage) {
             throw new InvalidTypeException($message, TrackingMessage::class);

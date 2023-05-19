@@ -46,7 +46,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -65,9 +65,9 @@ use Throwable;
 class ExportService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
-    private EntityRepositoryInterface $exportRepository;
+    private EntityRepository $exportRepository;
     /**
      * @var ExportGeneratorInterface[]
      */
@@ -91,7 +91,7 @@ class ExportService
 
     /**
      * ExportService constructor.
-     * @param EntityRepositoryInterface $exportRepository
+     * @param EntityRepository $exportRepository
      * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
      * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface $logger
@@ -99,7 +99,7 @@ class ExportService
      * @param FileWriterInterface[] $writers
      */
     public function __construct(
-        EntityRepositoryInterface $exportRepository,
+        EntityRepository $exportRepository,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,

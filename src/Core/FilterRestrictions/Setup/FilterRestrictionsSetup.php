@@ -39,7 +39,7 @@ use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
 use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
 use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -56,7 +56,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 class FilterRestrictionsSetup
 {
-    private ?EntityRepositoryInterface $filterRepository;
+    private ?EntityRepository $filterRepository;
     private ?Connection $connection;
 
     /**

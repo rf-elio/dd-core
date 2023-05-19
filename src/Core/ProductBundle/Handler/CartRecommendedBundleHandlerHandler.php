@@ -13,7 +13,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
@@ -32,7 +32,7 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
     private RecordsApi $recordsApi;
     private FactFinderConfigServiceInterface $configService;
     private CartService $cartService;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     /**
      * CartRecommendedBundle constructor.
@@ -40,13 +40,13 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
      * @param RecordsApi $recordsApi
      * @param FactFinderConfigServiceInterface $configService
      * @param CartService $cartService
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      */
     public function __construct(
         RecordsApi $recordsApi,
         FactFinderConfigServiceInterface $configService,
         CartService $cartService,
-        EntityRepositoryInterface $productRepository
+        EntityRepository $productRepository
     ) {
         $this->recordsApi = $recordsApi;
         $this->configService = $configService;

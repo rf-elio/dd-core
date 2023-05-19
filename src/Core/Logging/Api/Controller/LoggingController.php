@@ -4,7 +4,6 @@
 namespace Elio\FactFinder\Core\Logging\Api\Controller;
 
 use Elio\FactFinder\Core\Logging\LoggingService;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  * Class LoggingController
  *
  * @package Elio\FactFinder\Core\Logging\Api\Controller
