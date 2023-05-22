@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\Export\Writer;
 
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\SeoRoute;
@@ -226,7 +227,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
                 'ids' => Uuid::fromHexToBytesList(array_values($ids)),
             ],
             [
-                'ids' => Connection::PARAM_STR_ARRAY,
+                'ids' => ArrayParameterType::STRING,
             ]
         );
     }

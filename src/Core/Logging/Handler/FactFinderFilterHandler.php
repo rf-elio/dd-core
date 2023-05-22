@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Core\Logging\Handler;
 
 use Elio\FactFinder\Core\Logging\LogFilterContext;
 use Monolog\Handler\HandlerInterface;
+use Monolog\LogRecord;
 
 /**
  * Class LogFilterProcessor
@@ -58,7 +59,7 @@ class FactFinderFilterHandler implements HandlerInterface
         $this->logFilterContext = $logFilterContext;
     }
 
-    public function isHandling(array $record): bool
+    public function isHandling(LogRecord $record): bool
     {
         if (!$this->logFilterContext->isIsDebugLoggingActive()) {
             return false;
@@ -66,7 +67,7 @@ class FactFinderFilterHandler implements HandlerInterface
         return $this->handler->isHandling($record);
     }
 
-    public function handle(array $record): bool
+    public function handle(LogRecord $record): bool
     {
         return $this->handler->handle($record);
     }

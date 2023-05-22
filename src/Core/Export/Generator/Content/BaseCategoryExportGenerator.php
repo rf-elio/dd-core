@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -81,10 +81,10 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     /**
      * Returns a definition about all fields that are added to the export
      *
-     * @param ExportEntity $entity
+     * @param ExportEntity $export
      * @return array
      */
-    public function getModel(ExportEntity $entity): array
+    public function getModel(ExportEntity $export): array
     {
         return [
             ContentExportDefaults::FIELD_ID,

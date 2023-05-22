@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -32,6 +32,7 @@
 
 namespace Elio\FactFinder\Storefront\TwigExtension;
 
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -82,7 +83,7 @@ class ConfigLanguageBased extends AbstractExtension
      * @param string $key
      * @return array|bool|float|int|string|null
      */
-    public function configByLanguage(array $context, string $key)
+    public function configByLanguage(array $context, string $key): float|int|bool|array|string|null
     {
         $languagePrefix = $this->getLanguagePrefix($this->getLanguageId($context));
         $salesChannelId = $this->getSalesChannelId($context);
@@ -156,7 +157,7 @@ class ConfigLanguageBased extends AbstractExtension
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         /** @var LanguageEntity|null $language */
-        $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
+        $language = $this->languageRepository->search($criteria, new Context(new SystemSource()))->first();
 
         if ($language && $language->getLocale()) {
             return $language->getLocale()->getCode() . '_';

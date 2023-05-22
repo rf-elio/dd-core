@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Setup;
 
 
 use RuntimeException;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -133,7 +134,7 @@ class CustomFieldSetup
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
-        $customFieldSetRepository->upsert($upsets, Context::createDefaultContext());
+        $customFieldSetRepository->upsert($upsets, new Context(new SystemSource()));
     }
 
     /**
@@ -308,7 +309,7 @@ class CustomFieldSetup
         /** @var EntityRepository $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        $context = Context::createDefaultContext();
+        $context = new Context(new SystemSource());
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('name', array_keys($customFields)));
 

@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Command;
 
 use Elio\FactFinder\Core\Export\ExportService;
 use Exception;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -82,7 +83,7 @@ class ExportGenerateCommand extends Command
     {
         $force = $input->getOption('force');
         $exportId = $input->getArgument('exportId');
-        $context = Context::createDefaultContext();
+        $context = new Context(new SystemSource());
 
         $consoleMessage = 'Loading all exports';
         $criteria = new Criteria();
