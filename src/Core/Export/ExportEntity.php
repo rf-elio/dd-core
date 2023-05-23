@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -34,12 +34,10 @@ namespace Elio\FactFinder\Core\Export;
 
 
 use DateTimeInterface;
-use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Core\System\Tag\TagCollection;
 
 /**
  * Class ExportEntity

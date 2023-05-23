@@ -122,7 +122,6 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param SalesChannelContext $context
      * @param Criteria $criteria
      * @return ProductListingRouteResponse
-     * @throws ApiException
      * @throws Throwable
      */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\Export\Controller;
 
@@ -10,6 +10,7 @@ use Elio\FactFinder\Core\Export\ExportStorageService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class ExportController extends AbstractController
 {
     private ExportStorageService $exportStorageService;

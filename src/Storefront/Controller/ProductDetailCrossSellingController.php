@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace Elio\FactFinder\Storefront\Controller;
@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @package Elio\FactFinder\Storefront\Controller
  */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailCrossSellingController extends StorefrontController
 {
     use FactFinderLogTrait;

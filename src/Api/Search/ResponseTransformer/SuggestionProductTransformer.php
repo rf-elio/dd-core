@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -51,7 +51,6 @@ use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Enriches the product suggest group

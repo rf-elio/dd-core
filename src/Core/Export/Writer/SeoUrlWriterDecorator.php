@@ -5,6 +5,7 @@ namespace Elio\FactFinder\Core\Export\Writer;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\SeoRoute;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -207,6 +208,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      * @param string $routeName
      * @param SalesChannelContext $context
      * @return array
+     * @throws Exception
      */
     protected function getSeoUrls(array $ids, string $routeName, SalesChannelContext $context): array
     {
@@ -218,7 +220,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
                      AND `seo_url`.`language_id` =:languageId
                      AND (`seo_url`.`sales_channel_id` =:salesChannelId OR seo_url.sales_channel_id IS NULL)';
 
-        return $this->connection->fetchAll(
+        return $this->connection->fetchAllAssociative(
             $sql,
             [
                 'routeName' => $routeName,

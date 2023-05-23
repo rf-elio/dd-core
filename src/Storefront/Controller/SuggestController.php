@@ -55,6 +55,7 @@ use Throwable;
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  * @Route(defaults={"_routeScope"={"storefront"}})
  */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class SuggestController extends SearchController
 {
     private FactFinderConfigServiceInterface $configService;

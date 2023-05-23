@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -54,6 +54,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  * @Route(defaults={"_routeScope"={"storefront"}})
  */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailTrackingController extends StorefrontController
 {
     private FactFinderConfigServiceInterface $configService;

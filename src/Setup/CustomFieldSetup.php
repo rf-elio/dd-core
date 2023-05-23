@@ -239,7 +239,7 @@ class CustomFieldSetup
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', $customFieldName));
         /** @var CustomFieldSetEntity|null $fieldSet */
-        $fieldSet = $customFieldSetRepository->search($criteria, Context::createDefaultContext())->first();
+        $fieldSet = $customFieldSetRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$fieldSet ? null : $fieldSet->getId();
     }
 
@@ -268,7 +268,7 @@ class CustomFieldSetup
         $criteria->addFilter(new EqualsFilter('customFieldSetId', $customFieldSetId));
         $criteria->addFilter(new EqualsFilter('entityName', $relationName));
         /** @var CustomFieldSetRelationEntity|null $fieldSetRelation */
-        $fieldSetRelation = $customFieldSetRelationRepository->search($criteria, Context::createDefaultContext())->first();
+        $fieldSetRelation = $customFieldSetRelationRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$fieldSetRelation ? null : $fieldSetRelation->getId();
     }
 
@@ -297,7 +297,7 @@ class CustomFieldSetup
         $criteria->addFilter(new EqualsFilter('customFieldSetId', $customFieldSetId));
         $criteria->addFilter(new EqualsFilter('name', $name));
         /** @var CustomFieldEntity|null $field */
-        $field = $customFieldRepository->search($criteria, Context::createDefaultContext())->first();
+        $field = $customFieldRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$field ? null : $field->getId();
     }
 

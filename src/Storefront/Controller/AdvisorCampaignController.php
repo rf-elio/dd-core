@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"storefront"}})
  */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class AdvisorCampaignController extends StorefrontController
 {
     private AbstractAdvisorCampaignRoute $advisorCampaignRoute;

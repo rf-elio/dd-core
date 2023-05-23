@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -38,7 +38,6 @@ use Elio\FactFinder\Core\Consent\ConsentService;
 use Elio\FactFinder\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Checkout\Customer\Event\CustomerBeforeLoginEvent;
 use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;

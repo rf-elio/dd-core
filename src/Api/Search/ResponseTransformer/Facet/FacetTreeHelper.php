@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2022, elio GmbH.
  * All rights reserved.
@@ -32,13 +32,13 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer\Facet;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Elio\FactFinder\Core\Util\Tree\Node;
 use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\FacetElement;
@@ -150,7 +150,7 @@ class FacetTreeHelper
      */
     public static function flattenTree(array $treeItems, ?Collection $flattTree = null) : Collection
     {
-        $flattTree = $flattTree ?? new ArrayCollection();
+        $flattTree = $flattTree ?? new StructCollection();
         foreach ($treeItems as $treeItem) {
             $flattTree->add($treeItem);
             self::flattenTree($treeItem->getChildren(), $flattTree);

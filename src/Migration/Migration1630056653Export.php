@@ -3,6 +3,7 @@
 namespace Elio\FactFinder\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1630056653Export extends MigrationStep
@@ -12,6 +13,9 @@ class Migration1630056653Export extends MigrationStep
         return 1630056653;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Connection $connection): void
     {
         $query = <<<SQL

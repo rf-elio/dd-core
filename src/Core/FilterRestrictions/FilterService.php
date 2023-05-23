@@ -37,6 +37,7 @@ use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Elio\FactFinder\Configuration\LanguageHelper;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -241,7 +242,7 @@ class FilterService implements FilterInterface
      */
     private function getAllFilters(): array
     {
-        $context = Context::createDefaultContext();
+        $context = new Context(new SystemSource());
         $criteria = new Criteria();
         /** @var FilterCollection $filters */
         $filters = $this->filterRepository->search($criteria, $context)->getEntities();

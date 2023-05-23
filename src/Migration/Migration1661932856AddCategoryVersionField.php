@@ -34,6 +34,7 @@ declare(strict_types=1);
 namespace Elio\FactFinder\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
@@ -52,6 +53,9 @@ class Migration1661932856AddCategoryVersionField extends MigrationStep
         return 1661932856;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Connection $connection): void
     {
         $queries[] = <<<SQL

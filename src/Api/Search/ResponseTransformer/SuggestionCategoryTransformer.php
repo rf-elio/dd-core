@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -49,7 +49,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
 
@@ -234,6 +233,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
      *
      * @param SuggestGroup $group
      * @param EntityCollection $categories
+     * @param SalesChannelEntity|null $salesChannel
      */
     protected function enrich(SuggestGroup $group, EntityCollection $categories, ?SalesChannelEntity $salesChannel): void
     {

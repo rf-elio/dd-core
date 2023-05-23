@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace Elio\FactFinder\Core\Logging\Api\Controller;
@@ -16,6 +16,7 @@ use Throwable;
  *
  * @package Elio\FactFinder\Core\Logging\Api\Controller
  */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class LoggingController extends AbstractController
 {
     private LoggingService $loggingService;

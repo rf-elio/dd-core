@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -35,8 +35,6 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
-use Psr\Cache\CacheException;
-use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

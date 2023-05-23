@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\AdvisorCampaign\SalesChannel;
 
@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 {
     private FactFinderConfigServiceInterface $configService;

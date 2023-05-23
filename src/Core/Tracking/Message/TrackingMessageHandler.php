@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -34,7 +34,6 @@ namespace Elio\FactFinder\Core\Tracking\Message;
 
 
 use Elio\FactFinder\Api\Tracking\TrackingApi;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Swagger\Client\ApiException;
 
@@ -66,10 +65,6 @@ class TrackingMessageHandler
      */
     public function __invoke(TrackingMessage $message): void
     {
-        if(!$message instanceof TrackingMessage) {
-            throw new InvalidTypeException($message, TrackingMessage::class);
-        }
-
         $this->trackingApi->track(
             $message->getRequest(),
             $message->getSalesChannelId()

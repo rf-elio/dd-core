@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -32,7 +32,7 @@
 
 namespace Elio\FactFinder\Core\Tracking\Event;
 
-use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
+
 use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Symfony\Contracts\EventDispatcher\Event;
 
