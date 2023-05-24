@@ -3,7 +3,7 @@
 namespace Elio\FactFinder\Core\Export;
 
 use League\Flysystem\FilesystemException;
-use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Content\ImportExport\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +13,13 @@ use function is_resource;
 class ExportStorageService
 {
     private const BASE_DIR = 'ff-export';
-    private Filesystem $fileSystem;
+    private FilesystemOperator $fileSystem;
 
     /**
      * CSVFileWriter constructor.
-     * @param Filesystem $fileSystem
+     * @param FilesystemOperator $fileSystem
      */
-    public function __construct(Filesystem $fileSystem)
+    public function __construct(FilesystemOperator $fileSystem)
     {
         $this->fileSystem = $fileSystem;
     }

@@ -145,10 +145,10 @@ class FacetTreeHelper
 
     /**
      * @param TreeItem[] $treeItems
-     * @param Collection|null $flattTree
+     * @param StructCollection|null $flattTree
      * @return Collection
      */
-    public static function flattenTree(array $treeItems, ?Collection $flattTree = null) : Collection
+    public static function flattenTree(array $treeItems, ?StructCollection $flattTree = null) : Collection
     {
         $flattTree = $flattTree ?? new StructCollection();
         foreach ($treeItems as $treeItem) {

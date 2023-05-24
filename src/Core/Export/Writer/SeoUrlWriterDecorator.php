@@ -90,6 +90,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      *
      * @param resource $handle
      * @param array $items
+     * @throws Exception
      */
     public function writeList($handle, array $items): void
     {
@@ -135,6 +136,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      * Resolves the seo urls for the given route group
      *
      * @param SeoRoute[][][] $routeResolveGroups
+     * @throws Exception
      */
     protected function resolveSeoUrls(array $routeResolveGroups): void
     {

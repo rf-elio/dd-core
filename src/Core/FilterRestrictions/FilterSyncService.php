@@ -198,7 +198,8 @@ class FilterSyncService
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) {
+    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) : void
+    {
         $this->filterRepository->update(
             [
                 'id' => $filterEntity->getId(),
@@ -227,7 +228,8 @@ class FilterSyncService
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) {
+    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) : void
+    {
         $newFilterId = Uuid::randomHex();
         $this->filterRepository->create(
             [
@@ -257,7 +259,7 @@ class FilterSyncService
      * @param array $filtersIdsToDelete
      * @param Context $context
      */
-    private function delete(array $filtersIdsToDelete, Context $context)
+    private function delete(array $filtersIdsToDelete, Context $context) : void
     {
         $dataToDelete = [];
         foreach ($filtersIdsToDelete as $id) {

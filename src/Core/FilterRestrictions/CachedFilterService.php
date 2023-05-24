@@ -35,6 +35,8 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Psr\Cache\CacheException;
+use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -84,6 +86,7 @@ class CachedFilterService implements FilterInterface
      * @param int $level
      * @param ApiRequest $request
      * @return array
+     * @throws InvalidArgumentException|CacheException
      */
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
@@ -139,6 +142,7 @@ class CachedFilterService implements FilterInterface
     /**
      * Removes cached items with provided keys
      * @param string[] $keys
+     * @throws InvalidArgumentException
      */
     public function removeItems(array $keys)
     {
@@ -149,6 +153,7 @@ class CachedFilterService implements FilterInterface
 
     /**
      * Clears the whole cache pool
+     * @throws InvalidArgumentException
      */
     public function clearCache()
     {

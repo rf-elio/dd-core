@@ -34,6 +34,7 @@ namespace Elio\FactFinder\Storefront\Subscriber;
 
 use Elio\FactFinder\Core\FilterRestrictions\CachedFilterService;
 use Elio\FactFinder\Core\FilterRestrictions\FiltersEvents;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -65,6 +66,7 @@ class FilterRestrictionsSubscriber implements EventSubscriberInterface
 
     /**
      * Clearing filter-restrictions cache
+     * @throws InvalidArgumentException
      */
     public function onClearRestrictionsCache() : void {
         $this->cachedFilterService->clearCache();

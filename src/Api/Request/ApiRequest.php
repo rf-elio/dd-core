@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -46,7 +46,7 @@ use JsonSerializable;
 class ApiRequest implements JsonSerializable
 {
     /**
-     * @return array<string|array>
+     * @return array
      */
     public function toArray() : array
     {
@@ -54,9 +54,9 @@ class ApiRequest implements JsonSerializable
     }
 
     /**
-     * @return array[]|mixed|string[]
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

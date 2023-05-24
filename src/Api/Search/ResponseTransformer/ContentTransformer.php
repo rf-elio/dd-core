@@ -88,7 +88,7 @@ class ContentTransformer implements ResponseTransformerInterface
      * @param string $key
      * @return mixed|null
      */
-    protected function getFirstValue(array $masterValues, string $key)
+    protected function getFirstValue(array $masterValues, string $key): mixed
     {
         if(!isset($masterValues[$key])) {
             return null;

@@ -54,7 +54,7 @@ class ExportItem
      * @param string $key
      * @param mixed  $value
      */
-    public function set(string $key, $value): void
+    public function set(string $key, mixed $value): void
     {
         if(is_string($value) && strlen($value) > self::MAX_VALUE_LENGTH) {
             $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);

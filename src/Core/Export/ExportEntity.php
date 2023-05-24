@@ -72,7 +72,7 @@ class ExportEntity extends Entity
     /**
      * @return mixed
      */
-    public function getDownloadUsername()
+    public function getDownloadUsername(): mixed
     {
         return $this->downloadUsername;
     }
@@ -80,7 +80,7 @@ class ExportEntity extends Entity
     /**
      * @param mixed $downloadUsername
      */
-    public function setDownloadUsername($downloadUsername): void
+    public function setDownloadUsername(mixed $downloadUsername): void
     {
         $this->downloadUsername = $downloadUsername;
     }
@@ -88,7 +88,7 @@ class ExportEntity extends Entity
     /**
      * @return mixed
      */
-    public function getDownloadPassword()
+    public function getDownloadPassword(): mixed
     {
         return $this->downloadPassword;
     }
@@ -96,7 +96,7 @@ class ExportEntity extends Entity
     /**
      * @param mixed $downloadPassword
      */
-    public function setDownloadPassword($downloadPassword): void
+    public function setDownloadPassword(mixed $downloadPassword): void
     {
         $this->downloadPassword = $downloadPassword;
     }
@@ -306,7 +306,7 @@ class ExportEntity extends Entity
     /**
      * @return mixed
      */
-    public function getBaseCategoryIds()
+    public function getBaseCategoryIds(): mixed
     {
         return $this->baseCategoryIds;
     }
@@ -314,7 +314,7 @@ class ExportEntity extends Entity
     /**
      * @param mixed $baseCategoryIds
      */
-    public function setBaseCategoryIds($baseCategoryIds): void
+    public function setBaseCategoryIds(mixed $baseCategoryIds): void
     {
         $this->baseCategoryIds = $baseCategoryIds;
     }
@@ -322,7 +322,7 @@ class ExportEntity extends Entity
     /**
      * @return mixed
      */
-    public function getMapping()
+    public function getMapping(): mixed
     {
         return $this->mapping;
     }
@@ -330,7 +330,7 @@ class ExportEntity extends Entity
     /**
      * @param mixed $mapping
      */
-    public function setMapping($mapping): void
+    public function setMapping(mixed $mapping): void
     {
         $this->mapping = $mapping;
     }
@@ -338,7 +338,7 @@ class ExportEntity extends Entity
     /**
      * @return mixed
      */
-    public function getConfig()
+    public function getConfig(): mixed
     {
         return $this->config;
     }
@@ -346,7 +346,7 @@ class ExportEntity extends Entity
     /**
      * @param mixed $config
      */
-    public function setConfig($config): void
+    public function setConfig(mixed $config): void
     {
         $this->config = $config;
     }
