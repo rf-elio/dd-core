@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 3.0.0 - 2023-05-25
+### Features (1 change)
+- Replaced non-existent or deprecated classes/methods in the Shopware version 6.5
+
 ## 2.2.7 - 2022-09-21
 ### Fix (1 change)
 - Product export filter now removes line breaks
