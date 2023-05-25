@@ -54,7 +54,7 @@ Shopware.Module.register('elio-factfinder-export', {
         label: 'ff-export.title',
         color: '#014587',
         path: 'elio.factfinder.export.list',
-        icon: 'default-shopping-paper-bag-product',
+        icon: 'regular-products',
         parent: 'elio-fact-finder',
         position: 1
     }]

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -146,14 +146,20 @@ class ProductListingResultTransformer
     {
         /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
         $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-        $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+        if ($campaignRedirectionResponse) {
+            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+        }
 
         /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
         $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
-        $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+        if ($campaignFeedbackResponseCollection) {
+            $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+        }
 
         $advisorCampaignResponse = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
-        $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+        if ($advisorCampaignResponse) {
+            $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+        }
     }
 
     private function handleListingMode(

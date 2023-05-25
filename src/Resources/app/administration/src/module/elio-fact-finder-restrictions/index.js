@@ -66,7 +66,7 @@ Shopware.Module.register('elio-factfinder-restrictions', {
         label: 'ff.restrictions.title',
         color: '#014587',
         path: 'elio.factfinder.restrictions.index.global',
-        icon: 'default-shopping-paper-bag-product',
+        icon: 'regular-products',
         parent: 'elio-fact-finder',
         position: 1
     }]
