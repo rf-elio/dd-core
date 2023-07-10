@@ -139,7 +139,7 @@ class FilterSyncService
             /** @var FilterEntity $filter */
             foreach ($filters as $filter) {
                 $propertiesNamesUpdated[$filter->getPropertyId()] = true; // flag as updated
-                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations, $context);
+                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations[$filter->getPropertyId()], $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
@@ -202,9 +202,11 @@ class FilterSyncService
     {
         $this->filterRepository->update(
             [
-                'id' => $filterEntity->getId(),
-                'propertyName' => $propertyName,
-                'technicalName' => $propertyName
+                [
+                    'id' => $filterEntity->getId(),
+                    'propertyName' => $propertyName,
+                    'technicalName' => $propertyName
+                ]
             ],
             $context
         );
@@ -233,11 +235,13 @@ class FilterSyncService
         $newFilterId = Uuid::randomHex();
         $this->filterRepository->create(
             [
-                'id' => $newFilterId,
-                'propertyName' => $propertyName,
-                'technicalName' => $propertyName,
-                'propertyId' => $propertyId,
-                'isCustom' => false
+                [
+                    'id' => $newFilterId,
+                    'propertyName' => $propertyName,
+                    'technicalName' => $propertyName,
+                    'propertyId' => $propertyId,
+                    'isCustom' => false
+                ]
             ],
             $context
         );

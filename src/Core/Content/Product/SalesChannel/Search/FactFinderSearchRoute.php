@@ -134,7 +134,9 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
                     $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);
                     /** @var ContentListingResponse|null $contentListingResponse */
                     $contentListingResponse = $resultCollection->get(ContentListingResponse::class);
-                    $shopwareProductListingResult->addExtension(ContentListingResponse::class, $contentListingResponse);
+                    if ($contentListingResponse !== null) {
+                        $shopwareProductListingResult->addExtension(ContentListingResponse::class, $contentListingResponse);
+                    }
                 }
             } catch (Throwable $e) {
                 $this->ffError($e->getMessage(), $this, [

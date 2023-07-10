@@ -155,7 +155,9 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
 
             /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
             $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+            if ($campaignRedirectionResponse !== null) {
+                $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+            }
 
             return new ProductListingRouteResponse($shopwareProductListingResult);
         } catch (Throwable $e) {
