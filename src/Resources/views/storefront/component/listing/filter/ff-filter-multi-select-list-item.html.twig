@@ -4,7 +4,12 @@
     {% if element.extensions.ff_facet_extension is defined %}
         {% set id = element.extensions.ff_facet_extension.key %}
     {% endif %}
-    {{ parent() }}
+    <input type="checkbox"
+           {% if element.extensions.ff_facet_extension.selected %}checked{% endif %}
+           class="{{ formCheckInputClass }} filter-multi-select-checkbox"
+           data-label="{{ name }}"
+           value="{{ id }}"
+           id="{{ id }}">
 {% endblock %}
 
 {% block component_filter_multi_select_list_item_label_element %}

@@ -51,6 +51,7 @@ class DefaultFacetExtension extends Struct
     protected string $value;
     protected string $key;
     protected int $totalHits;
+    protected bool $selected;
 
     /**
      * @param int $totalHits
@@ -69,13 +70,15 @@ class DefaultFacetExtension extends Struct
     public function __construct(
         string $name,
         string $value,
-        int $totalHits
+        int $totalHits,
+        bool $selected = false
     )
     {
         $this->name = $name;
         $this->value = $value;
         $this->key = $this->name . self::COMBINATION_CHAR . $this->value;
         $this->totalHits = $totalHits;
+        $this->selected = $selected;
     }
 
     /**
@@ -120,5 +123,13 @@ class DefaultFacetExtension extends Struct
     public function getTotalHits(): int
     {
         return $this->totalHits;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSelected(): bool
+    {
+        return $this->selected;
     }
 }

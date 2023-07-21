@@ -137,7 +137,7 @@ class FacetTransformer implements ResponseTransformerInterface
                 // isn't allowed
                 || in_array($facet->getName(), $filtersRestrictions[1], true)
                 // not allowed all, but blocked all
-                || ($filtersRestrictions[0] !== null && $filtersRestrictions[1] == null)
+                || ($filtersRestrictions[0] !== null && $filtersRestrictions[1] === null)
             ) {
                 continue;
             }
@@ -163,11 +163,11 @@ class FacetTransformer implements ResponseTransformerInterface
                     $tree = $this->transformTreeFacet($facet);
                     $defaultCollection = new PropertyGroupCollection();
                     $defaultCollection->add($this->transformTree($facet, FacetTreeHelper::flattenTree($tree->getTree())));
-                    $defaultCollection->addExtension('ffTree', $tree);
-                    $facetCollection->addAggregation(
-                        new EntityResult($facet->getName(), $defaultCollection),
-                        $style
-                    );
+
+                    $aggregation = new EntityResult($facet->getName(), $defaultCollection);
+                    $aggregation->addExtension('ffTree', $tree);
+
+                    $facetCollection->addAggregation($aggregation, $style);
                     break;
             }
         }
@@ -185,7 +185,7 @@ class FacetTransformer implements ResponseTransformerInterface
     protected function transformDefault(Facet $facet): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
-        $elements = array_merge($facet->getElements(), $facet->getSelectedElements());
+        $elements = array_merge($facet->getSelectedElements(), $facet->getElements());
         foreach ($elements as $element) {
             $elementLabel = $element->getText();
             $option = new PropertyGroupOptionEntity();
@@ -195,7 +195,8 @@ class FacetTransformer implements ResponseTransformerInterface
             $option->setTranslated(['name' => $elementLabel]);
             $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
                 $facet->getName(), $element->getText(),
-                $element->getTotalHits()
+                $element->getTotalHits(),
+                $element->getSelected() === 'TRUE'
             ));
             $options->add($option);
         }

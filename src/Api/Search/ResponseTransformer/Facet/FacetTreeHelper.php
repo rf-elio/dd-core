@@ -68,15 +68,32 @@ class FacetTreeHelper
     {
         $randomAddTree = new RandomAddTree();
         foreach (array_merge($facet->getSelectedElements(), $facet->getElements()) as $element) {
-            $labels = explode('/', $element->getText());
+            $searchParams = $element->getSearchParams();
 
-            $parent = null;
-            $value = [];
-            foreach ($labels as $label) {
-                $value[] = $label;
-                $randomAddTree->add($label, $parent, [$label, implode('/', $value), $element]);
-                $parent = $label;
+            $searchParamsFilters = $searchParams->getFilters() ?? [];
+            $parents = [];
+            foreach ($searchParamsFilters as $searchParamsFilter) {
+                if ($searchParamsFilter->getName() === $facet->getAssociatedFieldName()) {
+                    $searchParamsFilterValues = $searchParamsFilter->getValues() ?? [];
+                    foreach ($searchParamsFilterValues as $searchParamsFilterValue) {
+                        $parents = $searchParamsFilterValue->getValue();
+                    }
+                }
             }
+
+            $label = $element->getText();
+            $lastParent = end($parents);
+            if ($lastParent === $label) {
+                array_pop($parents);
+            }
+
+
+            $id = $parents;
+            $id[] = $label;
+            $parents = implode('/', $parents);
+            $id = implode('/', $id);
+
+            $randomAddTree->add($id, $parents, [$label, $label, $element]);
         }
 
         return $randomAddTree->create();
@@ -105,7 +122,8 @@ class FacetTreeHelper
             $treeItem->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
                 $facet->getName(),
                 $value,
-                $element->getTotalHits()
+                $element->getTotalHits(),
+                $element->getSelected() === 'TRUE'
             ));
 
             $treeItems[] = $treeItem;

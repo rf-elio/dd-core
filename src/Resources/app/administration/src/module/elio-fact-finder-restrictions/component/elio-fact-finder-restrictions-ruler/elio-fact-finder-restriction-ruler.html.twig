@@ -2,21 +2,21 @@
     <div class="elio-ff-restrictions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
         <sw-field
-                v-model="languageId"
-                type="select"
-                required
-                :options="languageIdsList"
-                :label="$tc('ff-export.detail.labelLanguage')">
+            v-model="languageId"
+            type="select"
+            required
+            :options="languageIdsList"
+            :label="$tc('ff-export.detail.labelLanguage')">
         </sw-field>
 
         <h1>{{ $tc(rulerHeader) }}</h1>
 
         <div v-if="isInheritable" class="elio-ff-restrictions-ruler-inheritance-block">
             <sw-inheritance-switch
-                    class="sw-inherit-wrapper__inheritance-icon elio-ff-restrictions-ruler-inheritance"
-                    :isInherited="isInherited"
-                    @inheritance-restore="restoreInheritance"
-                    @inheritance-remove="removeInheritance">
+                class="sw-inherit-wrapper__inheritance-icon elio-ff-restrictions-ruler-inheritance"
+                :isInherited="isInherited"
+                @inheritance-restore="restoreInheritance"
+                @inheritance-remove="removeInheritance">
             </sw-inheritance-switch>
             <p>{{ $tc('ff.restrictions.ruler.inheritance') }}</p>
         </div>
@@ -28,7 +28,7 @@
                 <div id="rulerTabFilters"
                      :class="['ruler-tab-filter-list', 'ruler-tab-filter-list--main', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover="event.preventDefault()"
                      data-filter-column="all"
                 >
                     <div class="filter"
@@ -68,7 +68,7 @@
                 <div id="rulerTabFiltersAllowed"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover="event.preventDefault()"
                      data-filter-column="allow"
                 >
                     <div class="filter"
@@ -108,7 +108,7 @@
                 <div id="rulerTabFiltersBlocked"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover="event.preventDefault()"
                      data-filter-column="block"
                 >
                     <div class="filter"

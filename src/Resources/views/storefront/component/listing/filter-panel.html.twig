@@ -36,18 +36,16 @@
                     } %}
                 {% endif %}
             {% elseif style == 'TREE' %}
-                {% for property in ffAggregation.entities %}
-                    {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select.html.twig' with {
-                        elements: ffAggregation.entities.extensions.ffTree.tree,
-                        sidebar: sidebar,
-                        name: parameterName,
-                        displayName: parameterName,
-                        displayType: 'text',
-                        pluginSelector: 'fact-finder-filter-tree-select',
-                        propertyName: parameterName,
-                        ffTree: ffAggregation.entities.extensions.ffTree
-                    } %}
-                {% endfor %}
+                {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select.html.twig' with {
+                    elements: ffAggregation.extensions.ffTree.tree,
+                    sidebar: sidebar,
+                    name: parameterName,
+                    displayName: parameterName,
+                    displayType: 'text',
+                    pluginSelector: 'fact-finder-filter-tree-select',
+                    propertyName: parameterName,
+                    ffTree: ffAggregation.extensions.ffTree
+                } %}
             {% endif %}
         {% endif %}
     {% endfor %}

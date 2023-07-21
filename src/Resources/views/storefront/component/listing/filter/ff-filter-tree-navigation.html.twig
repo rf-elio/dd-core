@@ -14,10 +14,9 @@
                 {% block layout_navigation_categories_list_entry %}
                     {% set hidden = (item.category.id not in activeResult.id) and (item.category.id not in activeResult.path) %}
                     {% block layout_navigation_categories_link_children %}
-                        <li class="filter-multi-select-list-item filter-property-select-list-item" {% if hidden and not activeParent %}hidden{% endif %}>
+                        <li class="filter-multi-select-list-item filter-property-select-list-item">
                             {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select-list-item.html.twig' with {
-                                element: item,
-                                selectable: item.children|length <= 0
+                                element: item
                             } %}
                         </li>
                     {% endblock %}

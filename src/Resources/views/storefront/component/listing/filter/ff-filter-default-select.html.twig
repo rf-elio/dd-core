@@ -11,7 +11,7 @@
 {% endif %}
 
 {% block component_filter_multi_select %}
-    {% set filterItemId = 'filter-' ~ 'ffdefault' ~ '-' ~ random() %}
+    {% set filterItemId = 'filter-' ~ 'ffdefault' ~ '-' ~ name|replace({' ': ''}) ~ element.id %}
     {{ parent() }}
 {% endblock %}
 
@@ -37,6 +37,7 @@
 
                     {% block component_filter_property_select_checkox_input %}
                         <input type="checkbox"
+                               {% if element.extensions.ff_facet_extension.selected %}checked{% endif %}
                                class="filter-property-select-checkbox filter-multi-select-checkbox"
                                id="{{ id }}"
                                data-label="{{ name }}"

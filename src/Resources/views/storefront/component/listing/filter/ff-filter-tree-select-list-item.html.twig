@@ -4,20 +4,7 @@
     {# uses the category name as filter value #}
     {% set name = element.category.translated.name %}
 
-    {# Make parent levels not selectable #}
-    {% if selectable %}
-        {{ parent() }}
-    {% else %}
-        {% set id = element.id %}
-        {% if element.extensions.ff_facet_extension is defined %}
-            {% set id = element.extensions.ff_facet_extension.key %}
-        {% endif %}
-        <input type="checkbox"
-               class="custom-control-input filter-multi-select-checkbox e-ff-not-selectable"
-               data-label="{{ name }}"
-               value="{{ id }}"
-               id="{{ id }}">
-    {% endif %}
+    {{ parent() }}
 {% endblock %}
 
 {# Shows the category name as the filter label #}
@@ -32,9 +19,9 @@
         {% endif %}
     {% endif %}
 
-    <label class="filter-multi-select-item-label {% if selectable %}custom-control-label{% else %}e-ff-not-selectable{% endif %}" for="{{ id }}">
+    <label class="filter-multi-select-item-label custom-control-label" for="{{ id }}">
         {% block component_multi_select_list_item_label %}
-            {{ name|replace({'<br>': ''})|raw }} lorem
+            {{ name|replace({'<br>': ''})|raw }}
         {% endblock %}
     </label>
 {% endblock %}

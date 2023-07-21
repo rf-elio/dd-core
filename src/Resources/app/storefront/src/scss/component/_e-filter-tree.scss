@@ -1,5 +1,5 @@
 .category-navigation {
-  margin-left: 2rem;
+  margin-left: 1rem;
 }
 
 .category-navigation:first-child {
@@ -8,4 +8,11 @@
 
 .e-ff-not-selectable {
   cursor: default;
+}
+
+.is-loading {
+    .filter-multi-select-list-item {
+        pointer-events: none;
+        opacity: 0.6;
+    }
 }
