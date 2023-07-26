@@ -108,7 +108,7 @@ class TranslationSortTransformer implements ResponseTransformerInterface
     {
         $existingSortings = $this->getProductSortings($context);
 
-        foreach ($sortingCollection as $sorting) {
+        foreach ($sortingCollection as $sortingCollectionKey => $sorting) {
             $key = $sorting->getKey();
             $existingSorting = $existingSortings[$key] ?? null;
 
@@ -117,6 +117,11 @@ class TranslationSortTransformer implements ResponseTransformerInterface
             } else {
                 $sorting->setLabel($existingSorting->getTranslations()['label'] ?? $existingSorting->getLabel());
                 $sorting->setTranslated($existingSorting->getTranslated());
+                $sorting->setActive($existingSorting->isActive());
+
+                if (!$sorting->isActive()) {
+                    $sortingCollection->remove($sortingCollectionKey);
+                }
             }
         }
     }

@@ -34,17 +34,23 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
 use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Consent\ConsentService;
+use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\FactFinder\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
+use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemQuantityChangedEvent;
-use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
+use Shopware\Core\Checkout\Cart\Event\BeforeLineItemQuantityChangedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -59,26 +65,36 @@ class TrackCartSubscriber implements EventSubscriberInterface
     private FactFinderConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
-    private ConsentService $consentService;
+    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
+    private RequestStack $requestStack;
+    private EntityRepositoryInterface $productRepository;
+    private array $changedQuantities = [];
+    use TrackingSessionTrait;
 
     /**
      * TrackCartSubscriber constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param ConsentService $consentService
+     * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
+     * @param RequestStack $requestStack
+     * @param EntityRepositoryInterface $productRepository
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
-        ConsentService $consentService,
+        TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        RequestStack $requestStack,
+        EntityRepositoryInterface $productRepository
     )
     {
         $this->configService = $configService;
         $this->bus = $bus;
         $this->eventDispatcher = $eventDispatcher;
-        $this->consentService = $consentService;
+        $this->trackingAllowedChecker = $trackingAllowedChecker;
+        $this->requestStack = $requestStack;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -88,6 +104,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
     {
         return [
             AfterLineItemAddedEvent::class => 'trackAddCart',
+            BeforeLineItemQuantityChangedEvent::class => 'onBeforeLineItemQuantityChangedEvent',
             AfterLineItemQuantityChangedEvent::class => 'trackUpdateCart',
         ];
     }
@@ -101,11 +118,48 @@ class TrackCartSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * Tracks quantity increase actions. Only the increased quantity is submitted
+     *
+     * @param BeforeLineItemQuantityChangedEvent $event
+     * @return void
+     */
+    public function onBeforeLineItemQuantityChangedEvent(BeforeLineItemQuantityChangedEvent $event): void
+    {
+        $changedLineItem = $event->getLineItem();
+        $priceDefinition = $changedLineItem->getPriceDefinition();
+        if (!$priceDefinition instanceof QuantityPriceDefinition) {
+            return;
+        }
+
+        $newQuantity = $changedLineItem->getQuantity();
+        $oldQuantity = $priceDefinition->getQuantity();
+
+        // only quantity increases are submitted
+        if ($newQuantity <= $oldQuantity) {
+            return;
+        }
+
+        $this->changedQuantities[$changedLineItem->getReferencedId()] = $newQuantity - $oldQuantity;
+    }
+
+    /**
      * @param AfterLineItemQuantityChangedEvent $event
      */
     public function trackUpdateCart(AfterLineItemQuantityChangedEvent $event): void
     {
-        $this->trackCart($event->getSalesChannelContext(), $event->getItems(), $event->getCart());
+        // we only want items where the quantity was increased. This is tracked by onBeforeLineItemQuantityChangedEvent
+        $itemsWithQuantityIncrease = [];
+        foreach ($event->getItems() as $item) {
+            $id = $item['id'] ?? '';
+            if (isset($this->changedQuantities[$id])) {
+                $itemsWithQuantityIncrease[] = [
+                    'id' => $id,
+                    'quantity' => $this->changedQuantities[$id]
+                ];
+            }
+        }
+
+        $this->trackCart($event->getSalesChannelContext(), $itemsWithQuantityIncrease, $event->getCart());
     }
 
     /**
@@ -118,43 +172,70 @@ class TrackCartSubscriber implements EventSubscriberInterface
     protected function trackCart(SalesChannelContext $salesChannelContext, array $items, ?Cart $cart = null): void
     {
         $config = $this->configService->getByContext($salesChannelContext);
+        $context = $salesChannelContext->getContext();
 
         if(
             empty($items) ||
             !$config->isActive() ||
             !$config->isTrackCart() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext)
+            !$this->trackingAllowedChecker->isTrackingAllowed($salesChannelContext)
         ) {
             return;
         }
-        $customerId = $salesChannelContext->getCustomer() ? $salesChannelContext->getCustomer()->getId() : null;
+
+        $customerId = $salesChannelContext->getCustomer()?->getId();
         $request = new CartTrackingRequest($config->getApiChannel());
+
         foreach ($items as $item) {
             $lineItem = null;
+            $quantity = 0;
             if ($item instanceof LineItem){
                 $lineItem = $item;
-            }elseif ($cart !== null && $cart->getLineItems()->has($item['id'])){
+                $quantity = $lineItem->getQuantity();
+            } elseif ($cart !== null && $cart->getLineItems()->has($item['id'])){
                 $lineItem = $cart->getLineItems()->get($item['id']);
+                $quantity = $item['quantity'];
             }
 
-            if ($lineItem !== null && $lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE && $lineItem->getPrice()) {
-                $request->addEvent(
-                    $lineItem->getReferencedId(),
-                    $salesChannelContext->getToken(),
-                    $lineItem->getPayload()['productNumber'] ?? '',
-                    $lineItem->getLabel(),
-                    $lineItem->getQuantity(),
-                    $lineItem->getPrice()->getUnitPrice(),
-                    $customerId
-                );
+            if ($lineItem === null || $lineItem->getType() !== LineItem::PRODUCT_LINE_ITEM_TYPE || !$lineItem->getPrice()) {
+                continue;
             }
+
+            /** @var ProductEntity|null $product */
+            $product = $this->productRepository->search(new Criteria([$lineItem->getReferencedId()]), $context)->first();
+            if (!$product) {
+                continue;
+            }
+
+            $masterProductNumber = $productNumber = $product->getProductNumber();
+            if ($product->getParentId()) {
+                /** @var ProductEntity|null $parentProduct */
+                $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context)->first();
+
+                if ($parentProduct) {
+                    $masterProductNumber = $parentProduct->getProductNumber();
+                }
+            }
+
+            $request->addEvent(
+                $productNumber,
+                $this->getTrackingSessionId($this->requestStack),
+                $masterProductNumber,
+                $lineItem->getLabel(),
+                $quantity,
+                $lineItem->getPrice()->getUnitPrice(),
+                $customerId
+            );
         }
 
         $requestCreatedEvent = new CartTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
-        $this->bus->dispatch(new TrackingMessage(
-            $requestCreatedEvent->getRequest(),
-            $salesChannelContext->getSalesChannelId()
-        ));
+        $request = $requestCreatedEvent->getRequest();
+
+        if (!$request->hasEvents()) {
+            return;
+        }
+
+        $this->bus->dispatch(new TrackingMessage($request, $salesChannelContext->getSalesChannelId()));
     }
 }

@@ -54,10 +54,12 @@ use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\Facet;
+use Swagger\Client\Model\FacetElement;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
 use Elio\FactFinder\Core\FilterRestrictions\FilterService;
@@ -126,7 +128,6 @@ class FacetTransformer implements ResponseTransformerInterface
 
         $facetCollection = new FacetCollection('ff-default');
         $aggregationResultCollection->add($facetCollection);
-
         foreach ($model->getFacets() as $facet) {
             if ($filtersRestrictions[1] === null) { // blocked all
                 continue;
@@ -144,13 +145,14 @@ class FacetTransformer implements ResponseTransformerInterface
 
             $style = $facet->getFilterStyle();
             switch ($style) {
+                case 'MULTISELECT':
                 case 'DEFAULT':
                     $defaultCollection = new PropertyGroupCollection();
-                    $entity = $this->transformDefault($facet);
+                    $entity = $this->transformDefault($facet, $request);
                     $defaultCollection->add($entity);
                     $facetCollection->addAggregation(
                         new EntityResult($facet->getName(), $defaultCollection),
-                        $style
+                        'DEFAULT'
                     );
                     break;
                 case 'SLIDER':
@@ -171,6 +173,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     break;
             }
         }
+
         foreach ($facetCollection->getAggregations() as $aggregation){
             $aggregationResultCollection->add($aggregation);
         }
@@ -180,12 +183,14 @@ class FacetTransformer implements ResponseTransformerInterface
      * Transforms the default filter to an "property" filter
      *
      * @param Facet $facet
+     * @param ApiRequest $request
      * @return PropertyGroupEntity
      */
-    protected function transformDefault(Facet $facet): PropertyGroupEntity
+    protected function transformDefault(Facet $facet, ApiRequest $request): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $elements = array_merge($facet->getSelectedElements(), $facet->getElements());
+
         foreach ($elements as $element) {
             $elementLabel = $element->getText();
             $option = new PropertyGroupOptionEntity();
@@ -194,7 +199,7 @@ class FacetTransformer implements ResponseTransformerInterface
             $option->setName($elementLabel);
             $option->setTranslated(['name' => $elementLabel]);
             $option->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(), $element->getText(),
+                $facet->getAssociatedFieldName(), $this->resolveDefaultElementValue($facet, $element, $request),
                 $element->getTotalHits(),
                 $element->getSelected() === 'TRUE'
             ));
@@ -208,7 +213,45 @@ class FacetTransformer implements ResponseTransformerInterface
         $group->setName($facet->getName());
         $group->setTranslated(['name' => $facet->getName()]);
         $group->setDisplayType('text');
+        $group->addExtension(DefaultFacetExtension::KEY, new ArrayStruct([
+            'selectedCount' => count($facet->getSelectedElements())
+        ]));
         return $group;
+    }
+
+    /**
+     * @param Facet $facet
+     * @param FacetElement $element
+     * @param ApiRequest $request
+     * @return string
+     */
+    private function resolveDefaultElementValue(Facet $facet, FacetElement $element, ApiRequest $request): string
+    {
+        if (
+            $facet->getType() !== 'FLOAT' ||
+            !$element->getSearchParams()->getFilters()
+        ) {
+            return $element->getText();
+        }
+
+
+        // take the first value from the search params only for FLOAT facet
+        foreach ($element->getSearchParams()->getFilters() as $filter) {
+            if ($filter->getValues() && $facet->getAssociatedFieldName() === $filter->getName()) {
+                return $filter->getValues()[0]->getValue()[0];
+            }
+        }
+
+        try {
+            // extract original technical filter value from request to restore it in the element filter selection
+            foreach ($request->getFilter() as $filterName => $filter) {
+                if ($filter['values'] && $facet->getAssociatedFieldName() === $filterName) {
+                    return $filter['values'][0];
+                }
+            }
+        } catch (\Exception $exception) {}
+
+        return $element->getText();
     }
 
     /**

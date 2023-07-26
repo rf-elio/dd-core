@@ -179,9 +179,14 @@ class CustomFieldSetup
             $componentName = $customFieldProperties['componentName'] ?? 'sw-field';
             $label = $customFieldProperties['label'];
             $placeholder = $customFieldProperties['placeholder'] ?? $label;
+            $numberType = null;
 
             if ($configType === 'bool') {
                 $configType = 'checkbox';
+            } elseif ($configType === 'int' || $configType === 'float') {
+                $configType = 'number';
+                $customFieldType = 'number';
+                $numberType = $type;
             }
 
             $customField = [
@@ -207,6 +212,10 @@ class CustomFieldSetup
 
             if (isset($customFieldProperties['config'])) {
                 $customField['config']['config'] = $customFieldProperties['config'];
+            }
+
+            if ($numberType) {
+                $customField['config']['numberType'] = $numberType;
             }
 
             if ($customFieldId = $this->getFieldSetFieldId($fieldSetId, $customFieldName)) {

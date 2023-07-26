@@ -358,7 +358,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         }
         $exportItem->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
         $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
-        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_map('rawurlencode', array_slice($category->getBreadcrumb(), 1)))));
         $exportItem->set(ContentExportDefaults::FIELD_TAGS, $this->getCategoryTags($category));
     }
 

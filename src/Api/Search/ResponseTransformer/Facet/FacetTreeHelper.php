@@ -87,7 +87,6 @@ class FacetTreeHelper
                 array_pop($parents);
             }
 
-
             $id = $parents;
             $id[] = $label;
             $parents = implode('/', $parents);
@@ -120,7 +119,7 @@ class FacetTreeHelper
 
             $treeItem = new TreeItem($treeItemCategory, self::convertNodesToTreeItems($facet, $node->getChildNodes()));
             $treeItem->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(),
+                $facet->getAssociatedFieldName(),
                 $value,
                 $element->getTotalHits(),
                 $element->getSelected() === 'TRUE'

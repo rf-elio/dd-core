@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\Consent;
 
 use Elio\FactFinder\Configuration\Configuration;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +48,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ConsentService
+class ConsentService implements TrackingAllowedCheckerInterface
 {
     private FactFinderConfigServiceInterface $configService;
 

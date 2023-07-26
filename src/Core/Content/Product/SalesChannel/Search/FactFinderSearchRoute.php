@@ -130,7 +130,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
             try {
                 if ($config->isSearchUseContentChannel()) {
                     $contentSearchRequest = $this->contentSearchRequestBuilder->build($request, $context);
-                    $contentSearchRequest->setQuery('*');
+                    $contentSearchRequest->setQuery($request->get('search'));
                     $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);
                     /** @var ContentListingResponse|null $contentListingResponse */
                     $contentListingResponse = $resultCollection->get(ContentListingResponse::class);

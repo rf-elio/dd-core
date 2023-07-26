@@ -6,6 +6,7 @@
     <services>
         <service id="Elio\FactFinder\Core\Consent\ConsentService">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <tag name="elio-ff.tracking.allowed-checker"/>
         </service>
         <service id="Elio\FactFinder\Core\Consent\ConsentSubscriber">
             <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService" />

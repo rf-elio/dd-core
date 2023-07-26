@@ -20,14 +20,23 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEventFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
+use Shopware\Core\Framework\DataAbstractionLayer\Read\EntityReaderInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntityAggregatorInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\VersionManager;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\Currency\CurrencyDefinition;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxCollection;
 
@@ -45,9 +54,26 @@ class ProductExportGeneratorTest extends TestCase
     public function setUp(): void
     {
         $this->generator = new ProductExportGenerator(
-            new ProductRepositoryMock(),
+
+            new ProductRepositoryMock(
+                $this->getContainer()->get(ProductDefinition::class),
+                $this->getContainer()->get(EntityReaderInterface::class),
+                $this->getContainer()->get(VersionManager::class),
+                $this->getContainer()->get(EntitySearcherInterface::class),
+                $this->getContainer()->get(EntityAggregatorInterface::class),
+                $this->getContainer()->get('event_dispatcher'),
+                $this->getContainer()->get(EntityLoadedEventFactory::class)
+            ),
             new EventDispatcherMock(),
-            new SalesChannelRepositoryMock(),
+            new SalesChannelRepositoryMock(
+                $this->getContainer()->get(SalesChannelDefinition::class),
+                $this->getContainer()->get(EntityReaderInterface::class),
+                $this->getContainer()->get(VersionManager::class),
+                $this->getContainer()->get(EntitySearcherInterface::class),
+                $this->getContainer()->get(EntityAggregatorInterface::class),
+                $this->getContainer()->get('event_dispatcher'),
+                $this->getContainer()->get(EntityLoadedEventFactory::class)
+            ),
             new FeatureService()
         );
     }
@@ -77,24 +103,33 @@ class ProductExportGeneratorTest extends TestCase
         ]);
 
         self::assertSame([
+            ProductExportDefaults::FIELD_ID,
             ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER,
             ProductExportDefaults::FIELD_PRODUCT_ID,
             ProductExportDefaults::FIELD_MANUFACTURER_NUMBER,
             ProductExportDefaults::FIELD_NAME,
             ProductExportDefaults::FIELD_DESCRIPTION,
+            ProductExportDefaults::FIELD_META_TITLE,
             ProductExportDefaults::FIELD_PRODUCT_URL,
             ProductExportDefaults::FIELD_PRICE,
+            ProductExportDefaults::FIELD_RED_PRICE,
             ProductExportDefaults::FIELD_MANUFACTURER,
             ProductExportDefaults::FIELD_CATEGORY_PATH,
+            ProductExportDefaults::FIELD_CATEGORY_IDS,
             ProductExportDefaults::FIELD_EAN,
             ProductExportDefaults::FIELD_KEYWORDS,
             ProductExportDefaults::FIELD_SEARCH_KEYWORDS,
             ProductExportDefaults::FIELD_STOCK,
+            ProductExportDefaults::FIELD_CLOSEOUT,
             ProductExportDefaults::FIELD_RATING_AVERAGE,
+            ProductExportDefaults::FIELD_RATING_COUNT,
             ProductExportDefaults::FIELD_SHIPPING_FREE,
             ProductExportDefaults::FIELD_ATTRIBUTE,
             ProductExportDefaults::FIELD_IMAGE_URL,
+            ProductExportDefaults::FIELD_THUMBNAIL_URL,
             ProductExportDefaults::FIELD_TAGS,
+            ProductExportDefaults::FIELD_RELEASE_DATE,
+            ProductExportDefaults::FIELD_SALES_COUNT,
             'Foo',
             'Bar'
         ], $this->generator->getModel($exportEntity));
@@ -133,17 +168,17 @@ class ProductExportGeneratorTest extends TestCase
 
         // fields
         self::assertSame(
-            'MasterProductNumber;ProductID;ManufacturerNumber;Name;Description;ProductURL;Price;Manufacturer;CategoryPath;EAN;Keywords;SearchKeywords;Stock;RatingAverage;ShippingFree;Attribute;ImageURL;Tags',
+            'ID;MasterProductNumber;ProductID;ManufacturerNumber;Name;Description;MetaTitle;ProductURL;Price;RedPrice;Manufacturer;CategoryPath;CategoryIds;EAN;Keywords;SearchKeywords;Stock;Closeout;RatingAverage;RatingCount;ShippingFree;Attribute;ImageURL;ThumbnailURL;Tags;ReleaseDate;SalesCount',
             $rows[0]
         );
         // first product
         self::assertSame(
-            'productNumber1;productNumber1;test;product1;test;;200;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
+            Uuid::fromStringToHex('product1') . ';productNumber1;productNumber1;test;product1;test;;;200.00;;test;"breadcrumb 3/breadcrumb 4";1/2/3;;;;1;0;;0;;;;;;;1',
             $rows[1]
         );
         // second product
         self::assertSame(
-            'productNumber2;productNumber2;test;product2;test;;200;test;"breadcrumb 3/breadcrumb 4";;;;1;;;;;',
+            Uuid::fromStringToHex('product2') . ';productNumber2;productNumber2;test;product2;test;;;200.00;;test;"breadcrumb 3/breadcrumb 4";1/2/3;;;;1;0;;0;;;;;;;1',
             $rows[2]
         );
     }
@@ -172,15 +207,14 @@ class ProductExportGeneratorTest extends TestCase
     private function getSalesChannelContext(): SalesChannelContext
     {
         $salesChannel = new SalesChannelEntity();
-        $salesChannel->setId(Defaults::SALES_CHANNEL);
+        $salesChannel->setId(Defaults::SALES_CHANNEL_TYPE_STOREFRONT);
 
         return new SalesChannelContext(
-            Context::createDefaultContext(),
+            new Context(new SystemSource()),
             '',
             null,
             $salesChannel,
             new CurrencyEntity(),
-            new CustomerGroupEntity(),
             new CustomerGroupEntity(),
             new TaxCollection(),
             new PaymentMethodEntity(),

@@ -68,6 +68,7 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\ProductTransformer">
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
             <tag name="elio-ff.api.transformer.response"/>
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\FacetTransformer">
@@ -95,6 +96,9 @@
         </service>
         <service id="Elio\FactFinder\Api\Search\ResponseTransformer\ContentTransformer">
             <tag name="elio-ff.api.transformer.response"/>
+        </service>
+        <service id="Elio\FactFinder\Api\Search\ResponseTransformer\TrackingTransformer">
+            <tag name="elio-ff.api.transformer.response" priority="-1000"/>
         </service>
 
         <!-- transformer / response / import -->

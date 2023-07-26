@@ -62,5 +62,14 @@
             <argument type="service" id="Elio\FactFinder\Core\ProductBundle\ProductBundleService" />
             <argument type="service" id="translator" />
         </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\SalesChannelProductRepositoryDecorator"
+                 decorates="sales_channel.product.repository">
+            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\SalesChannelProductRepositoryDecorator.inner" />
+        </service>
+
+        <service id="Elio\FactFinder\Core\Content\Product\Subscriber\ProductSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

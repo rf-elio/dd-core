@@ -15,6 +15,14 @@
     {{ parent() }}
 {% endblock %}
 
+{% block component_filter_multi_select_count %}
+    <span class="filter-multi-select-count">
+        {% if count > 0 %}
+            ({{ count }})
+        {% endif %}
+    </span>
+{% endblock %}
+
 {% block component_filter_multi_select_list_item %}
     <li class="filter-multi-select-list-item filter-property-select-list-item">
         {% if displayType == 'color' or displayType == 'media' %}
@@ -37,7 +45,6 @@
 
                     {% block component_filter_property_select_checkox_input %}
                         <input type="checkbox"
-                               {% if element.extensions.ff_facet_extension.selected %}checked{% endif %}
                                class="filter-property-select-checkbox filter-multi-select-checkbox"
                                id="{{ id }}"
                                data-label="{{ name }}"
@@ -64,7 +71,7 @@
                     {% set id = element.name %}
                     <label class="filter-multi-select-item-label" for="{{ id }}">
                         {% block component_filter_property_select_preview_list_item_label %}
-                            {{ name }}
+                            {{ name|replace({'<br>': ''})|raw }}
                         {% endblock %}
                     </label>
                 {% endblock %}

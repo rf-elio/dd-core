@@ -17,7 +17,9 @@
         {% set id = element.extensions.ff_facet_extension.key %}
 
         {% if config('FactFinder.config.listingShowFacetResultCount') %}
-            {% set name = name ~ ' (' ~ element.extensions.ff_facet_extension.totalHits ~ ')' %}
+            {% if not element.extensions.ff_facet_extension.selected %}
+                {% set name = name ~ ' (' ~ element.extensions.ff_facet_extension.totalHits ~ ')' %}
+            {% endif %}
         {% endif %}
     {% endif %}
     {{ parent() }}

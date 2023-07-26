@@ -93,7 +93,7 @@ class ArrayUtilTest extends TestCase
             ],
         ], $result);
 
-        $this->expectNotice();
+        $this->expectWarning();
         ArrayUtil::arrayGroup($rows, 'test');
     }
 

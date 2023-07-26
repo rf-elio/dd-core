@@ -1,63 +1,100 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import HttpClient from 'src/service/http-client.service';
+import TrackingUtil from './../../utility/tracking.util'
 
 export default class TrackingPlugin extends Plugin {
     static options = {
-        idPathAttribute: 'data-elio-ff-id',
-        productNumberPathAttribute: 'data-elio-ff-productNumber',
+        ffListingBoxSelector: '.elio-ff-listing-box',
+        productNumberPathAttribute: 'data-elio-ff-product-number',
+        parentProductIdPathAttribute: 'data-elio-ff-parent-product-id',
         labelPathAttribute: 'data-elio-ff-label',
         queryPathAttribute: 'data-elio-ff-query',
-        posPathAttribute: 'data-elio-ff-pos',
         pagePathAttribute: 'data-elio-ff-page',
         pageSizePathAttribute: 'data-elio-ff-pageSize',
-        campaignPathAttribute: 'data-elio-ff-campaign',
-        trackProductClickPath: 'data-elio-ff-track-product-click-path'
+        campaignPathAttribute: 'data-elio-ff-campaign'
     };
     init() {
-        this._client = new HttpClient()
-        this._path = this.el.getAttribute(this.options.trackProductClickPath);
-        if(this._path.length > 0) {
-            this._linkElements = this.el.getElementsByTagName('a')
-            this._trackingId = this.el.getAttribute(this.options.idPathAttribute);
-            this._trackingProductNumber = this.el.getAttribute(this.options.productNumberPathAttribute);
-            this._trackingLabel = this.el.getAttribute(this.options.labelPathAttribute);
-            this._trackingQuery = this.el.getAttribute(this.options.queryPathAttribute);
-            this._trackingPos = this.el.getAttribute(this.options.posPathAttribute);
-            this._trackingPage = this.el.getAttribute(this.options.pagePathAttribute);
-            this._trackingPageSize = this.el.getAttribute(this.options.pageSizePathAttribute);
-            this._trackingCampaign = this.el.getAttribute(this.options.campaignPathAttribute);
-            this._registerEvents()
+        this._path = window.ff.tracking.detailPath;
+        if(this._path.length <= 0) {
+            return;
         }
+
+        this._linkElements = this.el.getElementsByTagName('a')
+        this._productNumber = this.el.getAttribute(this.options.productNumberPathAttribute);
+        this._parentProductId = this.el.getAttribute(this.options.parentProductIdPathAttribute);
+        this._trackingLabel = this.el.getAttribute(this.options.labelPathAttribute);
+        this._trackingQuery = this.el.getAttribute(this.options.queryPathAttribute);
+        this._trackingPage = this.el.getAttribute(this.options.pagePathAttribute);
+        this._trackingPageSize = this.el.getAttribute(this.options.pageSizePathAttribute);
+        this._trackingCampaign = this.el.getAttribute(this.options.campaignPathAttribute);
+        this._registerEvents()
     }
     _registerEvents() {
         const me = this;
         const parameters = {
             ffProductTrackingData: {
-                id: me._trackingId,
-                productNumber: me._trackingProductNumber,
+                productNumber: me._productNumber,
+                parentProductId: me._parentProductId,
                 label: me._trackingLabel,
                 query: me._trackingQuery,
-                pos: me._trackingPos,
+                pos: 0,
                 page: me._trackingPage,
                 pageSize: me._trackingPageSize,
                 campaign: me._trackingCampaign
             }
         };
-        for(const linkElement of this._linkElements) {
+        for (const linkElement of this._linkElements) {
             linkElement.addEventListener('click', function (event) {
+                const listingBoxes = me._getListingBoxes();
+                parameters.ffProductTrackingData.pos = me._getPosition(listingBoxes);
+                const listingSize = listingBoxes.length;
+                if (listingSize > parameters.ffProductTrackingData.pageSize) {
+                    parameters.ffProductTrackingData.pageSize = listingSize;
+                }
+
                 event.preventDefault();
-                me._postTracking(parameters).then(() =>{
-                    window.location.href = linkElement.href;
-                })
+                TrackingUtil.add(me._path, parameters);
+                window.location.href = linkElement.href;
             })
         }
     }
-    _postTracking(parameters) {
-        const me = this;
-        return new Promise((resolve) => {
-            me._client.post(me._path, JSON.stringify(parameters), function(responseText) {
-                resolve();
-            });
-        })
+
+    /**
+     * Determines the global position of the given element
+     * @returns {*}
+     * @private
+     */
+    _getPosition(listingBoxes) {
+        let pos = listingBoxes.indexOf(this.el)
+        pos = pos < 0 ? 0 : pos;
+        return pos + 1;
+    }
+
+    /**
+     * Loads all listing boxes and provides the result as an array
+     * @returns {any[]}
+     * @private
+     */
+    _getListingBoxes() {
+        const elements = [];
+        const boxes = document.querySelectorAll(this.options.ffListingBoxSelector);
+
+        for(const box of boxes) {
+            if (!this._isHidden(box)) {
+                elements.push(box)
+            }
+        }
+
+        return elements;
+    }
+
+    /**
+     * Checks if the element can be visible on the page or if the element or one if its parents is visible
+     * @param elem
+     * @returns {boolean|false|*}
+     * @private
+     */
+    _isHidden(elem) {
+        const styles = window.getComputedStyle(elem)
+        return styles.display === 'none' || styles.visibility === 'hidden' || (elem.parentNode && elem.parentNode.nodeType === Node.ELEMENT_NODE && this._isHidden(elem.parentNode))
     }
 }

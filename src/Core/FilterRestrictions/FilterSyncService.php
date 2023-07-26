@@ -139,12 +139,12 @@ class FilterSyncService
             /** @var FilterEntity $filter */
             foreach ($filters as $filter) {
                 $propertiesNamesUpdated[$filter->getPropertyId()] = true; // flag as updated
-                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations, $context);
+                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations[$filter->getPropertyId()], $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot update filters with this property ids',
-                ['$filters' => $filters]
+                ['$filters' => $filters, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             );
             throw new FilterSyncUpdateFailedException(
                 'FilterSync: Update failed - {{ message }}',
@@ -200,11 +200,11 @@ class FilterSyncService
      */
     private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) {
         $this->filterRepository->update(
-            [
+            [[
                 'id' => $filterEntity->getId(),
                 'propertyName' => $propertyName,
                 'technicalName' => $propertyName
-            ],
+            ]],
             $context
         );
         $dataToUpdate = [];
@@ -230,13 +230,13 @@ class FilterSyncService
     private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) {
         $newFilterId = Uuid::randomHex();
         $this->filterRepository->create(
-            [
+            [[
                 'id' => $newFilterId,
                 'propertyName' => $propertyName,
                 'technicalName' => $propertyName,
                 'propertyId' => $propertyId,
                 'isCustom' => false
-            ],
+            ]],
             $context
         );
         $dataToCreate = [];

@@ -4,7 +4,7 @@
             {% block page_advisor_campaign_question %}
                 <div class="card-body e-ff-advisor-campaign-questions-question">
                     {% block page_advisor_campaign_question_text %}
-                        <h5 class="card-title">{{ question.text }}</h5>
+                        <h5 class="card-title">{{ question.text|raw }}</h5>
                     {% endblock %}
 
                     {% block page_advisor_campaign_question_answers %}

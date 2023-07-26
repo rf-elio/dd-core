@@ -27,11 +27,16 @@
 {% endblock %}
 
 {% block product_listing %}
-    {% set elioFFQuery = 'main' %}
-    {% set elioFFPos = 3 %}
-    {% set elioFFPage = 1 %}
-    {% set elioFFPageSize = 2 %}
-    {% set elioFFTrackProductDetailClickPath = path('widgets.elio-ff.tracking.product-detail') %}
+    {% set elioFFQuery = page.searchTerm %}
+    {% set elioFFPage = searchResult.page %}
+    {% set elioFFPageSize = searchResult.limit %}
+
+    {% if searchResult.extensions.TrackingResponse is defined %}
+        {% set trackingResponse = searchResult.extensions.TrackingResponse %}
+        {% set elioFFQuery = trackingResponse.query %}
+        {% set elioFFPage = trackingResponse.pageNo %}
+        {% set elioFFPageSize = trackingResponse.pageSize %}
+    {% endif %}
 
     {{ parent() }}
 {% endblock %}

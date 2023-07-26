@@ -126,6 +126,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             !empty($this->getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
             !empty($this->getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
+                $this->prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
             !empty($this->getConfigWithLanguagePrefix($config, 'listingUseFactFinder', $languagePrefix)),
             $additionalRequestParameters,
             $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix) ?? false,
@@ -149,7 +150,11 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
             $this->getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24,
             $this->getConfigWithLanguagePrefix($config, 'maxAdvisorProducts', $languagePrefix) ?? 10,
             $this->getConfigWithLanguagePrefix($config, 'searchTermForAdvisorCmsElement', $languagePrefix) ?? '',
-            $this->getConfigWithLanguagePrefix($config, 'showPassedAdvisorAfterDays', $languagePrefix) ?? 0
+            $this->getConfigWithLanguagePrefix($config, 'showPassedAdvisorAfterDays', $languagePrefix) ?? 0,
+            $this->getConfigWithLanguagePrefix($config, 'productRankingActive', $languagePrefix) ?? false,
+            $this->getConfigWithLanguagePrefix($config, 'productRankingMaxOrderAge', $languagePrefix) ?? 14,
+            $this->getConfigWithLanguagePrefix($config, 'productRankingOrderStates', $languagePrefix) ?? [],
+            $this->getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

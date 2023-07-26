@@ -1,4 +1,5 @@
 import TrackingPlugin from './plugin/tracking/tracking-plugin';
+import TrackingWorkerPlugin from './plugin/tracking/tracking-worker-plugin';
 import FactFinderFilterPropertySelectPlugin from "./plugin/filter/ff-filter-property-select.plugin";
 import FactFinderFilterRangePlugin from "./plugin/filter/ff-filter-range.plugin";
 import FactFinderFilterTreeSelectPlugin from "./plugin/filter/ff-filter-tree-select.plugin";
@@ -13,6 +14,7 @@ import ElioListingPluginExtension from "./plugin/listing/listing.plugin";
 
 const PluginManager = window.PluginManager;
 PluginManager.register('TrackingPlugin', TrackingPlugin, '.elio-ff-listing-box');
+PluginManager.register('TrackingWorkerPlugin', TrackingWorkerPlugin, document);
 PluginManager.register('FactFinderFilterPropertySelect', FactFinderFilterPropertySelectPlugin, '[data-fact-finder-filter-property-select]');
 PluginManager.register('FactFinderFilterRange', FactFinderFilterRangePlugin, '[data-fact-finder-filter-range]');
 PluginManager.register('FactFinderFilterTreeSelect', FactFinderFilterTreeSelectPlugin, '[data-fact-finder-filter-tree-select]');
@@ -21,6 +23,6 @@ PluginManager.register('ElioSearchTrackerPlugin', ElioSearchTrackerPlugin, '[dat
 PluginManager.register('ElioSearchHistory', ElioSearchHistoryPlugin, '.e-search-history');
 PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-form]');
 PluginManager.register('ElioProductDetailCrossSellingPlugin', ElioProductDetailCrossSellingPlugin, '[data-e-ff-product-detail-cross-selling-url]');
-PluginManager.register('ElioAdvisorCampaignPlugin', ElioAdvisorCampaignPlugin, '.e-ff-advisor-campaign');
-PluginManager.register('ElioAdvisorCampaignCmsLoaderPlugin', ElioAdvisorCampaignCmsLoaderPlugin, '.e-ff-advisor-campaign-lazy');
-PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]');
+PluginManager.register('ElioAdvisorCampaignPlugin', ElioAdvisorCampaignPlugin, '.e-ff-advisor-campaign')
+PluginManager.register('ElioAdvisorCampaignCmsLoaderPlugin', ElioAdvisorCampaignCmsLoaderPlugin, '.e-ff-advisor-campaign-lazy')
+PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]')

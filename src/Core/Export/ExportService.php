@@ -177,7 +177,7 @@ class ExportService
 
         $languageId = $export->getLanguageId();
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
-        
+
         $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
         $this->logger->info(
             sprintf('Generating export: %s', $export->getName()),
