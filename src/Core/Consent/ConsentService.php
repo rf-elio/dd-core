@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -38,7 +38,6 @@ use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
 use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ConsentService

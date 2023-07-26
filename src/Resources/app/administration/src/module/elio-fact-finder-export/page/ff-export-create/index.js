@@ -1,4 +1,4 @@
-import uuid from 'src/../test/_helper_/uuid';
+//import uuid from 'src/../test/_helper_/uuid';
 
 Shopware.Component.extend('ff-export-create', 'ff-export-detail', {
     data() {

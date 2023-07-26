@@ -34,8 +34,9 @@ namespace Elio\FactFinder\Setup;
 
 
 use RuntimeException;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -133,7 +134,7 @@ class CustomFieldSetup
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
-        $customFieldSetRepository->upsert($upsets, Context::createDefaultContext());
+        $customFieldSetRepository->upsert($upsets, new Context(new SystemSource()));
     }
 
     /**
@@ -247,7 +248,7 @@ class CustomFieldSetup
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', $customFieldName));
         /** @var CustomFieldSetEntity|null $fieldSet */
-        $fieldSet = $customFieldSetRepository->search($criteria, Context::createDefaultContext())->first();
+        $fieldSet = $customFieldSetRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$fieldSet ? null : $fieldSet->getId();
     }
 
@@ -276,7 +277,7 @@ class CustomFieldSetup
         $criteria->addFilter(new EqualsFilter('customFieldSetId', $customFieldSetId));
         $criteria->addFilter(new EqualsFilter('entityName', $relationName));
         /** @var CustomFieldSetRelationEntity|null $fieldSetRelation */
-        $fieldSetRelation = $customFieldSetRelationRepository->search($criteria, Context::createDefaultContext())->first();
+        $fieldSetRelation = $customFieldSetRelationRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$fieldSetRelation ? null : $fieldSetRelation->getId();
     }
 
@@ -305,7 +306,7 @@ class CustomFieldSetup
         $criteria->addFilter(new EqualsFilter('customFieldSetId', $customFieldSetId));
         $criteria->addFilter(new EqualsFilter('name', $name));
         /** @var CustomFieldEntity|null $field */
-        $field = $customFieldRepository->search($criteria, Context::createDefaultContext())->first();
+        $field = $customFieldRepository->search($criteria, new Context(new SystemSource()))->first();
         return !$field ? null : $field->getId();
     }
 
@@ -314,10 +315,10 @@ class CustomFieldSetup
      */
     private function removeCustomFieldSets(array $customFields): void
     {
-        /** @var EntityRepositoryInterface $customFieldSetRepository */
+        /** @var EntityRepository $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        $context = Context::createDefaultContext();
+        $context = new Context(new SystemSource());
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('name', array_keys($customFields)));
 

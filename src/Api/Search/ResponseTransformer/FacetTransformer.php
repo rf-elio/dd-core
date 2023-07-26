@@ -299,10 +299,10 @@ class FacetTransformer implements ResponseTransformerInterface
 
     /**
      * @param Facet $facet
-     * @param \Doctrine\Common\Collections\Collection $items
+     * @param Collection $items
      * @return PropertyGroupEntity
      */
-    protected function transformTree(Facet $facet, \Doctrine\Common\Collections\Collection $items): PropertyGroupEntity
+    protected function transformTree(Facet $facet, Collection $items): PropertyGroupEntity
     {
         $options = new PropertyGroupOptionCollection();
         $group = new PropertyGroupEntity();

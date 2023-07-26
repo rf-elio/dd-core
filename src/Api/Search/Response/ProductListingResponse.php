@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -38,7 +38,6 @@ use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class ProductListingResponse

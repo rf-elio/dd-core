@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -86,6 +86,7 @@ class CachedFilterService implements FilterInterface
      * @param int $level
      * @param ApiRequest $request
      * @return array
+     * @throws InvalidArgumentException|CacheException
      */
     public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
     {
@@ -141,6 +142,7 @@ class CachedFilterService implements FilterInterface
     /**
      * Removes cached items with provided keys
      * @param string[] $keys
+     * @throws InvalidArgumentException
      */
     public function removeItems(array $keys)
     {
@@ -151,6 +153,7 @@ class CachedFilterService implements FilterInterface
 
     /**
      * Clears the whole cache pool
+     * @throws InvalidArgumentException
      */
     public function clearCache()
     {

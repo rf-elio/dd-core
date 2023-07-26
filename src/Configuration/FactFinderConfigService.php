@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -35,8 +35,9 @@ namespace Elio\FactFinder\Configuration;
 use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
 use Elio\FactFinder\Core\Defaults;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
@@ -61,17 +62,17 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @var array<string>
      */
     private array $languagePrefixCache = [];
-    private EntityRepositoryInterface $languageRepository;
+    private EntityRepository $languageRepository;
 
     /**
      * @param SystemConfigService $systemConfigService
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $languageRepository
+     * @param EntityRepository $languageRepository
      */
     public function __construct(
         SystemConfigService $systemConfigService,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $languageRepository
+        EntityRepository $languageRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->eventDispatcher = $eventDispatcher;
@@ -171,7 +172,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return string[]
      */
-    protected function prepareValueList(array $config, string $value, string $languagePrefix)
+    protected function prepareValueList(array $config, string $value, string $languagePrefix): array
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
             self::CONFIG_VALUE_SEPARATOR,
@@ -217,7 +218,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
      * @param string $languagePrefix
      * @return mixed
      */
-    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix)
+    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix): mixed
     {
         if (array_key_exists($languagePrefix . $key, $config)) {
             return $config[$languagePrefix . $key];
@@ -263,7 +264,7 @@ class FactFinderConfigService implements FactFinderConfigServiceInterface
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         /** @var LanguageEntity|null $language */
-        $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
+        $language = $this->languageRepository->search($criteria, new Context(new SystemSource()))->first();
 
         if($language && $language->getLocale()) {
             $languagePrefix = $language->getLocale()->getCode() . '_';

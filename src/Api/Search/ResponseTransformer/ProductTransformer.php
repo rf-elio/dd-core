@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -51,7 +51,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
-use Swagger\Client\Model\SearchRecord;
 use Swagger\Client\Model\VariantValues;
 
 /**

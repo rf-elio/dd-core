@@ -40,7 +40,7 @@ use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
 use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -58,8 +58,8 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 class ExportSetup
 {
-    private ?EntityRepositoryInterface $exportRepository;
-    private ?EntityRepositoryInterface $salesChannelRepository;
+    private ?EntityRepository $exportRepository;
+    private ?EntityRepository $salesChannelRepository;
     private ?Connection $connection;
 
     /**

@@ -36,10 +36,10 @@ class Node
     /**
      * Node constructor.
      * @param mixed       $id
-     * @param null|mixed $parentID
-     * @param mixed       $value
+     * @param mixed|null $parentID
+     * @param mixed|null $value
      */
-    public function __construct($id, $parentID = null, $value = null)
+    public function __construct(mixed $id, mixed $parentID = null, mixed $value = null)
     {
         $this->id = $id;
         $this->value = $value;
@@ -96,7 +96,7 @@ class Node
      *
      * @param string|null $parentID
      */
-    public function addParentID($parentID): void
+    public function addParentID(?string $parentID): void
     {
         if($parentID !== null)
         {
@@ -117,7 +117,7 @@ class Node
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }

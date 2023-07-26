@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -50,7 +50,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
 /**
  * Class ProductDetailTrackingController
@@ -58,8 +57,9 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- * @RouteScope(scopes={"storefront"})
+ * @Route(defaults={"_routeScope"={"storefront"}})
  */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailTrackingController extends StorefrontController
 {
     private FactFinderConfigServiceInterface $configService;

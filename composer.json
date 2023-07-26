@@ -1,7 +1,7 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v2.3.0",
+    "version": "v3.0.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -25,13 +25,17 @@
             "email": "mt@elio-systems.com"
         },
         {
+            "name": "Ibragim Murataev",
+            "email": "ibm@elio-systems.com"
+        },
+        {
             "name": "Ralf Frommherz",
             "email": "rf@elio-systems.com"
         }
     ],
     "require": {
-        "php": ">= 7.4",
-        "elio/fact-finder-api-client": "dev-master",
+        "php": ">= 8.1",
+        "elio/fact-finder-api-client": "^5.0",
         "dragonmantank/cron-expression": "^3.1"
     },
     "require-dev": {
@@ -62,7 +66,6 @@
     "config": {
         "gitlab-domains": ["git.elio-systems.io"]
     },
-
     "repositories": {
         "git.elio-systems.io/201": {
             "type": "composer",

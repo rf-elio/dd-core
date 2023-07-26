@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -36,6 +36,7 @@ namespace Elio\FactFinder\Core\Logging;
 use Elio\FactFinder\Core\Logging\Handler\FactFinderFilterHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RotatingFileHandler;
+use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
@@ -77,10 +78,10 @@ class LoggerFactory
      * @param string $filePrefix
      * @param int|null $fileRotationCount
      * @param bool $useLogFilter
-     * @param int $loggerLevel
+     * @param Level $loggerLevel
      * @return LoggerInterface
      */
-    public function createRotating(string $filePrefix, ?int $fileRotationCount = null, bool $useLogFilter = false, int $loggerLevel = Logger::DEBUG): LoggerInterface
+    public function createRotating(string $filePrefix, ?int $fileRotationCount = null, bool $useLogFilter = false, Level $loggerLevel = Level::Debug): LoggerInterface
     {
         $filepath = sprintf($this->rotatingFilePathPattern, $filePrefix);
 

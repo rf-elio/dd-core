@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -40,7 +40,7 @@ use Elio\FactFinder\Core\Export\OutputStream;
 use Elio\FactFinder\Core\Export\SeoRoute;
 use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -59,13 +59,13 @@ use Elio\FactFinder\Core\Defaults;
 class LandingPagePartialGenerator implements ExportGeneratorInterface
 {
     protected const EXPORT_TYPE = 'landingpage';
-    private EntityRepositoryInterface $landingPageRepository;
+    private EntityRepository $landingPageRepository;
 
     /**
      * LandingPageGenerator constructor.
-     * @param EntityRepositoryInterface $landingPageRepository
+     * @param EntityRepository $landingPageRepository
      */
-    public function __construct(EntityRepositoryInterface $landingPageRepository)
+    public function __construct(EntityRepository $landingPageRepository)
     {
         $this->landingPageRepository = $landingPageRepository;
     }
@@ -82,10 +82,10 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
     /**
      * Returns a definition about all fields that are added to the export
      *
-     * @param ExportEntity $entity
+     * @param ExportEntity $export
      * @return array
      */
-    public function getModel(ExportEntity $entity) : array
+    public function getModel(ExportEntity $export) : array
     {
         return [
             ContentExportDefaults::FIELD_ID,

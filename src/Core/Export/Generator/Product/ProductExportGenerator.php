@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -49,7 +49,7 @@ use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollectio
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
@@ -72,22 +72,22 @@ class ProductExportGenerator implements ExportGeneratorInterface
 {
     private const PRODUCT_CHUNK_SIZE = 500;
     private const PRODUCT_THUMBNAIL_SIZE = 200;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private EventDispatcherInterface $eventDispatcher;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
     private FeatureServiceInterface $featureService;
 
     /**
      * ProductExportGenerator constructor.
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $salesChannelRepository
+     * @param EntityRepository $salesChannelRepository
      * @param FeatureServiceInterface $featureService
      */
     public function __construct(
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         FeatureServiceInterface $featureService
     )
     {
@@ -243,7 +243,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
-        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle']));
+        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
 
         [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
         $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));

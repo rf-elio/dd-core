@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+
+## 3.0.0 - 2023-07-26
+### Features (1 change)
+- Replaced non-existent or deprecated classes/methods in the Shopware version 6.5
+
 ## 2.3.0 - 2023-07-20
 ### Features (1 change)
 - FactFinder main variant mapping for product listing
@@ -8,7 +13,6 @@
 - Filter panel is fixed: filters are replaced with filters from response, for opened filters only dropdown is replaced
 - Cagegory tree filter is fixed
 - Mapped properties in product export generator are fixed
-
 
 ## 2.2.8 - 2022-10-12
 ### Features (1 change)

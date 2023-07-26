@@ -35,7 +35,7 @@ Shopware.Module.register('elio-factfinder-logging', {
         label: 'ff-logging.title',
         color: '#014587',
         path: 'elio.factfinder.logging.list',
-        icon: 'default-shopping-paper-bag-product',
+        icon: 'regular-products',
         parent: 'elio-fact-finder',
         position: 3
     }]
