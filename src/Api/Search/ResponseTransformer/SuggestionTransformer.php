@@ -137,7 +137,7 @@ class SuggestionTransformer implements ResponseTransformerInterface
         $suggestItem = new SuggestItem();
         $suggestItem->setName($suggestion->getName());
         $suggestItem->setType($suggestion->getType());
-        if (!$suggestion->getImage() && $suggestion->getImage() !== '') {
+        if ($suggestion->getImage() !== '') {
             $suggestItem->setImgUrl($suggestion->getImage());
         }
 

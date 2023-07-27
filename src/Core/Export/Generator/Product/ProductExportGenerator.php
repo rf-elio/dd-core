@@ -177,7 +177,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
 
         // fetch products
         $criteria = new Criteria();
-        $criteria->addAssociation('manufacturer');
+        $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
         $criteria->addAssociation('cover');
