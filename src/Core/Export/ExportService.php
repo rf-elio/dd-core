@@ -32,8 +32,6 @@
 
 namespace Elio\FactFinder\Core\Export;
 
-require_once __DIR__.'/../../../vendor/autoload.php';
-
 use Cron\CronExpression;
 use Cron\FieldFactory;
 use DateTime;

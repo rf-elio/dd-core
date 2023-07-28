@@ -2,8 +2,6 @@
 
 namespace Elio\FactFinder\Api;
 
-require_once __DIR__.'/../../vendor/autoload.php';
-
 use Elio\FactFinder\Core\Logging\GuzzleLogWrapper;
 use Elio\FactFinder\Core\Logging\LoggingService;
 use GuzzleHttp\HandlerStack;
