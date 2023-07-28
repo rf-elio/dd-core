@@ -1,7 +1,7 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v2.3.1",
+    "version": "v2.3.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -35,7 +35,8 @@
         "dragonmantank/cron-expression": "^3.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.10"
     },
     "extra": {
         "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",
