@@ -125,6 +125,7 @@ class ProductExportGeneratorTest extends TestCase
             ProductExportDefaults::FIELD_RATING_COUNT,
             ProductExportDefaults::FIELD_SHIPPING_FREE,
             ProductExportDefaults::FIELD_ATTRIBUTE,
+            ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE,
             ProductExportDefaults::FIELD_IMAGE_URL,
             ProductExportDefaults::FIELD_THUMBNAIL_URL,
             ProductExportDefaults::FIELD_TAGS,
@@ -168,17 +169,17 @@ class ProductExportGeneratorTest extends TestCase
 
         // fields
         self::assertSame(
-            'ID;MasterProductNumber;ProductID;ManufacturerNumber;Name;Description;MetaTitle;ProductURL;Price;RedPrice;Manufacturer;CategoryPath;CategoryIds;EAN;Keywords;SearchKeywords;Stock;Closeout;RatingAverage;RatingCount;ShippingFree;Attribute;ImageURL;ThumbnailURL;Tags;ReleaseDate;SalesCount',
+            'ID;MasterProductNumber;ProductID;ManufacturerNumber;Name;Description;MetaTitle;ProductURL;Price;RedPrice;Manufacturer;CategoryPath;CategoryIds;EAN;Keywords;SearchKeywords;Stock;Closeout;RatingAverage;RatingCount;ShippingFree;Attribute;AttributeNonFilterable;ImageURL;ThumbnailURL;Tags;ReleaseDate;SalesCount',
             $rows[0]
         );
         // first product
         self::assertSame(
-            Uuid::fromStringToHex('product1') . ';productNumber1;productNumber1;test;product1;test;;;200.00;;test;"breadcrumb 3/breadcrumb 4";1/2/3;;;;1;0;;0;;;;;;;1',
+            Uuid::fromStringToHex('product1') . ';productNumber1;productNumber1;test;product1;test;;;200.00;;test;breadcrumb%203/breadcrumb%204;1/2/3;;;;1;0;;0;;|;|;;;;;1',
             $rows[1]
         );
         // second product
         self::assertSame(
-            Uuid::fromStringToHex('product2') . ';productNumber2;productNumber2;test;product2;test;;;200.00;;test;"breadcrumb 3/breadcrumb 4";1/2/3;;;;1;0;;0;;;;;;;1',
+            Uuid::fromStringToHex('product2') . ';productNumber2;productNumber2;test;product2;test;;;200.00;;test;breadcrumb%203/breadcrumb%204;1/2/3;;;;1;0;;0;;|;|;;;;;1',
             $rows[2]
         );
     }
@@ -215,6 +216,7 @@ class ProductExportGeneratorTest extends TestCase
             null,
             $salesChannel,
             new CurrencyEntity(),
+            new CustomerGroupEntity(),
             new CustomerGroupEntity(),
             new TaxCollection(),
             new PaymentMethodEntity(),

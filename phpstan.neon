@@ -1,10 +1,10 @@
 parameters:
+    phpVersion: 80000
+    bootstrapFiles:
+        - ../../../vendor/autoload.php
     parallel:
         maximumNumberOfProcesses: 2
     level: 5
-    autoload_files:
-        - vendor/autoload.php
-        - ../../../vendor/autoload.php
     paths:
         - src
         - tests
@@ -21,4 +21,12 @@ parameters:
 
         -
             message: '# expects bool, string given#'
+            path: src/Api/*
+        -
+            message: '#Expression on left side of \?\? is not nullable#'
+            path: src/Api/*
+        -
+            message: '#extends @final class#'
+        -
+            message: '#apiFactory is never read, only written#'
             path: src/Api/*

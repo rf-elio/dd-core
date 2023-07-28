@@ -185,7 +185,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 
         $criteria = $this->getBaseCriteria();
         $this->extendCriteriaForChildCategories($criteria, $categoryIds);
-        return $this->categoryRepository->search($criteria, $context->getContext());
+        /* @phpstan-ignore-next-line */
+        return $this->categoryRepository->search($criteria, $context->getContext())->getEntities();
     }
 
     /**

@@ -123,7 +123,6 @@ class ProductRankingUpdateService
      * @note Don't try to use the dal for this query, you will suffer on performance issued!
      *
      * @param string $targetField
-     * @param string $select
      * @param Configuration $config
      * @return void
      * @throws Exception

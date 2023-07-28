@@ -37,6 +37,7 @@ use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
+use Elio\FactFinder\Api\Search\Request\SearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Search\ResponseTransformer\Facet\FacetTreeHelper;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
@@ -52,6 +53,8 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -119,7 +122,7 @@ class FacetTransformer implements ResponseTransformerInterface
             $level = FilterService::LEVEL_SEARCH;
         }
 
-        $filtersRestrictions = $this->filterService->getFilters($context, $level, $request) ?? [null, []];
+        $filtersRestrictions = $this->filterService->getFilters($context, $level, $request);
         $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
         $responseCollection->set(ProductListingResponse::class, $listing);
 
@@ -137,8 +140,6 @@ class FacetTransformer implements ResponseTransformerInterface
                 (($filtersRestrictions[0] !== null) && !in_array($facet->getName(), $filtersRestrictions[0], true))
                 // isn't allowed
                 || in_array($facet->getName(), $filtersRestrictions[1], true)
-                // not allowed all, but blocked all
-                || ($filtersRestrictions[0] !== null && $filtersRestrictions[1] === null)
             ) {
                 continue;
             }
@@ -150,6 +151,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     $defaultCollection = new PropertyGroupCollection();
                     $entity = $this->transformDefault($facet, $request);
                     $defaultCollection->add($entity);
+                    /** @var EntityCollection<Entity> $defaultCollection */
                     $facetCollection->addAggregation(
                         new EntityResult($facet->getName(), $defaultCollection),
                         'DEFAULT'
@@ -166,6 +168,7 @@ class FacetTransformer implements ResponseTransformerInterface
                     $defaultCollection = new PropertyGroupCollection();
                     $defaultCollection->add($this->transformTree($facet, FacetTreeHelper::flattenTree($tree->getTree())));
 
+                    /** @var EntityCollection<Entity> $defaultCollection */
                     $aggregation = new EntityResult($facet->getName(), $defaultCollection);
                     $aggregation->addExtension('ffTree', $tree);
 
@@ -242,14 +245,14 @@ class FacetTransformer implements ResponseTransformerInterface
             }
         }
 
-        try {
+        if ($request instanceof SearchRequest) {
             // extract original technical filter value from request to restore it in the element filter selection
             foreach ($request->getFilter() as $filterName => $filter) {
                 if ($filter['values'] && $facet->getAssociatedFieldName() === $filterName) {
                     return $filter['values'][0];
                 }
             }
-        } catch (\Exception $exception) {}
+        }
 
         return $element->getText();
     }

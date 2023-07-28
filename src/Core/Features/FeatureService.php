@@ -62,7 +62,8 @@ class FeatureService implements FeatureServiceInterface
     protected function readConfig() : array
     {
         $configFilePath = __DIR__.'/../../Resources/config/features.config';
-        return parse_ini_file($configFilePath) ?? [];
+        $config = parse_ini_file($configFilePath);
+        return $config !== false ? $config : [];
     }
 
     /**

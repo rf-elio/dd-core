@@ -8,10 +8,11 @@
 ## 2.3.0 - 2023-07-20
 ### Features (1 change)
 - FactFinder main variant mapping for product listing
+### Fix (7 change)
 - Filter restrictions are applied in facet transformer
 - Filter restrictions in administration: js error is fixed
 - Filter panel is fixed: filters are replaced with filters from response, for opened filters only dropdown is replaced
-- Cagegory tree filter is fixed
+- Category tree filter is fixed
 - Mapped properties in product export generator are fixed
 
 ## 2.2.8 - 2022-10-12
