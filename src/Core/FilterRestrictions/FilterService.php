@@ -61,25 +61,21 @@ class FilterService implements FilterInterface
     public const LEVEL_CATEGORY = 10;
     private const MAX_DEEP_CATEGORY = 20;
 
-    private EntityRepositoryInterface $filterRepository;
     private EntityRepositoryInterface $filterRestrictionsRepository;
     private EntityRepositoryInterface $categoryRepository;
     private FactFinderConfigService $configService;
 
     /**
      * FilterService constructor.
-     * @param EntityRepositoryInterface $filterRepository
      * @param EntityRepositoryInterface $filterRestrictionsRepository
      * @param EntityRepositoryInterface $categoryRepository
      * @param FactFinderConfigService $configService
      */
     public function __construct(
-        EntityRepositoryInterface $filterRepository,
         EntityRepositoryInterface $filterRestrictionsRepository,
         EntityRepositoryInterface $categoryRepository,
         FactFinderConfigService $configService
     ) {
-        $this->filterRepository = $filterRepository;
         $this->filterRestrictionsRepository = $filterRestrictionsRepository;
         $this->categoryRepository = $categoryRepository;
         $this->configService = $configService;
@@ -232,20 +228,6 @@ class FilterService implements FilterInterface
             }
         }
         return $result;
-    }
-
-    /**
-     * Returns array with keys of filterId and values filterPropertyName
-     * for all filters in database;
-     * @return array
-     */
-    private function getAllFilters(): array
-    {
-        $context = Context::createDefaultContext();
-        $criteria = new Criteria();
-        /** @var FilterCollection $filters */
-        $filters = $this->filterRepository->search($criteria, $context)->getEntities();
-        return $this->transformToSimpleForm($filters);
     }
 
     /**

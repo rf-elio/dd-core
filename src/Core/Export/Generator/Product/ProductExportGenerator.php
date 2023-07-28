@@ -243,7 +243,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
-        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle']));
+        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
 
         [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
         $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));

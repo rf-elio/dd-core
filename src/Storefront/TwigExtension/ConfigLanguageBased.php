@@ -88,6 +88,7 @@ class ConfigLanguageBased extends AbstractExtension
         $salesChannelId = $this->getSalesChannelId($context);
 
         $parts = explode('.', $key);
+        /* @phpstan-ignore-next-line */
         if (empty($parts)) {
             return null;
         }
@@ -110,11 +111,7 @@ class ConfigLanguageBased extends AbstractExtension
         if (isset($context['context'])) {
             $salesChannelContext = $context['context'];
             if ($salesChannelContext instanceof SalesChannelContext) {
-                if ($salesChannelContext->getLanguageIdChain()) {
-                    if (count($salesChannelContext->getLanguageIdChain()) > 0) {
-                        return $salesChannelContext->getLanguageIdChain()[0];
-                    }
-                }
+                return $salesChannelContext->getLanguageIdChain()[0] ?? null;
             }
         }
         return null;

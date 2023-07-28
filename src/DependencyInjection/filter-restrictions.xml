@@ -21,7 +21,6 @@
         </service>
 
         <service id="Elio\FactFinder\Core\FilterRestrictions\FilterService">
-            <argument type="service" id="elio_ff_filter.repository" />
             <argument type="service" id="elio_ff_filter_restrictions.repository" />
             <argument type="service" id="category.repository" />
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>

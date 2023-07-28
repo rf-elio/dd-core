@@ -51,7 +51,6 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
     public const TYPE = 'csv';
     private const SEPARATOR = ';';
     private bool $headerWritten = false;
-    private array $header = [];
 
     /**
      * Checks if the writer can be used for the given export

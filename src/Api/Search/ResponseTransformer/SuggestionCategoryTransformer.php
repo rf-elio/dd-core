@@ -206,7 +206,6 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
 
     /**
      * Collects all category entities
-     *
      * @param SuggestGroup $group
      * @param Context $context
      * @return EntityCollection<CategoryEntity>
@@ -226,7 +225,8 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
 
         $criteria = new Criteria($categoryIds);
         $criteria->addAssociation('media');
-        return $this->categoryRepository->search($criteria, $context);
+        /* @phpstan-ignore-next-line */
+        return $this->categoryRepository->search($criteria, $context)->getEntities();
     }
 
     /**
@@ -247,6 +247,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
             // add image
             $categoryId = $this->getCategoryId($item);
             if($categories->has($categoryId)) {
+                /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
 
                 if(!$item->hasUrl()) {

@@ -215,7 +215,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     protected function addCustomFiltersToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category): void
     {
         $customFields = $category->getCustomFields();
-        if (!isset($customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY]) || empty(FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY)) {
+        if (empty($customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY])) {
             return;
         }
 

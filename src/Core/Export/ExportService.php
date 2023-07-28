@@ -126,6 +126,7 @@ class ExportService
     {
         $criteria->addAssociation('salesChannel.domains');
         $criteria->addFilter(new EqualsFilter('active', true));
+        /* @phpstan-ignore-next-line */
         return $this->exportRepository->search($criteria, $context)->getEntities();
     }
 

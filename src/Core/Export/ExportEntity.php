@@ -108,7 +108,7 @@ class ExportEntity extends Entity
      *
      * @return string
      */
-    private function getIdentifier() : string
+    public function getIdentifier() : string
     {
         return $this->salesChannelId.'-'.$this->languageId;
     }
