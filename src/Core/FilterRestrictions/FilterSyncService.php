@@ -35,6 +35,7 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
@@ -94,10 +95,11 @@ class FilterSyncService
         $criteria->addFilter(
             new EqualsFilter('propertyId', $property->getId())
         );
-        $propertyTranslations = $property->getTranslations();
+        $propertyTranslations = $property->getTranslations() ?? new PropertyGroupTranslationCollection();
         $filter = $this->filterRepository->search($criteria, $context);
         if ($filter->getTotal() > 0) {
             // updating
+            /* @phpstan-ignore-next-line */
             $this->update($filter->first(), $property->getName(), $propertyTranslations->getElements(), $context);
         } else {
             // creating

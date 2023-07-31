@@ -130,7 +130,7 @@ class CustomFieldSetup
 
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        if (!$customFieldSetRepository) {
+        if (!$customFieldSetRepository instanceof EntityRepository) {
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
@@ -241,7 +241,7 @@ class CustomFieldSetup
     {
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
-        if (!$customFieldSetRepository) {
+        if (!$customFieldSetRepository instanceof EntityRepository) {
             throw new RuntimeException('Service "custom_field_set.repository" not found');
         }
 
@@ -269,7 +269,7 @@ class CustomFieldSetup
 
         $customFieldSetRelationRepository = $this->container->get('custom_field_set_relation.repository');
 
-        if (!$customFieldSetRelationRepository) {
+        if (!$customFieldSetRelationRepository instanceof EntityRepository) {
             throw new RuntimeException('Service "custom_field_set_relation.repository" not found');
         }
 
@@ -298,7 +298,7 @@ class CustomFieldSetup
 
         $customFieldRepository = $this->container->get('custom_field.repository');
 
-        if (!$customFieldRepository) {
+        if (!$customFieldRepository instanceof EntityRepository) {
             throw new RuntimeException('Service "custom_field.repository" not found');
         }
 

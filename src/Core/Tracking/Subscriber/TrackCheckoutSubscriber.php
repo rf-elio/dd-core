@@ -43,7 +43,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -68,7 +68,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
     private RequestStack $requestStack;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     use TrackingSessionTrait;
 
     /**
@@ -79,7 +79,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
      * @param EventDispatcherInterface $eventDispatcher
      * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
      * @param RequestStack $requestStack
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
@@ -88,7 +88,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         EventDispatcherInterface $eventDispatcher,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         RequestStack $requestStack,
-        EntityRepositoryInterface $productRepository
+        EntityRepository $productRepository
     )
     {
         $this->configService = $configService;

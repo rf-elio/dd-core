@@ -45,6 +45,7 @@ use Elio\FactFinder\FactFinder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
+use Shopware\Core\Content\Product\ProductException;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -126,7 +127,11 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
     {
+        /** @var CategoryEntity|null $category */
         $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
+        if (!$category) {
+            throw ProductException::categoryNotFound($categoryId);
+        }
 
         $config = $this->configService->getByContext($context);
         if(!$config->isActive() || !$config->isListingUseFactFinder() || !$this->canLoadCategoryFromFactFinder($category)) {

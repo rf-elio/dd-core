@@ -136,6 +136,7 @@ class FilterService implements FilterInterface
                 if ($category) {
                     while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
                         $categoriesTreeIds[] = $category->getId();
+                        /** @var CategoryEntity|null $category */
                         $category = $this->categoryRepository->search(
                             new Criteria([$category->getParentId()]),
                             $context

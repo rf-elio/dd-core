@@ -56,6 +56,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -171,7 +172,9 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria = new Criteria([$context->getSalesChannelId()]);
         $criteria->addAssociation('currencies');
 
-        if($salesChannel = $this->salesChannelRepository->search($criteria, $context->getContext())->first()) {
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context->getContext())->first();
+        if($salesChannel) {
             $context->getSalesChannel()->setCurrencies($salesChannel->getCurrencies());
         }
 
@@ -232,6 +235,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
     {
         $parentProduct = null;
         if($product->getParentId()) {
+            /** @var ProductEntity|null  $parentProduct */
             $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
         }
 

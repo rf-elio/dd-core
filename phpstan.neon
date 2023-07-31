@@ -1,5 +1,5 @@
 parameters:
-    phpVersion: 80000
+    phpVersion: 80100
     bootstrapFiles:
         - ../../../vendor/autoload.php
     parallel:
@@ -15,10 +15,6 @@ parameters:
         -
             message: '#expects array, Swagger\\Client\\Model\\map given#'
             path: src/Api/Search/ResponseTransformer/ContentTransformer.php
-        -
-            message: '#Parameter \#3 \$level of class Monolog\\Handler\\RotatingFileHandler constructor expects#'
-            path: src/Core/Logging/LoggerFactory.php
-
         -
             message: '# expects bool, string given#'
             path: src/Api/*

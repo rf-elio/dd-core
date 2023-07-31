@@ -40,7 +40,7 @@ use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
 use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -66,7 +66,7 @@ class ProductDetailTrackingController extends StorefrontController
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private RequestStack $requestStack;
     use TrackingSessionTrait;
 
@@ -75,7 +75,7 @@ class ProductDetailTrackingController extends StorefrontController
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      * @param RequestStack $requestStack
      */
     public function __construct(
@@ -83,7 +83,7 @@ class ProductDetailTrackingController extends StorefrontController
         TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         RequestStack $requestStack
     )
     {

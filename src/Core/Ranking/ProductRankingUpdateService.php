@@ -41,7 +41,7 @@ use Elio\FactFinder\FactFinder;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -56,17 +56,17 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class ProductRankingUpdateService
 {
     private FactFinderConfigServiceInterface $factFinderConfigService;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
     private Connection $connection;
 
     /**
      * @param FactFinderConfigServiceInterface $factFinderConfigService
-     * @param EntityRepositoryInterface $salesChannelRepository
+     * @param EntityRepository $salesChannelRepository
      * @param Connection $connection
      */
     public function __construct(
         FactFinderConfigServiceInterface $factFinderConfigService,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         Connection $connection
     )
     {

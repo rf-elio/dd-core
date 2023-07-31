@@ -46,7 +46,7 @@ use Shopware\Core\Checkout\Cart\Event\BeforeLineItemQuantityChangedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -67,7 +67,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
     private EventDispatcherInterface $eventDispatcher;
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
     private RequestStack $requestStack;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private array $changedQuantities = [];
     use TrackingSessionTrait;
 
@@ -78,7 +78,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
      * @param RequestStack $requestStack
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
@@ -86,7 +86,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,
         RequestStack $requestStack,
-        EntityRepositoryInterface $productRepository
+        EntityRepository $productRepository
     )
     {
         $this->configService = $configService;

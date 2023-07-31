@@ -14,7 +14,7 @@ use Elio\FactFinder\Core\Features\FeatureService;
 use Elio\FactFinder\Tests\Core\Export\Mock\EventDispatcherMock;
 use Elio\FactFinder\Tests\Core\Export\Mock\Repository\SalesChannelRepositoryMock;
 use Elio\FactFinder\Tests\Core\Export\Mock\Repository\ProductRepositoryMock;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
@@ -56,23 +56,23 @@ class ProductExportGeneratorTest extends TestCase
         $this->generator = new ProductExportGenerator(
 
             new ProductRepositoryMock(
-                $this->getContainer()->get(ProductDefinition::class),
-                $this->getContainer()->get(EntityReaderInterface::class),
-                $this->getContainer()->get(VersionManager::class),
-                $this->getContainer()->get(EntitySearcherInterface::class),
-                $this->getContainer()->get(EntityAggregatorInterface::class),
-                $this->getContainer()->get('event_dispatcher'),
-                $this->getContainer()->get(EntityLoadedEventFactory::class)
+                self::getContainer()->get(ProductDefinition::class),
+                self::getContainer()->get(EntityReaderInterface::class),
+                self::getContainer()->get(VersionManager::class),
+                self::getContainer()->get(EntitySearcherInterface::class),
+                self::getContainer()->get(EntityAggregatorInterface::class),
+                self::getContainer()->get('event_dispatcher'),
+                self::getContainer()->get(EntityLoadedEventFactory::class)
             ),
             new EventDispatcherMock(),
             new SalesChannelRepositoryMock(
-                $this->getContainer()->get(SalesChannelDefinition::class),
-                $this->getContainer()->get(EntityReaderInterface::class),
-                $this->getContainer()->get(VersionManager::class),
-                $this->getContainer()->get(EntitySearcherInterface::class),
-                $this->getContainer()->get(EntityAggregatorInterface::class),
-                $this->getContainer()->get('event_dispatcher'),
-                $this->getContainer()->get(EntityLoadedEventFactory::class)
+                self::getContainer()->get(SalesChannelDefinition::class),
+                self::getContainer()->get(EntityReaderInterface::class),
+                self::getContainer()->get(VersionManager::class),
+                self::getContainer()->get(EntitySearcherInterface::class),
+                self::getContainer()->get(EntityAggregatorInterface::class),
+                self::getContainer()->get('event_dispatcher'),
+                self::getContainer()->get(EntityLoadedEventFactory::class)
             ),
             new FeatureService()
         );
@@ -138,8 +138,8 @@ class ProductExportGeneratorTest extends TestCase
 
     public function testGenerate(): void
     {
-        $container = $this->getContainer();
-        /** @var FilesystemInterface $fileSystem */
+        $container = self::getContainer();
+        /** @var FilesystemOperator $fileSystem */
         $fileSystem = $container->get('shopware.filesystem.private');
         $exportStorageService = new ExportStorageService($fileSystem);
         $writer = new CSVFileWriter($exportStorageService);
@@ -216,7 +216,6 @@ class ProductExportGeneratorTest extends TestCase
             null,
             $salesChannel,
             new CurrencyEntity(),
-            new CustomerGroupEntity(),
             new CustomerGroupEntity(),
             new TaxCollection(),
             new PaymentMethodEntity(),

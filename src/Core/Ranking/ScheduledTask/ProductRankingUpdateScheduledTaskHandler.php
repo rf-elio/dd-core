@@ -36,7 +36,7 @@ namespace Elio\FactFinder\Core\Ranking\ScheduledTask;
 use Doctrine\DBAL\Exception;
 use Elio\FactFinder\Core\Ranking\ProductRankingUpdateService;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 /**
@@ -52,7 +52,7 @@ class ProductRankingUpdateScheduledTaskHandler extends ScheduledTaskHandler
     private ProductRankingUpdateService $productRankingUpdateService;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
+        EntityRepository $scheduledTaskRepository,
         ProductRankingUpdateService $productRankingUpdateService
     )
     {
