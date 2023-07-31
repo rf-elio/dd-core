@@ -46,7 +46,7 @@ class SearchImportRequest extends ImportRequest
     public const IMPORT_STAGE_LOAD_ONLY = 'LOAD_ONLY';
     public const IMPORT_STAGE_FULL = 'FULL';
 
-    protected bool $download = false;
+    protected bool $download = true;
     protected bool $cacheFlush = false;
     protected bool $includeCustomerPrices = false;
     protected bool $includeGeo = false;
