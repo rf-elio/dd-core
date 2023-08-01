@@ -11,7 +11,7 @@
 {% endif %}
 
 {% block component_filter_multi_select %}
-    {% set filterItemId = 'filter-' ~ 'ffdefault' ~ '-' ~ name|replace({' ': ''}) ~ element.id %}
+    {% set filterItemId = 'filter-' ~ 'ffdefault' ~ '-' ~ name|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':''}) ~ element.id %}
     {{ parent() }}
 {% endblock %}
 
