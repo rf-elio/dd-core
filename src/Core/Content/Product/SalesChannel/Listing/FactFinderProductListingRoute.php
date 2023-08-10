@@ -45,10 +45,10 @@ use Elio\FactFinder\FactFinder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
+use Shopware\Core\Content\Product\ProductException;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteResponse;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
@@ -72,7 +72,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     private SearchApi $searchApi;
     private ProductSearchRequestBuilder $searchRequestBuilder;
     private ProductListingResultTransformer $productListingResultTransformer;
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
 
     /**
@@ -82,7 +82,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param FactFinderConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformer $productListingResultTransformer
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
      * @param LoggerInterface $logger
      */
@@ -92,7 +92,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
         FactFinderConfigServiceInterface $configService,
         SearchApi                        $searchApi,
         ProductListingResultTransformer  $productListingResultTransformer,
-        EntityRepositoryInterface        $categoryRepository,
+        EntityRepository        $categoryRepository,
         CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
         LoggerInterface                  $logger
     )
@@ -123,12 +123,15 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
      * @param SalesChannelContext $context
      * @param Criteria $criteria
      * @return ProductListingRouteResponse
-     * @throws ApiException
      * @throws Throwable
      */
     public function load(string $categoryId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductListingRouteResponse
     {
+        /** @var CategoryEntity|null $category */
         $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->getEntities()->first();
+        if (!$category) {
+            throw ProductException::categoryNotFound($categoryId);
+        }
 
         $config = $this->configService->getByContext($context);
         if(!$config->isActive() || !$config->isListingUseFactFinder() || !$this->canLoadCategoryFromFactFinder($category)) {
@@ -157,7 +160,9 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
 
             /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
             $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+            if ($campaignRedirectionResponse !== null) {
+                $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+            }
 
             return new ProductListingRouteResponse($shopwareProductListingResult);
         } catch (Throwable $e) {
@@ -215,7 +220,7 @@ class FactFinderProductListingRoute extends AbstractProductListingRoute
     protected function addCustomFiltersToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category): void
     {
         $customFields = $category->getCustomFields();
-        if (!isset($customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY]) || empty(FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY)) {
+        if (empty($customFields[FactFinder::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY])) {
             return;
         }
 

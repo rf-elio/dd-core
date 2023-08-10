@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\AdvisorCampaign\SalesChannel;
 
@@ -11,15 +11,15 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 {
     private FactFinderConfigServiceInterface $configService;

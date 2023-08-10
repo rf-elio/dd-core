@@ -127,7 +127,7 @@ class FilterEntity extends Entity
     /**
      * @param mixed $filterRestrictions
      */
-    public function setFilterRestrictions($filterRestrictions): void
+    public function setFilterRestrictions(mixed $filterRestrictions): void
     {
         $this->filterRestrictions = $filterRestrictions;
     }

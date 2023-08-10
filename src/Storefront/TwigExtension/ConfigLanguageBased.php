@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -32,8 +32,9 @@
 
 namespace Elio\FactFinder\Storefront\TwigExtension;
 
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -53,11 +54,11 @@ class ConfigLanguageBased extends AbstractExtension
 {
 
     private TemplateConfigAccessor $config;
-    private EntityRepositoryInterface $languageRepository;
+    private EntityRepository $languageRepository;
 
     public function __construct(
         TemplateConfigAccessor $config,
-        EntityRepositoryInterface $languageRepository
+        EntityRepository $languageRepository
     ) {
         $this->config = $config;
         $this->languageRepository = $languageRepository;
@@ -82,12 +83,13 @@ class ConfigLanguageBased extends AbstractExtension
      * @param string $key
      * @return array|bool|float|int|string|null
      */
-    public function configByLanguage(array $context, string $key)
+    public function configByLanguage(array $context, string $key): float|int|bool|array|string|null
     {
         $languagePrefix = $this->getLanguagePrefix($this->getLanguageId($context));
         $salesChannelId = $this->getSalesChannelId($context);
 
         $parts = explode('.', $key);
+        /* @phpstan-ignore-next-line */
         if (empty($parts)) {
             return null;
         }
@@ -110,11 +112,7 @@ class ConfigLanguageBased extends AbstractExtension
         if (isset($context['context'])) {
             $salesChannelContext = $context['context'];
             if ($salesChannelContext instanceof SalesChannelContext) {
-                if ($salesChannelContext->getLanguageIdChain()) {
-                    if (count($salesChannelContext->getLanguageIdChain()) > 0) {
-                        return $salesChannelContext->getLanguageIdChain()[0];
-                    }
-                }
+                return $salesChannelContext->getLanguageIdChain()[0] ?? null;
             }
         }
         return null;
@@ -156,7 +154,7 @@ class ConfigLanguageBased extends AbstractExtension
         $criteria = new Criteria([$languageId]);
         $criteria->addAssociation('locale');
         /** @var LanguageEntity|null $language */
-        $language = $this->languageRepository->search($criteria, Context::createDefaultContext())->first();
+        $language = $this->languageRepository->search($criteria, new Context(new SystemSource()))->first();
 
         if ($language && $language->getLocale()) {
             return $language->getLocale()->getCode() . '_';

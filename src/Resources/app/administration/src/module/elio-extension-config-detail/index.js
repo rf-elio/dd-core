@@ -140,4 +140,29 @@ Shopware.Component.override('sw-extension-config', {
     }
 });
 
-Shopware.Template.register('sw-extension-config', template);
+// TODO: in future we may could rewrite this to own admin module, to extend the shopware standard functionality
+// where the plugin settings could be language different.
+Shopware.Application.getContainer().factory.template.elioPostRegisterComponentTemplate = function (componentName) {
+    if (componentName == 'sw-extension-config') {
+        Shopware.Application.getContainer().factory.template.getTemplateRegistry().set(componentName, {
+            name: componentName,
+            raw: template,
+            extend: null,
+            overrides: [],
+        });
+    }
+};
+
+const registerComponentTemplate = Shopware.Application.getContainer().factory.template.registerComponentTemplate;
+Shopware.Application.getContainer().factory.template.registerComponentTemplate = function (
+    componentName,
+    componentTemplate = null
+) {
+    registerComponentTemplate(
+        componentName,
+        componentTemplate,
+    );
+    if (Shopware.Application.getContainer().factory.template.elioPostRegisterComponentTemplate) {
+        Shopware.Application.getContainer().factory.template.elioPostRegisterComponentTemplate(componentName, componentTemplate);
+    }
+}

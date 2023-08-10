@@ -67,6 +67,7 @@ abstract class ProductExportDefaults
     public const FIELD_RATING_COUNT = 'RatingCount';
     public const FIELD_SHIPPING_FREE = 'ShippingFree';
     public const FIELD_ATTRIBUTE = 'Attribute';
+    public const FIELD_ATTRIBUTE_NON_FILTERABLE = 'AttributeNonFilterable';
     public const FIELD_IMAGE_URL = 'ImageURL';
     public const FIELD_THUMBNAIL_URL = 'ThumbnailURL';
     public const FIELD_TAGS = 'Tags';

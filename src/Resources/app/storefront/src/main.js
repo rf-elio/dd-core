@@ -1,4 +1,5 @@
 import TrackingPlugin from './plugin/tracking/tracking-plugin';
+import TrackingWorkerPlugin from './plugin/tracking/tracking-worker-plugin';
 import FactFinderFilterPropertySelectPlugin from "./plugin/filter/ff-filter-property-select.plugin";
 import FactFinderFilterRangePlugin from "./plugin/filter/ff-filter-range.plugin";
 import FactFinderFilterTreeSelectPlugin from "./plugin/filter/ff-filter-tree-select.plugin";
@@ -9,9 +10,11 @@ import ElioSearchHistoryPlugin from "./plugin/elio-search-history/elio-search-hi
 import ElioSearchTrackerPlugin from "./plugin/elio-search-tracker/elio-search-tracker.plugin";
 import ElioAdvisorCampaignPlugin from "./plugin/elio-advisor-campaign/elio-advisor-campaign.plugin";
 import ElioAdvisorCampaignCmsLoaderPlugin from "./plugin/elio-advisor-campaign/elio-advisor-campaign-cms-loader.plugin";
+import ElioListingPluginExtension from "./plugin/listing/listing.plugin";
 
 const PluginManager = window.PluginManager;
 PluginManager.register('TrackingPlugin', TrackingPlugin, '.elio-ff-listing-box');
+PluginManager.register('TrackingWorkerPlugin', TrackingWorkerPlugin, document);
 PluginManager.register('FactFinderFilterPropertySelect', FactFinderFilterPropertySelectPlugin, '[data-fact-finder-filter-property-select]');
 PluginManager.register('FactFinderFilterRange', FactFinderFilterRangePlugin, '[data-fact-finder-filter-range]');
 PluginManager.register('FactFinderFilterTreeSelect', FactFinderFilterTreeSelectPlugin, '[data-fact-finder-filter-tree-select]');
@@ -22,3 +25,4 @@ PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-for
 PluginManager.register('ElioProductDetailCrossSellingPlugin', ElioProductDetailCrossSellingPlugin, '[data-e-ff-product-detail-cross-selling-url]');
 PluginManager.register('ElioAdvisorCampaignPlugin', ElioAdvisorCampaignPlugin, '.e-ff-advisor-campaign')
 PluginManager.register('ElioAdvisorCampaignCmsLoaderPlugin', ElioAdvisorCampaignCmsLoaderPlugin, '.e-ff-advisor-campaign-lazy')
+PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]')

@@ -16,8 +16,17 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     };
 
     init() {
-        this._input = DomAccess.querySelector(this.el, '.header-search-input');
-
+        try {
+            this._input = DomAccess.querySelector(this.el, '.header-search-input');
+        } catch (e) {
+            if (localStorage) {
+                let eDebugOutput = localStorage.getItem("eDebug");
+                if (eDebugOutput && parseInt(eDebugOutput) === 1) {
+                    console.log('SearchHistoryPlugin', e)
+                }
+            }
+            return false
+        }
         // initialize the arrow navigation
         this._navigationHelper = new ArrowNavigationHelper(
             this._input,
@@ -61,8 +70,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
     _handleInputEvent() {
         if (this._input.value) {
             this._clearSearchHistory();
-        }
-        else {
+        } else {
             this._showSearchHistory();
         }
     }
@@ -156,7 +164,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         eSearchHistoryContainer.classList.add("col-12", "col-md", "search-suggest-container");
 
         searchHistory.forEach((searchHistory, searchHistoryIndex) => {
-            if(!searchHistory.hasOwnProperty('searchTerm')) {
+            if (!searchHistory.hasOwnProperty('searchTerm')) {
                 return;
             }
 

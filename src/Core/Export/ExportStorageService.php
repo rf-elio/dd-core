@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\Export;
 
-use League\Flysystem\FileExistsException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Content\ImportExport\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +13,13 @@ use function is_resource;
 class ExportStorageService
 {
     private const BASE_DIR = 'ff-export';
-    private FilesystemInterface $fileSystem;
+    private FilesystemOperator $fileSystem;
 
     /**
      * CSVFileWriter constructor.
-     * @param FilesystemInterface $fileSystem
+     * @param FilesystemOperator $fileSystem
      */
-    public function __construct(FilesystemInterface $fileSystem)
+    public function __construct(FilesystemOperator $fileSystem)
     {
         $this->fileSystem = $fileSystem;
     }
@@ -46,6 +46,7 @@ class ExportStorageService
      *
      * @param ExportEntity $export
      * @return bool
+     * @throws FilesystemException
      */
     public function exists(ExportEntity $export): bool
     {
@@ -58,7 +59,7 @@ class ExportStorageService
      *
      * @param ExportEntity $export
      * @return Response
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FilesystemException
      */
     public function createFileResponse(ExportEntity $export): Response
     {
@@ -74,7 +75,7 @@ class ExportStorageService
                 // only printable ascii
                 preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $export->getName().'.'.$export->getFormat())
             ),
-            'Content-Length' => $this->fileSystem->getSize($fileName),
+            'Content-Length' => $this->fileSystem->fileSize($fileName),
             'Content-Type' => 'application/octet-stream',
         ];
 
@@ -93,12 +94,11 @@ class ExportStorageService
      *
      * @param ExportEntity $export
      * @param resource $handle
-     * @throws FileExistsException
-     * @throws \League\Flysystem\FileNotFoundException
+     * @throws FilesystemException
      */
     public function write(ExportEntity $export, $handle): void
     {
-        $this->fileSystem->createDir(self::BASE_DIR);
+        $this->fileSystem->createDirectory(self::BASE_DIR);
         $fileName = $this->createFileName($export);
 
         if($this->fileSystem->has($fileName)) {

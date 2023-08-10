@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -36,8 +36,7 @@ namespace Elio\FactFinder\Core\Export\Writer;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportItem;
 use Elio\FactFinder\Core\Export\ExportStorageService;
-use League\Flysystem\FileExistsException;
-use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -118,8 +117,7 @@ abstract class BaseWriter
      * @param ExportEntity $export
      * @param SalesChannelContext $context
      * @param resource $handle
-     * @throws FileExistsException
-     * @throws FileNotFoundException
+     * @throws FilesystemException
      */
     public function close(ExportEntity $export, SalesChannelContext $context, $handle): void
     {

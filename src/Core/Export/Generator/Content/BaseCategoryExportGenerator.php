@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -47,7 +47,7 @@ use Elio\FactFinder\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -66,14 +66,14 @@ use Elio\FactFinder\Core\Defaults;
  */
 abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 {
-    protected EntityRepositoryInterface $categoryRepository;
+    protected EntityRepository $categoryRepository;
     protected array $customFields = [];
 
     /**
      * CategoryExportGenerator constructor.
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $categoryRepository
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository)
+    public function __construct(EntityRepository $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
     }
@@ -81,10 +81,10 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     /**
      * Returns a definition about all fields that are added to the export
      *
-     * @param ExportEntity $entity
+     * @param ExportEntity $export
      * @return array
      */
-    public function getModel(ExportEntity $entity): array
+    public function getModel(ExportEntity $export): array
     {
         return [
             ContentExportDefaults::FIELD_ID,
@@ -185,7 +185,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 
         $criteria = $this->getBaseCriteria();
         $this->extendCriteriaForChildCategories($criteria, $categoryIds);
-        return $this->categoryRepository->search($criteria, $context->getContext());
+        /* @phpstan-ignore-next-line */
+        return $this->categoryRepository->search($criteria, $context->getContext())->getEntities();
     }
 
     /**
@@ -358,7 +359,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         }
         $exportItem->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
         $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
-        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_slice($category->getBreadcrumb(), 1))));
+        $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_map('rawurlencode', array_slice($category->getBreadcrumb(), 1)))));
         $exportItem->set(ContentExportDefaults::FIELD_TAGS, $this->getCategoryTags($category));
     }
 

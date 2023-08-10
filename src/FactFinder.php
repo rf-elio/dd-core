@@ -63,6 +63,8 @@ class FactFinder extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = 'category_custom_search_query';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = 'ff_ranking_product_order_count';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = 'ff_ranking_product_order_amount';
 
     public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
@@ -136,6 +138,31 @@ class FactFinder extends Plugin
                     ]
                 ],
                 'relations' => ['category', 'landing_page']
+            ],
+            'FactFinderProductRanking' => [
+                'label' => [
+                    'en-GB' => 'FactFinder product ranking',
+                    'de-DE' => 'FactFinder product ranking'
+                ],
+                'fields' => [
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [
+                        'type' => 'int',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Order count',
+                            'de-DE' => 'Anzahl Bestellungen'
+                        ]
+                    ],//{"type": "number", "label": {"en-GB": "xcvxcv"}, "helpText": {"en-GB": null}, "numberType": "float", "placeholder": {"en-GB": null}, "componentName": "sw-field", "customFieldType": "number", "customFieldPosition": 1}
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT => [
+                        'type' => 'float',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Order amount',
+                            'de-DE' => 'Bestellwert'
+                        ]
+                    ]
+                ],
+                'relations' => ['product']
             ]
         ];
 

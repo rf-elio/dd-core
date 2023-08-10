@@ -1,7 +1,7 @@
 {
     "name": "elio/fact-finder",
     "description": "",
-    "version": "v2.2.7",
+    "version": "v3.0.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -25,18 +25,22 @@
             "email": "mt@elio-systems.com"
         },
         {
+            "name": "Ibragim Murataev",
+            "email": "ibm@elio-systems.com"
+        },
+        {
             "name": "Ralf Frommherz",
             "email": "rf@elio-systems.com"
         }
     ],
     "require": {
-        "php": ">= 7.4",
-        "elio/fact-finder-api-client": "dev-master",
+        "php": ">= 8.1",
+        "elio/fact-finder-api-client": "^5.0",
         "dragonmantank/cron-expression": "^3.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "phpstan/phpstan": "^0.12.96"
+        "phpstan/phpstan": "^1.10"
     },
     "extra": {
         "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",
@@ -46,7 +50,7 @@
         },
         "description": {
             "de-DE": "Shopware FACTFinder NG Integrations-Plugin",
-            "en-GB": "Shopware FACTFinder NG ingegration plugin"
+            "en-GB": "Shopware FACTFinder NG integration plugin"
         }
     },
     "autoload": {
@@ -62,7 +66,6 @@
     "config": {
         "gitlab-domains": ["git.elio-systems.io"]
     },
-
     "repositories": {
         "git.elio-systems.io/201": {
             "type": "composer",

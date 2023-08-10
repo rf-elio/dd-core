@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -47,10 +47,10 @@ use Elio\FactFinder\Core\Features\FeatureServiceInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\FilterAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -73,22 +73,22 @@ class ProductExportGenerator implements ExportGeneratorInterface
 {
     private const PRODUCT_CHUNK_SIZE = 500;
     private const PRODUCT_THUMBNAIL_SIZE = 200;
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private EventDispatcherInterface $eventDispatcher;
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
     private FeatureServiceInterface $featureService;
 
     /**
      * ProductExportGenerator constructor.
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      * @param EventDispatcherInterface $eventDispatcher
-     * @param EntityRepositoryInterface $salesChannelRepository
+     * @param EntityRepository $salesChannelRepository
      * @param FeatureServiceInterface $featureService
      */
     public function __construct(
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         EventDispatcherInterface $eventDispatcher,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         FeatureServiceInterface $featureService
     )
     {
@@ -139,6 +139,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
             ProductExportDefaults::FIELD_RATING_COUNT,
             ProductExportDefaults::FIELD_SHIPPING_FREE,
             ProductExportDefaults::FIELD_ATTRIBUTE,
+            ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE,
             ProductExportDefaults::FIELD_IMAGE_URL,
             ProductExportDefaults::FIELD_THUMBNAIL_URL,
             ProductExportDefaults::FIELD_TAGS,
@@ -171,19 +172,22 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $criteria = new Criteria([$context->getSalesChannelId()]);
         $criteria->addAssociation('currencies');
 
-        if($salesChannel = $this->salesChannelRepository->search($criteria, $context->getContext())->first()) {
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context->getContext())->first();
+        if($salesChannel) {
             $context->getSalesChannel()->setCurrencies($salesChannel->getCurrencies());
         }
 
         // fetch products
         $criteria = new Criteria();
-        $criteria->addAssociation('manufacturer');
+        $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
         $criteria->addAssociation('cover');
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
+        $criteria->addFilter(new EqualsFilter('product.active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $export->getSalesChannelId()));
         $criteria->setLimit(self::PRODUCT_CHUNK_SIZE);
 
@@ -231,6 +235,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
     {
         $parentProduct = null;
         if($product->getParentId()) {
+            /** @var ProductEntity|null  $parentProduct */
             $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
         }
 
@@ -242,7 +247,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
         $item->set(ProductExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
-        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle']));
+        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
 
         [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
         $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));
@@ -265,7 +270,8 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
         $item->set(ProductExportDefaults::FIELD_RATING_COUNT, $ratingCount);
         $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
-        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($product));
+        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($this->getFilterableProductProperties($product)));
+        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE, $this->getProductAttribute($this->getNonFilterableProductProperties($product)));
         $item->set(ProductExportDefaults::FIELD_TAGS, $this->getProductTags($product));
         $item->set(ProductExportDefaults::FIELD_SALES_COUNT, $product->getSales());
         $item->set(
@@ -305,7 +311,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
                 foreach ($parts as $part) {
                     if ($part === 'first') {
                         $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
-                    } else {
+                    } elseif (is_object($previousObj) || is_array($previousObj)) {
                         $previousObj = $propertyAccessor->getValue($previousObj, $part);
                     }
                 }
@@ -334,7 +340,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
         $index = 0;
         $numCategories = count($categories);
         foreach ($categories as $category) {
-            $path .= implode('/', array_slice($category->getBreadcrumb(), 1));
+            $path .= implode('/', array_map('rawurlencode', array_slice($category->getBreadcrumb(), 1)));
             if (++$index < $numCategories) {
                 $path .= Defaults::VALUE_SEPARATOR;
             }
@@ -371,27 +377,50 @@ class ProductExportGenerator implements ExportGeneratorInterface
     /**
      * Appends the product attributes
      *
-     * @param ProductEntity $product
+     * @param array<PropertyGroupOptionEntity> $properties
      * @return string
      */
-    protected function getProductAttribute(ProductEntity $product): string
+    protected function getProductAttribute(array $properties): string
     {
-        if(!$product->getProperties()) {
-            return '';
-        }
-
         $resultAttribute = Defaults::VALUE_SEPARATOR;
-        $attributes = $product->getProperties()->getElements();
-        foreach ($attributes as $attribute) {
-            $group = $attribute->getGroup();
-            if($group) {
+        foreach ($properties as $property) {
+            $group = $property->getGroup();
+            if($group !== null) {
                 $name = $group->getTranslation('name') ?? $group->getName();
-                $value = $attribute->getTranslation('name') ?? $attribute->getName();
+                $value = $property->getTranslation('name') ?? $property->getName();
                 $resultAttribute .= $name . '=' . $value . Defaults::VALUE_SEPARATOR;
             }
         }
 
         return ValueUtil::cleanValue($resultAttribute);
+    }
+
+    /**
+     * @param ProductEntity $product
+     * @return array<PropertyGroupOptionEntity>
+     */
+    protected function getFilterableProductProperties(ProductEntity $product): array
+    {
+        if ($product->getProperties() === null) {
+            return [];
+        }
+        return $product->getProperties()->filter(
+            static fn (PropertyGroupOptionEntity $option) => $option->getGroup() !== null && $option->getGroup()->getFilterable()
+        )->getElements();
+    }
+
+    /**
+     * @param ProductEntity $product
+     * @return array<PropertyGroupOptionEntity>
+     */
+    protected function getNonFilterableProductProperties(ProductEntity $product): array
+    {
+        if ($product->getProperties() === null) {
+            return [];
+        }
+        return $product->getProperties()->filter(
+            static fn (PropertyGroupOptionEntity $option) => $option->getGroup() !== null && !$option->getGroup()->getFilterable()
+        )->getElements();
     }
 
     /**

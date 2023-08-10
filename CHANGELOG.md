@@ -1,8 +1,34 @@
 # CHANGELOG.md
 
-## 2.2.7 - 2022-09-21
-### Fix (1 change)
+
+## 3.0.0 - 2023-07-26
+### Features (1 change)
+- Replaced non-existent or deprecated classes/methods in the Shopware version 6.5
+
+## 2.3.0 - 2023-07-20
+### Features (1 change)
+- FactFinder main variant mapping for product listing
+### Fix (7 change)
+- Filter restrictions are applied in facet transformer
+- Filter restrictions in administration: js error is fixed
+- Filter panel is fixed: filters are replaced with filters from response, for opened filters only dropdown is replaced
+- Category tree filter is fixed
+- Mapped properties in product export generator are fixed
+
+## 2.2.8 - 2022-10-12
+### Features (1 change)
+- Ranking percentage values for products based on order count and value added
+- Tracking parameter "pos" in products listing is corrected
+
+## 2.2.7 - 2022-09-28
+### Fix (7 change)
 - Product export filter now removes line breaks
+- Disabled sort options are removed from sorting collection
+- Export date format is now in iso format instead of custom format
+- Default filter type uses now the AssociatedFieldName for filter requests
+- Listing count on search result page is now updated after filter select
+- Tracking parameters changed (product number and master product number).
+- Tracking session id keeps now the same after login
 
 ## 2.2.6 - 2022-09-16
 ### Fix (1 change)

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2018, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Resources\snippet\de_DE;
+namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
 
-use Shopware\Core\System\Snippet\Files\SnippetFileInterface;
 
-class SnippetFile_de_DE implements SnippetFileInterface
+use Shopware\Core\Framework\Struct\Struct;
+
+/**
+ * Class MainVariantMappingExtension
+ *
+ * @package Elio\FactFinder\Core\Content\Product\SalesChannel
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Alexander Mikheev <ami@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
+class MainVariantMappingExtension extends Struct
 {
-    public function getName(): string
+    public const KEY = 'ff-main-variant-mapping';
+
+    private array $mapping;
+
+    public function __construct(array $mapping)
     {
-        return 'storefront.de-DE';
+        $this->mapping = $mapping;
     }
 
-    public function getPath(): string
+    /**
+     * @return array
+     */
+    public function getMapping(): array
     {
-        return __DIR__ . '/storefront.de-DE.json';
-    }
-
-    public function getIso(): string
-    {
-        return 'de-DE';
-    }
-
-    public function getAuthor(): string
-    {
-        return 'FACTFinder-Snippets';
-    }
-
-    public function isBase(): bool
-    {
-        return true;
+        return $this->mapping;
     }
 }

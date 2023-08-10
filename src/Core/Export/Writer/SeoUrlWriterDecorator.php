@@ -1,9 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\Export\Writer;
 
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\SeoRoute;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -88,6 +90,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      *
      * @param resource $handle
      * @param array $items
+     * @throws Exception
      */
     public function writeList($handle, array $items): void
     {
@@ -133,6 +136,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      * Resolves the seo urls for the given route group
      *
      * @param SeoRoute[][][] $routeResolveGroups
+     * @throws Exception
      */
     protected function resolveSeoUrls(array $routeResolveGroups): void
     {
@@ -206,6 +210,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
      * @param string $routeName
      * @param SalesChannelContext $context
      * @return array
+     * @throws Exception
      */
     protected function getSeoUrls(array $ids, string $routeName, SalesChannelContext $context): array
     {
@@ -217,7 +222,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
                      AND `seo_url`.`language_id` =:languageId
                      AND (`seo_url`.`sales_channel_id` =:salesChannelId OR seo_url.sales_channel_id IS NULL)';
 
-        return $this->connection->fetchAll(
+        return $this->connection->fetchAllAssociative(
             $sql,
             [
                 'routeName' => $routeName,
@@ -226,7 +231,7 @@ class SeoUrlWriterDecorator implements FileWriterInterface
                 'ids' => Uuid::fromHexToBytesList(array_values($ids)),
             ],
             [
-                'ids' => Connection::PARAM_STR_ARRAY,
+                'ids' => ArrayParameterType::STRING,
             ]
         );
     }

@@ -2,6 +2,7 @@ import FilterPropertySelectPlugin from 'src/plugin/listing/filter-property-selec
 import DomAccess from 'src/helper/dom-access.helper';
 import Iterator from 'src/helper/iterator.helper';
 import deepmerge from 'deepmerge';
+import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
 
 export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySelectPlugin {
 
@@ -11,7 +12,6 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
     });
 
     getValues() {
-        this.listing.options.disableEmptyFilter = true;
         const values = super.getValues();
         values[this.options.ffFilterName] = values[this.options.name].slice();
         return values;
@@ -40,90 +40,16 @@ export default class FactFinderFilterTreeSelectPlugin extends FilterPropertySele
         });
     }
 
-    refreshDisabledState(filter) {
-        // Prevent disabling if propertyName is not set correctly
-        if (this.options.propertyName === '') {
-            return;
-        }
-
-        const activeItems = [];
-        const properties = filter[this.options.name];
-
-        if (!properties || !properties.entities) {
-            this.disableFilter();
-            return;
-        }
-        const entities = properties.entities;
-
-        const property = entities.find(entity => entity.translated.name === this.options.propertyName);
-        if (property) {
-            activeItems.push(...property.options);
-        } else {
-            this.disableFilter();
-            return;
-        }
-
-        const actualValues = this.getValues();
-        const actualProperties = actualValues[this.options.name];
-
-        if (activeItems.length < 1 && actualProperties.length === 0) {
-            this.disableFilter()
-            return;
-        } else {
-            this.enableFilter();
-        }
-
-        this.activeItemsTotalHits = [];
-        var activeItemsTotalHits = [];
-        activeItems.forEach( (item) => {
-            activeItemsTotalHits[item.extensions.ff_facet_extension.key] = item.extensions.ff_facet_extension.totalHits
-        });
-        this.activeItemsTotalHits = activeItemsTotalHits;
-        this._disableInactiveFilterOptions(activeItems.map(entity => entity.extensions.ff_facet_extension.key));
+    updateOpenedFilter(newFilter) {
+        const selector = '.filter-panel-item-dropdown';
+        this.el.querySelector(selector).innerHTML = newFilter.querySelector(selector).innerHTML;
+        // Delete plugin instance on element so the new instance will be created
+        PluginManagerSingleton.getPluginInstancesFromElement(this.el).delete(this._pluginName);
     }
 
-    /**
-     * @public
-     */
-    disableOption(input) {
-        const listItem = input.closest(this.options.listItemSelector);
-        listItem.classList.add('disabled', 'hidden');
-        listItem.setAttribute('title', this.options.snippets.disabledFilterText);
-        listItem.setAttribute('hidden', 'hidden');
-        input.disabled = true;
-        listItem.hidden = true;
-    }
-
-    /**
-     * @public
-     */
-    enableOption(input) {
-        const listItem = input.closest(this.options.listItemSelector);
-        listItem.removeAttribute('title', 'hidden');
-        listItem.classList.remove('disabled', 'hidden');
-        input.disabled = input.classList.contains('e-ff-not-selectable');
-        listItem.hidden = false;
-
-        const label = listItem.querySelector('label');
-        var count = this.activeItemsTotalHits[label.htmlFor];
-        if ((label.innerText.substr(0, label.innerText.lastIndexOf('(')))) {
-            label.innerText = (label.innerText.substr(0, label.innerText.lastIndexOf('('))) + '(' + count + ')';
+    afterContentChange() {
+        if (!this.el.classList.contains('disabled')) {
+            this.listing.deregisterFilter(this);
         }
-    }
-
-    _disableInactiveFilterOptions(activeItemIds) {
-        const checkboxes = DomAccess.querySelectorAll(this.el, this.options.checkboxSelector);
-        Iterator.iterate(checkboxes, (checkbox) => {
-            if (checkbox.checked === true) {
-                this.enableOption(checkbox);
-                return;
-            }
-
-            if (activeItemIds.includes(checkbox.id)) {
-                this.enableOption(checkbox);
-            } else {
-                this.disableOption(checkbox);
-            }
-        });
     }
 }

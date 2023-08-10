@@ -34,6 +34,7 @@ declare(strict_types=1);
 namespace Elio\FactFinder\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
@@ -51,6 +52,9 @@ class Migration1637571600FilterRestrictions extends MigrationStep
         return 1637571600;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Connection $connection): void
     {
         $query = <<<SQL

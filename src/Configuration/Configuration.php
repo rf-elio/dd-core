@@ -65,6 +65,7 @@ class Configuration extends Struct
     private bool $trackCart;
     private bool $trackLogin;
     private bool $trackProductView;
+    private array $disallowTrackingForUserAgents;
     private bool $botProtectionActive;
     private bool $botProtectionUseBadBotList;
     /**
@@ -96,6 +97,10 @@ class Configuration extends Struct
     private int $maxAdvisorProducts;
     private string $searchTermForAdvisorCmsElement;
     private int $showPassedAdvisorAfterDays;
+    private bool $productRankingActive;
+    private int $productRankingMaxOrderAge;
+    private array $productRankingOrderStates;
+    private array $productRankingOrderDeliveryStates;
 
     /**
      * Configuration constructor.
@@ -111,6 +116,7 @@ class Configuration extends Struct
      * @param bool $trackCheckout
      * @param bool $trackLogin
      * @param bool $trackProductView
+     * @param array $disallowTrackingForUserAgents
      * @param bool $listingUseFactFinder
      * @param array<string> $additionalRequestParameters
      * @param bool $botProtectionActive
@@ -135,6 +141,10 @@ class Configuration extends Struct
      * @param int $maxAdvisorProducts
      * @param string $searchTermForAdvisorCmsElement
      * @param int $showPassedAdvisorAfterDays
+     * @param bool $productRankingActive
+     * @param int $productRankingMaxOrderAge
+     * @param array $productRankingOrderStates
+     * @param array $productRankingOrderDeliveryStates
      */
     public function __construct(
         bool $active,
@@ -149,6 +159,7 @@ class Configuration extends Struct
         bool $trackCheckout,
         bool $trackLogin,
         bool $trackProductView,
+        array $disallowTrackingForUserAgents,
         bool $listingUseFactFinder,
         array $additionalRequestParameters,
         bool $botProtectionActive,
@@ -172,7 +183,11 @@ class Configuration extends Struct
         int $productDetailSliderLimit,
         int $maxAdvisorProducts,
         string $searchTermForAdvisorCmsElement,
-        int $showPassedAdvisorAfterDays
+        int $showPassedAdvisorAfterDays,
+        bool $productRankingActive,
+        int $productRankingMaxOrderAge,
+        array $productRankingOrderStates,
+        array $productRankingOrderDeliveryStates,
     )
     {
         $this->useAso = $useAso;
@@ -189,6 +204,7 @@ class Configuration extends Struct
         $this->trackCart = $trackCart;
         $this->trackLogin = $trackLogin;
         $this->trackProductView = $trackProductView;
+        $this->disallowTrackingForUserAgents = $disallowTrackingForUserAgents;
         $this->botProtectionActive = $botProtectionActive;
         $this->botProtectionUseBadBotList = $botProtectionUseBadBotList;
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
@@ -211,6 +227,10 @@ class Configuration extends Struct
         $this->maxAdvisorProducts = $maxAdvisorProducts;
         $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
         $this->showPassedAdvisorAfterDays = $showPassedAdvisorAfterDays;
+        $this->productRankingActive = $productRankingActive;
+        $this->productRankingMaxOrderAge = $productRankingMaxOrderAge;
+        $this->productRankingOrderStates = $productRankingOrderStates;
+        $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
     }
 
     /**
@@ -324,6 +344,14 @@ class Configuration extends Struct
     public function isTrackProductView(): bool
     {
         return $this->trackProductView;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisallowTrackingForUserAgents(): array
+    {
+        return $this->disallowTrackingForUserAgents;
     }
 
     /**
@@ -500,5 +528,37 @@ class Configuration extends Struct
     public function getShowPassedAdvisorAfterDays(): int
     {
         return $this->showPassedAdvisorAfterDays;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProductRankingActive(): bool
+    {
+        return $this->productRankingActive;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProductRankingMaxOrderAge(): int
+    {
+        return $this->productRankingMaxOrderAge;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProductRankingOrderStates(): array
+    {
+        return $this->productRankingOrderStates;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProductRankingOrderDeliveryStates(): array
+    {
+        return $this->productRankingOrderDeliveryStates;
     }
 }

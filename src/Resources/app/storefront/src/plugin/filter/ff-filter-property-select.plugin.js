@@ -1,5 +1,6 @@
 import FilterPropertySelectPlugin from 'src/plugin/listing/filter-property-select.plugin';
 import deepmerge from 'deepmerge';
+import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
 
 export default class FactFinderFilterPropertySelectPlugin extends FilterPropertySelectPlugin {
 
@@ -14,43 +15,16 @@ export default class FactFinderFilterPropertySelectPlugin extends FilterProperty
         return values;
     }
 
-    refreshDisabledState(filter) {
-        // Prevent disabling if propertyName is not set correctly
-        if (this.options.propertyName === '') {
-            return;
+    updateOpenedFilter(newFilter) {
+        const selector = '.filter-panel-item-dropdown';
+        this.el.querySelector(selector).innerHTML = newFilter.querySelector(selector).innerHTML;
+        // Delete plugin instance on element so the new instance will be created
+        PluginManagerSingleton.getPluginInstancesFromElement(this.el).delete(this._pluginName);
+    }
+
+    afterContentChange() {
+        if (!this.el.classList.contains('disabled')) {
+            this.listing.deregisterFilter(this);
         }
-
-        const activeItems = [];
-        const properties = filter[this.options.name];
-
-        if (!properties || !properties.entities) {
-            this.disableFilter();
-            return;
-        }
-        const entities = properties.entities;
-
-        const property = entities.find(entity => entity.translated.name === this.options.propertyName);
-        if (property) {
-            activeItems.push(...property.options);
-        } else {
-            this.disableFilter();
-            return;
-        }
-
-        const actualValues = this.getValues();
-        const actualProperties = actualValues[this.options.name];
-
-        if (activeItems.length < 1 && actualProperties.length === 0) {
-            this.disableFilter()
-            return;
-        } else {
-            this.enableFilter();
-        }
-
-        if(actualProperties.length > 0) {
-            return;
-        }
-
-        this._disableInactiveFilterOptions(activeItems.map(entity => entity.extensions.ff_facet_extension.key));
     }
 }

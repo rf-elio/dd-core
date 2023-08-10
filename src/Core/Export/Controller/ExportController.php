@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Elio\FactFinder\Core\Export\Controller;
 
@@ -6,14 +6,14 @@ use Elio\FactFinder\Core\Export\ExportEntity;
 use Elio\FactFinder\Core\Export\ExportGenerateMessage;
 use Elio\FactFinder\Core\Export\ExportService;
 use Elio\FactFinder\Core\Export\ExportStorageService;
-use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -21,8 +21,9 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class ExportController extends AbstractController
 {
     private ExportStorageService $exportStorageService;
@@ -47,6 +48,7 @@ class ExportController extends AbstractController
 
     /**
      * @Route("/api/_action/ff/export/status/{id}", name="api.action.elio-ff.export.status", methods={"GET"})
+     * @throws FilesystemException
      */
     public function features(string $id, Context $context): JsonResponse
     {
@@ -71,6 +73,7 @@ class ExportController extends AbstractController
      *
      * @Route("/api/_action/ff/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
+     * @throws FilesystemException
      */
     public function download(Request $request, string $id, Context $context): Response
     {

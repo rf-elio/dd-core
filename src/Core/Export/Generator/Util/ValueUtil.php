@@ -111,7 +111,7 @@ class ValueUtil
      * @param string $key
      * @return mixed|null
      */
-    public static function getCustomFieldValue(?array $customFields, string $key)
+    public static function getCustomFieldValue(?array $customFields, string $key): mixed
     {
         if(!$customFields) {
             return null;

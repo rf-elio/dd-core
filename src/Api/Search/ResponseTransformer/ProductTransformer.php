@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -33,15 +33,18 @@
 namespace Elio\FactFinder\Api\Search\ResponseTransformer;
 
 
+use Doctrine\DBAL\Connection;
 use Elio\FactFinder\Api\Request\ApiRequest;
 use Elio\FactFinder\Api\Response\ResponseCollection;
 use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
+use Elio\FactFinder\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
 use Elio\FactFinder\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -53,6 +56,7 @@ use Swagger\Client\Model\VariantValues;
 
 /**
  * Class ProductTransformer
+ *
  * @package Elio\FactFinder\Api\Search\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
@@ -62,14 +66,19 @@ use Swagger\Client\Model\VariantValues;
 class ProductTransformer implements ResponseTransformerInterface
 {
     private ProductListingLoader $listingLoader;
+    private Connection $connection;
 
     /**
      * ProductHandler constructor.
+     *
      * @param ProductListingLoader $listingLoader
      */
-    public function __construct(ProductListingLoader $listingLoader)
-    {
+    public function __construct(
+        ProductListingLoader $listingLoader,
+        Connection $connection
+    ) {
         $this->listingLoader = $listingLoader;
+        $this->connection = $connection;
     }
 
     /**
@@ -85,29 +94,40 @@ class ProductTransformer implements ResponseTransformerInterface
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
      * @param ApiRequest $request
+     *
      * @throws InconsistentCriteriaIdsException
      */
-    public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
-    {
-        if(!$model instanceof Result) {
+    public function transform(
+        ModelInterface $model,
+        ResponseCollection $responseCollection,
+        SalesChannelContext $context,
+        ApiRequest $request
+    ): void {
+
+        if (!$model instanceof Result) {
             throw new InvalidTypeException($model, Result::class);
         }
 
-        [$mainNumbers, $variantNumbers] = $this->extractProductNumbers($model);
-        $productNumbers = array_merge($mainNumbers, $variantNumbers);
+        $mainNumbers = array_map(
+            static fn (SearchRecord $record) => $record->getId(),
+            $model->getHits()
+        );
+        $productsData = $this->extractMainAndVariantProducts($mainNumbers);
+        $this->resolveMainVariants($productsData, $model->getHits(), $context->getContext());
+
+        $productNumbers = array_keys($productsData);
         $productNumberSort = array_flip($productNumbers);
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
         $criteria->addAssociation('manufacturer');
-
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
 
         // sorts the product collection based on the original ff result order
         $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
-            $aPosition = $productNumberSort[$a->getProductNumber()];
-            $bPosition = $productNumberSort[$b->getProductNumber()];
+            $aPosition = $productNumberSort[$a->getProductNumber()] ?? 0;
+            $bPosition = $productNumberSort[$b->getProductNumber()] ?? 0;
 
             if ($aPosition === $bPosition) {
                 return 0;
@@ -128,28 +148,71 @@ class ProductTransformer implements ResponseTransformerInterface
     }
 
     /**
-     * Extracts the product numbers from the given search result
+     * @param array<string, array<string, string>> $productsData
+     * @param array<SearchRecord> $hits
+     * @param Context $context
      *
-     * @param Result $result
-     * @return string[][]
+     * @return void
      */
-    protected function extractProductNumbers(Result $result): array
+    private function resolveMainVariants(array $productsData, array $hits, Context $context): void
     {
-        $mainNumbers = [];
-        $variantNumbers = [];
+        $mainVariantsMapping = [];
+        $parentVariantMapping = [];
 
-        foreach ($result->getHits() as $searchRecord) {
-            $mainNumbers[] = $searchRecord->getId();
-            /** @var VariantValues $variantValue */
-            foreach ($searchRecord->getVariantValues() as $variantValue) {
-                if (!empty($variantValue->getProductId())) {
-                    $variantNumbers[] = $variantValue->getProductId();
+        foreach ($hits as $hit) {
+            foreach ($hit->getVariantValues() as $variantValue) {
+                if ($variantValue->getProductId() !== $hit->getId()) {
+                    $parentVariantMapping[$hit->getId()] = $variantValue->getProductId();
+                    break;
                 }
             }
         }
 
-        $mainNumbers = array_unique($mainNumbers);
-        $variantNumbers = array_unique($variantNumbers);
-        return [$mainNumbers, $variantNumbers];
+        foreach ($productsData as $productNumber => $data) {
+            if (!array_key_exists($data['parentNumber'], $parentVariantMapping)) {
+                continue;
+            }
+            $mainVariantNumber = $parentVariantMapping[$data['parentNumber']];
+            if (!array_key_exists($mainVariantNumber, $productsData)) {
+                continue;
+            }
+            $mainVariantsMapping[$data['id']] = $productsData[$mainVariantNumber]['id'];
+        }
+
+        $context->addExtension(
+            MainVariantMappingExtension::KEY,
+            new MainVariantMappingExtension($mainVariantsMapping)
+        );
+    }
+
+    /**
+     * Extracts the main and variant product numbers and ids in the right order from the numbers of the search result
+     *
+     * @param array<int, string> $mainNumbers
+     *
+     * @return array<string, array<string, string>>
+     */
+    protected function extractMainAndVariantProducts(array $mainNumbers): array
+    {
+        return $this->connection->fetchAllAssociativeIndexed(
+            '# ff product-transformer::extract-product-numbers
+            SELECT
+                IFNULL(child.product_number, parent.product_number) as number,
+                LOWER(HEX(IFNULL(child.id, parent.id))) as id,
+                parent.product_number as parentNumber,
+                LOWER(HEX(parent.id)) as parentId,
+                LOWER(HEX(child.id)) as childId
+            FROM product as parent
+                LEFT JOIN product as child
+                    ON parent.id = child.parent_id
+                    AND parent.version_id = child.version_id
+            WHERE parent.product_number in (:numbers)
+            ORDER BY FIELD(parent.product_number, :numbers), child.product_number
+            ',
+            [
+                'numbers' => $mainNumbers
+            ],
+            ['numbers' => Connection::PARAM_STR_ARRAY]
+        );
     }
 }

@@ -134,7 +134,7 @@ trait FactFinderLogTrait
      * @param object $sender
      * @param array $context
      */
-    protected function ffLog($level, string $message, object $sender, array $context) : void {
+    protected function ffLog(mixed $level, string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
         $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
         $this->logger->log($level, $message, $context);

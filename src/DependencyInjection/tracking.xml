@@ -7,9 +7,11 @@
         <!-- storefront / controller -->
         <service id="Elio\FactFinder\Core\Tracking\Controller\ProductDetailTrackingController" public="true" >
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="request_stack"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -24,25 +26,44 @@
         <!-- subscriber -->
         <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackCartSubscriber">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="product.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="product.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackLoginSubscriber">
             <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument type="service" id="Elio\FactFinder\Core\Consent\ConsentService"/>
+            <argument type="service" id="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Elio\FactFinder\Core\Tracking\Subscriber\TrackingSubscriber">
+            <argument type="service" id="Elio\FactFinder\Core\Tracking\AllowedChecker\UserAgentAllowedChecker"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Tracking is allowed checker -->
+        <service id="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"
+                class="Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedChecker">
+            <argument type="tagged" tag="elio-ff.tracking.allowed-checker"/>
+        </service>
+        <service id="Elio\FactFinder\Core\Tracking\AllowedChecker\UserAgentAllowedChecker">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
+            <tag name="elio-ff.tracking.allowed-checker"/>
         </service>
     </services>
 </container>

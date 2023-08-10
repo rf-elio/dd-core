@@ -37,9 +37,10 @@ use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
 use Elio\FactFinder\Configuration\FactFinderConfigService;
 use Elio\FactFinder\Configuration\LanguageHelper;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
@@ -61,25 +62,21 @@ class FilterService implements FilterInterface
     public const LEVEL_CATEGORY = 10;
     private const MAX_DEEP_CATEGORY = 20;
 
-    private EntityRepositoryInterface $filterRepository;
-    private EntityRepositoryInterface $filterRestrictionsRepository;
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $filterRestrictionsRepository;
+    private EntityRepository $categoryRepository;
     private FactFinderConfigService $configService;
 
     /**
      * FilterService constructor.
-     * @param EntityRepositoryInterface $filterRepository
-     * @param EntityRepositoryInterface $filterRestrictionsRepository
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $filterRestrictionsRepository
+     * @param EntityRepository $categoryRepository
      * @param FactFinderConfigService $configService
      */
     public function __construct(
-        EntityRepositoryInterface $filterRepository,
-        EntityRepositoryInterface $filterRestrictionsRepository,
-        EntityRepositoryInterface $categoryRepository,
+        EntityRepository $filterRestrictionsRepository,
+        EntityRepository $categoryRepository,
         FactFinderConfigService $configService
     ) {
-        $this->filterRepository = $filterRepository;
         $this->filterRestrictionsRepository = $filterRestrictionsRepository;
         $this->categoryRepository = $categoryRepository;
         $this->configService = $configService;
@@ -139,6 +136,7 @@ class FilterService implements FilterInterface
                 if ($category) {
                     while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
                         $categoriesTreeIds[] = $category->getId();
+                        /** @var CategoryEntity|null $category */
                         $category = $this->categoryRepository->search(
                             new Criteria([$category->getParentId()]),
                             $context
@@ -232,20 +230,6 @@ class FilterService implements FilterInterface
             }
         }
         return $result;
-    }
-
-    /**
-     * Returns array with keys of filterId and values filterPropertyName
-     * for all filters in database;
-     * @return array
-     */
-    private function getAllFilters(): array
-    {
-        $context = Context::createDefaultContext();
-        $criteria = new Criteria();
-        /** @var FilterCollection $filters */
-        $filters = $this->filterRepository->search($criteria, $context)->getEntities();
-        return $this->transformToSimpleForm($filters);
     }
 
     /**

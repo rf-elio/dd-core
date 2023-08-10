@@ -36,7 +36,7 @@ Shopware.Module.register('elio-fact-finder', {
         id: 'elio-fact-finder',
         label: 'ff.global.title',
         color: '#014587',
-        icon: 'default-shopping-paper-bag-product',
+        icon: 'regular-products',
         position: 100
     }]
 });

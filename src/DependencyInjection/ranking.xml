@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+       <!-- command -->
+        <service id="Elio\FactFinder\Command\RankingUpdateCommand">
+            <argument type="service" id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService" />
+            <tag name="console.command"/>
+        </service>
+
+        <!-- scheduled task -->
+        <service id="Elio\FactFinder\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+        <service id="Elio\FactFinder\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService" />
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <!-- service -->
+        <service id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService">
+            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="sales_channel.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+    </services>
+</container>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -34,13 +34,14 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
 use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Consent\ConsentService;
+use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\FactFinder\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
+use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Checkout\Customer\Event\CustomerBeforeLoginEvent;
 use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -55,26 +56,31 @@ class TrackLoginSubscriber implements EventSubscriberInterface
     private FactFinderConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
-    private ConsentService $consentService;
+    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
+    private RequestStack $requestStack;
+    use TrackingSessionTrait;
 
     /**
      * TrackLoginSubscriber constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param ConsentService $consentService
+     * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
+     * @param RequestStack $requestStack
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
-        ConsentService $consentService,
+        TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        RequestStack $requestStack
     )
     {
         $this->configService = $configService;
         $this->bus = $bus;
         $this->eventDispatcher = $eventDispatcher;
-        $this->consentService = $consentService;
+        $this->trackingAllowedChecker = $trackingAllowedChecker;
+        $this->requestStack = $requestStack;
     }
 
     public static function getSubscribedEvents() : array
@@ -97,15 +103,17 @@ class TrackLoginSubscriber implements EventSubscriberInterface
         if(
             !$config->isActive() ||
             !$config->isTrackLogin() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext) ||
+            !$this->trackingAllowedChecker->isTrackingAllowed($salesChannelContext) ||
             !$customer->getId()
         ) {
             return;
         }
+
         $request = new LoginTrackingRequest($config->getApiChannel());
-        $request->addEvent($event->getContextToken(), $customer->getId());
+        $request->addEvent($this->getTrackingSessionId($this->requestStack), $customer->getId());
         $requestCreatedEvent = new LoginTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
+
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),
             $salesChannelId

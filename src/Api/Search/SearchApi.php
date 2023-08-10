@@ -252,7 +252,7 @@ class SearchApi
 
 
         $categoryPath = $navigationRequest->getCategoryPath();
-        if(!empty($categoryPath)){
+        if(!empty($categoryPath) && !array_key_exists('CategoryPath', $navigationRequest->getFilter())){
             $categoryPath = implode('/', array_values($categoryPath));
             $filters[] = [
                 'name' => 'CategoryPath',

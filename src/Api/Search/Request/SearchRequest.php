@@ -117,10 +117,10 @@ abstract class SearchRequest extends ChannelRequest
      * Adds an filter to the ff search request
      *
      * @param string $name
-     * @param string|array $value
+     * @param array|string $value
      * @param bool $substring
      */
-    public function addFilter(string $name, $value, bool $substring = false) : void
+    public function addFilter(string $name, array|string $value, bool $substring = false) : void
     {
         if (!isset($this->filter[$name])) {
             $this->filter[$name] = [

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -33,6 +33,7 @@
 namespace Elio\FactFinder\Command;
 
 use Elio\FactFinder\Core\FilterRestrictions\FilterSyncService;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -82,7 +83,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $propertyId = $input->getArgument('propertyId');
-        $context = Context::createDefaultContext();
+        $context = new Context(new SystemSource());
         try {
             if ($propertyId) {
                 $this->syncOne($context, $output, $propertyId);

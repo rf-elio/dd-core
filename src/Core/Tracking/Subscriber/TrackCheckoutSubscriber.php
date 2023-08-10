@@ -35,16 +35,21 @@ namespace Elio\FactFinder\Core\Tracking\Subscriber;
 
 use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
 use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Consent\ConsentService;
+use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
 use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
+use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -60,30 +65,39 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
     private FactFinderConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
-    private ConsentService $consentService;
+    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
+    private RequestStack $requestStack;
+    private EntityRepository $productRepository;
+    use TrackingSessionTrait;
 
     /**
      * TrackCheckoutSubscriber constructor.
      * @param FactFinderConfigServiceInterface $configService
-     * @param ConsentService $consentService
+     * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
      * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
+     * @param RequestStack $requestStack
+     * @param EntityRepository $productRepository
      */
     public function __construct(
         FactFinderConfigServiceInterface $configService,
-        ConsentService $consentService,
+        TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,
-        AbstractSalesChannelContextFactory $salesChannelContextFactory
+        AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        RequestStack $requestStack,
+        EntityRepository $productRepository
     )
     {
         $this->configService = $configService;
         $this->bus = $bus;
         $this->eventDispatcher = $eventDispatcher;
-        $this->consentService = $consentService;
+        $this->trackingAllowedChecker = $trackingAllowedChecker;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+        $this->requestStack = $requestStack;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -108,13 +122,13 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         $salesChannelContext = $this->salesChannelContextFactory->create(
             Uuid::randomHex(), $salesChannelId, [SalesChannelContextService::LANGUAGE_ID => $order->getLanguageId()]
         );
-
+        $context = $event->getContext();
         $config = $this->configService->getByContext($salesChannelContext);
 
         if(
             !$config->isActive() ||
             !$config->isTrackCheckout() ||
-            !$this->consentService->isTrackingAllowed($salesChannelContext) ||
+            !$this->trackingAllowedChecker->isTrackingAllowed($salesChannelContext) ||
             !$order->getLineItems()
         ) {
             return;
@@ -124,24 +138,45 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         $request = new CheckoutTrackingRequest($config->getApiChannel());
 
         foreach ($order->getLineItems() as $lineItem) {
-            if ($lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE) {
-                $request->addEvent(
-                    $lineItem->getReferencedId(),
-                    $customerId, //@TODO change
-                    $lineItem->getPayload()['productNumber'] ?? '',
-                    $lineItem->getLabel(),
-                    $lineItem->getQuantity(),
-                    $lineItem->getUnitPrice(),
-                    $customerId
-                );
+            if ($lineItem->getType() !== LineItem::PRODUCT_LINE_ITEM_TYPE) {
+                continue;
             }
+
+            /** @var ProductEntity|null $product */
+            $product = $this->productRepository->search(new Criteria([$lineItem->getReferencedId()]), $context)->first();
+            if (!$product) {
+                continue;
+            }
+
+            $masterProductNumber = $productNumber = $product->getProductNumber();
+            if ($product->getParentId()) {
+                /** @var ProductEntity|null $parentProduct */
+                $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context)->first();
+
+                if ($parentProduct) {
+                    $masterProductNumber = $parentProduct->getProductNumber();
+                }
+            }
+
+            $request->addEvent(
+                $productNumber,
+                $this->getTrackingSessionId($this->requestStack),
+                $masterProductNumber,
+                $lineItem->getLabel(),
+                $lineItem->getQuantity(),
+                $lineItem->getUnitPrice(),
+                $customerId
+            );
         }
 
         $checkoutTrackingRequestCreatedEvent = new CheckoutTrackingRequestCreatedEvent($event, $request);
         $this->eventDispatcher->dispatch($checkoutTrackingRequestCreatedEvent);
-        $this->bus->dispatch(new TrackingMessage(
-            $checkoutTrackingRequestCreatedEvent->getRequest(),
-            $salesChannelId
-        ));
+        $request = $checkoutTrackingRequestCreatedEvent->getRequest();
+
+        if (!$request->hasEvents()) {
+            return;
+        }
+
+        $this->bus->dispatch(new TrackingMessage($request, $salesChannelId));
     }
 }

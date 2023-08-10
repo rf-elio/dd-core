@@ -5,19 +5,15 @@ namespace Elio\FactFinder\Tests\Core\Export\Mock\Repository;
 
 
 use Elio\FactFinder\Tests\Core\Export\Mock\EntityDefinitionMock;
-use Shopware\Core\Content\Category\Aggregate\CategoryTranslation\CategoryTranslationEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\EntityHydrator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
@@ -35,14 +31,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
  */
-class ProductRepositoryMock implements EntityRepositoryInterface
+class ProductRepositoryMock extends EntityRepository
 {
     use KernelTestBehaviour;
-
-    public function getDefinition(): EntityDefinition
-    {
-        return new EntityDefinitionMock();
-    }
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
@@ -121,12 +112,13 @@ class ProductRepositoryMock implements EntityRepositoryInterface
     private function createProduct($name, $productNumber): ProductEntity
     {
         $product = new ProductEntity();
-        $product->setId(Uuid::randomHex());
+        $product->setId(Uuid::fromStringToHex($name));
         $product->setName($name);
         $product->setProductNumber($productNumber);
         $product->setManufacturerNumber('test');
         $product->setDescription('test');
         $product->setStock(1);
+        $product->setSales(1);
 
         $priceCollection = new PriceCollection();
         $priceCollection->add(new Price(Defaults::CURRENCY, 150, 200, false));

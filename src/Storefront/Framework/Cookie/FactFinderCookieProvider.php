@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -82,7 +82,7 @@ class FactFinderCookieProvider implements CookieProviderInterface
     public function getCookieGroups(): array
     {
         $cookieGroups = $this->cookieProvider->getCookieGroups();
-        $masterRequest = $this->requestStack->getMasterRequest();
+        $masterRequest = $this->requestStack->getMainRequest();
 
         if($masterRequest === null) {
             return $cookieGroups;

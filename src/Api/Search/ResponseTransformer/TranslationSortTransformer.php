@@ -39,7 +39,7 @@ use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
 use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
@@ -57,16 +57,16 @@ use Swagger\Client\Model\Result;
  */
 class TranslationSortTransformer implements ResponseTransformerInterface
 {
-    private EntityRepositoryInterface $sortingRepository;
+    private EntityRepository $sortingRepository;
     private ResponseTransformerInterface $decorated;
 
     /**
      * SortTransformer constructor.
-     * @param EntityRepositoryInterface $sortingRepository
+     * @param EntityRepository $sortingRepository
      * @param ResponseTransformerInterface $responseTransformer
      */
     public function __construct(
-        EntityRepositoryInterface $sortingRepository,
+        EntityRepository $sortingRepository,
         ResponseTransformerInterface $responseTransformer
     )
     {
@@ -108,7 +108,7 @@ class TranslationSortTransformer implements ResponseTransformerInterface
     {
         $existingSortings = $this->getProductSortings($context);
 
-        foreach ($sortingCollection as $sorting) {
+        foreach ($sortingCollection as $sortingCollectionKey => $sorting) {
             $key = $sorting->getKey();
             $existingSorting = $existingSortings[$key] ?? null;
 
@@ -117,6 +117,11 @@ class TranslationSortTransformer implements ResponseTransformerInterface
             } else {
                 $sorting->setLabel($existingSorting->getTranslations()['label'] ?? $existingSorting->getLabel());
                 $sorting->setTranslated($existingSorting->getTranslated());
+                $sorting->setActive($existingSorting->isActive());
+
+                if (!$sorting->isActive()) {
+                    $sortingCollection->remove($sortingCollectionKey);
+                }
             }
         }
     }

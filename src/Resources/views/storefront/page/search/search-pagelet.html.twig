@@ -1,6 +1,10 @@
 {% sw_extends '@Storefront/storefront/page/search/search-pagelet.html.twig' %}
 
 {% block element_product_listing_wrapper %}
+    <div class="e-ff-listing-properties"
+         data-total="{{ page.listing.total }}"
+    ></div>
+
     <div class="cms-element-sidebar-filter row">
 
         {% block e_mobile_filter_button %}

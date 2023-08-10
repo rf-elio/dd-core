@@ -10,8 +10,18 @@ const ARROW_NAVIGATION_ACTIVE_CLASS = 'is-active';
 
 export default class ElioSuggestAutocompletePlugin extends Plugin {
     init() {
-        this._inputField = DomAccess.querySelector(this.el, 'input[type="search"]');
-        this._autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete');
+        try {
+            this._inputField = DomAccess.querySelector(this.el, 'input[type="search"]');
+            this._autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete');
+        } catch (e) {
+            if (localStorage) {
+                let eDebugOutput = localStorage.getItem("eDebug");
+                if (eDebugOutput && parseInt(eDebugOutput) === 1) {
+                    console.log('SuggestAutocompletePlugin', e)
+                }
+            }
+            return false
+        }
 
         this.registerObserver();
         this.registerEvents();
@@ -32,8 +42,7 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
                                     // autocompletion from search history when input field is empty
                                     text = suggestName.innerText;
                                     this._inputField.value = text;
-                                }
-                                else {
+                                } else {
                                     // autocompletion when user typed something in search field
                                     text = this._createAutocompleteText(suggestName);
                                     if (text)
@@ -42,8 +51,7 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
                                         this._removeAutoComplete();
                                 }
                             }
-                        }
-                        catch(err) {
+                        } catch (err) {
                             // is_active class is set on something that is not suggestion item
                             this._removeAutoComplete();
                         }
@@ -76,8 +84,7 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
     _afterSuggestLoad(afterSuggestObject) {
         try {
             DomAccess.querySelector(this.el, ".is-active");
-        }
-        catch(err) {
+        } catch (err) {
             // There is no active element so this is the first load after the user enters text
             if (afterSuggestObject && afterSuggestObject.detail.firstElement) {
                 let firstElement = afterSuggestObject.detail.firstElement;
@@ -126,8 +133,7 @@ export default class ElioSuggestAutocompletePlugin extends Plugin {
             if (firstHighlight && suggestStartsWithMatch) {
                 autocompleteText = suggestNameInner.replaceAll('highlight', 'invisible');
             }
-        }
-        catch(err) {
+        } catch (err) {
             console.log("There is no exact match in results");
         }
 

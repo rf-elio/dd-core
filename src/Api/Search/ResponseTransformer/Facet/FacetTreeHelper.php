@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2022, elio GmbH.
  * All rights reserved.
@@ -32,13 +32,13 @@
 
 namespace Elio\FactFinder\Api\Search\ResponseTransformer\Facet;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Elio\FactFinder\Core\Util\Tree\Node;
 use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\FacetElement;
@@ -68,15 +68,31 @@ class FacetTreeHelper
     {
         $randomAddTree = new RandomAddTree();
         foreach (array_merge($facet->getSelectedElements(), $facet->getElements()) as $element) {
-            $labels = explode('/', $element->getText());
+            $searchParams = $element->getSearchParams();
 
-            $parent = null;
-            $value = [];
-            foreach ($labels as $label) {
-                $value[] = $label;
-                $randomAddTree->add($label, $parent, [$label, implode('/', $value), $element]);
-                $parent = $label;
+            $searchParamsFilters = $searchParams->getFilters() ?? [];
+            $parents = [];
+            foreach ($searchParamsFilters as $searchParamsFilter) {
+                if ($searchParamsFilter->getName() === $facet->getAssociatedFieldName()) {
+                    $searchParamsFilterValues = $searchParamsFilter->getValues() ?? [];
+                    foreach ($searchParamsFilterValues as $searchParamsFilterValue) {
+                        $parents = $searchParamsFilterValue->getValue();
+                    }
+                }
             }
+
+            $label = $element->getText();
+            $lastParent = end($parents);
+            if ($lastParent === $label) {
+                array_pop($parents);
+            }
+
+            $id = $parents;
+            $id[] = $label;
+            $parents = implode('/', $parents);
+            $id = implode('/', $id);
+
+            $randomAddTree->add($id, $parents, [$label, $label, $element]);
         }
 
         return $randomAddTree->create();
@@ -103,9 +119,10 @@ class FacetTreeHelper
 
             $treeItem = new TreeItem($treeItemCategory, self::convertNodesToTreeItems($facet, $node->getChildNodes()));
             $treeItem->addExtension(DefaultFacetExtension::KEY, new DefaultFacetExtension(
-                $facet->getName(),
+                $facet->getAssociatedFieldName(),
                 $value,
-                $element->getTotalHits()
+                $element->getTotalHits(),
+                $element->getSelected() === 'TRUE'
             ));
 
             $treeItems[] = $treeItem;
@@ -145,12 +162,12 @@ class FacetTreeHelper
 
     /**
      * @param TreeItem[] $treeItems
-     * @param Collection|null $flattTree
+     * @param StructCollection|null $flattTree
      * @return Collection
      */
-    public static function flattenTree(array $treeItems, ?Collection $flattTree = null) : Collection
+    public static function flattenTree(array $treeItems, ?StructCollection $flattTree = null) : Collection
     {
-        $flattTree = $flattTree ?? new ArrayCollection();
+        $flattTree = $flattTree ?? new StructCollection();
         foreach ($treeItems as $treeItem) {
             $flattTree->add($treeItem);
             self::flattenTree($treeItem->getChildren(), $flattTree);

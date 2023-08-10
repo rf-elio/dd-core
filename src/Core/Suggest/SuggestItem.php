@@ -133,10 +133,10 @@ class SuggestItem
 
     /**
      * @param string $name
-     * @param null|mixed $default
+     * @param mixed|null $default
      * @return mixed|null
      */
-    public function getAttribute(string $name, $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
@@ -153,7 +153,7 @@ class SuggestItem
      * @param string $name
      * @param mixed $value
      */
-    public function setAttribute(string $name, $value): void
+    public function setAttribute(string $name, mixed $value): void
     {
         $this->attributes[$name] = $value;
     }

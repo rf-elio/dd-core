@@ -1,5 +1,15 @@
 {% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
 
+{% if cmsPage %}
+    {% set slots = [
+        cmsPage.firstElementOfType('product-listing').id,
+        cmsPage.firstElementOfType('sidebar-filter').id
+    ] %}
+
+    {% set params = params|merge({slots: slots|join('|')}) %}
+{% endif %}
+{% set disableEmptyFilter = false %}
+
 {# advisor campaigns #}
 {% block element_product_listing_wrapper_content %}
     {% block element_product_listing_advisor %}
@@ -17,11 +27,17 @@
 {% endblock %}
 
 {% block product_listing %}
-    {% set elioFFQuery = 'main' %}
-    {% set elioFFPos = 3 %}
-    {% set elioFFPage = 1 %}
-    {% set elioFFPageSize = 2 %}
-    {% set elioFFTrackProductDetailClickPath = path('widgets.elio-ff.tracking.product-detail') %}
+    {% set elioFFQuery = page.searchTerm %}
+    {% set elioFFPage = searchResult.page %}
+    {% set elioFFPageSize = searchResult.limit %}
+
+    {% if searchResult.extensions.TrackingResponse is defined %}
+        {% set trackingResponse = searchResult.extensions.TrackingResponse %}
+        {% set elioFFQuery = trackingResponse.query %}
+        {% set elioFFPage = trackingResponse.pageNo %}
+        {% set elioFFPageSize = trackingResponse.pageSize %}
+    {% endif %}
+
     {{ parent() }}
 {% endblock %}
 

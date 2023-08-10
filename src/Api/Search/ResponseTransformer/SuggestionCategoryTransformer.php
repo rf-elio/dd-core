@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -43,13 +43,12 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
 
@@ -66,15 +65,15 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
     private const CATEGORY_ID_ATTRIBUTE = 'CategoryID';
     private const URL_ATTRIBUTE = 'ProductURL';
 
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
     private AbstractCategoryUrlGenerator $categoryUrlGenerator;
 
     /**
      * SuggestionTransformer constructor.
-     * @param EntityRepositoryInterface $categoryRepository
+     * @param EntityRepository $categoryRepository
      * @param AbstractCategoryUrlGenerator $categoryUrlGenerator
      */
-    public function __construct(EntityRepositoryInterface $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
+    public function __construct(EntityRepository $categoryRepository, AbstractCategoryUrlGenerator $categoryUrlGenerator) {
         $this->categoryRepository = $categoryRepository;
         $this->categoryUrlGenerator = $categoryUrlGenerator;
     }
@@ -206,7 +205,6 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
 
     /**
      * Collects all category entities
-     *
      * @param SuggestGroup $group
      * @param Context $context
      * @return EntityCollection<CategoryEntity>
@@ -226,7 +224,8 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
 
         $criteria = new Criteria($categoryIds);
         $criteria->addAssociation('media');
-        return $this->categoryRepository->search($criteria, $context);
+        /* @phpstan-ignore-next-line */
+        return $this->categoryRepository->search($criteria, $context)->getEntities();
     }
 
     /**
@@ -234,6 +233,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
      *
      * @param SuggestGroup $group
      * @param EntityCollection $categories
+     * @param SalesChannelEntity|null $salesChannel
      */
     protected function enrich(SuggestGroup $group, EntityCollection $categories, ?SalesChannelEntity $salesChannel): void
     {
@@ -247,6 +247,7 @@ class SuggestionCategoryTransformer implements ResponseTransformerInterface
             // add image
             $categoryId = $this->getCategoryId($item);
             if($categories->has($categoryId)) {
+                /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
 
                 if(!$item->hasUrl()) {

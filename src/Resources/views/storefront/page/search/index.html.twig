@@ -2,7 +2,6 @@
 
 {% block base_content %}
     {% set searchTerm = page.searchTerm %}
-
     {% set showSearchHistory = config_by_lang("FactFinder.config.suggestShowSearchHistory") %}
     {% if showSearchHistory %}
         {% set searchTermObject = {
@@ -31,7 +30,7 @@
                             {{ "search.headline"|trans({
                                 '%count%': page.listing.total,
                                 '%searchTerm%': searchTerm,
-                            }) }}
+                            })|raw }}
                         {% endblock %}
                     </h1>
                 {% endblock %}

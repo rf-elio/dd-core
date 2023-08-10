@@ -88,7 +88,7 @@ class ContentTransformer implements ResponseTransformerInterface
      * @param string $key
      * @return mixed|null
      */
-    protected function getFirstValue(array $masterValues, string $key)
+    protected function getFirstValue(array $masterValues, string $key): mixed
     {
         if(!isset($masterValues[$key])) {
             return null;
@@ -115,7 +115,8 @@ class ContentTransformer implements ResponseTransformerInterface
         }
 
         $value = trim($value, '"');
-        return DateTimeImmutable::createFromFormat(ExportDefaults::DATE_TIME_FORMAT, $value);
+        $dateTime = DateTimeImmutable::createFromFormat(ExportDefaults::DATE_TIME_FORMAT, $value);
+        return $dateTime ?: null;
     }
 
     /**

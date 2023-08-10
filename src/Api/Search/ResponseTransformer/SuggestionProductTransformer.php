@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -43,7 +43,7 @@ use Elio\FactFinder\Core\Suggest\SuggestGroup;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -51,7 +51,6 @@ use Elio\FactFinder\Core\Suggest\SuggestItem;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Enriches the product suggest group
@@ -65,18 +64,18 @@ class SuggestionProductTransformer implements ResponseTransformerInterface
     public const TYPE = 'productName';
     private const URL_ATTRIBUTE = 'ProductURL';
 
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
     private FactFinderConfigServiceInterface $configService;
     private SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler;
 
     /**
      * SuggestionTransformer constructor.
-     * @param EntityRepositoryInterface $productRepository
+     * @param EntityRepository $productRepository
      * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
      * @param FactFinderConfigServiceInterface $configService
      */
     public function __construct(
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
         FactFinderConfigServiceInterface $configService
     ) {

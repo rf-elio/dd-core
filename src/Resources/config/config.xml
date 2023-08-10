@@ -328,6 +328,55 @@
             <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
+        <component name="sw-textarea-field">
+            <name>disallowTrackingForUserAgents</name>
+            <label>The tracking will be disabled for requests with the user agents listed here</label>
+            <label lang="de-DE">Das Tracking wird für Anfragen mit den hier aufgeführten User Agents deaktiviert</label>
+            <placeholder>StormForger-X|Test</placeholder>
+            <helpText>User agents separated by pipes(|) </helpText>
+            <helpText lang="de-DE">Durch Pipes getrennte Benutzeragenten(|)</helpText>
+        </component>
+    </card>
+    <card>
+        <title>Ranking</title>
+        <title lang="de-DE">Ranking</title>
+
+        <input-field type="bool">
+            <name>productRankingActive</name>
+            <label>Product ranking: active</label>
+            <label lang="de-DE">Produktranking: aktiv</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Generates the product ranking custom fields based on the order count and amount.</helpText>
+            <helpText lang="de-DE">Generiert die Produkt Custom-Fields basierend auf der Anzahl der Bestellungen und deren Beträgen.</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>productRankingMaxOrderAge</name>
+            <label>Product ranking: Max order age in days that should be considered in the ranking</label>
+            <label lang="de-DE">Produktranking: Maximales Alter der Bestellungen in Tagen die im Ranking berücksichtigt werden sollen</label>
+            <defaultValue>14</defaultValue>
+            <helpText>Only order within the last x days are considered.</helpText>
+            <helpText lang="de-DE">Nur Bestellungen der letzten x Tage werden berücksichtigt.</helpText>
+        </input-field>
+
+        <component name="sw-entity-multi-id-select">
+            <name>productRankingOrderStates</name>
+            <entity>state_machine_state</entity>
+            <label>Product ranking: Order state - only consider orders with the configured states in the ranking</label>
+            <label lang="de-DE">Produktranking: Bestellstatus - nur Bestellungen mit dem gewählten State im Ranking berücksichtigen</label>
+            <helpText>Only orders that have one of the configured state will be taken into account for the ranking calculation.</helpText>
+            <helpText lang="de-DE">Es werden nur Bestelungen mit einem der konfigurierten States in der Rankingberechnung berücksichtigt.</helpText>
+        </component>
+
+        <component name="sw-entity-multi-id-select">
+            <name>productRankingOrderDeliveryStates</name>
+            <entity>state_machine_state</entity>
+            <label>Product ranking: Delivery state - only consider orders with the configured delivery states in the ranking</label>
+            <label lang="de-DE">Produktranking: Lieferstatus - nur Bestellungen mit dem gewählten Lieferstatus im Ranking berücksichtigen</label>
+            <helpText>Only orders that have one of the configured delivery state will be taken into account for the ranking calculation.</helpText>
+            <helpText lang="de-DE">Es werden nur Bestelungen mit einem der konfigurierten Lieferstati in der Rankingberechnung berücksichtigt.</helpText>
+        </component>
     </card>
     <card>
         <title>Bot-Protection</title>
@@ -467,6 +516,7 @@
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
     </card>
+
     <card>
         <title>Debugging</title>
         <title lang="de-DE">Debugging</title>

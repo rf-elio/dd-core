@@ -42,7 +42,6 @@ namespace Elio\FactFinder\Api\Tracking\Request;
  */
 class CartTrackingRequest extends TrackingRequest
 {
-
     /**
      * @param string $id
      * @param string $sid

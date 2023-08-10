@@ -1,0 +1,99 @@
+<?php
+/**
+ * Copyright (c) 2022, elio GmbH.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+namespace Elio\FactFinder\Core\Tracking\Subscriber;
+
+
+use Elio\FactFinder\Core\Tracking\AllowedChecker\UserAgentAllowedChecker;
+use Shopware\Core\Framework\Routing\KernelListenerPriorities;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SalesChannel\Event\SalesChannelContextRestoredEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+/**
+ * Class TrackingSubscriber
+ *
+ * @package Elio\FactFinder\Core\Tracking\Subscriber
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Alexander Mikheev <ami@elio-systems.com>
+ * @copyright Copyright (c) 2022, elio GmbH (https://www.elio-systems.com)
+ */
+class TrackingSubscriber implements EventSubscriberInterface
+{
+    private UserAgentAllowedChecker $userAgentAllowedChecker;
+
+    public function __construct(
+        UserAgentAllowedChecker $userAgentAllowedChecker
+    ) {
+        $this->userAgentAllowedChecker = $userAgentAllowedChecker;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::CONTROLLER => [
+                'onKernelController',
+                KernelListenerPriorities::KERNEL_CONTROLLER_EVENT_CONTEXT_RESOLVE_POST
+            ],
+            SalesChannelContextRestoredEvent::class => 'onContextRestore'
+        ];
+    }
+
+    public function onKernelController(ControllerEvent $event): void
+    {
+        $request = $event->getRequest();
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        if ($context === null){
+            return;
+        }
+
+        $this->userAgentAllowedChecker->updateContext(
+            $request->server->get('HTTP_USER_AGENT'),
+            $context
+        );
+    }
+
+    public function onContextRestore(SalesChannelContextRestoredEvent $restoredEvent): void
+    {
+        $request = Request::createFromGlobals();
+        $newContext = $restoredEvent->getRestoredSalesChannelContext();
+
+        $this->userAgentAllowedChecker->updateContext(
+            $request->server->get('HTTP_USER_AGENT'),
+            $newContext
+        );
+    }
+}

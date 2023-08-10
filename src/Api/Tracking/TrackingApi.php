@@ -85,6 +85,7 @@ class TrackingApi
             $this,
             ['request' => $request, 'events' => $request->getEvents()]
         );
+
         if(!$request->hasEvents()) {
             return;
         }
@@ -180,14 +181,14 @@ class TrackingApi
     {
         return array_map(static function (array $event) : ClickEvent {
             return new ClickEvent([
-                'id' => $event['id'],
+                'id' => $event['id'], // hier die Produktnummer
                 'sid' => $event['sid'],
-                'master_id' => $event['productNumber'],
+                'master_id' => $event['productNumber'], // hier kommt die Varianten-Produkt-Nummer -> hier soll die Nummer der Hauptvarianten kommen
                 'title' => $event['title'],
                 'query' => $event['query'],
                 'pos' => $event['pos'],
                 'page' => $event['page'],
-                'pageSize' => $event['pageSize'],
+                'page_size' => $event['pageSize'],
                 'campaign' => $event['campaign'],
                 'user_id' => $event['customerId'],
             ]);

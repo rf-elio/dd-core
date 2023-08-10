@@ -32,8 +32,6 @@
 
 namespace Elio\FactFinder\Core\Export;
 
-require_once __DIR__.'/../../../vendor/autoload.php';
-
 use Cron\CronExpression;
 use Cron\FieldFactory;
 use DateTime;
@@ -46,7 +44,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -65,9 +63,9 @@ use Throwable;
 class ExportService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
-    private EntityRepositoryInterface $exportRepository;
+    private EntityRepository $exportRepository;
     /**
      * @var ExportGeneratorInterface[]
      */
@@ -91,7 +89,7 @@ class ExportService
 
     /**
      * ExportService constructor.
-     * @param EntityRepositoryInterface $exportRepository
+     * @param EntityRepository $exportRepository
      * @param AbstractSalesChannelContextFactory $salesChannelContextFactory
      * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface $logger
@@ -99,7 +97,7 @@ class ExportService
      * @param FileWriterInterface[] $writers
      */
     public function __construct(
-        EntityRepositoryInterface $exportRepository,
+        EntityRepository $exportRepository,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
@@ -126,6 +124,7 @@ class ExportService
     {
         $criteria->addAssociation('salesChannel.domains');
         $criteria->addFilter(new EqualsFilter('active', true));
+        /* @phpstan-ignore-next-line */
         return $this->exportRepository->search($criteria, $context)->getEntities();
     }
 
@@ -177,7 +176,7 @@ class ExportService
 
         $languageId = $export->getLanguageId();
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
-        
+
         $this->exportRepository->update([['id' => $export->getId(), 'lastGenerationStartedAt' => new DateTime()]], $context);
         $this->logger->info(
             sprintf('Generating export: %s', $export->getName()),

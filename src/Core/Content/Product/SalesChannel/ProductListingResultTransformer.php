@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
@@ -38,6 +38,7 @@ use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
+use Elio\FactFinder\Api\Search\Response\TrackingResponse;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -91,6 +92,7 @@ class ProductListingResultTransformer
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
+        $this->addTracking($resultCollection, $shopwareProductListingResult);
         $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
         return $shopwareProductListingResult;
     }
@@ -144,18 +146,48 @@ class ProductListingResultTransformer
      */
     protected function addCampaigns(ResponseCollection $resultCollection, EntitySearchResult $shopwareProductListingResult) : void
     {
+        // redirect campaigns
         /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
         $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
-        $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+        if ($campaignRedirectionResponse) {
+            $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+        }
 
+        // feedback text campaigns
         /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
         $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
-        $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+        if ($campaignFeedbackResponseCollection) {
+            $shopwareProductListingResult->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+        }
 
+        // advisor campaigns
         $advisorCampaignResponse = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
-        $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+        if ($advisorCampaignResponse) {
+            $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+        }
     }
 
+    /**
+     * Adds the tracking response which contains the parameters we need to add for product tracking
+     *
+     * @param ResponseCollection $resultCollection
+     * @param EntitySearchResult $shopwareProductListingResult
+     * @return void
+     */
+    protected function addTracking(ResponseCollection $resultCollection, EntitySearchResult $shopwareProductListingResult) : void
+    {
+        /** @var TrackingResponse|null $trackingResponse */
+        $trackingResponse = $resultCollection->get(TrackingResponse::class);
+        $shopwareProductListingResult->addExtension(TrackingResponse::KEY, $trackingResponse);
+    }
+
+    /**
+     * @todo: description
+     * @param ProductListingResult $shopwareProductListingResult
+     * @param SearchRequest $searchRequest
+     * @param Request $request
+     * @return void
+     */
     private function handleListingMode(
         ProductListingResult $shopwareProductListingResult,
         SearchRequest $searchRequest,

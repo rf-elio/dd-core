@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2018, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Resources\snippet\en_GB;
+namespace Elio\FactFinder\Core\Content\Product\Subscriber;
 
-use Shopware\Core\System\Snippet\Files\SnippetFileInterface;
 
-class SnippetFile_en_GB implements SnippetFileInterface
+use Elio\FactFinder\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
+use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+/**
+ * Class ProductSubscriber
+ *
+ * @package Elio\FactFinder\Core\Content\Product\Subscriber
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Alexander Mikheev <ami@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
+class ProductSubscriber implements EventSubscriberInterface
 {
-    public function getName(): string
+    public static function getSubscribedEvents(): array
     {
-        return 'storefront.en-GB';
+        return [
+            ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview'
+        ];
     }
 
-    public function getPath(): string
+    public function onProductListingResolvePreview(ProductListingResolvePreviewEvent $event): void
     {
-        return __DIR__ . '/storefront.en-GB.json';
-    }
+        $mainVariantMapping = $event->getContext()->getExtension(MainVariantMappingExtension::KEY);
+        if (!$mainVariantMapping instanceof MainVariantMappingExtension) {
+            return;
+        }
+        $mainVariantMapping = $mainVariantMapping->getMapping();
 
-    public function getIso(): string
-    {
-        return 'en-GB';
-    }
-
-    public function getAuthor(): string
-    {
-        return 'FACTFinder-Snippets';
-    }
-
-    public function isBase(): bool
-    {
-        return true;
+        foreach ($event->getMapping() as $id => $mappedId) {
+            if (array_key_exists($id, $mainVariantMapping)) {
+                $event->replace($id, $mainVariantMapping[$id]);
+            }
+        }
     }
 }

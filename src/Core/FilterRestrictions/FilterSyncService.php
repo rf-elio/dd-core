@@ -35,10 +35,11 @@ namespace Elio\FactFinder\Core\FilterRestrictions;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -56,22 +57,22 @@ use Throwable;
  */
 class FilterSyncService
 {
-    private EntityRepositoryInterface $propertyRepository;
-    private EntityRepositoryInterface $filterRepository;
-    private EntityRepositoryInterface $filterTranslationRepository;
+    private EntityRepository $propertyRepository;
+    private EntityRepository $filterRepository;
+    private EntityRepository $filterTranslationRepository;
     private LoggerInterface $logger;
 
     /**
      * FilterService constructor.
-     * @param EntityRepositoryInterface $propertyRepository
-     * @param EntityRepositoryInterface $filterRepository
-     * @param EntityRepositoryInterface $filterTranslationRepository
+     * @param EntityRepository $propertyRepository
+     * @param EntityRepository $filterRepository
+     * @param EntityRepository $filterTranslationRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
-        EntityRepositoryInterface $propertyRepository,
-        EntityRepositoryInterface $filterRepository,
-        EntityRepositoryInterface $filterTranslationRepository,
+        EntityRepository $propertyRepository,
+        EntityRepository $filterRepository,
+        EntityRepository $filterTranslationRepository,
         LoggerInterface $logger
     ) {
         $this->propertyRepository = $propertyRepository;
@@ -94,10 +95,11 @@ class FilterSyncService
         $criteria->addFilter(
             new EqualsFilter('propertyId', $property->getId())
         );
-        $propertyTranslations = $property->getTranslations();
+        $propertyTranslations = $property->getTranslations() ?? new PropertyGroupTranslationCollection();
         $filter = $this->filterRepository->search($criteria, $context);
         if ($filter->getTotal() > 0) {
             // updating
+            /* @phpstan-ignore-next-line */
             $this->update($filter->first(), $property->getName(), $propertyTranslations->getElements(), $context);
         } else {
             // creating
@@ -139,12 +141,12 @@ class FilterSyncService
             /** @var FilterEntity $filter */
             foreach ($filters as $filter) {
                 $propertiesNamesUpdated[$filter->getPropertyId()] = true; // flag as updated
-                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations, $context);
+                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations[$filter->getPropertyId()], $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
                 'Cannot update filters with this property ids',
-                ['$filters' => $filters]
+                ['$filters' => $filters, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             );
             throw new FilterSyncUpdateFailedException(
                 'FilterSync: Update failed - {{ message }}',
@@ -198,13 +200,14 @@ class FilterSyncService
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) {
+    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) : void
+    {
         $this->filterRepository->update(
-            [
+            [[
                 'id' => $filterEntity->getId(),
                 'propertyName' => $propertyName,
                 'technicalName' => $propertyName
-            ],
+            ]],
             $context
         );
         $dataToUpdate = [];
@@ -227,16 +230,17 @@ class FilterSyncService
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) {
+    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) : void
+    {
         $newFilterId = Uuid::randomHex();
         $this->filterRepository->create(
-            [
+            [[
                 'id' => $newFilterId,
                 'propertyName' => $propertyName,
                 'technicalName' => $propertyName,
                 'propertyId' => $propertyId,
                 'isCustom' => false
-            ],
+            ]],
             $context
         );
         $dataToCreate = [];
@@ -257,7 +261,7 @@ class FilterSyncService
      * @param array $filtersIdsToDelete
      * @param Context $context
      */
-    private function delete(array $filtersIdsToDelete, Context $context)
+    private function delete(array $filtersIdsToDelete, Context $context) : void
     {
         $dataToDelete = [];
         foreach ($filtersIdsToDelete as $id) {

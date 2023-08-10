@@ -117,7 +117,7 @@ class ProductSearchRequestBuilder
         }
 
         $page = (int)$payload[self::PARAM_PAGE];
-        $page = $page < 1 ? 1 : $page;
+        $page = max($page, 1);
         $searchRequest->setPage($page);
     }
 

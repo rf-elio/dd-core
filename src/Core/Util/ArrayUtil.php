@@ -50,7 +50,7 @@ class ArrayUtil
      * @param mixed  $data
      * @param string $keys
      */
-    public static function arrayKeyPush(array &$array, $data, ...$keys): void
+    public static function arrayKeyPush(array &$array, mixed $data, ...$keys): void
     {
         if(empty($keys))
         {
@@ -74,7 +74,7 @@ class ArrayUtil
      * @param mixed $data
      * @param string $keys
      */
-    public static function arrayKeyAdd(array &$array, $data, ...$keys): void
+    public static function arrayKeyAdd(array &$array, mixed $data, ...$keys): void
     {
         $key = $keys[0];
         if(count($keys) === 1)

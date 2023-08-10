@@ -8,7 +8,7 @@ use Elio\FactFinder\Tests\Core\Export\Mock\EntityDefinitionMock;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -26,7 +26,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
  *
  * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
  */
-class SalesChannelRepositoryMock implements EntityRepositoryInterface
+class SalesChannelRepositoryMock extends EntityRepository
 {
     public function getDefinition(): EntityDefinition
     {
@@ -58,7 +58,7 @@ class SalesChannelRepositoryMock implements EntityRepositoryInterface
         $currency->setId(Defaults::CURRENCY);
 
         $salesChannel = new SalesChannelEntity();
-        $salesChannel->setId(Defaults::SALES_CHANNEL);
+        $salesChannel->setId(Defaults::SALES_CHANNEL_TYPE_STOREFRONT);
         $salesChannel->setCurrencies(new CurrencyCollection([$currency]));
 
         return new EntitySearchResult(

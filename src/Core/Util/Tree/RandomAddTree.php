@@ -24,7 +24,7 @@ class RandomAddTree
      * @param string|null $parentID
      * @param mixed       $value
      */
-    public function add(string $id, ?string $parentID, $value): void
+    public function add(string $id, ?string $parentID, mixed $value): void
     {
         if(isset($this->nodeList[$id]))
         {
