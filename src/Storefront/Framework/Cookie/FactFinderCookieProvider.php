@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Framework\Cookie;
+namespace Elio\ElioSearch\Storefront\Framework\Cookie;
 
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class FactFinderCookieProvider
- * @package Elio\FactFinder\Storefront\Framework\Cookie
+ * @package Elio\ElioSearch\Storefront\Framework\Cookie
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

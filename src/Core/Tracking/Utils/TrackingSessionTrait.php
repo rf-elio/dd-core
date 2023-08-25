@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Utils;
+namespace Elio\ElioSearch\Core\Tracking\Utils;
 
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\RequestStack;

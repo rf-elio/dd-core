@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Storefront\Controller;
+namespace Elio\ElioSearch\Storefront\Controller;
 
-use Elio\FactFinder\Api\Search\Request\SuggestRequest;
-use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
-use Elio\FactFinder\Api\Search\SuggestApi;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
+use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
+use Elio\ElioSearch\Api\Search\SuggestApi;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;

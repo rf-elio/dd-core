@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Exception;
+namespace Elio\ElioSearch\Core\Exception;
 
 
 /**
  * Class InvalidTypeException
- * @package Elio\FactFinder\Core\Exception
+ * @package Elio\ElioSearch\Core\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

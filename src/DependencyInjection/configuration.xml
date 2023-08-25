@@ -4,12 +4,12 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Configuration\FactFinderConfigService">
+        <service id="Elio\ElioSearch\Configuration\FactFinderConfigService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="language.repository"/>
         </service>
-        <service id="Elio\FactFinder\Storefront\TwigExtension\ConfigLanguageBased">
+        <service id="Elio\ElioSearch\Storefront\TwigExtension\ConfigLanguageBased">
             <argument type="service" id="Shopware\Storefront\Framework\Twig\TemplateConfigAccessor"/>
             <argument type="service" id="language.repository"/>
             <tag name="twig.extension"/>

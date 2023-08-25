@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\FactFinder\Configuration;
+namespace Elio\ElioSearch\Configuration;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

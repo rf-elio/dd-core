@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Records;
+namespace Elio\ElioSearch\Api\Records;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Records\Request\DetailPageRequest;
-use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
-use Elio\FactFinder\Api\Records\Request\RecordRequest;
-use Elio\FactFinder\Api\Records\Request\SimilarRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Transform\Transformer;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\Records\Request\DetailPageRequest;
+use Elio\ElioSearch\Api\Records\Request\RecommendationRequest;
+use Elio\ElioSearch\Api\Records\Request\RecordRequest;
+use Elio\ElioSearch\Api\Records\Request\SimilarRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\FullRecordsResult;
@@ -48,7 +48,7 @@ use Throwable;
 /**
  * Class RecordsApi
  *
- * @package Elio\FactFinder\Api\Records
+ * @package Elio\ElioSearch\Api\Records
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

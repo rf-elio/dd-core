@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Export\Mock;
+namespace Elio\ElioSearch\Tests\Core\Export\Mock;
 
 
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -9,7 +9,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Class EventDispatcherMock
  *
- * @package Elio\FactFinder\Tests\Core\Export\Mock
+ * @package Elio\ElioSearch\Tests\Core\Export\Mock
  */
 class EventDispatcherMock implements EventDispatcherInterface
 {

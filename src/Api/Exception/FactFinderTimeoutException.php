@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Exception;
+namespace Elio\ElioSearch\Api\Exception;
 
 
-use Elio\FactFinder\Core\Exception\FactFinderException;
+use Elio\ElioSearch\Core\Exception\FactFinderException;
 
 /**
  * This exception will be thrown if ff run into an timeout. The timeout is not about the request or shopware, the
  * timeout happened in ff.
  *
  * Class FactFinderTimeoutException
- * @package Elio\FactFinder\Api\Exception
+ * @package Elio\ElioSearch\Api\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

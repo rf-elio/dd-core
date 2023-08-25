@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Message;
+namespace Elio\ElioSearch\Core\Tracking\Message;
 
 
-use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
 
 /**
  * Class TrackingMessage
- * @package Elio\FactFinder\Core\Tracking\Message
+ * @package Elio\ElioSearch\Core\Tracking\Message
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

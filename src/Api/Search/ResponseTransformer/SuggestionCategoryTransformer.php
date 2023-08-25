@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Elio\FactFinder\Core\Suggest\SuggestGroup;
-use Elio\FactFinder\Core\Util\ArrayUtil;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Suggest\SuggestGroup;
+use Elio\ElioSearch\Core\Util\ArrayUtil;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\AbstractCategoryUrlGenerator;
 use Shopware\Core\Framework\Context;
@@ -47,7 +47,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Elio\ElioSearch\Core\Suggest\SuggestItem;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\SuggestionResult;
@@ -56,7 +56,7 @@ use Swagger\Client\Model\SuggestionResult;
  * Enriches the category suggest group
  *
  * Class SuggestionCategoryTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer
  * @author Ralf Frommherz <ralf@frommherz.me>
  */
 class SuggestionCategoryTransformer implements ResponseTransformerInterface

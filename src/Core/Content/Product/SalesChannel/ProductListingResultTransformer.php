@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
 
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
-use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\Response\TrackingResponse;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Api\Search\Response\AdvisorCampaignResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Search\Response\TrackingResponse;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -49,7 +49,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductListingResultTransformer
- * @package Elio\FactFinder\Core\Content\Product\SalesChannel
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

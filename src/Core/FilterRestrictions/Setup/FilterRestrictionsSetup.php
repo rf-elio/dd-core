@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Setup;
+namespace Elio\ElioSearch\Core\FilterRestrictions\Setup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Elio\FactFinder\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
+use Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterDefinition;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

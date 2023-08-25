@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api;
+namespace Elio\ElioSearch\Api;
 
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -44,7 +44,7 @@ use Swagger\Client\Api\TrackingApi;
 
 /**
  * Interface ApiClientFactoryInterface
- * @package Elio\FactFinder\Api
+ * @package Elio\ElioSearch\Api
  */
 interface ApiClientFactoryInterface
 {

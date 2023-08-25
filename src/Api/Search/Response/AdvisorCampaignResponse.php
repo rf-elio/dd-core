@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\FactFinder\Api\Search\Response;
+namespace Elio\ElioSearch\Api\Search\Response;
 
-use Elio\FactFinder\Api\Response\Response;
-use Elio\FactFinder\Core\AdvisorCampaign\AdvisorQuestion;
+use Elio\ElioSearch\Api\Response\Response;
+use Elio\ElioSearch\Core\AdvisorCampaign\AdvisorQuestion;
 
 /**
  * Class AdvisorCampaignResponse
- * @package Elio\FactFinder\Api\Search\Response
+ * @package Elio\ElioSearch\Api\Search\Response
  * @author Ralf Frommherz
  */
 class AdvisorCampaignResponse extends Response

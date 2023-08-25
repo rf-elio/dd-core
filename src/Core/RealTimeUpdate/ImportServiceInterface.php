@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate;
+namespace Elio\ElioSearch\Core\RealTimeUpdate;
 
 
-use Elio\FactFinder\Api\Import\Response\ImportResponse;
-use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\ElioSearch\Api\Import\Response\ImportResponse;
+use Elio\ElioSearch\Core\Export\ExportEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**

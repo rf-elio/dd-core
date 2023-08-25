@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Request;
+namespace Elio\ElioSearch\Api\Request;
 
 
 /**
  * Trait AbTestTrait
- * @package Elio\FactFinder\Api\Request
+ * @package Elio\ElioSearch\Api\Request
  */
 trait AbTestTrait
 {

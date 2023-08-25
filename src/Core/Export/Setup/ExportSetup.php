@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Setup;
+namespace Elio\ElioSearch\Core\Export\Setup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\FactFinder\Core\Export\ExportConfig;
-use Elio\FactFinder\Core\Export\ExportDefinition;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
-use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
+use Elio\ElioSearch\Core\Export\ExportConfig;
+use Elio\ElioSearch\Core\Export\ExportDefinition;
+use Elio\ElioSearch\Core\Export\Generator\Content\ContentExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\Product\ProductExportDefaults;
+use Elio\ElioSearch\Core\Export\Writer\CSVFileWriter;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

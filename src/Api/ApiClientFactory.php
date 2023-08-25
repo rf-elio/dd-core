@@ -1,9 +1,9 @@
 <?php
 
-namespace Elio\FactFinder\Api;
+namespace Elio\ElioSearch\Api;
 
-use Elio\FactFinder\Core\Logging\GuzzleLogWrapper;
-use Elio\FactFinder\Core\Logging\LoggingService;
+use Elio\ElioSearch\Core\Logging\GuzzleLogWrapper;
+use Elio\ElioSearch\Core\Logging\LoggingService;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
@@ -16,7 +16,7 @@ use Swagger\Client\Api\PredbasketApi;
 use Swagger\Client\Api\RecordsApi;
 use Swagger\Client\Api\SearchApi;
 use Swagger\Client\Api\TrackingApi;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
 use GuzzleHttp\ClientInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Configuration;
@@ -24,7 +24,7 @@ use GuzzleHttp\Client;
 
 /**
  * Class ApiClientFactory
- * @package Elio\FactFinder\Api
+ * @package Elio\ElioSearch\Api
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

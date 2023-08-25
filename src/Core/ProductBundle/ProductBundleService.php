@@ -1,11 +1,11 @@
 <?php
 
-namespace Elio\FactFinder\Core\ProductBundle;
+namespace Elio\ElioSearch\Core\ProductBundle;
 
 
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
-use Elio\FactFinder\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
+use Elio\ElioSearch\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductBundleService
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  * @author Ralf Frommherz
  */
 class ProductBundleService implements ProductBundleServiceInterface

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Elio\FactFinder\Core\Logging\Api\Controller;
+namespace Elio\ElioSearch\Core\Logging\Api\Controller;
 
-use Elio\FactFinder\Core\Logging\LoggingService;
+use Elio\ElioSearch\Core\Logging\LoggingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Throwable;
  * @Route(defaults={"_routeScope"={"api"}})
  * Class LoggingController
  *
- * @package Elio\FactFinder\Core\Logging\Api\Controller
+ * @package Elio\ElioSearch\Core\Logging\Api\Controller
  */
 #[Route(defaults: ['_routeScope' => ['api']])]
 class LoggingController extends AbstractController

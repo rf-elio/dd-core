@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\ElioSearch\Core\Export;
 
 use Cron\CronExpression;
 use Cron\FieldFactory;
 use DateTime;
-use Elio\FactFinder\Core\Export\Exception\ExportNotSupportedException;
-use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
-use Elio\FactFinder\Core\Export\Writer\FileWriterInterface;
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
+use Elio\ElioSearch\Core\Export\Exception\ExportNotSupportedException;
+use Elio\ElioSearch\Core\Export\Generator\ExportGeneratorInterface;
+use Elio\ElioSearch\Core\Export\Writer\FileWriterInterface;
+use Elio\ElioSearch\Core\Export\Event\ExportGeneratedEvent;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -54,7 +54,7 @@ use Throwable;
 
 /**
  * Class ExportService
- * @package Elio\FactFinder\Core\Export
+ * @package Elio\ElioSearch\Core\Export
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

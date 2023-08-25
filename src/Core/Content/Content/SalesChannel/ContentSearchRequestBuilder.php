@@ -1,18 +1,18 @@
 <?php
 
-namespace Elio\FactFinder\Core\Content\Content\SalesChannel;
+namespace Elio\ElioSearch\Core\Content\Content\SalesChannel;
 
 
-use Elio\FactFinder\Api\Search\Request\ContentSearchRequest;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ContentSearchRequestBuilder
- * @package Elio\FactFinder\Core\Content\Content\SalesChannel
+ * @package Elio\ElioSearch\Core\Content\Content\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -30,21 +30,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Import\ResponseTransformer;
 
 
-use Elio\FactFinder\Api\Import\Response\ImportResponse;
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Api\Import\Response\ImportResponse;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ImportChannelResult;
 use Swagger\Client\Model\ModelInterface;
 
 /**
  * Class ImportTransformer
- * @package Elio\FactFinder\Api\Import\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Import\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

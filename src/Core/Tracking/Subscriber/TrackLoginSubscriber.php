@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Subscriber;
+namespace Elio\ElioSearch\Core\Tracking\Subscriber;
 
-use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\FactFinder\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
-use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
-use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioSearch\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
+use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

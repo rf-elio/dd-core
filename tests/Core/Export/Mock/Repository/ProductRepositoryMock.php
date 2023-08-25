@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Export\Mock\Repository;
+namespace Elio\ElioSearch\Tests\Core\Export\Mock\Repository;
 
 
-use Elio\FactFinder\Tests\Core\Export\Mock\EntityDefinitionMock;
+use Elio\ElioSearch\Tests\Core\Export\Mock\EntityDefinitionMock;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
@@ -29,7 +29,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * Class ProductRepositoryMock
  *
- * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
+ * @package Elio\ElioSearch\Tests\Core\Export\Mock\Repository
  */
 class ProductRepositoryMock extends EntityRepository
 {

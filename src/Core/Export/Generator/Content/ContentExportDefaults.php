@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Content;
+namespace Elio\ElioSearch\Core\Export\Generator\Content;
 
 
 /**
  * Class ContentExportDefaults
- * @package Elio\FactFinder\Core\Export\Generator\Content
+ * @package Elio\ElioSearch\Core\Export\Generator\Content
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

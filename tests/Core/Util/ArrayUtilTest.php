@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Util;
+namespace Elio\ElioSearch\Tests\Core\Util;
 
 
-use Elio\FactFinder\Core\Util\ArrayUtil;
+use Elio\ElioSearch\Core\Util\ArrayUtil;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
 /**
  * Class ArrayUtilTest
  *
- * @package Elio\FactFinder\Tests\Core\Util
+ * @package Elio\ElioSearch\Tests\Core\Util
  */
 class ArrayUtilTest extends TestCase
 {

@@ -30,23 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Content\Product\SalesChannel;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
 
 
-use Elio\FactFinder\Api\Search\Request\AdvisorStatus;
-use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\ElioSearch\Api\Search\Request\AdvisorStatus;
+use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductSearchRequestBuilder
- * @package Elio\FactFinder\Core\Content\Product\SalesChannel
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

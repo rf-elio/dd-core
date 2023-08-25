@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Transform;
+namespace Elio\ElioSearch\Api\Transform;
 
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Transform\Event\TransformResponseEvent;
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Transform\Event\TransformResponseEvent;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -45,7 +45,7 @@ use Throwable;
 
 /**
  * Class Transformer
- * @package Elio\FactFinder\Api\Transform
+ * @package Elio\ElioSearch\Api\Transform
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

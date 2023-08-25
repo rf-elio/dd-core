@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Content\Product\Subscriber;
+namespace Elio\ElioSearch\Core\Content\Product\Subscriber;
 
 
-use Elio\FactFinder\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
 use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class ProductSubscriber
  *
- * @package Elio\FactFinder\Core\Content\Product\Subscriber
+ * @package Elio\ElioSearch\Core\Content\Product\Subscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>

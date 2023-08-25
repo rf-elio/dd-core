@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Subscriber;
+namespace Elio\ElioSearch\Core\Tracking\Subscriber;
 
 
-use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\FactFinder\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
-use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
-use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioSearch\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioSearch\Core\Tracking\Event\CheckoutTrackingRequestCreatedEvent;
+use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -54,7 +54,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class TrackCheckoutSubscriber
- * @package Elio\FactFinder\Core\Tracking\Subscriber
+ * @package Elio\ElioSearch\Core\Tracking\Subscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

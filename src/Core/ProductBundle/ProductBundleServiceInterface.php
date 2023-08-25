@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\FactFinder\Core\ProductBundle;
+namespace Elio\ElioSearch\Core\ProductBundle;
 
 
 use Shopware\Core\Content\Product\ProductCollection;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductBundleService
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  * @author Ralf Frommherz
  */
 interface ProductBundleServiceInterface

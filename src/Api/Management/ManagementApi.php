@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Management;
+namespace Elio\ElioSearch\Api\Management;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
 
 /**
  * Class ManagementApi
- * @package Elio\FactFinder\Api\Management
+ * @package Elio\ElioSearch\Api\Management
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

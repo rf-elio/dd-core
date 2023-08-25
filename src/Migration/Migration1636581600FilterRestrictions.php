@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\FactFinder\Migration;
+namespace Elio\ElioSearch\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;

@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Elio\FactFinder\Api\Records\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Records\ResponseTransformer;
 
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -23,7 +23,7 @@ use Swagger\Client\Model\TypedFlatRecord;
 /**
  * Class ProductTransformer
  *
- * @package Elio\FactFinder\Api\Records\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Records\ResponseTransformer
  */
 class ProductTransformer implements ResponseTransformerInterface
 {

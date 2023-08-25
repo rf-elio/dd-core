@@ -1,17 +1,17 @@
 <?php
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer\Event;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer\Event;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Core\Suggest\SuggestItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class SuggestItemTransformEvent
- * @package Elio\FactFinder\Api\Search\ResponseTransformer\Event
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

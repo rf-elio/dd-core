@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Transform;
+namespace Elio\ElioSearch\Api\Transform;
 
 
 use Shopware\Core\Framework\Struct\Struct;
@@ -38,7 +38,7 @@ use Swagger\Client\Model\ModelInterface;
 
 /**
  * Class ExtensionWrapper
- * @package Elio\FactFinder\Api\Transform
+ * @package Elio\ElioSearch\Api\Transform
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

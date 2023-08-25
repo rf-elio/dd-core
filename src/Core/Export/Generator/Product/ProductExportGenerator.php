@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Product;
+namespace Elio\ElioSearch\Core\Export\Generator\Product;
 
 
-use Elio\FactFinder\Core\Defaults;
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
-use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductExportItemPrepareEvent;
-use Elio\FactFinder\Core\Export\Generator\Product\Event\FilterProductModelEvent;
-use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Elio\FactFinder\Core\Export\SeoRoute;
-use Elio\FactFinder\Core\Features\FeatureServiceInterface;
+use Elio\ElioSearch\Core\Defaults;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\ExportGeneratorInterface;
+use Elio\ElioSearch\Core\Export\Generator\Product\Event\FilterProductExportItemPrepareEvent;
+use Elio\ElioSearch\Core\Export\Generator\Product\Event\FilterProductModelEvent;
+use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
+use Elio\ElioSearch\Core\Export\OutputStream;
+use Elio\ElioSearch\Core\Export\SeoRoute;
+use Elio\ElioSearch\Core\Features\FeatureServiceInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -63,7 +63,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * Class ProductExportGenerator
- * @package Elio\FactFinder\Core\Export\Generator
+ * @package Elio\ElioSearch\Core\Export\Generator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

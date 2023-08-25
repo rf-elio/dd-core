@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Export\Mock\Repository;
+namespace Elio\ElioSearch\Tests\Core\Export\Mock\Repository;
 
 
-use Elio\FactFinder\Tests\Core\Export\Mock\EntityDefinitionMock;
+use Elio\ElioSearch\Tests\Core\Export\Mock\EntityDefinitionMock;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -24,7 +24,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 /**
  * Class SalesChannelRepositoryMock
  *
- * @package Elio\FactFinder\Tests\Core\Export\Mock\Repository
+ * @package Elio\ElioSearch\Tests\Core\Export\Mock\Repository
  */
 class SalesChannelRepositoryMock extends EntityRepository
 {

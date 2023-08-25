@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class FilterRestrictionEntity
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * @package Elio\ElioSearch\Core\FilterRestrictions
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>

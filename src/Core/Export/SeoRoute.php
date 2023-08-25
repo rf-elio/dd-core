@@ -1,11 +1,11 @@
 <?php
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\ElioSearch\Core\Export;
 
 
 /**
  * Class SeoRoute
- * @package Elio\FactFinder\Core\Export
+ * @package Elio\ElioSearch\Core\Export
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -1,12 +1,12 @@
 <?php
 
-namespace Elio\FactFinder\Core\AdvisorCampaign;
+namespace Elio\ElioSearch\Core\AdvisorCampaign;
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class AdvisorQuestion
- * @package Elio\FactFinder\Core\AdvisorCampaign
+ * @package Elio\ElioSearch\Core\AdvisorCampaign
  * @author Ralf Frommherz
  */
 class AdvisorQuestion extends Struct

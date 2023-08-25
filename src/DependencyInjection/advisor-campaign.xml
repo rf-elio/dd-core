@@ -4,11 +4,11 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AdvisorCampaignRoute" public="true">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+        <service id="Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel\AdvisorCampaignRoute" public="true">
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
         </service>
     </services>
 </container>

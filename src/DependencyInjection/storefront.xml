@@ -4,20 +4,20 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Storefront\Framework\Cookie\FactFinderCookieProvider"
+        <service id="Elio\ElioSearch\Storefront\Framework\Cookie\FactFinderCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface"
         >
-            <argument type="service" id="Elio\FactFinder\Storefront\Framework\Cookie\FactFinderCookieProvider.inner" />
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Storefront\Framework\Cookie\FactFinderCookieProvider.inner" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
             <argument id="request_stack" type="service"/>
         </service>
 
-        <service id="Elio\FactFinder\Storefront\Controller\SuggestController"
+        <service id="Elio\ElioSearch\Storefront\Controller\SuggestController"
                  decorates="Shopware\Storefront\Controller\SearchController"
                  public="true"
         >
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Api\Search\SuggestApi" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Api\Search\SuggestApi" />
             <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"/>
@@ -29,11 +29,11 @@
             </call>
         </service>
 
-        <service id="Elio\FactFinder\Storefront\Subscriber\CampaignRedirectionSubscriber">
+        <service id="Elio\ElioSearch\Storefront\Subscriber\CampaignRedirectionSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Elio\FactFinder\Storefront\Controller\ProductDetailCrossSellingController" public="true">
+        <service id="Elio\ElioSearch\Storefront\Controller\ProductDetailCrossSellingController" public="true">
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute" />
             <argument type="service" id="elio.fact_finder.core.logging.default" />
             <call method="setContainer">
@@ -44,8 +44,8 @@
             </call>
         </service>
 
-        <service id="Elio\FactFinder\Storefront\Controller\AdvisorCampaignController" public="true">
-            <argument type="service" id="Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AdvisorCampaignRoute" />
+        <service id="Elio\ElioSearch\Storefront\Controller\AdvisorCampaignController" public="true">
+            <argument type="service" id="Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel\AdvisorCampaignRoute" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

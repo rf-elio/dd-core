@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\FactFinder\Core\Util\Tree;
+namespace Elio\ElioSearch\Core\Util\Tree;
 
 /**
  * Class Node
- * @package Elio\FactFinder\Core\Util\Tree
+ * @package Elio\ElioSearch\Core\Util\Tree
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

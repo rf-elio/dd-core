@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\ElioSearch\Core\FilterRestrictions;
 
-use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncCreateException;
-use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
-use Elio\FactFinder\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncCreateException;
+use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
+use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
@@ -49,7 +49,7 @@ use Throwable;
 
 /**
  * Class FilterSyncService
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * @package Elio\ElioSearch\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

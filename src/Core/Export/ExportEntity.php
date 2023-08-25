@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\ElioSearch\Core\Export;
 
 
 use DateTimeInterface;
@@ -41,7 +41,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
  * Class ExportEntity
- * @package Elio\FactFinder\Core\Export
+ * @package Elio\ElioSearch\Core\Export
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

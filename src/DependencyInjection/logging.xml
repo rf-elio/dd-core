@@ -5,40 +5,40 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- core -->
-        <service id="Elio\FactFinder\Core\Logging\LoggingService">
+        <service id="Elio\ElioSearch\Core\Logging\LoggingService">
             <argument>%kernel.logs_dir%</argument>
         </service>
-        <service id="Elio\FactFinder\Core\Logging\LogFilterContext"/>
+        <service id="Elio\ElioSearch\Core\Logging\LogFilterContext"/>
 
         <!-- api -->
-        <service id="Elio\FactFinder\Core\Logging\Api\Controller\LoggingController" public="true">
-            <argument type="service" id="Elio\FactFinder\Core\Logging\LoggingService" />
+        <service id="Elio\ElioSearch\Core\Logging\Api\Controller\LoggingController" public="true">
+            <argument type="service" id="Elio\ElioSearch\Core\Logging\LoggingService" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
         <!-- subscriber -->
-        <service id="Elio\FactFinder\Core\Logging\Subscriber\LogIpFilterSubscriber">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService"/>
-            <argument type="service" id="Elio\FactFinder\Core\Logging\LogFilterContext"/>
+        <service id="Elio\ElioSearch\Core\Logging\Subscriber\LogIpFilterSubscriber">
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Core\Logging\LogFilterContext"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- logger -->
-        <service id="Elio\FactFinder\Core\Logging\LoggerFactory">
+        <service id="Elio\ElioSearch\Core\Logging\LoggerFactory">
             <argument type="string">%kernel.logs_dir%/%%s_%kernel.environment%.log</argument>
             <argument>%shopware.logger.file_rotation_count%</argument>
-            <argument type="service" id="Elio\FactFinder\Core\Logging\LogFilterContext" />
+            <argument type="service" id="Elio\ElioSearch\Core\Logging\LogFilterContext" />
         </service>
         <service id="elio.fact_finder.core.logging.default" class="Monolog\Logger">
-            <factory service="Elio\FactFinder\Core\Logging\LoggerFactory" method="createRotating" />
+            <factory service="Elio\ElioSearch\Core\Logging\LoggerFactory" method="createRotating" />
             <argument type="string">elio_fact_finder_default</argument>
             <argument type="string">10</argument>
             <argument type="string">false</argument>
         </service>
         <service id="elio.fact_finder.core.logging.debug" class="Monolog\Logger">
-            <factory service="Elio\FactFinder\Core\Logging\LoggerFactory" method="createRotating" />
+            <factory service="Elio\ElioSearch\Core\Logging\LoggerFactory" method="createRotating" />
             <argument type="string">elio_fact_finder_debug</argument>
             <argument type="string">10</argument>
             <argument type="string">true</argument>

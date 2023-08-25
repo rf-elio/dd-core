@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Event;
+namespace Elio\ElioSearch\Core\Export\Event;
 
-use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 

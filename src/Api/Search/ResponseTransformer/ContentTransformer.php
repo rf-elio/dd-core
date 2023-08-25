@@ -1,20 +1,20 @@
 <?php
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\ContentSearchRequest;
-use Elio\FactFinder\Api\Search\Response\ContentListingResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Content\Content\SalesChannel\ContentGroup;
-use Elio\FactFinder\Core\Content\Content\SalesChannel\ContentItem;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
+use Elio\ElioSearch\Api\Search\Response\ContentListingResponse;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentGroup;
+use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentItem;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Export\Generator\Content\ContentExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
@@ -23,7 +23,7 @@ use Swagger\Client\Model\Result;
  * Adds the content responses (content channel) to the search result
  *
  * Class ContentTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

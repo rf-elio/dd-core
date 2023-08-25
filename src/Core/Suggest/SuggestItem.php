@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Suggest;
+namespace Elio\ElioSearch\Core\Suggest;
 
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class SuggestItem
- * @package Elio\FactFinder\Core\Suggest
+ * @package Elio\ElioSearch\Core\Suggest
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

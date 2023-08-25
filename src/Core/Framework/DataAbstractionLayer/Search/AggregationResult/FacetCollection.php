@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -40,7 +40,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 
 /**
  * Class FacetCollection
- * @package Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * @package Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

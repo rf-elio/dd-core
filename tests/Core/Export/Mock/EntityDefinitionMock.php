@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Export\Mock;
+namespace Elio\ElioSearch\Tests\Core\Export\Mock;
 
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -10,7 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 /**
  * Class EntityDefinitionMock
  *
- * @package Elio\FactFinder\Tests\Core\Export\Mock
+ * @package Elio\ElioSearch\Tests\Core\Export\Mock
  */
 class EntityDefinitionMock extends EntityDefinition
 {

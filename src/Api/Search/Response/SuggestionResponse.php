@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\Response;
+namespace Elio\ElioSearch\Api\Search\Response;
 
-use Elio\FactFinder\Api\Response\Response;
-use Elio\FactFinder\Core\Suggest\SuggestGroup;
+use Elio\ElioSearch\Api\Response\Response;
+use Elio\ElioSearch\Core\Suggest\SuggestGroup;
 
 /**
  * Class SuggestionResponse
- * @package Elio\FactFinder\Api\Search\Response
+ * @package Elio\ElioSearch\Api\Search\Response
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

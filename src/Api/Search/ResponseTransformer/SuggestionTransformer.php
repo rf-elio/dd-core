@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Response\SuggestionResponse;
-use Elio\FactFinder\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Elio\FactFinder\Core\Suggest\SuggestGroup;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
+use Elio\ElioSearch\Api\Search\ResponseTransformer\Event\SuggestItemTransformEvent;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Suggest\SuggestGroup;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Elio\FactFinder\Core\Suggest\SuggestItem;
+use Elio\ElioSearch\Core\Suggest\SuggestItem;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\ResultSuggestion;
 use Swagger\Client\Model\SuggestionResult;
@@ -53,7 +53,7 @@ use Throwable;
  * Converts suggest result to internal structure
  *
  * Class SuggestionTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

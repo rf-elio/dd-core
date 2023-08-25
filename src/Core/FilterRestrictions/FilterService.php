@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\ElioSearch\Core\FilterRestrictions;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Elio\FactFinder\Configuration\FactFinderConfigService;
-use Elio\FactFinder\Configuration\LanguageHelper;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Configuration\FactFinderConfigService;
+use Elio\ElioSearch\Configuration\LanguageHelper;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -48,7 +48,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class FilterService
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * @package Elio\ElioSearch\Core\FilterRestrictions
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>

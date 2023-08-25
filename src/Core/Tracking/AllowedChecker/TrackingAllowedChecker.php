@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\AllowedChecker;
+namespace Elio\ElioSearch\Core\Tracking\AllowedChecker;
 
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -38,7 +38,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Class TrackingAllowedChecker
  *
- * @package Elio\FactFinder\Core\Tracking\AllowedValidator
+ * @package Elio\ElioSearch\Core\Tracking\AllowedValidator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>

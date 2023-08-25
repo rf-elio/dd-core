@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Exception;
+namespace Elio\ElioSearch\Core\Export\Exception;
 
 
 use RuntimeException;
 
 /**
  * Class UnknownExportTypeException
- * @package Elio\FactFinder\Core\Export\Exception
+ * @package Elio\ElioSearch\Core\Export\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

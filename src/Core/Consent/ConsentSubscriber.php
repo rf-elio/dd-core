@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Consent;
+namespace Elio\ElioSearch\Core\Consent;
 
 
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
@@ -44,7 +44,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Class ConsentSubscriber
- * @package Elio\FactFinder\Core\Consent
+ * @package Elio\ElioSearch\Core\Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

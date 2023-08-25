@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking\Request;
+namespace Elio\ElioSearch\Api\Tracking\Request;
 
 /**
  * Class CartTrackingRequest
- * @package Elio\FactFinder\Api\Tracking\Request
+ * @package Elio\ElioSearch\Api\Tracking\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

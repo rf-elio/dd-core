@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate\Subscriber;
+namespace Elio\ElioSearch\Core\RealTimeUpdate\Subscriber;
 
-use Elio\FactFinder\Core\Export\Event\ExportGeneratedEvent;
-use Elio\FactFinder\Core\RealTimeUpdate\ImportServiceInterface;
+use Elio\ElioSearch\Core\Export\Event\ExportGeneratedEvent;
+use Elio\ElioSearch\Core\RealTimeUpdate\ImportServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

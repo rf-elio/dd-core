@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder;
+namespace Elio\ElioSearch;
 
-use Elio\FactFinder\Core\Export\Setup\ExportSetup;
-use Elio\FactFinder\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
-use Elio\FactFinder\Setup\CustomFieldSetup;
+use Elio\ElioSearch\Core\Export\Setup\ExportSetup;
+use Elio\ElioSearch\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
+use Elio\ElioSearch\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -54,7 +54,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
-class FactFinder extends Plugin
+class ElioSearch extends Plugin
 {
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = 'content_export_type_inherited';

@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\ElioSearch\Command;
 
 
 use Doctrine\DBAL\Exception;
-use Elio\FactFinder\Core\Ranking\ProductRankingUpdateService;
+use Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,7 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class RankingUpdateCommand
- * @package Elio\FactFinder\Command
+ * @package Elio\ElioSearch\Command
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

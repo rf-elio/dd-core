@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Event;
+namespace Elio\ElioSearch\Core\Tracking\Event;
 
-use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

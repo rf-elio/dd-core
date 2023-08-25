@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Elio\FactFinder\Core\AdvisorCampaign\SalesChannel;
+namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
 
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\SearchApi;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Search\SearchApi;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

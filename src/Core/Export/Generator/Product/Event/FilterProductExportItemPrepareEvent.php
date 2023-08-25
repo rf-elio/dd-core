@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Product\Event;
+namespace Elio\ElioSearch\Core\Export\Generator\Product\Event;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportItem;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class FilterProductExportItemPrepareEvent
- * @package Elio\FactFinder\Core\Export\Generator\Product\Event
+ * @package Elio\ElioSearch\Core\Export\Generator\Product\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

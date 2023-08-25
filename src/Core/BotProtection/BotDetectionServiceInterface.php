@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\BotProtection;
+namespace Elio\ElioSearch\Core\BotProtection;
 
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -38,7 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BotDetectionService
- * @package Elio\FactFinder\Core\BotProtection
+ * @package Elio\ElioSearch\Core\BotProtection
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

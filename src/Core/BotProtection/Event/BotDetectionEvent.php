@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\BotProtection\Event;
+namespace Elio\ElioSearch\Core\BotProtection\Event;
 
 
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +38,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class BotDetectionEvent
- * @package Elio\FactFinder\Core\BotProtection\Event
+ * @package Elio\ElioSearch\Core\BotProtection\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

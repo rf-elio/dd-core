@@ -31,7 +31,7 @@ declare(strict_types=1);
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Migration;
+namespace Elio\ElioSearch\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -40,7 +40,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
  * Class Migration1661932856AddCategoryVersionField
- * @package Elio\FactFinder\Migration
+ * @package Elio\ElioSearch\Migration
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

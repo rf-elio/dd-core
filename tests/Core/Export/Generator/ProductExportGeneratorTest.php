@@ -1,19 +1,19 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Export\Generator;
+namespace Elio\ElioSearch\Tests\Core\Export\Generator;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportStorageService;
-use Elio\FactFinder\Core\Export\Generator\Product\ProductExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Elio\FactFinder\Core\Export\Writer\CSVFileWriter;
-use Elio\FactFinder\Core\Features\FeatureService;
-use Elio\FactFinder\Tests\Core\Export\Mock\EventDispatcherMock;
-use Elio\FactFinder\Tests\Core\Export\Mock\Repository\SalesChannelRepositoryMock;
-use Elio\FactFinder\Tests\Core\Export\Mock\Repository\ProductRepositoryMock;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportStorageService;
+use Elio\ElioSearch\Core\Export\Generator\Product\ProductExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\Product\ProductExportGenerator;
+use Elio\ElioSearch\Core\Export\OutputStream;
+use Elio\ElioSearch\Core\Export\Writer\CSVFileWriter;
+use Elio\ElioSearch\Core\Features\FeatureService;
+use Elio\ElioSearch\Tests\Core\Export\Mock\EventDispatcherMock;
+use Elio\ElioSearch\Tests\Core\Export\Mock\Repository\SalesChannelRepositoryMock;
+use Elio\ElioSearch\Tests\Core\Export\Mock\Repository\ProductRepositoryMock;
 use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\ShippingLocation;
@@ -43,7 +43,7 @@ use Shopware\Core\System\Tax\TaxCollection;
 /**
  * Class ProductExportGeneratorTest
  *
- * @package Elio\FactFinder\Tests\Core\Export\Generator
+ * @package Elio\ElioSearch\Tests\Core\Export\Generator
  */
 class ProductExportGeneratorTest extends TestCase
 {

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
@@ -46,7 +46,7 @@ use Swagger\Client\Model\Result;
  * Adds the pagination
  *
  * Class PagingTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

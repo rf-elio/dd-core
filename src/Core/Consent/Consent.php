@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Consent;
+namespace Elio\ElioSearch\Core\Consent;
 
 use Shopware\Core\Framework\Struct\Struct;
 

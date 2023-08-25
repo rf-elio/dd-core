@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\FactFinder\Core\Logging;
+namespace Elio\ElioSearch\Core\Logging;
 
 
 use Psr\Log\LoggerInterface;
@@ -11,7 +11,7 @@ use Throwable;
 
 /**
  * Trait FactFinderLogTrait
- * @package Elio\FactFinder\Core\Logging
+ * @package Elio\ElioSearch\Core\Logging
  * @author Ralf Frommherz
  */
 trait FactFinderLogTrait

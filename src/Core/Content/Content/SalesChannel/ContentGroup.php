@@ -1,11 +1,11 @@
 <?php
 
-namespace Elio\FactFinder\Core\Content\Content\SalesChannel;
+namespace Elio\ElioSearch\Core\Content\Content\SalesChannel;
 
 
 /**
  * Class ContentGroup
- * @package Elio\FactFinder\Core\Content\Content\SalesChannel
+ * @package Elio\ElioSearch\Core\Content\Content\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

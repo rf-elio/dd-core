@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import\Response;
+namespace Elio\ElioSearch\Api\Import\Response;
 
 
 use DateTimeInterface;
-use Elio\FactFinder\Api\Response\Response;
+use Elio\ElioSearch\Api\Response\Response;
 
 /**
  * Class ImportResponse
- * @package Elio\FactFinder\Api\Import\Response
+ * @package Elio\ElioSearch\Api\Import\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

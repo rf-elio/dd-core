@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import\Request;
+namespace Elio\ElioSearch\Api\Import\Request;
 
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\ElioSearch\Api\Request\ChannelRequest;
 
 /**
  * Class ImportRequest

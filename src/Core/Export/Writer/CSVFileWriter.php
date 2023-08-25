@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\ElioSearch\Core\Export\Writer;
 
 
-use Elio\FactFinder\Core\Export\Exception\ExportValidationException;
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Export\Exception\ExportValidationException;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class CSVFileWriter
- * @package Elio\FactFinder\Core\Export\Writer
+ * @package Elio\ElioSearch\Core\Export\Writer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

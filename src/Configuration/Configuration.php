@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Configuration;
+namespace Elio\ElioSearch\Configuration;
 
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class Configuration
- * @package Elio\FactFinder\Configuration
+ * @package Elio\ElioSearch\Configuration
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

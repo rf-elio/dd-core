@@ -22,7 +22,7 @@
                 } %}
             {% endblock %}
 
-            {% set contentListingResponse = page.listing.getExtension('Elio\\FactFinder\\Api\\Search\\Response\\ContentListingResponse') %}
+            {% set contentListingResponse = page.listing.getExtension('Elio\\ElioSearch\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}
                 {% block page_search_headline %}
                     <h1 class="search-headline">

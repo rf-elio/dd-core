@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Logging\Handler;
+namespace Elio\ElioSearch\Core\Logging\Handler;
 
-use Elio\FactFinder\Core\Logging\LogFilterContext;
+use Elio\ElioSearch\Core\Logging\LogFilterContext;
 use Monolog\Handler\HandlerInterface;
 use Monolog\LogRecord;
 

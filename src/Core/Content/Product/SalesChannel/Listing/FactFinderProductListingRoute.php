@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Listing;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing;
 
 
-use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\SearchApi;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
-use Elio\FactFinder\FactFinder;
+use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Search\SearchApi;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\FactFinder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
@@ -58,7 +58,7 @@ use Throwable;
 
 /**
  * Class FactFinderProductListingRoute
- * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Listing
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

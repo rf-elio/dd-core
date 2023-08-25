@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Transform;
+namespace Elio\ElioSearch\Api\Transform;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Request\RequestCollection;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Request\RequestCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Interface RequestTransformerInterface
- * @package Elio\FactFinder\Api\Transform
+ * @package Elio\ElioSearch\Api\Transform
  */
 interface RequestTransformerInterface
 {

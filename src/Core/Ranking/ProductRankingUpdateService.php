@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Ranking;
+namespace Elio\ElioSearch\Core\Ranking;
 
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\FactFinder;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\FactFinder;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -47,7 +47,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class ProductRankingUpdateService
- * @package Elio\FactFinder\Core\Ranking
+ * @package Elio\ElioSearch\Core\Ranking
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

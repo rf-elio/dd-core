@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Content;
+namespace Elio\ElioSearch\Core\Export\Generator\Content;
 
 
-use Elio\FactFinder\Core\Export\ExportConfig;
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
-use Elio\FactFinder\Core\Export\Generator\ExportGeneratorInterface;
-use Elio\FactFinder\Core\Export\Generator\Util\ValueUtil;
-use Elio\FactFinder\Core\Export\OutputStream;
-use Elio\FactFinder\Core\Export\SeoRoute;
-use Elio\FactFinder\Core\Util\Tree\Node;
-use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
-use Elio\FactFinder\FactFinder;
+use Elio\ElioSearch\Core\Export\ExportConfig;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\ExportGeneratorInterface;
+use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
+use Elio\ElioSearch\Core\Export\OutputStream;
+use Elio\ElioSearch\Core\Export\SeoRoute;
+use Elio\ElioSearch\Core\Util\Tree\Node;
+use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
+use Elio\ElioSearch\FactFinder;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -54,11 +54,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
-use Elio\FactFinder\Core\Defaults;
+use Elio\ElioSearch\Core\Defaults;
 
 /**
  * Class BaseCategoryExportGenerator
- * @package Elio\FactFinder\Core\Export\Generator\Content
+ * @package Elio\ElioSearch\Core\Export\Generator\Content
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

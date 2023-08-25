@@ -5,24 +5,24 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
        <!-- command -->
-        <service id="Elio\FactFinder\Command\RankingUpdateCommand">
-            <argument type="service" id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService" />
+        <service id="Elio\ElioSearch\Command\RankingUpdateCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService" />
             <tag name="console.command"/>
         </service>
 
         <!-- scheduled task -->
-        <service id="Elio\FactFinder\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTask">
+        <service id="Elio\ElioSearch\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTask">
             <tag name="shopware.scheduled.task"/>
         </service>
-        <service id="Elio\FactFinder\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTaskHandler">
+        <service id="Elio\ElioSearch\Core\Ranking\ScheduledTask\ProductRankingUpdateScheduledTaskHandler">
             <argument type="service" id="scheduled_task.repository"/>
-            <argument type="service" id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService" />
             <tag name="messenger.message_handler"/>
         </service>
 
         <!-- service -->
-        <service id="Elio\FactFinder\Core\Ranking\ProductRankingUpdateService">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        <service id="Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService">
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
             <argument type="service" id="sales_channel.repository" />
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>

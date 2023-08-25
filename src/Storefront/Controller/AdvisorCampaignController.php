@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\FactFinder\Storefront\Controller;
+namespace Elio\ElioSearch\Storefront\Controller;
 
-use Elio\FactFinder\Core\AdvisorCampaign\SalesChannel\AbstractAdvisorCampaignRoute;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel\AbstractAdvisorCampaignRoute;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use JsonException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Exception;
+namespace Elio\ElioSearch\Core\FilterRestrictions\Exception;
 
 
-use Elio\FactFinder\Core\Exception\FactFinderException;
+use Elio\ElioSearch\Core\Exception\FactFinderException;
 
 /**
  * Class FilterSyncDeleteException
- * @package Elio\FactFinder\Core\FilterRestrictions\Exception
+ * @package Elio\ElioSearch\Core\FilterRestrictions\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

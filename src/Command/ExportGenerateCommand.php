@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\ElioSearch\Command;
 
-use Elio\FactFinder\Core\Export\ExportService;
+use Elio\ElioSearch\Core\Export\ExportService;
 use Exception;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -48,7 +48,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class ExportGenerateCommand
  *
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
+ * @package   Shopware\Plugins\ElioSearch\Command
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @copyright Copyright (c) 2020, elio GmbH (http://www.elio-systems.com)
  */

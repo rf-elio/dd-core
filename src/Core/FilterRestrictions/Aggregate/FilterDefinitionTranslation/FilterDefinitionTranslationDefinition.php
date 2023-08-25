@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
+namespace Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterDefinition;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -41,7 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
  * Class FilterDefinitionTranslationDefinition
- * @package Elio\FactFinder\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
+ * @package Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Subscriber;
+namespace Elio\ElioSearch\Core\Tracking\Subscriber;
 
-use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\FactFinder\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
-use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
-use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioSearch\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
+use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;

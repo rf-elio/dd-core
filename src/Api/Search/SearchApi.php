@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\ElioSearch\Api\Search;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\ContentSearchRequest;
-use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Api\Transform\Transformer;
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
+use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Api\Transform\Transformer;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
@@ -50,7 +50,7 @@ use Throwable;
 
 /**
  * Class SearchApi
- * @package Elio\FactFinder\Api\Search
+ * @package Elio\ElioSearch\Api\Search
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

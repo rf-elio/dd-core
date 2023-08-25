@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\ProductBundle\Handler;
+namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 
 
-use Elio\FactFinder\Api\Records\RecordsApi;
-use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Excluder;
+use Elio\ElioSearch\Api\Records\RecordsApi;
+use Elio\ElioSearch\Api\Records\Request\RecommendationRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -23,7 +23,7 @@ use Throwable;
 /**
  * Class CartRecommendedBundleHandler
  *
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  */
 class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 {

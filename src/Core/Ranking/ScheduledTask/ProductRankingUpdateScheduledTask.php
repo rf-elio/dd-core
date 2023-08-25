@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Ranking\ScheduledTask;
+namespace Elio\ElioSearch\Core\Ranking\ScheduledTask;
 
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 /**
  * Class ProductRankingUpdateScheduledTask
- * @package Elio\FactFinder\Core\Ranking\ScheduledTask
+ * @package Elio\ElioSearch\Core\Ranking\ScheduledTask
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

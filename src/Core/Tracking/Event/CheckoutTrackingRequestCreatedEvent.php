@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Event;
+namespace Elio\ElioSearch\Core\Tracking\Event;
 
-use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\CheckoutTrackingRequest;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class CheckoutTrackingRequestCreatedEvent
- * @package Elio\FactFinder\Core\Tracking\Event
+ * @package Elio\ElioSearch\Core\Tracking\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

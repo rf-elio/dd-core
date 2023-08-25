@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Elio\FactFinder\Api\Records\Request;
+namespace Elio\ElioSearch\Api\Records\Request;
 
 
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\ElioSearch\Api\Request\ChannelRequest;
 
 /**
  * Class DetailPageRequest
  *
- * @package Elio\FactFinder\Api\Records\Request
+ * @package Elio\ElioSearch\Api\Records\Request
  */
 class DetailPageRequest extends ChannelRequest
 {

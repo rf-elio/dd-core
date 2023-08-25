@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Campaign;
+namespace Elio\ElioSearch\Api\Campaign;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
 
 /**
  * Class CampaignApi
- * @package Elio\FactFinder\Api\Campaign
+ * @package Elio\ElioSearch\Api\Campaign
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

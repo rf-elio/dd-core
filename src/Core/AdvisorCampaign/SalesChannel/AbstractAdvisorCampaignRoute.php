@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\FactFinder\Core\AdvisorCampaign\SalesChannel;
+namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
 
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class AbstractAdvisorCampaignRoute
- * @package Elio\FactFinder\Core\AdvisorCampaign\SalesChannel
+ * @package Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel
  * @author Ralf Frommherz
  */
 abstract class AbstractAdvisorCampaignRoute

@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer\Facet;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer\Facet;
 
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
-use Elio\FactFinder\Core\Util\Tree\Node;
-use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\ElioSearch\Core\Util\Tree\Node;
+use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\Struct\Collection;
@@ -45,7 +45,7 @@ use Swagger\Client\Model\FacetElement;
 
 /**
  * Class FacetTreeHelper
- * @package Elio\FactFinder\Api\Search\ResponseTransformer\Facet
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer\Facet
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

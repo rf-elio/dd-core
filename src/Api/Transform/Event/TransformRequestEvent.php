@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Transform\Event;
+namespace Elio\ElioSearch\Api\Transform\Event;
 
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Request\RequestCollection;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Request\RequestCollection;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class TransformRequestEvent
- * @package Elio\FactFinder\Api\Transform\Event
+ * @package Elio\ElioSearch\Api\Transform\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

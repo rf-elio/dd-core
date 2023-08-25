@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Command;
+namespace Elio\ElioSearch\Command;
 
-use Elio\FactFinder\Core\FilterRestrictions\FilterSyncService;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
@@ -45,7 +45,7 @@ use Throwable;
  * Class SynchronizePropertiesToFiltersCommand
  *
  * @category  Shopware
- * @package   Shopware\Plugins\FactFinder\Command
+ * @package   Shopware\Plugins\ElioSearch\Command
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */

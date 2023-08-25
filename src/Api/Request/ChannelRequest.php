@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Request;
+namespace Elio\ElioSearch\Api\Request;
 
 
 /**
  * Class ChannelRequest
- * @package Elio\FactFinder\Api\Request
+ * @package Elio\ElioSearch\Api\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

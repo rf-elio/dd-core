@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 
-namespace Elio\FactFinder\Storefront\Controller;
+namespace Elio\ElioSearch\Storefront\Controller;
 
 
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRouteResponse;
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class ProductDetailCrossSellingController
  * @Route(defaults={"_routeScope"={"storefront"}})
  *
- * @package Elio\FactFinder\Storefront\Controller
+ * @package Elio\ElioSearch\Storefront\Controller
  */
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailCrossSellingController extends StorefrontController

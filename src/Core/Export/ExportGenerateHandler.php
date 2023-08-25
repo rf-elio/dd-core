@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\ElioSearch\Core\Export;
 
 
 use Exception;
@@ -38,7 +38,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Class ExportGeneratingHandler
- * @package Elio\FactFinder\Core\Export
+ * @package Elio\ElioSearch\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Report;
+namespace Elio\ElioSearch\Core\Report;
 
 
 /**
  * Class ReportItem
- * @package Elio\FactFinder\Core\Report
+ * @package Elio\ElioSearch\Core\Report
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

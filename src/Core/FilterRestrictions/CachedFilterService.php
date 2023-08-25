@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\FilterRestrictions;
+namespace Elio\ElioSearch\Core\FilterRestrictions;
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Elio\FactFinder\Configuration\FactFinderConfigService;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Configuration\FactFinderConfigService;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
@@ -44,7 +44,7 @@ use Throwable;
 
 /**
  * Class CachedFilterService
- * @package Elio\FactFinder\Core\FilterRestrictions
+ * @package Elio\ElioSearch\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

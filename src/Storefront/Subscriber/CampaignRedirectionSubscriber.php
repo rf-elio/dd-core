@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\FactFinder\Storefront\Subscriber;
+namespace Elio\ElioSearch\Storefront\Subscriber;
 
 
-use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\FactFinder\Storefront\Exception\CampaignRedirectionException;
+use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioSearch\Storefront\Exception\CampaignRedirectionException;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Handles the redirection campaign redirect
  *
  * Class CampaignRedirectionSubscriber
- * @package Elio\FactFinder\Storefront\Subscriber
+ * @package Elio\ElioSearch\Storefront\Subscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

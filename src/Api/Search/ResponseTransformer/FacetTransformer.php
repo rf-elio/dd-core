@@ -30,22 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
 
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\NavigationRequestProduct;
-use Elio\FactFinder\Api\Search\Request\ProductSearchRequest;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\ResponseTransformer\Facet\FacetTreeHelper;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
-use Elio\FactFinder\Core\FilterRestrictions\FilterInterface;
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
-use Elio\FactFinder\Core\Framework\DataAbstractionLayer\Search\AggregationResult\SliderResult;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Search\ResponseTransformer\Facet\FacetTreeHelper;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterInterface;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\FacetCollection;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\SliderResult;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Tree\Tree;
 use Shopware\Core\Content\Category\Tree\TreeItem;
@@ -65,13 +65,13 @@ use Swagger\Client\Model\Facet;
 use Swagger\Client\Model\FacetElement;
 use Swagger\Client\Model\ModelInterface;
 use Swagger\Client\Model\Result;
-use Elio\FactFinder\Core\FilterRestrictions\FilterService;
+use Elio\ElioSearch\Core\FilterRestrictions\FilterService;
 
 /**
  * Converts the facets to shopware facets
  *
  * Class FacetTransformer
- * @package Elio\FactFinder\Api\Search\ResponseTransformer
+ * @package Elio\ElioSearch\Api\Search\ResponseTransformer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

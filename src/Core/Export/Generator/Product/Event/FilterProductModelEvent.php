@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Product\Event;
+namespace Elio\ElioSearch\Core\Export\Generator\Product\Event;
 
-use Elio\FactFinder\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportEntity;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class FilterProductModelEvent
- * @package Elio\FactFinder\Core\Export\Generator\Product\Event
+ * @package Elio\ElioSearch\Core\Export\Generator\Product\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Consent;
+namespace Elio\ElioSearch\Core\Consent;
 
 
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class ConsentService
- * @package Elio\FactFinder\Core\Consent
+ * @package Elio\ElioSearch\Core\Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\Controller;
+namespace Elio\ElioSearch\Core\Tracking\Controller;
 
-use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\FactFinder\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
-use Elio\FactFinder\Core\Tracking\Message\TrackingMessage;
-use Elio\FactFinder\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioSearch\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
+use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;

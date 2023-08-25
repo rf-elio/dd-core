@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Setup;
+namespace Elio\ElioSearch\Setup;
 
 
 use RuntimeException;
@@ -49,7 +49,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class CustomFieldSetup
  *
- * @package Elio\FactFinder\Setup
+ * @package Elio\ElioSearch\Setup
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

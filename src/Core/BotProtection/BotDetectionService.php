@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\BotProtection;
+namespace Elio\ElioSearch\Core\BotProtection;
 
 
-use Elio\FactFinder\Configuration\Configuration;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\BotProtection\Event\BotDetectedEvent;
-use Elio\FactFinder\Core\BotProtection\Event\BotDetectionEvent;
+use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\BotProtection\Event\BotDetectedEvent;
+use Elio\ElioSearch\Core\BotProtection\Event\BotDetectionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BotDetectionService
- * @package Elio\FactFinder\Core\BotProtection
+ * @package Elio\ElioSearch\Core\BotProtection
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

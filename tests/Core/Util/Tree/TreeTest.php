@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Elio\FactFinder\Tests\Core\Util\Tree;
+namespace Elio\ElioSearch\Tests\Core\Util\Tree;
 
 
-use Elio\FactFinder\Core\Util\Tree\Node;
-use Elio\FactFinder\Core\Util\Tree\RandomAddTree;
+use Elio\ElioSearch\Core\Util\Tree\Node;
+use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class TreeTest
  *
- * @package Elio\FactFinder\Tests\Core\Util\Tree
+ * @package Elio\ElioSearch\Tests\Core\Util\Tree
  */
 class TreeTest extends TestCase
 {

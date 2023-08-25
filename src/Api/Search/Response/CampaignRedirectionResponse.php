@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\FactFinder\Api\Search\Response;
+namespace Elio\ElioSearch\Api\Search\Response;
 
 
-use Elio\FactFinder\Api\Response\Response;
+use Elio\ElioSearch\Api\Response\Response;
 
 /**
  * Class CampaignRedirectionResponse
- * @package Elio\FactFinder\Api\Search\Response
+ * @package Elio\ElioSearch\Api\Search\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\AllowedChecker;
+namespace Elio\ElioSearch\Core\Tracking\AllowedChecker;
 
 
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Tracking\AllowedChecker\Struct\UserAgent;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct\UserAgent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * Class UserAgentAllowedChecker
  *
- * @package Elio\FactFinder\Core\Tracking\AllowedValidator
+ * @package Elio\ElioSearch\Core\Tracking\AllowedValidator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>

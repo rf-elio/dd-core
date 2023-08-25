@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\RealTimeUpdate;
+namespace Elio\ElioSearch\Core\RealTimeUpdate;
 
-use Elio\FactFinder\Api\Import\ImportApi;
-use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
-use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
-use Elio\FactFinder\Api\Import\Response\ImportResponse;
-use Elio\FactFinder\Configuration\FactFinderConfigService;
-use Elio\FactFinder\Core\Export\ExportConfig;
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\Generator\Content\ContentExportDefaults;
+use Elio\ElioSearch\Api\Import\ImportApi;
+use Elio\ElioSearch\Api\Import\Request\SearchImportRequest;
+use Elio\ElioSearch\Api\Import\Request\SuggestImportRequest;
+use Elio\ElioSearch\Api\Import\Response\ImportResponse;
+use Elio\ElioSearch\Configuration\FactFinderConfigService;
+use Elio\ElioSearch\Core\Export\ExportConfig;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\Generator\Content\ContentExportDefaults;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;

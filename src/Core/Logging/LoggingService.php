@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\Logging;
+namespace Elio\ElioSearch\Core\Logging;
 
 
 use RuntimeException;
@@ -11,7 +11,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Class LoggingService
  *
- * @package Elio\FactFinder\Core\Logging
+ * @package Elio\ElioSearch\Core\Logging
  */
 class LoggingService implements LoggingServiceInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Elio\FactFinder\Api\Records\Request;
+namespace Elio\ElioSearch\Api\Records\Request;
 
 
-use Elio\FactFinder\Api\Request\ChannelRequest;
+use Elio\ElioSearch\Api\Request\ChannelRequest;
 
 class RecommendationRequest extends ChannelRequest
 {

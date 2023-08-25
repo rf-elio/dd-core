@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Logging;
+namespace Elio\ElioSearch\Core\Logging;
 
 
-use Elio\FactFinder\Core\Logging\Handler\FactFinderFilterHandler;
+use Elio\ElioSearch\Core\Logging\Handler\FactFinderFilterHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
@@ -43,7 +43,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class LoggerFactory
- * @package Elio\FactFinder\Core\Logging
+ * @package Elio\ElioSearch\Core\Logging
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

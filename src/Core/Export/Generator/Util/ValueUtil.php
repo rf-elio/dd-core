@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator\Util;
+namespace Elio\ElioSearch\Core\Export\Generator\Util;
 
 
 use DateTimeInterface;
-use Elio\FactFinder\Core\Export\Generator\ExportDefaults;
+use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
 
 /**
  * Class ValueUtil
- * @package Elio\FactFinder\Core\Export\Generator\Util
+ * @package Elio\ElioSearch\Core\Export\Generator\Util
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

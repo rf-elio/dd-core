@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import\Request;
+namespace Elio\ElioSearch\Api\Import\Request;
 
 /**
  * Class SearchImportRequest
- * @package Elio\FactFinder\Api\Import\Request
+ * @package Elio\ElioSearch\Api\Import\Request
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Writer;
+namespace Elio\ElioSearch\Core\Export\Writer;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportItem;
-use Elio\FactFinder\Core\Export\ExportStorageService;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Export\ExportStorageService;
 use League\Flysystem\FilesystemException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class BaseWriter
- * @package Elio\FactFinder\Core\Export\Writer
+ * @package Elio\ElioSearch\Core\Export\Writer
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

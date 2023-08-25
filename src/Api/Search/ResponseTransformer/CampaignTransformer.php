@@ -30,22 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search\ResponseTransformer;
+namespace Elio\ElioSearch\Api\Search\ResponseTransformer;
 
 use ArrayObject;
-use Elio\FactFinder\Api\Request\ApiRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SearchRequest;
-use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponse;
-use Elio\FactFinder\Api\Search\Response\AdvisorCampaignResponseCollection;
-use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponse;
-use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\FactFinder\Api\Transform\ResponseTransformerInterface;
-use Elio\FactFinder\Core\AdvisorCampaign\AdvisorAnswer;
-use Elio\FactFinder\Core\AdvisorCampaign\AdvisorQuestion;
-use Elio\FactFinder\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Api\Request\ApiRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Api\Search\Response\AdvisorCampaignResponse;
+use Elio\ElioSearch\Api\Search\Response\AdvisorCampaignResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponse;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioSearch\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioSearch\Core\AdvisorCampaign\AdvisorAnswer;
+use Elio\ElioSearch\Core\AdvisorCampaign\AdvisorQuestion;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\Model\DetailPage;
 use Swagger\Client\Model\ModelInterface;

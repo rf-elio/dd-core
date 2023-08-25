@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Snippets;
+namespace Elio\ElioSearch\Core\Snippets;
 
 
 /**
  * Class Snippet
- * @package Elio\FactFinder\Core\Snippets
+ * @package Elio\ElioSearch\Core\Snippets
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\PredictiveBasket;
+namespace Elio\ElioSearch\Api\PredictiveBasket;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
 
 /**
  * Class PredictiveBasketApi
- * @package Elio\FactFinder\Api\PredictiveBasket
+ * @package Elio\ElioSearch\Api\PredictiveBasket
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

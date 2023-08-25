@@ -1,11 +1,11 @@
 <?php
 
-namespace Elio\FactFinder\Core\Content\Product\SalesChannel\CrossSelling;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\CrossSelling;
 
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler;
-use Elio\FactFinder\Core\ProductBundle\Handler\SimilarBundleHandlerHandler;
-use Elio\FactFinder\Core\ProductBundle\ProductBundleServiceInterface;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler;
+use Elio\ElioSearch\Core\ProductBundle\Handler\SimilarBundleHandlerHandler;
+use Elio\ElioSearch\Core\ProductBundle\ProductBundleServiceInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class FactFinderProductCrossSellingRoute
- * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Detail
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail
  * @author Ralf Frommherz
  */
 class FactFinderProductCrossSellingRoute extends AbstractProductCrossSellingRoute

@@ -4,16 +4,16 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Core\Export\ExportDefinition">
+        <service id="Elio\ElioSearch\Core\Export\ExportDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
 
-        <service id="Elio\FactFinder\Command\ExportGenerateCommand">
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+        <service id="Elio\ElioSearch\Command\ExportGenerateCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
             <tag name="console.command"/>
         </service>
 
-        <service id="Elio\FactFinder\Core\Export\ExportService">
+        <service id="Elio\ElioSearch\Core\Export\ExportService">
             <argument type="service" id="elio_ff_export.repository" />
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="event_dispatcher"/>
@@ -23,53 +23,53 @@
         </service>
 
         <!-- generators / product -->
-        <service id="Elio\FactFinder\Core\Export\Generator\Product\ProductExportGenerator">
+        <service id="Elio\ElioSearch\Core\Export\Generator\Product\ProductExportGenerator">
             <argument type="service" id="product.repository" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="sales_channel.repository" />
-            <argument type="service" id="Elio\FactFinder\Core\Features\FeatureService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Features\FeatureService" />
             <tag name="elio-ff.export.generator" />
         </service>
         <!-- generators / content -->
-        <service id="Elio\FactFinder\Core\Export\Generator\Content\CategoryExportGenerator">
+        <service id="Elio\ElioSearch\Core\Export\Generator\Content\CategoryExportGenerator">
             <argument type="service" id="category.repository" />
             <argument type="service" id="router"/>
             <tag name="elio-ff.export.generator" />
         </service>
-        <service id="Elio\FactFinder\Core\Export\Generator\Content\LandingPagePartialGenerator">
+        <service id="Elio\ElioSearch\Core\Export\Generator\Content\LandingPagePartialGenerator">
             <argument type="service" id="landing_page.repository" />
             <tag name="elio-ff.export.generator" />
         </service>
 
         <!-- storage -->
-        <service id="Elio\FactFinder\Core\Export\ExportStorageService">
+        <service id="Elio\ElioSearch\Core\Export\ExportStorageService">
             <argument type="service" id="shopware.filesystem.private" />
         </service>
 
         <!-- writers -->
-        <service id="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
+        <service id="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
         </service>
-        <service id="Elio\FactFinder\Core\Export\Writer\CleanupWriterDecorator"
-                 decorates="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\FactFinder\Core\Export\Writer\CleanupWriterDecorator.inner" />
+        <service id="Elio\ElioSearch\Core\Export\Writer\CleanupWriterDecorator"
+                 decorates="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\Writer\CleanupWriterDecorator.inner" />
         </service>
-        <service id="Elio\FactFinder\Core\Export\Writer\SeoUrlWriterDecorator"
-                 decorates="Elio\FactFinder\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\FactFinder\Core\Export\Writer\SeoUrlWriterDecorator.inner" />
+        <service id="Elio\ElioSearch\Core\Export\Writer\SeoUrlWriterDecorator"
+                 decorates="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\Writer\SeoUrlWriterDecorator.inner" />
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="router"/>
         </service>
-        <service id="Elio\FactFinder\Core\Export\Writer\XMLFileWriter">
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
+        <service id="Elio\ElioSearch\Core\Export\Writer\XMLFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
             <tag name="elio-ff.export.writer"/>
         </service>
 
         <!-- controller -->
-        <service id="Elio\FactFinder\Core\Export\Controller\ExportController" public="true">
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportStorageService" />
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+        <service id="Elio\ElioSearch\Core\Export\Controller\ExportController" public="true">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
             <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -77,8 +77,8 @@
         </service>
 
         <!-- message handler -->
-        <service id="Elio\FactFinder\Core\Export\ExportGenerateHandler">
-            <argument type="service" id="Elio\FactFinder\Core\Export\ExportService" />
+        <service id="Elio\ElioSearch\Core\Export\ExportGenerateHandler">
+            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
             <tag name="messenger.message_handler" />
         </service>
     </services>

@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Search;
+namespace Elio\ElioSearch\Api\Search;
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Search\Request\SuggestRequest;
-use Elio\FactFinder\Api\Transform\Transformer;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
+use Elio\ElioSearch\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\SuggestParams;
@@ -43,7 +43,7 @@ use Throwable;
 
 /**
  * Class SuggestApi
- * @package Elio\FactFinder\Api\Search
+ * @package Elio\ElioSearch\Api\Search
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

@@ -1,15 +1,15 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\ProductBundle\Handler;
+namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 
 
-use Elio\FactFinder\Api\Records\RecordsApi;
-use Elio\FactFinder\Api\Records\Request\SimilarRequest;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
-use Elio\FactFinder\Core\ProductBundle\Excluder;
+use Elio\ElioSearch\Api\Records\RecordsApi;
+use Elio\ElioSearch\Api\Records\Request\SimilarRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
+use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -20,7 +20,7 @@ use Throwable;
 /**
  * Class SimilarBundleHandler
  *
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  */
 class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 {

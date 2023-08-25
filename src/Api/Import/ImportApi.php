@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Import;
+namespace Elio\ElioSearch\Api\Import;
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Import\Request\SearchImportRequest;
-use Elio\FactFinder\Api\Import\Request\SuggestImportRequest;
-use Elio\FactFinder\Api\Response\ResponseCollection;
-use Elio\FactFinder\Api\Transform\Transformer;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\Import\Request\SearchImportRequest;
+use Elio\ElioSearch\Api\Import\Request\SuggestImportRequest;
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swagger\Client\ApiException;
 use Throwable;
 
 /**
  * Class ImportApi
- * @package Elio\FactFinder\Api\Import
+ * @package Elio\ElioSearch\Api\Import
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

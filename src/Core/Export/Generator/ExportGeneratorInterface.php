@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Export\Generator;
+namespace Elio\ElioSearch\Core\Export\Generator;
 
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\OutputStream;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\OutputStream;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Interface ExportGeneratorInterface
- * @package Elio\FactFinder\Core\Export\Generator
+ * @package Elio\ElioSearch\Core\Export\Generator
  */
 interface ExportGeneratorInterface
 {

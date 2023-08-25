@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\FactFinder\Api\Search\Request;
+namespace Elio\ElioSearch\Api\Search\Request;
 
 /**
  * Class AdvisorStatus
- * @package Elio\FactFinder\Api\Search\Request
+ * @package Elio\ElioSearch\Api\Search\Request
  * @author Ralf Frommherz
  */
 class AdvisorStatus

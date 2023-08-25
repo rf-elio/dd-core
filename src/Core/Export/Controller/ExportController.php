@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Elio\FactFinder\Core\Export\Controller;
+namespace Elio\ElioSearch\Core\Export\Controller;
 
-use Elio\FactFinder\Core\Export\ExportEntity;
-use Elio\FactFinder\Core\Export\ExportGenerateMessage;
-use Elio\FactFinder\Core\Export\ExportService;
-use Elio\FactFinder\Core\Export\ExportStorageService;
+use Elio\ElioSearch\Core\Export\ExportEntity;
+use Elio\ElioSearch\Core\Export\ExportGenerateMessage;
+use Elio\ElioSearch\Core\Export\ExportService;
+use Elio\ElioSearch\Core\Export\ExportStorageService;
 use League\Flysystem\FilesystemException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;

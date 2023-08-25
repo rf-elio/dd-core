@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\FactFinder\Core\Logging;
+namespace Elio\ElioSearch\Core\Logging;
 
 
 use Psr\Log\LoggerInterface;
@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
  * Wrapper for logger to inject additional log handling
  *
  * Class GuzzleLogWrapper
- * @package Elio\FactFinder\Core\Logging
+ * @package Elio\ElioSearch\Core\Logging
  * @author Ralf Frommherz
  */
 class GuzzleLogWrapper implements LoggerInterface

@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Configuration;
+namespace Elio\ElioSearch\Configuration;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Interface FactFinderConfigServiceInterface
- * @package Elio\FactFinder\Configuration
+ * @package Elio\ElioSearch\Configuration
  */
 interface FactFinderConfigServiceInterface
 {

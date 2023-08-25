@@ -1,12 +1,12 @@
 <?php
 
-namespace Elio\FactFinder\Core\Logging;
+namespace Elio\ElioSearch\Core\Logging;
 
 
 /**
  * Class LoggingService
  *
- * @package Elio\FactFinder\Core\Logging
+ * @package Elio\ElioSearch\Core\Logging
  */
 interface LoggingServiceInterface
 {

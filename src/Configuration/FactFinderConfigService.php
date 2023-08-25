@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Configuration;
+namespace Elio\ElioSearch\Configuration;
 
-use Elio\FactFinder\Configuration\Event\ConfigurationLoadedEvent;
-use Elio\FactFinder\Core\Defaults;
+use Elio\ElioSearch\Configuration\Event\ConfigurationLoadedEvent;
+use Elio\ElioSearch\Core\Defaults;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -53,7 +53,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class FactFinderConfigService implements FactFinderConfigServiceInterface
 {
-    public const PLUGIN_CONFIG_PREFIX = 'FactFinder.config';
+    public const PLUGIN_CONFIG_PREFIX = 'ElioSearch.config';
     protected const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;

@@ -1,7 +1,7 @@
 {
-    "name": "elio/fact-finder",
+    "name": "elio/search",
     "description": "",
-    "version": "v3.0.0",
+    "version": "v1.0.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -35,7 +35,6 @@
     ],
     "require": {
         "php": ">= 8.1",
-        "elio/fact-finder-api-client": "^5.0",
         "dragonmantank/cron-expression": "^3.1"
     },
     "require-dev": {
@@ -43,24 +42,24 @@
         "phpstan/phpstan": "^1.10"
     },
     "extra": {
-        "shopware-plugin-class": "Elio\\FactFinder\\FactFinder",
+        "shopware-plugin-class": "Elio\\ElioSearch\\ElioSearch",
         "label": {
-            "de-DE": "ElioFactFinder",
-            "en-GB": "ElioFactFinder"
+            "de-DE": "ElioSearch",
+            "en-GB": "ElioSearch"
         },
         "description": {
-            "de-DE": "Shopware FACTFinder NG Integrations-Plugin",
-            "en-GB": "Shopware FACTFinder NG integration plugin"
+            "de-DE": "Shopware Search Integrations-Plugin",
+            "en-GB": "Shopware Search integration plugin"
         }
     },
     "autoload": {
         "psr-4": {
-            "Elio\\FactFinder\\": "src/"
+            "Elio\\ElioSearch\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Elio\\FactFinder\\Tests\\": "tests/"
+            "Elio\\ElioSearch\\Tests\\": "tests/"
         }
     },
     "config": {

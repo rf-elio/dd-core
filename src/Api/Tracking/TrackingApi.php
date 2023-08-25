@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Api\Tracking;
+namespace Elio\ElioSearch\Api\Tracking;
 
 
-use Elio\FactFinder\Api\ApiClientFactoryInterface;
-use Elio\FactFinder\Api\Tracking\Exception\TrackingRequestNotSupportedException;
-use Elio\FactFinder\Api\Tracking\Request\CartTrackingRequest;
-use Elio\FactFinder\Api\Tracking\Request\CheckoutTrackingRequest;
-use Elio\FactFinder\Api\Tracking\Request\LoginTrackingRequest;
-use Elio\FactFinder\Api\Tracking\Request\ProductDetailTrackingRequest;
-use Elio\FactFinder\Api\Tracking\Request\TrackingRequest;
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Api\ApiClientFactoryInterface;
+use Elio\ElioSearch\Api\Tracking\Exception\TrackingRequestNotSupportedException;
+use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\CheckoutTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
+use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\CartOrCheckoutEvent;
@@ -49,7 +49,7 @@ use Swagger\Client\Model\LoginEvent;
 
 /**
  * Class TrackingApi
- * @package Elio\FactFinder\Api\Tracking
+ * @package Elio\ElioSearch\Api\Tracking
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

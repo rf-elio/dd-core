@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\FactFinder\Core\Export;
+namespace Elio\ElioSearch\Core\Export;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;

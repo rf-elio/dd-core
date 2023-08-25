@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\FactFinder\Core\Tracking\AllowedChecker\Struct;
+namespace Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct;
 
 
 use Shopware\Core\Framework\Struct\Struct;
@@ -38,7 +38,7 @@ use Shopware\Core\Framework\Struct\Struct;
 /**
  * Class UserAgent
  *
- * @package Elio\FactFinder\Core\Tracking\AllowedValidator\Struct
+ * @package Elio\ElioSearch\Core\Tracking\AllowedValidator\Struct
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>

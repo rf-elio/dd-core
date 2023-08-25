@@ -4,66 +4,66 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer"/>
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer"/>
 
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder">
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
         </service>
-        <service id="Elio\FactFinder\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder">
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
+        <service id="Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder">
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
         </service>
 
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute"
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"
                  decoration-priority="-3000"
         >
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute.inner" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder" />
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Search\FactFinderSearchRoute.inner" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="elio.fact_finder.core.logging.default" />
         </service>
 
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute"
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"
                  decoration-priority="-3000"
                  public="true"
         >
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute.inner" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Api\Search\SearchApi" />
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing\FactFinderProductListingRoute.inner" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
             <argument type="service" id="elio.fact_finder.core.logging.default" />
         </service>
 
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute"
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute"
                  decoration-priority="-3000"
                  public="true"
         >
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute.inner" />
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Api\Records\RecordsApi" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute.inner" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Api\Records\RecordsApi" />
             <argument type="service" id="elio.fact_finder.core.logging.default" />
         </service>
 
-        <service id="Elio\FactFinder\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute"
+        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
                  decoration-priority="-3000"
                  public="true"
         >
-            <argument type="service" id="Elio\FactFinder\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute.inner" />
-            <argument type="service" id="Elio\FactFinder\Configuration\FactFinderConfigService" />
-            <argument type="service" id="Elio\FactFinder\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\CrossSelling\FactFinderProductCrossSellingRoute.inner" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Core\ProductBundle\ProductBundleService" />
             <argument type="service" id="translator" />
         </service>
 
-        <service id="Elio\FactFinder\Core\Content\Product\Subscriber\ProductSubscriber">
+        <service id="Elio\ElioSearch\Core\Content\Product\Subscriber\ProductSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

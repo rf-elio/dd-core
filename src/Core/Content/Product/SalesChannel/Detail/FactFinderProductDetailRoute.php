@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Elio\FactFinder\Core\Content\Product\SalesChannel\Detail;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail;
 
 
-use Elio\FactFinder\Api\Records\RecordsApi;
-use Elio\FactFinder\Api\Records\Request\DetailPageRequest;
-use Elio\FactFinder\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Api\Records\RecordsApi;
+use Elio\ElioSearch\Api\Records\Request\DetailPageRequest;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRouteResponse;
@@ -20,7 +20,7 @@ use Throwable;
 /**
  * Class FactFinderProductDetailRoute
  *
- * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Detail
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail
  */
 class FactFinderProductDetailRoute extends AbstractProductDetailRoute
 {
