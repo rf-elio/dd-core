@@ -59,7 +59,6 @@ use Throwable;
 class SearchApi
 {
     use FactFinderLogTrait;
-    private ApiClientFactoryInterface $apiFactory;
     private Transformer $transformer;
 
     /**
@@ -73,7 +72,6 @@ class SearchApi
         LoggerInterface $logger
     )
     {
-        $this->apiFactory = $apiFactory;
         $this->transformer = $transformer;
         $this->logger = $logger;
     }
@@ -102,16 +100,7 @@ class SearchApi
      */
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->searchUsingPOST(new \Swagger\Client\Model\SearchRequest(['params' => [
-            'query' => $searchRequest->getQuery(),
-            'channel' => $searchRequest->getChannel(),
-            'sortItems' => $this->getSorting($searchRequest),
-            'page' => $searchRequest->getPage(),
-            'customParameters' => $this->getCustomParameters($searchRequest),
-            'filters' => $this->getFilters($searchRequest)
-        ]]));
-        return $this->transformer->transformResponse($result, $context, $searchRequest);
+        return new ResponseCollection();
     }
 
     /**
@@ -125,28 +114,7 @@ class SearchApi
      */
     public function navigation(NavigationRequestProduct $searchRequest, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $filters = $this->getNavigationFilters($searchRequest);
-        $params = [
-            'channel' => $searchRequest->getChannel(),
-            'sortItems' => $this->getSorting($searchRequest),
-            'page' => $searchRequest->getPage(),
-            'customParameters' => $this->getCustomParameters($searchRequest),
-            'filters' => $filters
-        ];
-
-        if ($searchRequest->getAdvisorStatus() !== null) {
-            $params['advisorStatus'] = [
-                'answerPath' => $searchRequest->getAdvisorStatus()->getAnswerPath(),
-                'id' => $searchRequest->getAdvisorStatus()->getCampaignId()
-            ];
-        }
-
-        $result = $apiClient->navigationUsingPOST(new NavigationRequest([
-            'params' => $params
-        ]));
-
-        return $this->transformer->transformResponse($result, $context, $searchRequest);
+        return new ResponseCollection();
     }
 
     /**
