@@ -65,14 +65,6 @@ class Credentials
         $this->apiUrl = $apiUrl;
         $this->apiUsername = $apiUsername;
         $this->apiPassword = $apiPassword;
-
-        if (strpos($this->apiUrl, Defaults::API_SCHEMA) !== 0) {
-            $this->apiUrl = Defaults::API_SCHEMA.$this->apiUrl;
-        }
-
-        if (strpos($this->apiUrl, Defaults::API_URI_POST_FIX) === false) {
-            $this->apiUrl .=  Defaults::API_URI_POST_FIX;
-        }
     }
 
     /**

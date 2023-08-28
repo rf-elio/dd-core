@@ -48,58 +48,58 @@
             <argument type="service" id="elio.fact_finder.core.logging.default"/>
         </service>
 
-        <!-- transformer / response / search -->
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TimeoutTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\PagingTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TotalHitsTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SortTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TranslationSortTransformer"
-                 decorates="Elio\ElioSearch\Api\Search\ResponseTransformer\SortTransformer">
-            <argument type="service" id="product_sorting.repository" />
-            <argument type="service" id="Elio\ElioSearch\Api\Search\ResponseTransformer\TranslationSortTransformer.inner" />
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\ProductTransformer">
-            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\FacetTransformer">
-            <argument type="service" id="Elio\ElioSearch\Core\FilterRestrictions\FilterService" />
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionTransformer">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
-            <argument type="service" id="event_dispatcher"/>
-            <tag name="elio-ff.api.transformer.response" priority="50"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionProductTransformer">
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
-            <tag name="elio-ff.api.transformer.response" priority="49"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionCategoryTransformer">
-            <argument type="service" id="category.repository" />
-            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryUrlGenerator"/>
-            <tag name="elio-ff.api.transformer.response" priority="49"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\CampaignTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\ContentTransformer">
-            <tag name="elio-ff.api.transformer.response"/>
-        </service>
-        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TrackingTransformer">
-            <tag name="elio-ff.api.transformer.response" priority="-1000"/>
-        </service>
+<!--        &lt;!&ndash; transformer / response / search &ndash;&gt;-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TimeoutTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\PagingTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TotalHitsTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SortTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TranslationSortTransformer"-->
+<!--                 decorates="Elio\ElioSearch\Api\Search\ResponseTransformer\SortTransformer">-->
+<!--            <argument type="service" id="product_sorting.repository" />-->
+<!--            <argument type="service" id="Elio\ElioSearch\Api\Search\ResponseTransformer\TranslationSortTransformer.inner" />-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\ProductTransformer">-->
+<!--            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />-->
+<!--            <argument type="service" id="Doctrine\DBAL\Connection"/>-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\FacetTransformer">-->
+<!--            <argument type="service" id="Elio\ElioSearch\Core\FilterRestrictions\FilterService" />-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionTransformer">-->
+<!--            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />-->
+<!--            <argument type="service" id="event_dispatcher"/>-->
+<!--            <tag name="elio-ff.api.transformer.response" priority="50"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionProductTransformer">-->
+<!--            <argument type="service" id="product.repository" />-->
+<!--            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />-->
+<!--            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />-->
+<!--            <tag name="elio-ff.api.transformer.response" priority="49"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\SuggestionCategoryTransformer">-->
+<!--            <argument type="service" id="category.repository" />-->
+<!--            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryUrlGenerator"/>-->
+<!--            <tag name="elio-ff.api.transformer.response" priority="49"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\CampaignTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\ContentTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response"/>-->
+<!--        </service>-->
+<!--        <service id="Elio\ElioSearch\Api\Search\ResponseTransformer\TrackingTransformer">-->
+<!--            <tag name="elio-ff.api.transformer.response" priority="-1000"/>-->
+<!--        </service>-->
 
         <!-- transformer / response / import -->
         <service id="Elio\ElioSearch\Api\Import\ResponseTransformer\ImportTransformer">

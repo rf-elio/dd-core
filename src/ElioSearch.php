@@ -48,7 +48,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  * Class FactFinder
  *
  * @category  Bootstrap
- * @package   Shopware\Plugins\FactFinder
+ * @package   Shopware\Plugins\ElioSearch
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>

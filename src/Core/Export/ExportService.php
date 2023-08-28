@@ -35,6 +35,8 @@ namespace Elio\ElioSearch\Core\Export;
 use Cron\CronExpression;
 use Cron\FieldFactory;
 use DateTime;
+use Elio\ElioBatteryIncludedSearchExtension\Core\Export\Generator\BatteryIncluded\ProductExportGenerator;
+use Elio\ElioBatteryIncludedSearchExtension\Core\Export\Writer\BatteryIncludedWriter;
 use Elio\ElioSearch\Core\Export\Exception\ExportNotSupportedException;
 use Elio\ElioSearch\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\ElioSearch\Core\Export\Writer\FileWriterInterface;
@@ -222,6 +224,12 @@ class ExportService
     {
         $generators = [];
         foreach ($this->generators as $generator) {
+            if ($generator instanceof ProductExportGenerator) {
+                return [$generator];
+            }
+
+            continue;
+
             if($generator->supports($export)) {
                 $generators[] = $generator;
             }
@@ -246,6 +254,12 @@ class ExportService
     protected function getWriter(ExportEntity $export) : FileWriterInterface
     {
         foreach ($this->writers as $writer) {
+            if ($writer instanceof BatteryIncludedWriter) {
+                return $writer;
+            }
+
+            continue;
+
             if($writer->supports($export)) {
                 return $writer;
             }

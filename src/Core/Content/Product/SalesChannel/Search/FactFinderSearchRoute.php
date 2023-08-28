@@ -156,6 +156,7 @@ class FactFinderSearchRoute extends AbstractProductSearchRoute
                 'context' => $context,
                 'criteria' => $criteria
             ]);
+
             return $this->getDecorated()->load($request, $context, $criteria);
         }
     }

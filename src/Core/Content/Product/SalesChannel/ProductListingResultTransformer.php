@@ -92,7 +92,7 @@ class ProductListingResultTransformer
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
-        $this->addTracking($resultCollection, $shopwareProductListingResult);
+//        $this->addTracking($resultCollection, $shopwareProductListingResult);
         $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
         return $shopwareProductListingResult;
     }
