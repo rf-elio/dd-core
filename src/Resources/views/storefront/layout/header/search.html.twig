@@ -2,10 +2,10 @@
 
 {% block layout_header_search %}
     {% set searchOptions = {
-        suggestAutocompleteType: config_by_lang("FactFinder.config.suggestAutocompleteType")
+        suggestAutocompleteType: config_by_lang("ElioSearch.config.suggestAutocompleteType")
     } %}
 
-    {% set showSearchHistory = config_by_lang("FactFinder.config.suggestShowSearchHistory") %}
+    {% set showSearchHistory = config_by_lang("ElioSearch.config.suggestShowSearchHistory") %}
     {% set searchHistoryOptions = {
         channel: context.salesChannel.id,
         searchPageUrl: path('frontend.search.page')~"?search="

@@ -93,7 +93,7 @@ class ValueUtil
     }
 
     /**
-     * Formats the given date for the ff export
+     * Formats the given date for the elio search export
      *
      * @param DateTimeInterface $date
      * @return string
@@ -122,7 +122,7 @@ class ValueUtil
     }
 
     /**
-     * Applies the default format for ff with two decimal chars
+     * Applies the default format for elio search with two decimal chars
      *
      * @param float|null $price
      * @return string

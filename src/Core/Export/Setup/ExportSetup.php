@@ -68,7 +68,7 @@ class ExportSetup
     public function __construct(ContainerInterface $container)
     {
         try {
-            $this->exportRepository = $container->get('elio_ff_export.repository');
+            $this->exportRepository = $container->get('elio_search_export.repository');
         } catch (ServiceNotFoundException $e) {
         }
 

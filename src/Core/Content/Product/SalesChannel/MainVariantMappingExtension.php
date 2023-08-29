@@ -46,7 +46,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class MainVariantMappingExtension extends Struct
 {
-    public const KEY = 'ff-main-variant-mapping';
+    public const KEY = 'elio-search-main-variant-mapping';
 
     private array $mapping;
 

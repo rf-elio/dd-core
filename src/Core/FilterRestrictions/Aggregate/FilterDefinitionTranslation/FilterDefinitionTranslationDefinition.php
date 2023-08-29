@@ -49,7 +49,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
  */
 class FilterDefinitionTranslationDefinition extends EntityTranslationDefinition
 {
-    public const ENTITY_NAME = 'elio_ff_filter_translation';
+    public const ENTITY_NAME = 'elio_search_filter_translation';
 
     public function getEntityName(): string
     {

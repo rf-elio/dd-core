@@ -3,17 +3,17 @@ import TrackingUtil from './../../utility/tracking.util'
 
 export default class TrackingPlugin extends Plugin {
     static options = {
-        ffListingBoxSelector: '.elio-ff-listing-box',
-        productNumberPathAttribute: 'data-elio-ff-product-number',
-        parentProductIdPathAttribute: 'data-elio-ff-parent-product-id',
-        labelPathAttribute: 'data-elio-ff-label',
-        queryPathAttribute: 'data-elio-ff-query',
-        pagePathAttribute: 'data-elio-ff-page',
-        pageSizePathAttribute: 'data-elio-ff-pageSize',
-        campaignPathAttribute: 'data-elio-ff-campaign'
+        elioSearchListingBoxSelector: '.elio-search-listing-box',
+        productNumberPathAttribute: 'data-elio-search-product-number',
+        parentProductIdPathAttribute: 'data-elio-search-parent-product-id',
+        labelPathAttribute: 'data-elio-search-label',
+        queryPathAttribute: 'data-elio-search-query',
+        pagePathAttribute: 'data-elio-search-page',
+        pageSizePathAttribute: 'data-elio-search-pageSize',
+        campaignPathAttribute: 'data-elio-search-campaign'
     };
     init() {
-        this._path = window.ff.tracking.detailPath;
+        this._path = window.elioSearch.tracking.detailPath;
         if(this._path.length <= 0) {
             return;
         }
@@ -31,7 +31,7 @@ export default class TrackingPlugin extends Plugin {
     _registerEvents() {
         const me = this;
         const parameters = {
-            ffProductTrackingData: {
+            elioSearchProductTrackingData: {
                 productNumber: me._productNumber,
                 parentProductId: me._parentProductId,
                 label: me._trackingLabel,
@@ -45,10 +45,10 @@ export default class TrackingPlugin extends Plugin {
         for (const linkElement of this._linkElements) {
             linkElement.addEventListener('click', function (event) {
                 const listingBoxes = me._getListingBoxes();
-                parameters.ffProductTrackingData.pos = me._getPosition(listingBoxes);
+                parameters.elioSearchProductTrackingData.pos = me._getPosition(listingBoxes);
                 const listingSize = listingBoxes.length;
-                if (listingSize > parameters.ffProductTrackingData.pageSize) {
-                    parameters.ffProductTrackingData.pageSize = listingSize;
+                if (listingSize > parameters.elioSearchProductTrackingData.pageSize) {
+                    parameters.elioSearchProductTrackingData.pageSize = listingSize;
                 }
 
                 event.preventDefault();
@@ -76,7 +76,7 @@ export default class TrackingPlugin extends Plugin {
      */
     _getListingBoxes() {
         const elements = [];
-        const boxes = document.querySelectorAll(this.options.ffListingBoxSelector);
+        const boxes = document.querySelectorAll(this.options.elioSearchListingBoxSelector);
 
         for(const box of boxes) {
             if (!this._isHidden(box)) {

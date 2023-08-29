@@ -52,7 +52,7 @@ interface RequestTransformerInterface
     public function supports(ApiRequest $apiRequest, SalesChannelContext $context) : bool;
 
     /**
-     * Transforms the request to an model that can used by ff plugin components
+     * Transforms the request to an model that can used by elio search plugin components
      *
      * @param ApiRequest $apiRequest
      * @param RequestCollection $responseCollection

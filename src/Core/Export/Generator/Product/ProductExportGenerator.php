@@ -323,7 +323,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
     }
 
     /**
-     * Builds the category path for ff
+     * Builds the category path for elio search
      *
      * @param ProductEntity $product
      * @return string
@@ -350,7 +350,7 @@ class ProductExportGenerator implements ExportGeneratorInterface
     }
 
     /**
-     * Builds the category path for ff
+     * Builds the category path for elio search
      *
      * @param ProductEntity $product
      * @return string

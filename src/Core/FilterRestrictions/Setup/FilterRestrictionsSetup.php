@@ -65,7 +65,7 @@ class FilterRestrictionsSetup
     public function __construct(ContainerInterface $container)
     {
         try {
-            $this->filterRepository = $container->get('elio_ff_filter.repository');
+            $this->filterRepository = $container->get('elio_search_filter.repository');
         } catch (ServiceNotFoundException $e) {
         }
 

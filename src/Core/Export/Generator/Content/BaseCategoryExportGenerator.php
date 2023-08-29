@@ -43,7 +43,7 @@ use Elio\ElioSearch\Core\Export\OutputStream;
 use Elio\ElioSearch\Core\Export\SeoRoute;
 use Elio\ElioSearch\Core\Util\Tree\Node;
 use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
-use Elio\ElioSearch\FactFinder;
+use Elio\ElioSearch\ElioSearch;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -133,7 +133,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
     private function buildCustomFieldInheritanceByNodes(array $nodes, array $inheritedCustomFields = []): void
     {
         // if we exclude product info in main category we don't inherit its exclusion to child categories
-        unset($inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
+        unset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
 
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
@@ -147,23 +147,23 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
             // apply the category type for child categories to child categories that don't have an own type
             if(
                 (
-                    !isset($categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE]) ||
-                    empty($categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE])
+                    !isset($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE]) ||
+                    empty($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE])
                 ) &&
-                isset($inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) &&
-                !empty($inheritedCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
+                isset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) &&
+                !empty($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
             ) {
-                $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
+                $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
 
             // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)
             if(
                 !(
-                    isset($categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
-                    $categoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                    isset($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                    $categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
                 )
             ) {
-                unset($mergedCategoryCustomFields[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]);
+                unset($mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]);
             }
 
             $this->customFields[$category->getId()] = $mergedCategoryCustomFields;
@@ -251,8 +251,8 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
 
             // child categories are excluded from export -> don't add
             if (
-                !(isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]) &&
-                $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
+                !(isset($category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]) &&
+                $category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
             ) {
                 $categoryIds[] = $category->getId();
             }
@@ -317,16 +317,16 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
         // category is excluded by parent
         if (
             $category->getParentId() &&
-            isset($this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
-            && $this->customFields[$category->getParentId()][FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]
+            isset($this->customFields[$category->getParentId()][ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED])
+            && $this->customFields[$category->getParentId()][ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]
         ) {
             return false;
         }
 
         // category itself is excluded from export
         if (
-            isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
-            $category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+            isset($category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+            $category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
         ) {
             return false;
         }
@@ -358,7 +358,7 @@ abstract class BaseCategoryExportGenerator implements ExportGeneratorInterface
             $exportItem->set(ContentExportDefaults::FIELD_IMAGE_URL, ValueUtil::cleanValue($category->getMedia()->getUrl()));
         }
         $exportItem->set(ContentExportDefaults::FIELD_PUBLICATION_DATE, ValueUtil::cleanValue($category->getCreatedAt()->format(ExportDefaults::DATE_TIME_FORMAT)));
-        $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
+        $exportItem->set(ContentExportDefaults::FIELD_PRIORITY, ValueUtil::getCustomFieldValue($category->getCustomFields(), ElioSearch::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY) ?? ContentExportDefaults::DEFAULT_PRIORITY);
         $exportItem->set(ContentExportDefaults::FIELD_CONTENT_STRUCTURE, ValueUtil::cleanValue(implode('/', array_map('rawurlencode', array_slice($category->getBreadcrumb(), 1)))));
         $exportItem->set(ContentExportDefaults::FIELD_TAGS, $this->getCategoryTags($category));
     }

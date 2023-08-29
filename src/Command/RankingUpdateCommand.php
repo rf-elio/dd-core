@@ -64,7 +64,7 @@ class RankingUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-ff:ranking:update');
+        $this->setName('elio-search:ranking:update');
     }
 
     /**

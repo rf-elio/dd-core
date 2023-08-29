@@ -5,11 +5,11 @@ import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-l
 import PluginManager from 'src/plugin-system/plugin.manager';
 
 /**
- * This plugin uses the template extension on detail pages to load product sliders provided by ff dynamically.
+ * This plugin uses the template extension on detail pages to load product sliders provided by elioSearch dynamically.
  */
 export default class ElioProductDetailCrossSellingPlugin extends Plugin {
     static options = {
-        urlAttribute: 'data-e-ff-product-detail-cross-selling-url',
+        urlAttribute: 'data-e-elio-search-product-detail-cross-selling-url',
         url: null,
         productDetailCrossSellingSelector: '.product-detail-cross-selling'
     }

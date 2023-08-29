@@ -32,7 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Logging\Subscriber;
 
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Defaults;
 use Elio\ElioSearch\Core\Logging\LogFilterContext;
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
@@ -52,15 +52,15 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class LogIpFilterSubscriber implements EventSubscriberInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private LogFilterContext $logFilterContext;
 
     /**
      * LogIpFilterSubscriber constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param LogFilterContext $logFilterContext
      */
-    public function __construct(FactFinderConfigServiceInterface $configService, LogFilterContext $logFilterContext)
+    public function __construct(ElioSearchConfigServiceInterface $configService, LogFilterContext $logFilterContext)
     {
         $this->configService = $configService;
         $this->logFilterContext = $logFilterContext;

@@ -46,7 +46,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class UserAgent extends Struct
 {
-    public const EXTENSION_KEY = 'elioFfTrackingAllowedCheckerUserAgent';
+    public const EXTENSION_KEY = 'elioSearchTrackingAllowedCheckerUserAgent';
 
     private string $userAgent;
 

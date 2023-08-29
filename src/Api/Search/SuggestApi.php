@@ -32,13 +32,10 @@
 
 namespace Elio\ElioSearch\Api\Search;
 
-use Elio\ElioSearch\Api\ApiClientFactoryInterface;
 use Elio\ElioSearch\Api\Response\ResponseCollection;
 use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
 use Elio\ElioSearch\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\SuggestParams;
 use Throwable;
 
 /**
@@ -51,20 +48,16 @@ use Throwable;
  */
 class SuggestApi
 {
-    private ApiClientFactoryInterface $apiFactory;
     private Transformer $transformer;
 
     /**
      * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
      * @param Transformer $transformer
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory,
         Transformer $transformer
     )
     {
-        $this->apiFactory = $apiFactory;
         $this->transformer = $transformer;
     }
 
@@ -72,16 +65,10 @@ class SuggestApi
      * @param SuggestRequest $suggestRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
-     * @throws ApiException
      * @throws Throwable
      */
     public function suggest(SuggestRequest $suggestRequest, SalesChannelContext $context): ResponseCollection
     {
-        $apiClient = $this->apiFactory->createSearchApi($context);
-        $result = $apiClient->getSuggestionsUsingPOST(new SuggestParams([
-            'channel' => $suggestRequest->getChannel(),
-            'query' => $suggestRequest->getQuery(),
-        ]));
-        return $this->transformer->transformResponse($result, $context, $suggestRequest);
+        return new ResponseCollection();
     }
 }

@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\BotProtection;
 
 
 use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\BotProtection\Event\BotDetectedEvent;
 use Elio\ElioSearch\Core\BotProtection\Event\BotDetectionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -51,16 +51,16 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class BotDetectionService implements BotDetectionServiceInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private EventDispatcherInterface $eventDispatcher;
 
     /**
      * BotProtectionService constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         EventDispatcherInterface $eventDispatcher
     )
     {

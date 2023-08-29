@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Elio\ElioSearch\Api\Request\ApiRequest;
 use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioSearch\Configuration\FactFinderConfigService;
+use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
@@ -55,17 +55,17 @@ class CachedFilterService implements FilterInterface
 
     private FilterInterface $decorated;
     private TagAwareAdapterInterface $cache;
-    private FactFinderConfigService $configService;
+    private ElioSearchConfigService $configService;
 
     /**
      * @param FilterInterface $decorated
      * @param TagAwareAdapterInterface $cache
-     * @param FactFinderConfigService $configService
+     * @param ElioSearchConfigService $configService
      */
     public function __construct(
         FilterInterface $decorated,
         TagAwareAdapterInterface $cache,
-        FactFinderConfigService $configService
+        ElioSearchConfigService $configService
     ) {
         $this->decorated = $decorated;
         $this->cache = $cache;
@@ -127,7 +127,7 @@ class CachedFilterService implements FilterInterface
         int $level,
         ?string $categoryId = null
     ): string {
-        return 'elio_fact_finder.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
+        return 'elio_search.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
             ) . '_' . $level . ($categoryId ? '_' . $categoryId : '');
     }
 
@@ -136,7 +136,7 @@ class CachedFilterService implements FilterInterface
      */
     private function generateTags(): array
     {
-        return ['elio_factfinder_filtersrestrictions'];
+        return ['elio_search_filtersrestrictions'];
     }
 
     /**

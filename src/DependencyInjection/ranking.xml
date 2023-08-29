@@ -22,7 +22,7 @@
 
         <!-- service -->
         <service id="Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
             <argument type="service" id="sales_channel.repository" />
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>

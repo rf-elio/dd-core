@@ -36,8 +36,8 @@ namespace Elio\ElioSearch\Core\Ranking;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
-use Elio\ElioSearch\FactFinder;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioSearch\ElioSearch;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -55,22 +55,22 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class ProductRankingUpdateService
 {
-    private FactFinderConfigServiceInterface $factFinderConfigService;
+    private ElioSearchConfigServiceInterface $elioSearchConfigService;
     private EntityRepository $salesChannelRepository;
     private Connection $connection;
 
     /**
-     * @param FactFinderConfigServiceInterface $factFinderConfigService
+     * @param ElioSearchConfigServiceInterface $elioSearchConfigService
      * @param EntityRepository $salesChannelRepository
      * @param Connection $connection
      */
     public function __construct(
-        FactFinderConfigServiceInterface $factFinderConfigService,
+        ElioSearchConfigServiceInterface $elioSearchConfigService,
         EntityRepository $salesChannelRepository,
         Connection $connection
     )
     {
-        $this->factFinderConfigService = $factFinderConfigService;
+        $this->elioSearchConfigService = $elioSearchConfigService;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->connection = $connection;
     }
@@ -85,19 +85,19 @@ class ProductRankingUpdateService
     public function updateProductRanking(Context $context): void
     {
         foreach ($this->getSalesChannelIds($context) as $salesChannelId) {
-            $config = $this->factFinderConfigService->get($salesChannelId);
+            $config = $this->elioSearchConfigService->get($salesChannelId);
             if (!$config->isProductRankingActive()) {
                 continue;
             }
 
             $this->updateProductData(
-                FactFinder::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
+                ElioSearch::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
                 'oli.total_price',
                 $config
             );
 
             $this->updateProductData(
-                FactFinder::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
+                ElioSearch::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
                 'oli.quantity',
                 $config
             );

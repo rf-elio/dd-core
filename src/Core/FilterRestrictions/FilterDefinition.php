@@ -59,7 +59,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
  */
 class FilterDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_ff_filter';
+    public const ENTITY_NAME = 'elio_search_filter';
 
     public function getEntityName(): string
     {
@@ -98,7 +98,7 @@ class FilterDefinition extends EntityDefinition
            ),
            (new TranslationsAssociationField(
                FilterDefinitionTranslationDefinition::class,
-               'elio_ff_filter_id'
+               'elio_search_filter_id'
            ))->addFlags(new Required(), new CascadeDelete()),
            new ManyToManyAssociationField(
                'filterRestrictions',

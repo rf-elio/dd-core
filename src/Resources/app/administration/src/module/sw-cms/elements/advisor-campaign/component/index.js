@@ -1,7 +1,7 @@
-import template from './sw-cms-el-ff-advisor-campaign.html.twig';
-import './sw-cms-el-ff-advisor-campaign.scss';
+import template from './sw-cms-el-elio-search-advisor-campaign.html.twig';
+import './sw-cms-el-elio-search-advisor-campaign.scss';
 
-Shopware.Component.register('sw-cms-el-ff-advisor-campaign', {
+Shopware.Component.register('sw-cms-el-elio-search-advisor-campaign', {
     template,
 
     mixins: [
@@ -14,7 +14,7 @@ Shopware.Component.register('sw-cms-el-ff-advisor-campaign', {
 
     methods: {
         createdComponent () {
-            this.initElementConfig('ff-advisor-campaign');
+            this.initElementConfig('elio-search-advisor-campaign');
         }
     }
 })

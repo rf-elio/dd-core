@@ -65,7 +65,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-ff:filters:sync')
+        $this->setName('elio-search:filters:sync')
             ->addArgument(
                 'propertyId',
                 InputArgument::OPTIONAL,

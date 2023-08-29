@@ -43,7 +43,7 @@ namespace Elio\ElioSearch\Core\Snippets;
  */
 class Snippet
 {
-    public const SNIPPET_PREFIX = 'elioFactFinder.';
+    public const SNIPPET_PREFIX = 'elioSearch.';
     public const SNIPPET_LISTING_PREFIX = self::SNIPPET_PREFIX.'listing.';
     public const SNIPPET_LISTING_SORTING_PREFIX = self::SNIPPET_LISTING_PREFIX.'sorting.';
 }

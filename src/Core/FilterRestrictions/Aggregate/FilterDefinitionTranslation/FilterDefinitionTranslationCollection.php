@@ -74,7 +74,7 @@ class FilterDefinitionTranslationCollection extends EntityCollection
 
     public function getApiAlias(): string
     {
-        return 'elio_ff_filter_translation_collection';
+        return 'elio_search_filter_translation_collection';
     }
 
     protected function getExpectedClass(): string

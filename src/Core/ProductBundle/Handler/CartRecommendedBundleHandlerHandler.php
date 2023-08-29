@@ -7,7 +7,7 @@ namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 use Elio\ElioSearch\Api\Records\RecordsApi;
 use Elio\ElioSearch\Api\Records\Request\RecommendationRequest;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -30,7 +30,7 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
     public const TYPE = 'cartRecommended';
 
     private RecordsApi $recordsApi;
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private CartService $cartService;
     private EntityRepository $productRepository;
 
@@ -38,13 +38,13 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
      * CartRecommendedBundle constructor.
      *
      * @param RecordsApi $recordsApi
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param CartService $cartService
      * @param EntityRepository $productRepository
      */
     public function __construct(
         RecordsApi $recordsApi,
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         CartService $cartService,
         EntityRepository $productRepository
     ) {

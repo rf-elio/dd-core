@@ -12,7 +12,7 @@ use function is_resource;
 
 class ExportStorageService
 {
-    private const BASE_DIR = 'ff-export';
+    private const BASE_DIR = 'elio-search-export';
     private FilesystemOperator $fileSystem;
 
     /**

@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Logging;
 
 
-use Elio\ElioSearch\Core\Logging\Handler\FactFinderFilterHandler;
+use Elio\ElioSearch\Core\Logging\Handler\ElioSearchFilterHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
@@ -93,7 +93,7 @@ class LoggerFactory
         $handler->setFormatter($formatter);
 
         if ($useLogFilter) {
-            $result->pushHandler(new FactFinderFilterHandler($handler, $this->logFilterContext));
+            $result->pushHandler(new ElioSearchFilterHandler($handler, $this->logFilterContext));
         } else {
             $result->pushHandler($handler);
         }

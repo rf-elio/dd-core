@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Tracking\Subscriber;
 
 use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\ElioSearch\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
 use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
@@ -62,7 +62,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class TrackCartSubscriber implements EventSubscriberInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
@@ -73,7 +73,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
 
     /**
      * TrackCartSubscriber constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
@@ -81,7 +81,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,

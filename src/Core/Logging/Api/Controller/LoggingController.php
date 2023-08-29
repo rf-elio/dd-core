@@ -32,7 +32,7 @@ class LoggingController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/ff/logging/{index}", name="api.action.elio-ff.logging.index", methods={"GET"})
+     * @Route("/api/_action/elio-search/logging/{index}", name="api.action.elio-search.logging.index", methods={"GET"})
      * @param Request $request
      * @param int $index
      *
@@ -63,7 +63,7 @@ class LoggingController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/ff/logging/{index}", name="api.action.elio-ff.logging.delete", methods={"DELETE"})
+     * @Route("/api/_action/elio-search/logging/{index}", name="api.action.elio-search.logging.delete", methods={"DELETE"})
      * @param int $index
      *
      * @return JsonResponse

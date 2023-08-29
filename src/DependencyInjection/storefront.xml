@@ -4,11 +4,11 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\ElioSearch\Storefront\Framework\Cookie\FactFinderCookieProvider"
+        <service id="Elio\ElioSearch\Storefront\Framework\Cookie\ElioSearchCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface"
         >
-            <argument type="service" id="Elio\ElioSearch\Storefront\Framework\Cookie\FactFinderCookieProvider.inner" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Storefront\Framework\Cookie\ElioSearchCookieProvider.inner" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
             <argument id="request_stack" type="service"/>
         </service>
 
@@ -16,7 +16,7 @@
                  decorates="Shopware\Storefront\Controller\SearchController"
                  public="true"
         >
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
             <argument type="service" id="Elio\ElioSearch\Api\Search\SuggestApi" />
             <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
@@ -35,7 +35,7 @@
 
         <service id="Elio\ElioSearch\Storefront\Controller\ProductDetailCrossSellingController" public="true">
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute" />
-            <argument type="service" id="elio.fact_finder.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

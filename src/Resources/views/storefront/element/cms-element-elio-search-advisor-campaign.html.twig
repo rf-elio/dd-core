@@ -1,0 +1,15 @@
+{% block element_e_elio_search_advisor_campaign %}
+    {% set config = element.fieldConfig.elements %}
+
+    <div class="e-elio-search-advisor-campaign-lazy"
+         data-elio-search-advisor-campaign-url="{{ path('frontend.e-elio-search.campaign.advisor') }}"
+         data-elio-search-advisor-campaign-parameter-name="{{ config.campaignParameterName.value|escape }}"
+         data-elio-search-advisor-campaign-parameter-value="{{ config.campaignParameterValue.value|escape }}"
+    >
+        {% if config.productsTitle.value %}
+            <h3>{{ config.productsTitle.value }}</h3>
+        {% endif %}
+
+        <div class="e-elio-search-advisor-campaign-lazy-container"></div>
+    </div>
+{% endblock %}

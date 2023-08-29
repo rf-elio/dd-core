@@ -1,0 +1,16 @@
+{
+    "elio-search-logging": {
+        "title": "Logging",
+        "description": "",
+        "logIsEmpty": "Keine Einträge im Log. Aktiviere Debug-Logging in der Plugin-Konfiguration für mehr Details.",
+        "LogsNotFound": "Keine Logs vorhanden",
+        "reload": "Aktualisieren",
+        "remove": "Löschen",
+        "modal": {
+            "title": "Löschen",
+            "body": "Sind sie sicher, dass Sie die Datei \"{name}\" löschen möchten?",
+            "cancel": "Abbrechen",
+            "delete": "Löschen"
+        }
+    }
+}

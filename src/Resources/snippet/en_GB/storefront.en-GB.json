@@ -1,8 +1,8 @@
 {
-    "elioFactFinder": {
+    "elioSearch": {
         "cookies": {
             "tracking": {
-                "name": "FACTFinder Tracking",
+                "name": "ElioSearch Tracking",
                 "description": ""
             }
         },

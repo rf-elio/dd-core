@@ -19,8 +19,8 @@ class Migration1660123300Export extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-ALTER TABLE elio_ff_export ADD download_username varchar(255) NULL;
-ALTER TABLE elio_ff_export ADD download_password varchar(255) NULL;
+ALTER TABLE elio_search_export ADD download_username varchar(255) NULL;
+ALTER TABLE elio_search_export ADD download_password varchar(255) NULL;
 SQL;
 
         $connection->executeStatement($query);

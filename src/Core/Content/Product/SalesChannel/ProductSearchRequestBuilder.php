@@ -37,7 +37,7 @@ use Elio\ElioSearch\Api\Search\Request\AdvisorStatus;
 use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioSearch\Api\Search\Request\SearchRequest;
 use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
 use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -56,22 +56,22 @@ class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
-    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'ff-answer-path-';
-    public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'ff_additional_request_parameter_';
+    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-search-answer-path-';
+    public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'elio_search_additional_request_parameter_';
 
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * SearchRequestBuilder constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(FactFinderConfigServiceInterface $configService)
+    public function __construct(ElioSearchConfigServiceInterface $configService)
     {
         $this->configService = $configService;
     }
 
     /**
-     * Builds the ff search request
+     * Builds the elio search search request
      * @param Request $request
      * @param Criteria $criteria
      * @param SalesChannelContext $salesChannelContext
@@ -122,7 +122,7 @@ class ProductSearchRequestBuilder
     }
 
     /**
-     * Adds the applied sorting to the ff request
+     * Adds the applied sorting to the elio search request
      * @param array $payload
      * @param ProductSearchRequest $searchRequest
      */
@@ -141,7 +141,7 @@ class ProductSearchRequestBuilder
     }
 
     /**
-     * Adds the ff filter to the search request
+     * Adds the elio search filter to the search request
      *
      * @param array $payload
      * @param ProductSearchRequest $searchRequest
@@ -183,7 +183,7 @@ class ProductSearchRequestBuilder
     }
 
     /**
-     * Adds the advisor campaign filters to the ff request
+     * Adds the advisor campaign filters to the elio search request
      *
      * @param array $payload
      * @param ProductSearchRequest $searchRequest
@@ -205,7 +205,7 @@ class ProductSearchRequestBuilder
     }
 
     /**
-     * Adds the additional request params to the ff request
+     * Adds the additional request params to the elio search request
      *
      * @param SearchRequest $searchRequest
      * @param Configuration $config

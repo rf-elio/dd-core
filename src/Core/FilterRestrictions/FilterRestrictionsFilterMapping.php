@@ -49,7 +49,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
  */
 class FilterRestrictionsFilterMapping extends MappingEntityDefinition
 {
-    public const ENTITY_NAME = 'elio_ff_filter_restrictions_filters';
+    public const ENTITY_NAME = 'elio_search_filter_restrictions_filters';
 
     public function getEntityName(): string
     {

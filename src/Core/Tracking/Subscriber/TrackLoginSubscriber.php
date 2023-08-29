@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Tracking\Subscriber;
 
 use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\ElioSearch\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
 use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
@@ -53,7 +53,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class TrackLoginSubscriber implements EventSubscriberInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
@@ -62,14 +62,14 @@ class TrackLoginSubscriber implements EventSubscriberInterface
 
     /**
      * TrackLoginSubscriber constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
      * @param RequestStack $requestStack
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,

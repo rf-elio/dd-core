@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Elio\ElioSearch\Api\Request\ApiRequest;
 use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioSearch\Configuration\FactFinderConfigService;
+use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Elio\ElioSearch\Configuration\LanguageHelper;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Api\Context\SystemSource;
@@ -64,18 +64,18 @@ class FilterService implements FilterInterface
 
     private EntityRepository $filterRestrictionsRepository;
     private EntityRepository $categoryRepository;
-    private FactFinderConfigService $configService;
+    private ElioSearchConfigService $configService;
 
     /**
      * FilterService constructor.
      * @param EntityRepository $filterRestrictionsRepository
      * @param EntityRepository $categoryRepository
-     * @param FactFinderConfigService $configService
+     * @param ElioSearchConfigService $configService
      */
     public function __construct(
         EntityRepository $filterRestrictionsRepository,
         EntityRepository $categoryRepository,
-        FactFinderConfigService $configService
+        ElioSearchConfigService $configService
     ) {
         $this->filterRestrictionsRepository = $filterRestrictionsRepository;
         $this->categoryRepository = $categoryRepository;

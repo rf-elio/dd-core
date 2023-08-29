@@ -33,19 +33,10 @@
 namespace Elio\ElioSearch\Api\Tracking;
 
 
-use Elio\ElioSearch\Api\ApiClientFactoryInterface;
-use Elio\ElioSearch\Api\Tracking\Exception\TrackingRequestNotSupportedException;
-use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
-use Elio\ElioSearch\Api\Tracking\Request\CheckoutTrackingRequest;
-use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
-use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
-use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\ApiException;
-use Swagger\Client\Model\CartOrCheckoutEvent;
-use Swagger\Client\Model\ClickEvent;
-use Swagger\Client\Model\LoginEvent;
 
 /**
  * Class TrackingApi
@@ -57,20 +48,16 @@ use Swagger\Client\Model\LoginEvent;
  */
 class TrackingApi
 {
-    private ApiClientFactoryInterface $apiFactory;
-    use FactFinderLogTrait;
+    use ElioSearchLogTrait;
 
     /**
      * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ApiClientFactoryInterface $apiFactory,
         LoggerInterface $logger
     )
     {
-        $this->apiFactory = $apiFactory;
         $this->logger = $logger;
     }
 
@@ -80,170 +67,6 @@ class TrackingApi
      */
     public function track(TrackingRequest $request, string $salesChannelId) : void
     {
-        $this->ffDebug(
-            'track received',
-            $this,
-            ['request' => $request, 'events' => $request->getEvents()]
-        );
 
-        if(!$request->hasEvents()) {
-            return;
-        }
-        if($request instanceof CartTrackingRequest) {
-            $this->trackCart($request, $salesChannelId);
-            return;
-        }
-        if($request instanceof CheckoutTrackingRequest) {
-            $this->trackCheckout($request, $salesChannelId);
-            return;
-        }
-        if($request instanceof LoginTrackingRequest) {
-            $this->trackLogin($request, $salesChannelId);
-            return;
-        }
-        if($request instanceof ProductDetailTrackingRequest) {
-            $this->trackProductDetail($request, $salesChannelId);
-            return;
-        }
-
-        $this->ffError('Not supported tracking request received', $this, ['request' => $request]);
-        throw new TrackingRequestNotSupportedException(sprintf(
-            'Tracking request "%s" is not supported by "%s".',
-            get_class($request), self::class
-        ));
-    }
-
-    /**
-     * Tracks the cart event
-     *
-     * @param CartTrackingRequest $cartTrackingRequest
-     * @param string $salesChannelId
-     * @throws ApiException
-     */
-    protected function trackCart(CartTrackingRequest $cartTrackingRequest, string $salesChannelId) : void
-    {
-        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
-        $apiClient->trackCartUsingPOST(
-            $cartTrackingRequest->getChannel(),
-            $this->convertCartEvents($cartTrackingRequest)
-        );
-    }
-
-    /**
-     * Tracks the checkout event
-     *
-     * @param CheckoutTrackingRequest $checkoutTrackingRequest
-     * @param string $salesChannelId
-     * @throws ApiException
-     */
-    protected function trackCheckout(CheckoutTrackingRequest $checkoutTrackingRequest, string $salesChannelId) : void
-    {
-        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
-        $apiClient->trackCheckoutUsingPOST(
-            $checkoutTrackingRequest->getChannel(),
-            $this->convertCheckoutEvents($checkoutTrackingRequest)
-        );
-    }
-
-    /**
-     * @param LoginTrackingRequest $loginTrackingRequest
-     * @param string $salesChannelId
-     * @throws ApiException
-     */
-    protected function trackLogin(LoginTrackingRequest $loginTrackingRequest, string $salesChannelId): void
-    {
-        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
-        $apiClient->trackLoginUsingPOST(
-            $loginTrackingRequest->getChannel(),
-            $this->convertLoginEvents($loginTrackingRequest)
-        );
-    }
-
-    /**
-     * @param ProductDetailTrackingRequest $productDetailTrackingRequest
-     * @param string $salesChannelId
-     * @throws ApiException
-     */
-    protected function trackProductDetail(ProductDetailTrackingRequest $productDetailTrackingRequest, string $salesChannelId): void
-    {
-        $apiClient = $this->apiFactory->createTrackingApi($salesChannelId);
-        $apiClient->trackClickUsingPOST(
-            $productDetailTrackingRequest->getChannel(),
-            $this->convertClickEvents($productDetailTrackingRequest)
-        );
-    }
-
-    /**
-     * @param ProductDetailTrackingRequest $productDetailTrackingRequest
-     * @return ClickEvent[]
-     */
-    protected function convertClickEvents(ProductDetailTrackingRequest $productDetailTrackingRequest): array
-    {
-        return array_map(static function (array $event) : ClickEvent {
-            return new ClickEvent([
-                'id' => $event['id'], // hier die Produktnummer
-                'sid' => $event['sid'],
-                'master_id' => $event['productNumber'], // hier kommt die Varianten-Produkt-Nummer -> hier soll die Nummer der Hauptvarianten kommen
-                'title' => $event['title'],
-                'query' => $event['query'],
-                'pos' => $event['pos'],
-                'page' => $event['page'],
-                'page_size' => $event['pageSize'],
-                'campaign' => $event['campaign'],
-                'user_id' => $event['customerId'],
-            ]);
-        }, $productDetailTrackingRequest->getEvents());
-    }
-
-    /**
-     * @param LoginTrackingRequest $loginTrackingRequest
-     * @return LoginEvent[]
-     */
-    protected function convertLoginEvents(LoginTrackingRequest $loginTrackingRequest): array
-    {
-        return array_map(static function (array $event) : LoginEvent {
-            return new LoginEvent([
-                'sid' => $event['sid'],
-                'user_id' => $event['userId'],
-            ]);
-        }, $loginTrackingRequest->getEvents());
-    }
-
-    /**
-     * @param CheckoutTrackingRequest $checkoutTrackingRequest
-     * @return CartOrCheckoutEvent[]
-     */
-    protected function convertCheckoutEvents(CheckoutTrackingRequest $checkoutTrackingRequest): array
-    {
-        return array_map(static function (array $event) : CartOrCheckoutEvent {
-            return new CartOrCheckoutEvent([
-                'id' => $event['id'],
-                'sid' => $event['sid'],
-                'master_id' => $event['productNumber'],
-                'title' => $event['title'],
-                'count' => $event['count'],
-                'price' => $event['price'],
-                'user_id' => $event['customerId'],
-            ]);
-        }, $checkoutTrackingRequest->getEvents());
-    }
-
-    /**
-     * @param CartTrackingRequest $cartTrackingRequest
-     * @return CartOrCheckoutEvent[]
-     */
-    protected function convertCartEvents(CartTrackingRequest $cartTrackingRequest): array
-    {
-        return array_map(static function (array $event) : CartOrCheckoutEvent {
-            return new CartOrCheckoutEvent([
-                'id' => $event['id'],
-                'sid' => $event['sid'],
-                'master_id' => $event['productNumber'],
-                'title' => $event['title'],
-                'count' => $event['count'],
-                'price' => $event['price'],
-                'user_id' => $event['customerId'],
-            ]);
-        }, $cartTrackingRequest->getEvents());
     }
 }

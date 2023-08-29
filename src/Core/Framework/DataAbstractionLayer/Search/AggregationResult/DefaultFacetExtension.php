@@ -45,7 +45,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class DefaultFacetExtension extends Struct
 {
-    public const KEY = 'ff_facet_extension';
+    public const KEY = 'elio_search_facet_extension';
     protected const COMBINATION_CHAR = '~';
     protected string $name;
     protected string $value;
@@ -62,7 +62,7 @@ class DefaultFacetExtension extends Struct
     }
 
     /**
-     * FactFinderDefaultFacetExtension constructor.
+     * DefaultFacetExtension constructor.
      * @param string $name
      * @param string $value
      * @param int $totalHits

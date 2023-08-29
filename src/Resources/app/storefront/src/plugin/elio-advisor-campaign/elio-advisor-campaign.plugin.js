@@ -11,10 +11,10 @@ import deepmerge from 'deepmerge'
  */
 export default class ElioAdvisorCampaignPlugin extends Plugin {
     static options = deepmerge(FilterBasePlugin.options, {
-        advisorSelector: '#e-ff-advisor-campaign-',
-        advisorIdAttribute: 'data-fact-finder-advisor-campaign-id',
-        answerSelector: '.e-ff-advisor-campaign-answer',
-        answerPathAttribute: 'data-e-ff-advisor-campaign-answer-path'
+        advisorSelector: '#e-elio-search-advisor-campaign-',
+        advisorIdAttribute: 'data-elio-search-advisor-campaign-id',
+        answerSelector: '.e-elio-search-advisor-campaign-answer',
+        answerPathAttribute: 'data-e-elio-search-advisor-campaign-answer-path'
     })
 
     init () {
@@ -56,7 +56,7 @@ export default class ElioAdvisorCampaignPlugin extends Plugin {
     getValues() {
         const values = {}
         if (this._values.answerPath) {
-            values['ff-answer-path-' + this._values.campaignId] = this._values.answerPath
+            values['elio-search-answer-path-' + this._values.campaignId] = this._values.answerPath
         }
         return values
     }

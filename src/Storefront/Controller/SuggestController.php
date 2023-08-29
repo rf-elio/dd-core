@@ -35,7 +35,7 @@ namespace Elio\ElioSearch\Storefront\Controller;
 use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
 use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
 use Elio\ElioSearch\Api\Search\SuggestApi;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;
@@ -58,18 +58,18 @@ use Throwable;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class SuggestController extends SearchController
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private SuggestApi $suggestApi;
 
     /**
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param SuggestApi $suggestApi
      * @param SearchPageLoader $searchPageLoader
      * @param SuggestPageLoader $suggestPageLoader
      * @param AbstractProductSearchRoute $productSearchRoute
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         SuggestApi $suggestApi,
         SearchPageLoader $searchPageLoader,
         SuggestPageLoader $suggestPageLoader,
@@ -85,7 +85,7 @@ class SuggestController extends SearchController
     }
 
     /**
-     * Replaces the shopware suggestions with ff suggestions in the case this feature is activated
+     * Replaces the shopware suggestions with elio search suggestions in the case this feature is activated
      *
      * @param SalesChannelContext $context
      * @param Request $request
@@ -96,7 +96,7 @@ class SuggestController extends SearchController
     public function suggest(SalesChannelContext $context, Request $request): Response
     {
         $config = $this->configService->getByContext($context);
-        if (!$config->isActive() || !$config->isSuggestUseFactFinder()) {
+        if (!$config->isActive() || !$config->isSuggestUseElioSearch()) {
             return parent::suggest($context, $request);
         }
 

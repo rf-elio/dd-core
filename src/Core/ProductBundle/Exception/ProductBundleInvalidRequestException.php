@@ -3,13 +3,13 @@
 
 namespace Elio\ElioSearch\Core\ProductBundle\Exception;
 
-use Elio\ElioSearch\Core\Exception\FactFinderException;
+use Elio\ElioSearch\Core\Exception\ElioSearchException;
 
 /**
  * Class ProductBundleException
  *
  * @package Elio\ElioSearch\Core\ProductBundle\Exception
  */
-class ProductBundleInvalidRequestException extends FactFinderException
+class ProductBundleInvalidRequestException extends ElioSearchException
 {
 }

@@ -47,31 +47,31 @@ class FiltersEvents
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent")
      */
-    public const FILTER_WRITTEN_EVENT = 'elio_ff_filter.written';
+    public const FILTER_WRITTEN_EVENT = 'elio_search_filter.written';
 
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent")
      */
-    public const FILTER_DELETED_EVENT = 'elio_ff_filter.deleted';
+    public const FILTER_DELETED_EVENT = 'elio_search_filter.deleted';
 
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent")
      */
-    public const FILTER_LOADED_EVENT = 'elio_ff_filter.loaded';
+    public const FILTER_LOADED_EVENT = 'elio_search_filter.loaded';
 
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent")
      */
-    public const FILTER_RESTRICTION_WRITTEN_EVENT = 'elio_ff_filter_restrictions.written';
+    public const FILTER_RESTRICTION_WRITTEN_EVENT = 'elio_search_filter_restrictions.written';
 
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent")
      */
-    public const FILTER_RESTRICTION_DELETED_EVENT = 'elio_ff_filter_restrictions.deleted';
+    public const FILTER_RESTRICTION_DELETED_EVENT = 'elio_search_filter_restrictions.deleted';
 
     /**
      * @Event("Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent")
      */
-    public const FILTER_RESTRICTION_LOADED_EVENT = 'elio_ff_filter_restrictions.loaded';
+    public const FILTER_RESTRICTION_LOADED_EVENT = 'elio_search_filter_restrictions.loaded';
 
 }

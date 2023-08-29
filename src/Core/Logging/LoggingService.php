@@ -15,7 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class LoggingService implements LoggingServiceInterface
 {
-    public const FILE_NAME = 'elio_fact_finder';
+    public const FILE_NAME = 'elio_search_finder';
     public const LOG_FORMAT = <<<EOT
     {
         method: {method}
@@ -108,7 +108,7 @@ EOT;
     }
 
     /**
-     * Collects all logs created by ff
+     * Collects all logs created by elio search
      */
     private function fillLogs(): void
     {

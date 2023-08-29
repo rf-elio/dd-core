@@ -2,7 +2,7 @@
 
 {# adds a feedback text label #}
 {% block page_product_detail_headline %}
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+    {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
         label: 'product detail - above product', container: page.product
     } %}
     {{ parent() }}
@@ -12,17 +12,17 @@
 {% block page_product_detail_inner %}
     {{ parent() }}
 
-    {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+    {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
         label: 'product detail - below product', container: page.product
     } %}
 {% endblock %}
 
 {# adds the lazy loaded product cross selling sliders #}
 {% block page_product_detail_cross_selling %}
-    {% set useRecommendations = config_by_lang("FactFinder.config.useProductDetailRecommendations") %}
-    {% set useSimilar = config_by_lang("FactFinder.config.useProductDetailSimilar") %}
+    {% set useRecommendations = config_by_lang("ElioSearch.config.useProductDetailRecommendations") %}
+    {% set useSimilar = config_by_lang("ElioSearch.config.useProductDetailSimilar") %}
     {% if useRecommendations or useSimilar %}
-        <div data-e-ff-product-detail-cross-selling-url="{{ path('widgets.e-ff.product-cross-selling.detail', {productId: page.product.id}) }}">
+        <div data-e-elio-search-product-detail-cross-selling-url="{{ path('widgets.e-elio-search.product-cross-selling.detail', {productId: page.product.id}) }}">
             {{ parent() }}
         </div>
     {% else %}

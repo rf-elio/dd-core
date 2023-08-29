@@ -6,7 +6,7 @@
     <services>
         <!-- storefront / controller -->
         <service id="Elio\ElioSearch\Core\Tracking\Controller\ProductDetailTrackingController" public="true" >
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
@@ -25,7 +25,7 @@
 
         <!-- subscriber -->
         <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackCartSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
@@ -34,7 +34,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
@@ -44,7 +44,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackLoginSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
@@ -59,11 +59,11 @@
         <!-- Tracking is allowed checker -->
         <service id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"
                 class="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedChecker">
-            <argument type="tagged" tag="elio-ff.tracking.allowed-checker"/>
+            <argument type="tagged" tag="elio-search.tracking.allowed-checker"/>
         </service>
         <service id="Elio\ElioSearch\Core\Tracking\AllowedChecker\UserAgentAllowedChecker">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
-            <tag name="elio-ff.tracking.allowed-checker"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
+            <tag name="elio-search.tracking.allowed-checker"/>
         </service>
     </services>
 </container>

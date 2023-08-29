@@ -3,7 +3,7 @@
 namespace Elio\ElioSearch\Core\ProductBundle;
 
 
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
 use Elio\ElioSearch\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -22,12 +22,12 @@ class ProductBundleService implements ProductBundleServiceInterface
      * @var iterable|ProductBundleHandlerInterface[]
      */
     private iterable $productBundles;
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * @param iterable|ProductBundleHandlerInterface[] $productBundles
      */
-    public function __construct(iterable $productBundles, FactFinderConfigServiceInterface $configService)
+    public function __construct(iterable $productBundles, ElioSearchConfigServiceInterface $configService)
     {
         $this->productBundles = $productBundles;
         $this->configService = $configService;

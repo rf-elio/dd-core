@@ -63,17 +63,17 @@ class ElioSearch extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = 'category_custom_search_query';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = 'ff_ranking_product_order_count';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = 'ff_ranking_product_order_amount';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = 'elio_search_ranking_product_order_count';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = 'elio_search_ranking_product_order_amount';
 
-    public const DEFAULT_FACTFINDER_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
+    public const DEFAULT_ELIO_SEARCH_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     public const CUSTOM_FIELDS
         = [
-            'FactFinderContentExportCategory' => [
+            'ElioSearchContentExportCategory' => [
                 'label' => [
-                    'en-GB' => 'FactFinder content export',
-                    'de-DE' => 'FactFinder Content Export'
+                    'en-GB' => 'ElioSearch content export',
+                    'de-DE' => 'ElioSearch Content Export'
                 ],
                 'fields' => [
                     self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
@@ -139,10 +139,10 @@ class ElioSearch extends Plugin
                 ],
                 'relations' => ['category', 'landing_page']
             ],
-            'FactFinderProductRanking' => [
+            'ElioSearchProductRanking' => [
                 'label' => [
-                    'en-GB' => 'FactFinder product ranking',
-                    'de-DE' => 'FactFinder product ranking'
+                    'en-GB' => 'ElioSearch product ranking',
+                    'de-DE' => 'ElioSearch product ranking'
                 ],
                 'fields' => [
                     self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [
@@ -189,7 +189,7 @@ class ElioSearch extends Plugin
         $setup->createExports($activateContext->getContext());
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS, true);
+        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install(self::CUSTOM_FIELDS);
@@ -205,7 +205,7 @@ class ElioSearch extends Plugin
         }
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FACTFINDER_FILTERS);
+        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install(self::CUSTOM_FIELDS);

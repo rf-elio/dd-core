@@ -38,7 +38,7 @@ use Elio\ElioSearch\Core\Export\Generator\ExportGeneratorInterface;
 use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
 use Elio\ElioSearch\Core\Export\OutputStream;
 use Elio\ElioSearch\Core\Export\SeoRoute;
-use Elio\ElioSearch\FactFinder;
+use Elio\ElioSearch\ElioSearch;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -116,15 +116,15 @@ class LandingPagePartialGenerator implements ExportGeneratorInterface
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('salesChannels.id', $context->getSalesChannelId()));
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.'.FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
-            new EqualsFilter('customFields.'.FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+            new EqualsFilter('customFields.'.ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.'.ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
         ]));
         $landingPages = $this->landingPageRepository->search($criteria, $context->getContext());
 
         /** @var LandingPageEntity $landingPage */
         foreach ($landingPages as $landingPage) {
             $type = ValueUtil::getCustomFieldValue(
-                $landingPage->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
+                $landingPage->getCustomFields(), ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE
             ) ?? self::EXPORT_TYPE;
 
             $item = new ExportItem();

@@ -1,15 +1,15 @@
 {% sw_extends '@Storefront/storefront/component/product/card/box-standard.html.twig' %}
 
 {% block component_product_box_content %}
-    {% if config('FactFinder.config.trackProductView') %}
-        <div class="elio-ff-listing-box"
-             data-elio-ff-product-number="{{ product.productNumber }}"
-             data-elio-ff-parent-product-id="{{ product.parentId }}"
-             data-elio-ff-label="{{ name }}"
-             data-elio-ff-query="{{ elioFFQuery }}"
-             data-elio-ff-page="{{ elioFFPage }}"
-             data-elio-ff-pageSize="{{ elioFFPageSize }}"
-             data-elio-ff-campaign="{{ elioFFCampaign }}"
+    {% if config('ElioSearch.config.trackProductView') %}
+        <div class="elio-search-listing-box"
+             data-elio-search-product-number="{{ product.productNumber }}"
+             data-elio-search-parent-product-id="{{ product.parentId }}"
+             data-elio-search-label="{{ name }}"
+             data-elio-search-query="{{ elioSearchQuery }}"
+             data-elio-search-page="{{ elioSearchPage }}"
+             data-elio-search-pageSize="{{ elioSearchPageSize }}"
+             data-elio-search-campaign="{{ elioSearchCampaign }}"
         >
             {{ parent() }}
         </div>

@@ -1,0 +1,100 @@
+<?php
+
+
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail;
+
+
+use Elio\ElioSearch\Api\Records\RecordsApi;
+use Elio\ElioSearch\Api\Records\Request\DetailPageRequest;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
+use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRouteResponse;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
+use Throwable;
+
+/**
+ * Class ElioSearchProductDetailRoute
+ *
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail
+ */
+class ElioSearchProductDetailRoute extends AbstractProductDetailRoute
+{
+    use ElioSearchLogTrait;
+    private AbstractProductDetailRoute $decorated;
+    private ElioSearchConfigServiceInterface $configService;
+    private RecordsApi $recordsApi;
+
+    /**
+     * ElioSearchProductDetailRoute constructor.
+     *
+     * @param AbstractProductDetailRoute $decorated
+     * @param ElioSearchConfigServiceInterface $configService
+     * @param RecordsApi $recordsApi
+     * @param LoggerInterface $logger
+     */
+    public function __construct(
+        AbstractProductDetailRoute $decorated,
+        ElioSearchConfigServiceInterface $configService,
+        RecordsApi $recordsApi,
+        LoggerInterface $logger
+    ) {
+        $this->decorated = $decorated;
+        $this->configService = $configService;
+        $this->recordsApi = $recordsApi;
+        $this->logger = $logger;
+    }
+
+    public function getDecorated(): AbstractProductDetailRoute
+    {
+        return $this->decorated;
+    }
+
+    /**
+     * Sends the detail page request to be able to show campaigns or feedback texts
+     *
+     * @param string $productId
+     * @param Request $request
+     * @param SalesChannelContext $context
+     * @param Criteria $criteria
+     * @return ProductDetailRouteResponse
+     */
+    public function load(
+        string $productId,
+        Request $request,
+        SalesChannelContext $context,
+        Criteria $criteria
+    ): ProductDetailRouteResponse {
+        $config = $this->configService->getByContext($context);
+        $productDetailResponse = $this->decorated->load($productId, $request, $context, $criteria);
+
+        if (!$config->isActive() || !$config->isProductDetailPageCampaignsActive()) {
+            return $productDetailResponse;
+        }
+
+        $detailPageRequest = (new DetailPageRequest($config->getApiChannel()))
+            ->setId($productDetailResponse->getProduct()->getProductNumber())
+            ->setWithSimilarProducts('false')
+            ->setWithRecommendations('false')
+            ->setWithRecord('false');
+
+        try {
+            $responseCollection = $this->recordsApi->getDetailPage($detailPageRequest, $context);
+            if($responseCollection->has(CampaignFeedbackResponseCollection::KEY)) {
+                $productDetailResponse->getProduct()->addExtension(
+                    CampaignFeedbackResponseCollection::KEY,
+                    $responseCollection->get(CampaignFeedbackResponseCollection::KEY)
+                );
+            }
+
+            return $productDetailResponse;
+        } catch (Throwable $e) {
+            $this->searchError($e->getMessage(), $this, [$context, $detailPageRequest]);
+            return $productDetailResponse;
+        }
+    }
+}

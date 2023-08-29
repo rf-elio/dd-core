@@ -1,9 +1,9 @@
 {% sw_extends '@Storefront/storefront/element/cms-element-product-slider.html.twig' %}
 
 {% block element_product_slider %}
-    {% set elioFFQuery = 'main' %}
-    {% set elioFFPage = 1 %}
-    {% set elioFFPageSize = element.data.products.elements|length %}
+    {% set elioSearchQuery = 'main' %}
+    {% set elioSearchPage = 1 %}
+    {% set elioSearchPageSize = element.data.products.elements|length %}
 
     {{ parent() }}
 {% endblock %}

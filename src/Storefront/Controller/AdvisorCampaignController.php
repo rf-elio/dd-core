@@ -28,7 +28,7 @@ class AdvisorCampaignController extends StorefrontController
     }
 
     /**
-     * @Route("/widgets/ff/campaign/advisor", name="frontend.e-ff.campaign.advisor", methods={"POST", "GET"}, defaults={"csrf_protected"=false, "XmlHttpRequest"=true})
+     * @Route("/widgets/elio-search/campaign/advisor", name="frontend.e-elio-search.campaign.advisor", methods={"POST", "GET"}, defaults={"csrf_protected"=false, "XmlHttpRequest"=true})
      *
      * @param Request $request
      * @param SalesChannelContext $context
@@ -39,7 +39,7 @@ class AdvisorCampaignController extends StorefrontController
     public function campaign(Request $request, SalesChannelContext $context): Response
     {
         $this->injectParametersByRequestContent($request);
-        $request->request->set(ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER, ProductListingResultTransformer::FF_LISTING_ADVISOR);
+        $request->request->set(ProductListingResultTransformer::ELIO_SEARCH_LISTING_MODE_PARAMETER, ProductListingResultTransformer::ELIO_SEARCH_LISTING_ADVISOR);
         $result = $this->advisorCampaignRoute->load($request, $context);
 
         $result->getListingResult()->getCriteria()->setLimit(-1);
@@ -55,7 +55,7 @@ class AdvisorCampaignController extends StorefrontController
                 'searchParams' => [
                     'search' => '*',
                     ProductSearchRequestBuilder::ADDITIONAL_REQUEST_PARAM_PREFIX.$parameterName => $parameterValue,
-                    ProductListingResultTransformer::FF_LISTING_MODE_PARAMETER => ProductListingResultTransformer::FF_LISTING_ADVISOR
+                    ProductListingResultTransformer::ELIO_SEARCH_LISTING_MODE_PARAMETER => ProductListingResultTransformer::ELIO_SEARCH_LISTING_ADVISOR
                 ]
             ]
         );

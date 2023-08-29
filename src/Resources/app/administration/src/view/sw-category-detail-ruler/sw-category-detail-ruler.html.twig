@@ -1,16 +1,16 @@
-{% block ff_restrictions_category_page %}
+{% block elio_search_restrictions_category_page %}
     <div class="sw-category-detail-base">
-        <div class="elio-ff-restrictions-sales-channel-picker elio-ff-restrictions-sales-channel-picker--category">
+        <div class="elio-search-restrictions-sales-channel-picker elio-search-restrictions-sales-channel-picker--category">
             <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
                                      @change-sales-channel-id="onSalesChannelChanged">
             </sw-sales-channel-switch>
         </div>
 
-        <sw-card :title="$tc('ff.restrictions.tabs.global')"
+        <sw-card :title="$tc('elio-search.restrictions.tabs.global')"
                  :isLoading="isLoading">
-            <ff-restriction-ruler :isCategory="true"
+            <elio-search-restriction-ruler :isCategory="true"
                                   :categoryId="category.id"
-                                  ref="ruler"></ff-restriction-ruler>
+                                  ref="ruler"></elio-search-restriction-ruler>
         </sw-card>
     </div>
 {% endblock %}

@@ -3,49 +3,49 @@
 {% block component_filter_panel_item_manufacturer %}
     {{ parent() }}
 
-    {% set ffAggregations = listing.aggregations.get('ff-default') %}
-    {% for ffAggregation in ffAggregations.aggregations %}
-        {% if ffAggregation.extensions.ff is defined %}
-            {% set parameterName = ffAggregation.extensions.ff.parameterName %}
-            {% set style = ffAggregation.extensions.ff.style %}
+    {% set elioSearchAggregations = listing.aggregations.get('elio-search-default') %}
+    {% for elioSearchAggregation in elioSearchAggregations.aggregations %}
+        {% if elioSearchAggregation.extensions.elioSearch is defined %}
+            {% set parameterName = elioSearchAggregation.extensions.elio-search.parameterName %}
+            {% set style = elioSearchAggregation.extensions.elio-search.style %}
 
             {% if style == 'DEFAULT' %}
-                {% if not ffAggregation.entities is empty %}
-                    {% for property in ffAggregation.entities %}
-                        {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-default-select.html.twig' with {
+                {% if not elioSearchAggregation.entities is empty %}
+                    {% for property in elioSearchAggregation.entities %}
+                        {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-default-select.html.twig' with {
                             elements: property.options,
                             sidebar: sidebar,
                             name: parameterName,
                             displayName: property.translated.name,
                             displayType: property.displayType,
-                            pluginSelector: 'fact-finder-filter-property-select',
+                            pluginSelector: 'elio-search-filter-property-select',
                             propertyName: property.translated.name,
-                            count: property.extensions.ff_facet_extension.selectedCount
+                            count: property.extensions.elio_search_facet_extension.selectedCount
                         } %}
                     {% endfor %}
                 {% endif %}
             {% elseif style == 'SLIDER' %}
-                {% if ffAggregation.min > 0 and ffAggregation.max > 0 %}
-                    {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-range.html.twig' with {
-                        price: ffAggregation,
+                {% if elioSearchAggregation.min > 0 and elioSearchAggregation.max > 0 %}
+                    {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-range.html.twig' with {
+                        price: elioSearchAggregation,
                         sidebar: sidebar,
-                        name: ffAggregation.name,
-                        minKey: 'min-' ~ ffAggregation.name,
-                        maxKey: 'max-' ~ ffAggregation.name,
-                        displayName: ffAggregation.name,
-                        rangeUnit: ffAggregation.unit
+                        name: elioSearchAggregation.name,
+                        minKey: 'min-' ~ elioSearchAggregation.name,
+                        maxKey: 'max-' ~ elioSearchAggregation.name,
+                        displayName: elioSearchAggregation.name,
+                        rangeUnit: elioSearchAggregation.unit
                     } %}
                 {% endif %}
             {% elseif style == 'TREE' %}
-                {% sw_include '@FactFinder/storefront/component/listing/filter/ff-filter-tree-select.html.twig' with {
-                    elements: ffAggregation.extensions.ffTree.tree,
+                {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-select.html.twig' with {
+                    elements: elioSearchAggregation.extensions.elioSearchTree.tree,
                     sidebar: sidebar,
                     name: parameterName,
                     displayName: parameterName,
                     displayType: 'text',
-                    pluginSelector: 'fact-finder-filter-tree-select',
+                    pluginSelector: 'elio-search-filter-tree-select',
                     propertyName: parameterName,
-                    ffTree: ffAggregation.extensions.ffTree
+                    elioSearchTree: elioSearchAggregation.extensions.elioSearchTree
                 } %}
             {% endif %}
         {% endif %}

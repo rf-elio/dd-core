@@ -74,7 +74,7 @@ class Credentials
      */
     public function __serialize(): array
     {
-        throw new RuntimeException('FF configuration object cannot be serialized');
+        throw new RuntimeException('Elio search configuration object cannot be serialized');
     }
 
     /**

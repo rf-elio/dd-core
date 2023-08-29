@@ -1,7 +1,7 @@
 {
-  "ff": {
+  "elio-search": {
     "global": {
-      "title": "FACTFinder",
+      "title": "ElioSearch",
       "description": "",
       "errors": {
         "unexpectedErrorTitle": "Fehler!",

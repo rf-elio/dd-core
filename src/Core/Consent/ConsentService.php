@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\Consent;
 
 
 use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -49,13 +49,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ConsentService implements TrackingAllowedCheckerInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * ConsentService constructor.
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(FactFinderConfigServiceInterface $configService)
+    public function __construct(ElioSearchConfigServiceInterface $configService)
     {
         $this->configService = $configService;
     }

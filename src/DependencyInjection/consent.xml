@@ -5,8 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="Elio\ElioSearch\Core\Consent\ConsentService">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
-            <tag name="elio-ff.tracking.allowed-checker"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
+            <tag name="elio-search.tracking.allowed-checker"/>
         </service>
         <service id="Elio\ElioSearch\Core\Consent\ConsentSubscriber">
             <argument type="service" id="Elio\ElioSearch\Core\Consent\ConsentService" />

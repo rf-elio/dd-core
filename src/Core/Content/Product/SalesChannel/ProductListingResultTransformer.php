@@ -57,8 +57,8 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ProductListingResultTransformer
 {
-    public const FF_LISTING_MODE_PARAMETER = 'ff_listing_mode';
-    public const FF_LISTING_ADVISOR = 'advisor';
+    public const ELIO_SEARCH_LISTING_MODE_PARAMETER = 'elio_search_listing_mode';
+    public const ELIO_SEARCH_LISTING_ADVISOR = 'advisor';
 
     /**
      * Transforms the ProductListingResponse to an shopware ProductListingResult
@@ -194,15 +194,15 @@ class ProductListingResultTransformer
         Request $request
     ): void
     {
-        $listingMode = $request->get(self::FF_LISTING_MODE_PARAMETER);
+        $listingMode = $request->get(self::ELIO_SEARCH_LISTING_MODE_PARAMETER);
 
-        if ($listingMode === self::FF_LISTING_ADVISOR) {
+        if ($listingMode === self::ELIO_SEARCH_LISTING_ADVISOR) {
             $showListing = false;
             if ($searchRequest->getAdvisorStatus() && !empty($searchRequest->getAdvisorStatus()->getAnswerPath())) {
                 $showListing = true;
             }
 
-            $shopwareProductListingResult->addExtension('ff-advisor-listing', new ArrayEntity([
+            $shopwareProductListingResult->addExtension('elio-search-advisor-listing', new ArrayEntity([
                 'showListing' => $showListing
             ]));
         }

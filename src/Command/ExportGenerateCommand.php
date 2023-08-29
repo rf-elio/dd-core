@@ -68,7 +68,7 @@ class ExportGenerateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-ff:export:generate')
+        $this->setName('elio-search:export:generate')
              ->addArgument('exportId', InputArgument::OPTIONAL, 'Id of the export that should be generated')
              ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
     }

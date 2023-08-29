@@ -7,7 +7,7 @@ namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 use Elio\ElioSearch\Api\Records\RecordsApi;
 use Elio\ElioSearch\Api\Records\Request\RecommendationRequest;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
 use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -27,15 +27,15 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
     public const TYPE = 'recommendation';
 
     private RecordsApi $recordsApi;
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * RecommendedBundle constructor.
      *
      * @param RecordsApi $recordsApi
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(RecordsApi $recordsApi, FactFinderConfigServiceInterface $configService)
+    public function __construct(RecordsApi $recordsApi, ElioSearchConfigServiceInterface $configService)
     {
         $this->recordsApi = $recordsApi;
         $this->configService = $configService;

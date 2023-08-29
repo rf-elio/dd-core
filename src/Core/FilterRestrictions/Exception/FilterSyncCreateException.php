@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\FilterRestrictions\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\FactFinderException;
+use Elio\ElioSearch\Core\Exception\ElioSearchException;
 
 /**
  * Class FilterSyncCreateException
@@ -43,7 +43,7 @@ use Elio\ElioSearch\Core\Exception\FactFinderException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FilterSyncCreateException extends FactFinderException
+class FilterSyncCreateException extends ElioSearchException
 {
 
 }

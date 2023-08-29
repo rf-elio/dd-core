@@ -2,7 +2,7 @@
 
 {% block base_content %}
     {% set searchTerm = page.searchTerm %}
-    {% set showSearchHistory = config_by_lang("FactFinder.config.suggestShowSearchHistory") %}
+    {% set showSearchHistory = config_by_lang("ElioSearch.config.suggestShowSearchHistory") %}
     {% if showSearchHistory %}
         {% set searchTermObject = {
             searchTerm: searchTerm,
@@ -16,8 +16,8 @@
 
     {% block page_search %}
         <div class="cms-page search-page e-search-page">
-            {% block e_ff_page_search_feedback_text_above_search_result %}
-                {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+            {% block e_elio_search_page_search_feedback_text_above_search_result %}
+                {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
                     label: 'above search result', container: page.listing
                 } %}
             {% endblock %}
@@ -45,7 +45,7 @@
                                 <a data-toggle="pill"
                                    class="nav-link product-detail-tab-navigation-link active"
                                    href="#products">
-                                    {{ 'elioFactFinder.content-listing.tab-products-label'|trans|sw_sanitize }}
+                                    {{ 'elioSearch.content-listing.tab-products-label'|trans|sw_sanitize }}
                                 </a>
                             </li>
                         {% endif %}
@@ -55,7 +55,7 @@
                                 <a data-toggle="pill"
                                    class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
                                    href="#{{ contentGroup.type }}">
-                                    {{ ('elioFactFinder.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
+                                    {{ ('elioSearch.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}
                                 </a>
                             </li>
                         {% endfor %}
@@ -85,7 +85,7 @@
                 </div>
             {% endif %}
 
-            {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+            {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
                 label: 'below search result', container: page.listing
             } %}
         </div>

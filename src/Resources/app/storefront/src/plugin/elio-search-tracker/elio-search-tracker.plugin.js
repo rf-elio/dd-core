@@ -3,7 +3,7 @@ import Plugin from 'src/plugin-system/plugin.class';
 export default class ElioSearchTrackerPlugin extends Plugin {
     static options = {
         maxHistoryLength: 10,
-        localStorageKey: 'eff-search-history'
+        localStorageKey: 'elio-search-search-history'
     };
 
     init() {

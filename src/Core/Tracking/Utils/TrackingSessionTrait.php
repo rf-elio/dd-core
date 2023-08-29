@@ -39,11 +39,11 @@ trait TrackingSessionTrait
 {
     private function getTrackingSessionIdKey() : string
     {
-        return 'ffTrackingSessionId';
+        return 'elioSearchTrackingSessionId';
     }
 
     /**
-     * Creates the ff tracking session id
+     * Creates the elio search tracking session id
      *
      * @param RequestStack $requestStack
      * @return string

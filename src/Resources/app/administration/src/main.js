@@ -1,12 +1,12 @@
-import './module/elio-fact-finder/index';
+import './module/elio-search/index';
 import './module/elio-extension-config-detail/index';
-import './module/elio-fact-finder-export/index';
-import './module/elio-fact-finder-logging/index';
-import './module/elio-fact-finder-restrictions/index';
+import './module/elio-search-export/index';
+import './module/elio-search-logging/index';
+import './module/elio-search-restrictions/index';
 import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';
 import './view/sw-category-detail-ruler/index';
-import './module/sw-cms/blocks/commerce/ff-advisor-campaign';
+import './module/sw-cms/blocks/commerce/elio-search-advisor-campaign';
 import './module/sw-cms/elements/advisor-campaign'
 
 import deDE from './snippet/de-DE.json';

@@ -14,12 +14,12 @@
         </service>
 
         <service id="Elio\ElioSearch\Core\Export\ExportService">
-            <argument type="service" id="elio_ff_export.repository" />
+            <argument type="service" id="elio_search_export.repository" />
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="logger" />
-            <argument type="tagged" tag="elio-ff.export.generator" />
-            <argument type="tagged" tag="elio-ff.export.writer" />
+            <argument type="tagged" tag="elio-search.export.generator" />
+            <argument type="tagged" tag="elio-search.export.writer" />
         </service>
 
         <!-- generators / product -->
@@ -28,17 +28,17 @@
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="sales_channel.repository" />
             <argument type="service" id="Elio\ElioSearch\Core\Features\FeatureService" />
-            <tag name="elio-ff.export.generator" />
+            <tag name="elio-search.export.generator" />
         </service>
         <!-- generators / content -->
         <service id="Elio\ElioSearch\Core\Export\Generator\Content\CategoryExportGenerator">
             <argument type="service" id="category.repository" />
             <argument type="service" id="router"/>
-            <tag name="elio-ff.export.generator" />
+            <tag name="elio-search.export.generator" />
         </service>
         <service id="Elio\ElioSearch\Core\Export\Generator\Content\LandingPagePartialGenerator">
             <argument type="service" id="landing_page.repository" />
-            <tag name="elio-ff.export.generator" />
+            <tag name="elio-search.export.generator" />
         </service>
 
         <!-- storage -->
@@ -49,7 +49,7 @@
         <!-- writers -->
         <service id="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
             <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
-            <tag name="elio-ff.export.writer"/>
+            <tag name="elio-search.export.writer"/>
         </service>
         <service id="Elio\ElioSearch\Core\Export\Writer\CleanupWriterDecorator"
                  decorates="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
@@ -63,7 +63,7 @@
         </service>
         <service id="Elio\ElioSearch\Core\Export\Writer\XMLFileWriter">
             <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
-            <tag name="elio-ff.export.writer"/>
+            <tag name="elio-search.export.writer"/>
         </service>
 
         <!-- controller -->

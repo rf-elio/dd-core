@@ -33,19 +33,14 @@
 namespace Elio\ElioSearch\Api\Search;
 
 
-use Elio\ElioSearch\Api\ApiClientFactoryInterface;
 use Elio\ElioSearch\Api\Response\ResponseCollection;
 use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioSearch\Api\Search\Request\SearchRequest;
 use Elio\ElioSearch\Api\Transform\Transformer;
-use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
-use Swagger\Client\Model\NavigationRequest;
-use Swagger\Client\Model\SortItem;
 use Throwable;
 
 /**
@@ -58,12 +53,11 @@ use Throwable;
  */
 class SearchApi
 {
-    use FactFinderLogTrait;
+    use ElioSearchLogTrait;
     private Transformer $transformer;
 
     /**
      * SearchApi constructor.
-     * @param ApiClientFactoryInterface $apiFactory
      * @param Transformer $transformer
      * @param LoggerInterface $logger
      */
@@ -77,17 +71,16 @@ class SearchApi
     }
 
     /**
-     * Executes the ff search request
+     * Executes the elio search request
      *
      * @param ProductSearchRequest $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
-     * @throws ApiException
      * @throws Throwable
      */
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
-        $this->ffDebug('search', $this, [$searchRequest, $context]);
+        $this->searchDebug('search', $this, [$searchRequest, $context]);
         return new ResponseCollection();
     }
 
@@ -95,7 +88,6 @@ class SearchApi
      * @param ContentSearchRequest $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
-     * @throws ApiException
      * @throws Throwable
      */
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
@@ -104,146 +96,15 @@ class SearchApi
     }
 
     /**
-     * Executes the ff navigation request
+     * Executes the elio search navigation request
      *
      * @param NavigationRequestProduct $searchRequest
      * @param SalesChannelContext $context
      * @return ResponseCollection
-     * @throws ApiException
      * @throws Throwable
      */
     public function navigation(NavigationRequestProduct $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         return new ResponseCollection();
-    }
-
-    /**
-     * Converts the sortings to SortItem's
-     *
-     * @param SearchRequest $searchRequest
-     * @return array|SortItem[]
-     */
-    protected function getSorting(SearchRequest $searchRequest): array
-    {
-        if(!$searchRequest->getSort()) {
-            return [];
-        }
-
-        return [
-            new SortItem([
-                'name' => $searchRequest->getSort()['name'],
-                'order' => $searchRequest->getSort()['order']
-            ])
-        ];
-    }
-
-    /**
-     * Prepares the filters to match the ff request structure
-     *
-     * @param SearchRequest $searchRequest
-     * @return array
-     */
-    protected function getFilters(SearchRequest $searchRequest) : array
-    {
-        $preparedFilters = [];
-        foreach ($searchRequest->getFilter() as $name => $filter) {
-            $preparedFilter = [
-                'name' => $name,
-                'substring' => $filter['substring'],
-                'values' => [],
-            ];
-
-            foreach ($filter['values'] as $value) {
-                $preparedFilter['values'][] = [
-                    'exclude' => false,
-                    'type' => 'or',
-                    'value' => $value
-                ];
-            }
-
-            $preparedFilters[] = $preparedFilter;
-        }
-
-        return $preparedFilters;
-    }
-
-    /**
-     * Fetching filters from NavigationRequest
-     *
-     * @param NavigationRequestProduct $navigationRequest
-     * @return array
-     */
-    protected function getNavigationFilters(NavigationRequestProduct $navigationRequest): array
-    {
-        $filters = $this->getFilters($navigationRequest);
-        $customFilters = $navigationRequest->getCustomFilters();
-
-        if (!empty($customFilters)) {
-            foreach ($customFilters as $name => $value) {
-                $filters[] = [
-                    'name' => $name,
-                    'substring' => false,
-                    'values' => [[
-                        'exclude' => false,
-                        'type' => 'or',
-                        'value' => $this->prepareFilterValue($value)
-                    ]]
-                ];
-            }
-
-            return $filters;
-        }
-
-
-        $categoryPath = $navigationRequest->getCategoryPath();
-        if(!empty($categoryPath) && !array_key_exists('CategoryPath', $navigationRequest->getFilter())){
-            $categoryPath = implode('/', array_values($categoryPath));
-            $filters[] = [
-                'name' => 'CategoryPath',
-                'substring' => false,
-                'values' => [[
-                    'exclude' => false,
-                    'type' => 'or',
-                    'value' => explode('/', $categoryPath)
-                ]]
-            ];
-        }
-        return $filters;
-    }
-
-    /**
-     * Creates the custom params based on the additional parameters
-     *
-     * @param SearchRequest $searchRequest
-     * @return array
-     */
-    protected function getCustomParameters(SearchRequest $searchRequest): array
-    {
-        if(!$searchRequest->getAdditionalRequestParameters()) {
-            return [];
-        }
-
-        $customParameters = [];
-
-        foreach ($searchRequest->getAdditionalRequestParameters() as $name => $value) {
-            $customParameters[] = [
-                'cacheIrrelevant' => true,
-                'name' => $name,
-                'values' => [$value]
-            ];
-        }
-
-        return $customParameters;
-    }
-
-    /**
-     * Encloses the filter value in double quotes if it contains spaces
-     *
-     * @param string $value
-     * @return string
-     */
-    private function prepareFilterValue(string $value) : string
-    {
-        return strpos($value, ' ') === false ? $value : '"'.$value.'"';
     }
 }

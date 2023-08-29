@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="Elio\ElioSearch\Core\BotProtection\BotDetectionService">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
             <argument type="service" id="event_dispatcher" />
         </service>
         <service id="Elio\ElioSearch\Core\BotProtection\BotProtectionRequestSubscriber">

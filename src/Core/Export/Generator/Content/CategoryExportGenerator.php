@@ -41,7 +41,7 @@ use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
 use Elio\ElioSearch\Core\Export\OutputStream;
 use Elio\ElioSearch\Core\Export\SeoRoute;
 use Elio\ElioSearch\Core\Util\ArrayUtil;
-use Elio\ElioSearch\FactFinder;
+use Elio\ElioSearch\ElioSearch;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -142,15 +142,15 @@ class CategoryExportGenerator extends BaseCategoryExportGenerator
         if(!empty($productInformation)) {
             // adding productInformation if not disabled
             if (
-                !isset($category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) ||
-                !$category->getCustomFields()[FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]
+                !isset($category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]) ||
+                !$category->getCustomFields()[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]
             ) {
                 $keywords .= ExportDefaults::KEYWORD_SEPARATOR . ValueUtil::removeDuplicateWords($productInformation);
                 $keywords = ltrim($keywords, ExportDefaults::KEYWORD_SEPARATOR);
             }
         }
 
-        $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), FactFinder::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
+        $type = ValueUtil::getCustomFieldValue($category->getCustomFields(), ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ?? $type;
         $this->prepareExportItem($category, $exportItem, $type);
         $exportItem->set(Defaults::FIELD_KEYWORDS, ValueUtil::cleanValue($keywords));
 

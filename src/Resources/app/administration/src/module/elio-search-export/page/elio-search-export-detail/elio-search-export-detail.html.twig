@@ -1,0 +1,311 @@
+{% block elio_search_export_detail %}
+    <sw-page class="sw-property-detail">
+
+        {% block elio_search_export_detail_smart_bar_header %}
+            <template slot="smart-bar-header">
+                {% block elio_search_export_detail_smart_bar_header_title %}
+                    <h2>{{ placeholder(elio_search_export, 'name', $tc('elio-search-export.detail.textHeadline')) }}</h2>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block elio_search_export_detail_smart_bar_actions %}
+            <template slot="smart-bar-actions">
+                {% block elio_search_export_detail_smart_bar_actions_cancel %}
+                    <sw-button class="sw-property-detail__back-action"
+                               :disabled="isLoading"
+                               @click="onCancel">
+                        {{ $tc('elio-search-export.buttonCancel') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block elio_search_export_detail_smart_bar_actions_save %}
+                    <sw-button-process
+                            class="sw-property-detail__save-action"
+                            :isLoading="isLoading"
+                            :processSuccess="isSaveSuccessful"
+                            :disabled="isLoading"
+                            variant="primary"
+                            @process-finish="onSaveFinish"
+                            @click.prevent="onSave">
+                        {{ $tc('elio-search-export.buttonSave') }}
+                    </sw-button-process>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block elio_search_export_detail_content %}
+            <sw-card-view slot="content">
+
+                {% block elio_search_export_detail_content_language_info %}
+                    <sw-language-info
+                            :entityDescription="placeholder(elio_search_export, 'name', $tc('elio-search-export.detail.textHeadline'))">
+                    </sw-language-info>
+                {% endblock %}
+
+                <sw-card v-if="elio_search_export" :title="$tc('elio-search-export.detail.cardTitleBasicInfo')" :isLoading="isLoading">
+                    <sw-container slot="grid" rows="auto auto">
+                        <sw-card-section divider="bottom">
+                            {% block elio_search_export_detail_basic_info %}
+                                <sw-field
+                                        v-model="elio_search_export.name"
+                                        type="text"
+                                        required
+                                        :label="$tc('elio-search-export.detail.labelName')"
+                                        :placeholder="placeholder(elio_search_export, 'name', $tc('elio-search-export.detail.placeholderName'))">
+                                </sw-field>
+                                <div class="sw-container" style="grid-template-columns: 1fr 1fr 1fr; gap: 0px 30px; place-items: stretch;">
+                                    <sw-field
+                                            v-model="elio_search_export.type"
+                                            type="select"
+                                            required
+                                            :options="typeList"
+                                            :label="$tc('elio-search-export.detail.labelType')">
+                                    </sw-field>
+
+                                    <sw-field
+                                            v-model="elio_search_export.format"
+                                            type="select"
+                                            required
+                                            :options="formatList"
+                                            :label="$tc('elio-search-export.detail.labelFormat')">
+                                    </sw-field>
+
+                                    <sw-field
+                                            v-model="elio_search_export.active"
+                                            type="switch"
+                                            :label="$tc('elio-search-export.detail.labelActive')"
+                                            :helpText="$tc('elio-search-export.detail.helpTextActive')">
+                                    </sw-field>
+
+                                </div>
+                                <sw-field
+                                        v-model="elio_search_export.interval"
+                                        type="text"
+                                        required
+                                        :label="$tc('elio-search-export.detail.labelInterval')"
+                                        placeholder="0 * * * *"
+                                        :helpText="$tc('elio-search-export.detail.helpTextInterval')">
+                                </sw-field>
+
+                                {% block elio_search_export_detail_basic_info_download_protection %}
+
+                                    <sw-field
+                                        v-model="elio_search_export.downloadUsername"
+                                        type="text"
+                                        required
+                                        :label="$tc('elio-search-export.detail.downloadUsername')"
+                                        :placeholder="placeholder(elio_search_export, 'downloadUsername', $tc('elio-search-export.detail.downloadUsername'))">
+                                    </sw-field>
+
+                                    <sw-field
+                                        v-model="elio_search_export.downloadPassword"
+                                        type="password"
+                                        required
+                                        :label="$tc('elio-search-export.detail.downloadPassword')"
+                                        :placeholder="placeholder(elio_search_export, 'downloadPassword', $tc('elio-search-export.detail.downloadPassword'))">
+                                    </sw-field>
+
+                                {% endblock %}
+
+                                {% block elio_search_export_detail_basic_info_saleschannel_language %}
+                                    <sw-field
+                                            v-model="elio_search_export.salesChannelId"
+                                            type="select"
+                                            required
+                                            :options="salesChannelIdsList"
+                                            :label="$tc('elio-search-export.detail.labelSalesChannel')">
+                                    </sw-field>
+                                    <sw-field
+                                            v-model="elio_search_export.languageId"
+                                            type="select"
+                                            required
+                                            :options="languageIdsList"
+                                            :label="$tc('elio-search-export.detail.labelLanguage')">
+                                    </sw-field>
+                                    <sw-entity-multi-select
+                                            v-if="baseCategories"
+                                            v-model="baseCategories"
+                                            required
+                                            entity-name="category"
+                                            :label="$tc('elio-search-export.detail.baseCategoryLabel')"
+                                            @change="onChangeBaseCategory"
+                                    />
+                                {% endblock %}
+
+                            {% endblock %}
+                        </sw-card-section>
+
+                        {% block elio_search_export_detail_basic_info_secondary_section %}
+                            <sw-card-section secondary slim v-if="!isNew">
+                                <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
+                                    <sw-description-list>
+                                        <div class="headline">
+                                            {{ $tc('elio-search-export.detail.labelDetails') }}
+                                        </div>
+
+                                        {% block elio_search_export_detail_basic_info_lastgeneration_started %}
+                                            <dt>{{ $tc('elio-search-export.detail.labelLastGenerationStarted') }}</dt>
+                                            <dd v-if="elio_search_export.lastGenerationStartedAt">{{ formatDate(elio_search_export.lastGenerationStartedAt) }}</dd>
+                                            <dd v-else>-</dd>
+                                        {% endblock %}
+
+                                        {% block elio_search_export_detail_basic_info_lastgeneration_finished %}
+                                            <dt>{{ $tc('elio-search-export.detail.labelLastGenerationFinished') }}</dt>
+                                            <dd v-if="elio_search_export.lastGenerationFinishedAt">{{ formatDate(elio_search_export.lastGenerationFinishedAt) }}</dd>
+                                            <dd v-else>-</dd>
+                                        {% endblock %}
+
+                                        {% block elio_search_export_detail_basic_info_next_generation_due_at %}
+                                            <dt>{{ $tc('elio-search-export.detail.labelNextGenerationDueAt') }}</dt>
+                                            <dd v-if="elio_search_export.nextGenerationDueAt">{{ formatDate(elio_search_export.nextGenerationDueAt) }}</dd>
+                                            <dd v-else>-</dd>
+                                        {% endblock %}
+
+                                        {% block elio_search_export_detail_basic_info_status %}
+                                            <dt>{{ $tc('elio-search-export.detail.status.title') }}</dt>
+                                            <dd>
+                                                <sw-field
+                                                        v-model="getDownloadUrl"
+                                                        type="text"
+                                                        readonly>
+                                                </sw-field>
+                                                <sw-button variant="primary"
+                                                           size="small"
+                                                           v-if="status.exists"
+                                                           :disabled="!status.exists"
+                                                           @click="onDownloadExport">
+                                                    {{ $tc('elio-search-export.detail.download') }}
+                                                </sw-button>
+                                                <sw-button variant="danger"
+                                                           size="small"
+                                                           v-if="!status.exists"
+                                                           :disabled="!status.exists"
+                                                           @click="onDownloadExport">
+                                                    {{ $tc('elio-search-export.detail.status.notExists') }}
+                                                </sw-button>
+                                                <sw-button class="elio-search-export-button-generate"
+                                                           variant="primary"
+                                                           size="small"
+                                                           :disabled="isGenerating"
+                                                           @click="onGenerate">
+                                                    {{ isGenerating?$tc('elio-search-export.detail.buttonGenerateInProgress'):$tc('elio-search-export.detail.buttonGenerate') }}
+                                                </sw-button>
+                                            </dd>
+                                        {% endblock %}
+
+                                        {% block elio_search_export_detail_basic_info_export_id %}
+                                            <dt>{{ $tc('elio-search-export.detail.labelExportCommand') }}</dt>
+                                            <dd>
+                                                <sw-field
+                                                        v-model="command"
+                                                        type="text"
+                                                        readonly>
+                                                </sw-field>
+                                                <sw-field
+                                                        v-model="commandForce"
+                                                        type="switch"
+                                                        :label="$tc('elio-search-export.detail.labelExportCommandForce')">
+                                                </sw-field>
+                                            </dd>
+                                        {% endblock %}
+                                    </sw-description-list>
+                                </sw-container>
+                            </sw-card-section>
+                        {% endblock %}
+                    </sw-container>
+                </sw-card>
+
+                <sw-card v-if="elio_search_export" :title="$tc('elio-search-export.detail.cardTitleConfig')" :isLoading="isLoading">
+                    <div v-if="elio_search_export.type === 'content'">
+                        <sw-field
+                            v-model="elio_search_export.config.export_product_categories"
+                            type="switch"
+                            :label="$tc('elio-search-export.detail.config.export_product_categories')">
+                        </sw-field>
+                        <sw-field
+                                v-model="elio_search_export.config.export_structure_categories"
+                                type="switch"
+                                :label="$tc('elio-search-export.detail.config.export_structure_categories')">
+                        </sw-field>
+                        <sw-field
+                                v-model="elio_search_export.config.export_link_categories"
+                                type="switch"
+                                :label="$tc('elio-search-export.detail.config.export_link_categories')">
+                        </sw-field>
+                    </div>
+                    <sw-field
+                            v-model="elio_search_export.config.trigger_import_search_data"
+                            type="switch"
+                            :label="$tc('elio-search-export.detail.config.trigger_import_search_data')">
+                    </sw-field>
+                    <sw-field
+                            v-model="elio_search_export.config.trigger_import_suggest_data"
+                            type="switch"
+                            :label="$tc('elio-search-export.detail.config.trigger_import_suggest_data')">
+                    </sw-field>
+                </sw-card>
+
+                <sw-card :class="[{'elio-search-mappings--empty':isMappingsEmpty}]"
+                         v-if="!isNew"
+                         :title="$tc('elio-search-export.detail.cardTitleMappings')"
+                         :isLoading="isLoading">
+                    <div class="elio-search-mappings">
+                    {% block elio_search_export_detail_mapping_info %}
+                        <sw-button class="elio-search-mappings-button-add"
+                                   variant="primary"
+                                   size="small"
+                                   @click="onAddNewMapping">
+                            {{ $tc('elio-search-export.detail.buttonMappingAdd') }}
+                        </sw-button>
+
+                        <div class="sw-container" style="grid-template-columns: 3fr 3fr 1fr; gap: 0 30px; place-items: stretch;">
+                            <div>
+                                <div class="headline">{{ $tc('elio-search-export.detail.columnSource') }}</div>
+                                {% block elio_search_export_detail_mapping_source_column %}
+                                    <sw-field
+                                            v-for="export_mapping in elio_search_export_mappings"
+                                            v-model="export_mapping.source"
+                                            type="text"
+                                            :placeholder="$tc('elio-search-export.detail.mappingSourcePlaceholder')">
+                                    </sw-field>
+                                {% endblock %}
+                            </div>
+                            <div>
+                                <div class="headline">{{ $tc('elio-search-export.detail.columnTarget') }}</div>
+                                {% block elio_search_export_detail_mapping_target_column %}
+                                    <sw-field
+                                            v-for="export_mapping in elio_search_export_mappings"
+                                            v-model="export_mapping.target"
+                                            type="text"
+                                            :placeholder="placeholder(elio_search_export, 'name', $tc('elio-search-export.detail.placeholderName'))">
+                                    </sw-field>
+                                {% endblock %}
+                            </div>
+                            <div class="elio-search-mappings-column-actions">
+                                {% block elio_search_export_detail_mapping_action_column %}
+                                    <sw-button class="elio-search-mappings-button-delete"
+                                               v-for="export_mapping in elio_search_export_mappings"
+                                               variant="danger"
+                                               size="small"
+                                               @click.prevent="onDeleteMapping(export_mapping.id)">
+                                        {{ $tc('elio-search-export.detail.buttonMappingRemove') }}
+                                    </sw-button>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endblock %}
+                    </div>
+
+                    <sw-empty-state v-if="isMappingsEmpty"
+                                    :title="$tc('elio-search-export.detail.messageMappingsEmptyTitle')"
+                                    icon="default-documentation-file"
+                                    :subline="$tc('elio-search-export.detail.messageMappingsEmptySubline')"
+                                    :absolute="false">
+                    </sw-empty-state>
+                </sw-card>
+
+            </sw-card-view>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

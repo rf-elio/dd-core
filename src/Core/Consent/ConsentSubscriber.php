@@ -94,7 +94,7 @@ class ConsentSubscriber implements EventSubscriberInterface
         if ($context === null){
             return;
         }
-        $trackingCookie = $request->cookies->get('elio_ff_tracking');
+        $trackingCookie = $request->cookies->get('elio_search_tracking');
         $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $context);
     }
 
@@ -110,7 +110,7 @@ class ConsentSubscriber implements EventSubscriberInterface
             return;
         }
         $newContext = $restoredEvent->getRestoredSalesChannelContext();
-        $trackingCookie = $request->cookies->get('elio_ff_tracking');
+        $trackingCookie = $request->cookies->get('elio_search_tracking');
         $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $newContext);
     }
 }

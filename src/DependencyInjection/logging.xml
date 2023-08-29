@@ -20,7 +20,7 @@
 
         <!-- subscriber -->
         <service id="Elio\ElioSearch\Core\Logging\Subscriber\LogIpFilterSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\FactFinderConfigService"/>
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <argument type="service" id="Elio\ElioSearch\Core\Logging\LogFilterContext"/>
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -31,15 +31,15 @@
             <argument>%shopware.logger.file_rotation_count%</argument>
             <argument type="service" id="Elio\ElioSearch\Core\Logging\LogFilterContext" />
         </service>
-        <service id="elio.fact_finder.core.logging.default" class="Monolog\Logger">
+        <service id="elio.search.core.logging.default" class="Monolog\Logger">
             <factory service="Elio\ElioSearch\Core\Logging\LoggerFactory" method="createRotating" />
-            <argument type="string">elio_fact_finder_default</argument>
+            <argument type="string">elio_search_default</argument>
             <argument type="string">10</argument>
             <argument type="string">false</argument>
         </service>
-        <service id="elio.fact_finder.core.logging.debug" class="Monolog\Logger">
+        <service id="elio.search.core.logging.debug" class="Monolog\Logger">
             <factory service="Elio\ElioSearch\Core\Logging\LoggerFactory" method="createRotating" />
-            <argument type="string">elio_fact_finder_debug</argument>
+            <argument type="string">elio_search_debug</argument>
             <argument type="string">10</argument>
             <argument type="string">true</argument>
         </service>

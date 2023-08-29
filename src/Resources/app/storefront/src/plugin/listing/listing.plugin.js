@@ -6,7 +6,7 @@ import deepmerge from 'deepmerge'
 export default class ListingPluginExtension extends Plugin {
 
     static options = deepmerge(FilterBasePlugin.options, {
-        listingPropertiesSelector: '.e-ff-listing-properties',
+        listingPropertiesSelector: '.e-elio-search-listing-properties',
         filterPanelSelector: '.filter-panel-items-container',
         filterPanelActiveSelector: '.filter-panel-active-container',
         filterPanelItemDropdownSelector: '.filter-panel-item-dropdown'
@@ -35,10 +35,10 @@ export default class ListingPluginExtension extends Plugin {
 
     /**
      * Replace values on page by search widget response. All data attributes that are present in
-     * ".e-ff-listing-properties" element will be processed.
+     * ".e-elio-search-listing-properties" element will be processed.
      *
      * We iterate all data attributes and search for elements with classes that have a combination of
-     * "e-ff-listing-properties" + "-" + dataAttributeName -> e-ff-listing-properties-total.
+     * "e-elio-search-listing-properties" + "-" + dataAttributeName -> e-elio-search-listing-properties-total.
      *
      * @param response
      * @private

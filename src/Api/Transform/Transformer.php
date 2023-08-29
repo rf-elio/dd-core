@@ -36,7 +36,7 @@ namespace Elio\ElioSearch\Api\Transform;
 use Elio\ElioSearch\Api\Request\ApiRequest;
 use Elio\ElioSearch\Api\Response\ResponseCollection;
 use Elio\ElioSearch\Api\Transform\Event\TransformResponseEvent;
-use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -53,7 +53,7 @@ use Throwable;
  */
 class Transformer
 {
-    use FactFinderLogTrait;
+    use ElioSearchLogTrait;
 
     /**
      * @var iterable|ResponseTransformerInterface[]
@@ -77,7 +77,7 @@ class Transformer
     }
 
     /**
-     * Transforms the ff response to an response that is supported by shopware
+     * Transforms the elio search response to an response that is supported by shopware
      *
      * @param ModelInterface $model
      * @param SalesChannelContext $context
@@ -96,7 +96,7 @@ class Transformer
                 }
             }
             catch (Throwable $ex) {
-                $this->ffError('Response transformer caused an error during transform', $this, [
+                $this->searchError('Response transformer caused an error during transform', $this, [
                     'exception' => $ex,
                     'transformer' => $responseTransformer,
                     'model' => $model

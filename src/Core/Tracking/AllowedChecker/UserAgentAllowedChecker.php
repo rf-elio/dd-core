@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Tracking\AllowedChecker;
 
 
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct\UserAgent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -49,10 +49,10 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class UserAgentAllowedChecker implements TrackingAllowedCheckerInterface
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
 
     public function __construct(
-        FactFinderConfigServiceInterface $configService
+        ElioSearchConfigServiceInterface $configService
     ) {
         $this->configService = $configService;
     }

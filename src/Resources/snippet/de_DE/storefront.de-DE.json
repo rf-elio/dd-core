@@ -1,11 +1,11 @@
 {
     "search" : {
-        "headline" : "{0} Zu \"%searchTerm%\" wurde kein Produkt gefunden | {1} Zu \"%searchTerm%\" wurde <span class=\"e-ff-listing-properties-total\">1</span> Produkt gefunden | ]1,Inf[ Zu \"%searchTerm%\" wurden <span class=\"e-ff-listing-properties-total\">%count%</span> Produkte gefunden"
+        "headline" : "{0} Zu \"%searchTerm%\" wurde kein Produkt gefunden | {1} Zu \"%searchTerm%\" wurde <span class=\"e-elio-search-listing-properties-total\">1</span> Produkt gefunden | ]1,Inf[ Zu \"%searchTerm%\" wurden <span class=\"e-elio-search-listing-properties-total\">%count%</span> Produkte gefunden"
     },
-    "elioFactFinder": {
+    "elioSearch": {
         "cookies": {
             "tracking": {
-                "name": "FACTFinder Tracking",
+                "name": "ElioSearch Tracking",
                 "description": ""
             }
         },

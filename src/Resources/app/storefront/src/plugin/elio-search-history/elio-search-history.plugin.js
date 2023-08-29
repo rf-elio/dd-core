@@ -5,7 +5,7 @@ import DomAccess from 'src/helper/dom-access.helper';
 
 export default class ElioSearchHistoryPlugin extends Plugin {
     static options = {
-        localStorageKey: 'eff-search-history',
+        localStorageKey: 'elio-search-search-history',
         searchHistoryResultClassName: 'js-search-history-result',
         searchHistoryResultItemClassName: 'js-result',
         searchHistoryInputFieldSelector: 'input[type=search]',

@@ -1,0 +1,54 @@
+{% block elio_search_logging_list_page %}
+    <sw-page class="elio-search-logging-list">
+        <template #smart-bar-actions>
+            <sw-button
+                    size="small"
+                    variant="primary"
+                    @click="loadInitial"
+            >
+                &nbsp;<sw-icon name="small-arrow-360-left" :small="true"></sw-icon>&nbsp;
+            </sw-button>
+            <sw-button size="small"
+                       variant="danger"
+                       @click="openDeleteModal"
+                       v-if="hasLogs"
+            >
+                &nbsp;<sw-icon name="small-trash" :small="true"></sw-icon>&nbsp;
+            </sw-button>
+        </template>
+
+        <sw-card-view slot="content">
+            <sw-loader v-if="isLoading" size="50px"></sw-loader>
+            {{ selectedLog }}
+            <sw-card v-if="hasLogs">
+                <sw-single-select
+                        :options="logs"
+                        v-model="selectedLog"
+                        size="medium"
+                ></sw-single-select>
+            </sw-card>
+
+            <div class="elio-search-logging-list__content">
+                <template v-if="contents.length">
+                    <template v-for="(content, index) in contents">
+                        <sw-card :title="index + 1">
+                            <div v-html="content"></div>
+                        </sw-card>
+                    </template>
+                    <div ref="pagination"></div>
+                </template>
+                <template v-else>
+                    <sw-card>{{ $tc('elio-search-logging.logIsEmpty') }}</sw-card>
+                </template>
+            </div>
+
+            <elio-search-modal-delete-log
+                    :log-index="selectedLog"
+                    :log-name="selectedLogName"
+                    v-if="logs.length && showDeleteModal"
+                    @elio-search-close-delete-modal="closeDeleteModal"
+                    @elio-search-log-deleted="onDeleted"
+            ></elio-search-modal-delete-log>
+        </sw-card-view>
+    </sw-page>
+{% endblock %}

@@ -43,7 +43,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class Consent extends Struct
 {
-    public const EXTENSION_KEY = 'elio_ff_consent';
+    public const EXTENSION_KEY = 'elio_search_consent';
 
     private bool $trackingAllowed;
 

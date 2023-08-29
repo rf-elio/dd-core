@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Tracking\Controller;
 
 use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Elio\ElioSearch\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
 use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
@@ -62,7 +62,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailTrackingController extends StorefrontController
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private MessageBusInterface $bus;
     private EventDispatcherInterface $eventDispatcher;
     private TrackingAllowedCheckerInterface $trackingAllowedChecker;
@@ -71,7 +71,7 @@ class ProductDetailTrackingController extends StorefrontController
     use TrackingSessionTrait;
 
     /**
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
@@ -79,7 +79,7 @@ class ProductDetailTrackingController extends StorefrontController
      * @param RequestStack $requestStack
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         TrackingAllowedCheckerInterface $trackingAllowedChecker,
         MessageBusInterface $bus,
         EventDispatcherInterface $eventDispatcher,
@@ -96,7 +96,7 @@ class ProductDetailTrackingController extends StorefrontController
     }
 
     /**
-     * @Route("/widgets/ff/productDetailTrack", name="widgets.elio-ff.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
+     * @Route("/widgets/elio-search/productDetailTrack", name="widgets.elio-search.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param RequestDataBag $dataBag
      * @param SalesChannelContext $salesChannelContext
@@ -109,15 +109,15 @@ class ProductDetailTrackingController extends StorefrontController
         if(
             !$config->isActive() ||
             !$config->isTrackProductView() ||
-            !$dataBag->has('ffProductTrackingData') ||
-            empty($dataBag->get('ffProductTrackingData')->get('query')) ||
+            !$dataBag->has('elioSearchProductTrackingData') ||
+            empty($dataBag->get('elioSearchProductTrackingData')->get('query')) ||
             !$this->trackingAllowedChecker->isTrackingAllowed($salesChannelContext)
         ) {
             return new SuccessResponse();
         }
 
         /** @var RequestDataBag $trackingData */
-        $trackingData = $dataBag->get('ffProductTrackingData');
+        $trackingData = $dataBag->get('elioSearchProductTrackingData');
         $masterProductNumber = $productNumber = $trackingData->get('productNumber');
         $parentProductId = $trackingData->get('parentProductId');
 

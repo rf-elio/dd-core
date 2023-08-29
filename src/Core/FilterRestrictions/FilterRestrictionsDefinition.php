@@ -58,7 +58,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
  */
 class FilterRestrictionsDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_ff_filter_restrictions';
+    public const ENTITY_NAME = 'elio_search_filter_restrictions';
 
     public function getEntityName(): string
     {

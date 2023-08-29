@@ -16,7 +16,7 @@
         {% if searchResult and searchResult.hasExtension('AdvisorCampaignResponseCollection') %}
             {% set advisorCampaignResponseCollection = searchResult.getExtension('AdvisorCampaignResponseCollection') %}
             {% for advisorCampaign in advisorCampaignResponseCollection.advisorCampaignResponses %}
-                {% sw_include '@FactFinder/storefront/component/factfinder/advisor-campaign/index.html.twig' with {
+                {% sw_include '@ElioSearch/storefront/component/elio-search/advisor-campaign/index.html.twig' with {
                     advisorCampaign: advisorCampaign,
                     searchResult: searchResult
                 } %}
@@ -27,15 +27,15 @@
 {% endblock %}
 
 {% block product_listing %}
-    {% set elioFFQuery = page.searchTerm %}
-    {% set elioFFPage = searchResult.page %}
-    {% set elioFFPageSize = searchResult.limit %}
+    {% set elioSearchQuery = page.searchTerm %}
+    {% set elioSearchPage = searchResult.page %}
+    {% set elioSearchPageSize = searchResult.limit %}
 
     {% if searchResult.extensions.TrackingResponse is defined %}
         {% set trackingResponse = searchResult.extensions.TrackingResponse %}
-        {% set elioFFQuery = trackingResponse.query %}
-        {% set elioFFPage = trackingResponse.pageNo %}
-        {% set elioFFPageSize = trackingResponse.pageSize %}
+        {% set elioSearchQuery = trackingResponse.query %}
+        {% set elioSearchPage = trackingResponse.pageNo %}
+        {% set elioSearchPageSize = trackingResponse.pageSize %}
     {% endif %}
 
     {{ parent() }}
@@ -45,13 +45,13 @@
 {% block element_product_listing_row %}
     {% set showListing = true %}
     {# we don't show the listing for cms campaigns if there is no selection done yet #}
-    {% if searchResult.hasExtension('ff-advisor-listing') %}
-        {% set showListing = searchResult.getExtension('ff-advisor-listing').showListing %}
+    {% if searchResult.hasExtension('elio-search-advisor-listing') %}
+        {% set showListing = searchResult.getExtension('elio-search-advisor-listing').showListing %}
     {% endif %}
 
     {% if showListing %}
         {# feedback text #}
-        {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
             label: 'above search result', container: searchResult
         } %}
 
@@ -61,7 +61,7 @@
         {{ parent() }}
 
         {# feedback text #}
-        {% sw_include '@FactFinder/storefront/component/factfinder/campaign/ff-campaign-feedback.html.twig' with {
+        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
             label: 'below search result', container: searchResult
         } %}
     {% endif %}
@@ -69,7 +69,7 @@
 
 {# we don't show the no products message for cms advisor campaigns #}
 {% block element_product_listing_col_empty %}
-    {% if not searchResult.hasExtension('ff-advisor-listing') %}
+    {% if not searchResult.hasExtension('elio-search-advisor-listing') %}
         {{ parent() }}
     {% endif %}
 {% endblock %}
@@ -77,8 +77,8 @@
 {# we hide the sorting if we are on a cms advisor campaign and no selection was made by the user #}
 {% block element_product_listing_sorting %}
     {% set showListing = true %}
-    {% if searchResult.hasExtension('ff-advisor-listing') %}
-        {% set showListing = searchResult.getExtension('ff-advisor-listing').showListing %}
+    {% if searchResult.hasExtension('elio-search-advisor-listing') %}
+        {% set showListing = searchResult.getExtension('elio-search-advisor-listing').showListing %}
     {% endif %}
 
     {% if showListing %}

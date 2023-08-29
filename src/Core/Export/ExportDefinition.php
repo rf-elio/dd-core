@@ -58,7 +58,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
  */
 class ExportDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_ff_export';
+    public const ENTITY_NAME = 'elio_search_export';
 
     /**
      * @return string

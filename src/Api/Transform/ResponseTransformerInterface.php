@@ -54,7 +54,7 @@ interface ResponseTransformerInterface
     public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context) : bool;
 
     /**
-     * Transforms the model to an response that can used by ff plugin components
+     * Transforms the model to an response that can used by elio search plugin components
      *
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection

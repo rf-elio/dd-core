@@ -4,7 +4,7 @@
 namespace Elio\ElioSearch\Storefront\Controller;
 
 
-use Elio\ElioSearch\Core\Logging\FactFinderLogTrait;
+use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRouteResponse;
@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailCrossSellingController extends StorefrontController
 {
-    use FactFinderLogTrait;
+    use ElioSearchLogTrait;
     private AbstractProductCrossSellingRoute $productCrossSellingRoute;
 
     /**
@@ -43,7 +43,7 @@ class ProductDetailCrossSellingController extends StorefrontController
     }
 
     /**
-     * @Route("/widgets/ff/product-cross-selling/{productId}", name="widgets.e-ff.product-cross-selling.detail", methods={"GET"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
+     * @Route("/widgets/elio-search/product-cross-selling/{productId}", name="widgets.e-elio-search.product-cross-selling.detail", methods={"GET"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param string $productId
      * @param Request $request

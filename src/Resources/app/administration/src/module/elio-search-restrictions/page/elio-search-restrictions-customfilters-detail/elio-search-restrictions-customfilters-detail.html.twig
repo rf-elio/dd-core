@@ -1,0 +1,75 @@
+{% block elio_search_restrictions_customfilters_detail %}
+    <sw-page class="sw-property-detail">
+
+        {% block elio_search_restrictions_customfilters_detail_smart_bar_header %}
+            <template slot="smart-bar-header">
+                {% block elio_search_restrictions_customfilters_detail_smart_bar_header_title %}
+                    <h2>{{ placeholder(filter, 'propertyName', $tc('elio-search.restrictions.filters.detail.textHeadline')) }}</h2>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block elio_search_restrictions_customfilters_detail_smart_bar_actions %}
+            <template slot="smart-bar-actions">
+                {% block elio_search_restrictions_customfilters_detail_smart_bar_actions_cancel %}
+                    <sw-button class="sw-property-detail__back-action"
+                               :disabled="isLoading"
+                               @click="onCancel">
+                        {{ $tc('elio-search.restrictions.filters.buttonCancel') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block elio_search_restrictions_customfilters_detail_smart_bar_actions_save %}
+                    <sw-button-process
+                            class="sw-property-detail__save-action"
+                            :isLoading="isLoading"
+                            :processSuccess="isSaveSuccessful"
+                            :disabled="isLoading"
+                            variant="primary"
+                            @process-finish="saveFinish"
+                            @click.prevent="onSave">
+                        {{ $tc('elio-search.restrictions.filters.buttonSave') }}
+                    </sw-button-process>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block elio_search_restrictions_customfilters_detail_language_switch %}
+            <template slot="language-switch">
+                <sw-language-switch @on-change="onChangeLanguage"
+                                    :saveChangesFunction="saveOnLanguageChange"
+                                    :abortChangeFunction="abortOnLanguageChange">
+                </sw-language-switch>
+            </template>
+        {% endblock %}
+
+        {% block elio_search_restrictions_customfilters_detail_content %}
+            <sw-card-view slot="content">
+                {% block elio_search_restrictions_customfilters_detail_content_language_info %}
+                    <sw-language-info
+                            :entityDescription="placeholder(filter, 'propertyName', $tc('elio-search.restrictions.filters.detail.textHeadline'))">
+                    </sw-language-info>
+                {% endblock %}
+
+                <sw-card v-if="filter" :title="$tc('elio-search.restrictions.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
+                    {% block elio_search_restrictions_customfilters_detail_technical_name %}
+                        <sw-field
+                                v-model="filter.technicalName"
+                                type="text"
+                                required
+                                :label="$tc('elio-search.restrictions.filters.detail.labelTechnicalName')"
+                                :placeholder="placeholder(filter, 'technicalName', $tc('elio-search.restrictions.filters.placeholderTechnicalName'))"/>
+                    {% endblock %}
+                    {% block elio_search_restrictions_customfilters_detail_base_name %}
+                        <sw-field
+                                v-model="filter.propertyName"
+                                type="text"
+                                required
+                                :label="$tc('elio-search.restrictions.filters.detail.labelName')"
+                                :placeholder="placeholder(filter, 'propertyName', $tc('elio-search.restrictions.filters.placeholderPropertyName'))"/>
+                    {% endblock %}
+                </sw-card>
+            </sw-card-view>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

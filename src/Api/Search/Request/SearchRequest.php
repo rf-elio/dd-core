@@ -114,7 +114,7 @@ abstract class SearchRequest extends ChannelRequest
     }
 
     /**
-     * Adds an filter to the ff search request
+     * Adds an filter to the elio search search request
      *
      * @param string $name
      * @param array|string $value

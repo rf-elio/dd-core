@@ -47,7 +47,7 @@ class ExportController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/ff/export/status/{id}", name="api.action.elio-ff.export.status", methods={"GET"})
+     * @Route("/api/_action/elio-search/export/status/{id}", name="api.action.elio-search.export.status", methods={"GET"})
      * @throws FilesystemException
      */
     public function features(string $id, Context $context): JsonResponse
@@ -71,7 +71,7 @@ class ExportController extends AbstractController
     /**
      * Provides the generated file.
      *
-     * @Route("/api/_action/ff/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-ff.export.download", defaults={"auth_required"=false}, methods={"GET"})
+     * @Route("/api/_action/elio-search/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-search.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
      * @throws FilesystemException
      */
@@ -92,7 +92,7 @@ class ExportController extends AbstractController
     }
 
     /**
-     * Validates the given auth set in the ff export
+     * Validates the given auth set in the elio search export
      *
      * @param Request $request
      * @param ExportEntity $export
@@ -124,7 +124,7 @@ class ExportController extends AbstractController
     /**
      * Generates the export in background
      *
-     * @Route("/api/_action/ff/export/generate/{id}", name="api.action.elio-ff.export.generate", methods={"GET"})
+     * @Route("/api/_action/elio-search/export/generate/{id}", name="api.action.elio-search.export.generate", methods={"GET"})
      */
     public function generate(string $id, Context $context): Response
     {

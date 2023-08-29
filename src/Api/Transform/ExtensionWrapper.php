@@ -46,7 +46,7 @@ use Swagger\Client\Model\ModelInterface;
  */
 class ExtensionWrapper extends Struct
 {
-    public const KEY = 'ff-api';
+    public const KEY = 'elio-search-api';
     private ModelInterface $model;
 
     /**

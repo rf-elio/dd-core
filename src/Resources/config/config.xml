@@ -9,8 +9,8 @@
             <name>apiUrl</name>
             <label>API Url</label>
             <label lang="de-DE">API-Url</label>
-            <placeholder>example.FACT-Finder.de</placeholder>
-            <helpText>Die URL des FACT-Finders Servers</helpText>
+            <placeholder>example.ElioSearch.de</placeholder>
+            <helpText>Die URL des ElioSearch Servers</helpText>
         </input-field>
 
         <input-field>
@@ -18,8 +18,8 @@
             <label>API user name</label>
             <label lang="de-DE">API-Benutzername</label>
             <placeholder>User</placeholder>
-            <helpText>FACT-Finder API user with the necessary rights</helpText>
-            <helpText lang="de-DE">FACT-Finder API-Benutzer mit der nötigen Berechtigung</helpText>
+            <helpText>Elio search API user with the necessary rights</helpText>
+            <helpText lang="de-DE">Elio search API-Benutzer mit der nötigen Berechtigung</helpText>
         </input-field>
 
         <input-field type="password">
@@ -27,24 +27,24 @@
             <label>API password</label>
             <label lang="de-DE">API-Passwort</label>
             <placeholder>Password</placeholder>
-            <helpText>Password of FACT-Finder API user</helpText>
-            <helpText lang="de-DE">Passwort des FACT-Finder API-Benutzers</helpText>
+            <helpText>Password of ElioSearch API user</helpText>
+            <helpText lang="de-DE">Passwort des ElioSearch API-Benutzers</helpText>
         </input-field>
 
         <input-field>
             <name>apiChannel</name>
             <label>API channel</label>
             <label lang="de-DE">API-Channel</label>
-            <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
-            <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
+            <helpText>Name of the used channel in ElioSearch to differentiate between languages</helpText>
+            <helpText lang="de-DE">Name des Channels in ElioSearch. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
 
         <input-field>
             <name>apiContentChannel</name>
             <label>API channel for contents</label>
             <label lang="de-DE">API-Channel für Inhalte</label>
-            <helpText>Name of the used channel in FACT-Finder to differentiate between languages</helpText>
-            <helpText lang="de-DE">Name des Channels in FACT-Finder. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
+            <helpText>Name of the used channel in ElioSearch to differentiate between languages</helpText>
+            <helpText lang="de-DE">Name des Channels in ElioSearch. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
         </input-field>
 
         <input-field type="int">
@@ -53,7 +53,7 @@
             <label lang="de-DE">API Timeout</label>
             <defaultValue>10</defaultValue>
             <helpText>maximum request duration in seconds</helpText>
-            <helpText lang="de-DE">Maximale Laufzeit für Anfragen an Factfinder in Sekunden</helpText>
+            <helpText lang="de-DE">Maximale Laufzeit für Anfragen an ElioSearch in Sekunden</helpText>
         </input-field>
     </card>
     <card>
@@ -62,8 +62,8 @@
 
         <input-field type="bool">
             <name>active</name>
-            <label>FACT-Finder active</label>
-            <label lang="de-DE">FACT-Finder benutzen</label>
+            <label>ElioSearch active</label>
+            <label lang="de-DE">ElioSearch benutzen</label>
             <defaultValue>false</defaultValue>
         </input-field>
 
@@ -76,15 +76,15 @@
 
         <input-field type="bool">
             <name>useABTests</name>
-            <label>FACT-Finder AB-Tests active</label>
-            <label lang="de-DE">FACT-Finder AB-Tests benutzen</label>
+            <label>ElioSearch AB-Tests active</label>
+            <label lang="de-DE">ElioSearch AB-Tests benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>useCache</name>
-            <label>FACT-Finder Cache active</label>
-            <label lang="de-DE">FACT-Finder Cache benutzen</label>
+            <label>ElioSearch Cache active</label>
+            <label lang="de-DE">ElioSearch Cache benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>
@@ -93,9 +93,9 @@
         <title lang="de-DE">Such-Einstellungen</title>
 
         <input-field type="bool">
-            <name>searchUseFactFinder</name>
-            <label>Replace shopware search by FACTFinder search</label>
-            <label lang="de-DE">Shopware Suche durch die FACTFinder-Suche ersetzten</label>
+            <name>searchUseElioSearch</name>
+            <label>Replace shopware search by ElioSearch search</label>
+            <label lang="de-DE">Shopware Suche durch die ElioSearch-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -111,9 +111,9 @@
         <title lang="de-DE">Suggest-Einstellungen</title>
 
         <input-field type="bool">
-            <name>suggestUseFactFinder</name>
-            <label>Replace shopware suggest by FACTFinder suggest</label>
-            <label lang="de-DE">Shopware Suggest durch den FACTFinder-Suggest ersetzten</label>
+            <name>suggestUseElioSearch</name>
+            <label>Replace shopware suggest by ElioSearch suggest</label>
+            <label lang="de-DE">Shopware Suggest durch den ElioSearch-Suggest ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -159,8 +159,8 @@
             <label lang="de-DE">Mapping: Produktnummer-Attribute</label>
             <placeholder>MasterProductNumber</placeholder>
             <defaultValue>MasterProductNumber</defaultValue>
-            <helpText>Defines which attribute contains the product number in the ff api response.</helpText>
-            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der FF Api Antwort enthält.</helpText>
+            <helpText>Defines which attribute contains the product number in the elio search api response.</helpText>
+            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der elio search Api Antwort enthält.</helpText>
         </input-field>
     </card>
     <card>
@@ -168,9 +168,9 @@
         <title lang="de-DE">Listing-Einstellungen</title>
 
         <input-field type="bool">
-            <name>listingUseFactFinder</name>
-            <label>Replace shopware listing by FACTFinder listing</label>
-            <label lang="de-DE">Shopware Listing durch das FACTFinder-Listing ersetzten</label>
+            <name>listingUseElioSearch</name>
+            <label>Replace shopware listing by ElioSearch listing</label>
+            <label lang="de-DE">Shopware Listing durch das ElioSearch-Listing ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -186,7 +186,7 @@
         <input-field type="bool">
             <name>replaceSimilarProducts</name>
             <label>Replaces or adds a product slider to show similar products</label>
-            <label lang="de-DE">Produktslider für ähnliche Produkte von FACT-Finder benutzen</label>
+            <label lang="de-DE">Produktslider für ähnliche Produkte von ElioSearch benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -243,15 +243,15 @@
 
         <input-field type="bool">
             <name>useProductDetailRecommendations</name>
-            <label>Display the FACT-Finder product recommendation slider on product detail pages</label>
-            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
+            <label>Display the ElioSearch product recommendation slider on product detail pages</label>
+            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>useProductDetailSimilar</name>
-            <label>Display the FACT-Finder similar slider on product detail pages</label>
-            <label lang="de-DE">FACT-Finder ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
+            <label>Display the ElioSearch similar slider on product detail pages</label>
+            <label lang="de-DE">ElioSearch ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -264,22 +264,22 @@
 
         <input-field type="bool">
             <name>useCartRecommendations</name>
-            <label>Display the FACT-Finder product recommendation slider on the cart page</label>
-            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Warenkorb anzeigen</label>
+            <label>Display the ElioSearch product recommendation slider on the cart page</label>
+            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Warenkorb anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>useOffCanvasRecommendations</name>
-            <label>Display the FACT-Finder product recommendation slider inside the offcanvas-cart</label>
-            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
+            <label>Display the ElioSearch product recommendation slider inside the offcanvas-cart</label>
+            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>useConfirmRecommendations</name>
-            <label>Display the FACT-Finder product recommendation slider in the checkout confirm page</label>
-            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider im Checkout anzeigen</label>
+            <label>Display the ElioSearch product recommendation slider in the checkout confirm page</label>
+            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Checkout anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -509,8 +509,8 @@
 
         <component name="sw-textarea-field">
             <name>additionalRequestParameters</name>
-            <label>Additional parameters for request to FACT-Finder</label>
-            <label lang="de-DE">Zusatzparameter für Requests nach FACT-Finder</label>
+            <label>Additional parameters for request to ElioSearch</label>
+            <label lang="de-DE">Zusatzparameter für Requests nach ElioSearch</label>
             <placeholder>name=value&amp;otherName=otherValue</placeholder>
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>

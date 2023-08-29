@@ -213,7 +213,7 @@ class FilterSyncService
         $dataToUpdate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToUpdate[] = [
-                'elioFfFilterId' => $filterEntity->getId(),
+                'elioSearchFilterId' => $filterEntity->getId(),
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];
@@ -246,7 +246,7 @@ class FilterSyncService
         $dataToCreate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToCreate[] = [
-                'elioFfFilterId' => $newFilterId,
+                'elioSearchFilterId' => $newFilterId,
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];

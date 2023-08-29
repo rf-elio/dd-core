@@ -12,15 +12,15 @@ import ElioAdvisorCampaignPlugin from "./elio-advisor-campaign.plugin";
  */
 export default class ElioAdvisorCampaignCmsLoaderPlugin extends Plugin {
     static options = {
-        urlAttribute: 'data-fact-finder-advisor-campaign-url',
-        parameterNameAttribute: 'data-fact-finder-advisor-campaign-parameter-name',
-        parameterValueAttribute: 'data-fact-finder-advisor-campaign-parameter-value',
-        containerSelector: '.e-ff-advisor-campaign-lazy-container',
+        urlAttribute: 'data-elio-search-advisor-campaign-url',
+        parameterNameAttribute: 'data-elio-search-advisor-campaign-parameter-name',
+        parameterValueAttribute: 'data-elio-search-advisor-campaign-parameter-value',
+        containerSelector: '.e-elio-search-advisor-campaign-lazy-container',
 
-        containerItemSelector: '.elio-ff-advisor-campaign-container-item',
-        campaignIdAttribute: 'data-e-ff-advisor-campaign-id',
-        answerSelector: '.elio-ff-advisor-campaign-answer',
-        answerPathAttribute: 'data-e-ff-advisor-campaign-answer-path'
+        containerItemSelector: '.elio-search-advisor-campaign-container-item',
+        campaignIdAttribute: 'data-e-elio-search-advisor-campaign-id',
+        answerSelector: '.elio-search-advisor-campaign-answer',
+        answerPathAttribute: 'data-e-elio-search-advisor-campaign-answer-path'
     }
 
     init () {

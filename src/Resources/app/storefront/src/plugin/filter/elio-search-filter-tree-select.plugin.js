@@ -1,0 +1,55 @@
+import FilterPropertySelectPlugin from 'src/plugin/listing/filter-property-select.plugin';
+import DomAccess from 'src/helper/dom-access.helper';
+import Iterator from 'src/helper/iterator.helper';
+import deepmerge from 'deepmerge';
+import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
+
+export default class ElioSearchFilterTreeSelectPlugin extends FilterPropertySelectPlugin {
+
+    static options = deepmerge(FilterPropertySelectPlugin.options, {
+        propertyName: '',
+        elioSearchFilterName: 'elio-search-tree',
+    });
+
+    getValues() {
+        const values = super.getValues();
+        values[this.options.elioSearchFilterName] = values[this.options.name].slice();
+        return values;
+    }
+
+    _onChangeFilter(checkbox) {
+        if (checkbox.checked === false) {
+            const checkboxes = DomAccess.querySelectorAll(checkbox.closest('.category-navigation'), this.options.checkboxSelector);
+            Iterator.iterate(checkboxes, (checkbox) => {
+                if (checkbox.checked === false) {
+                    return;
+                }
+                checkbox.checked = false;
+            });
+        }
+        // const checkboxes = DomAccess.querySelectorAll(checkbox.children(), this.options.checkboxSelector);
+        // reset page to 1 when updating the filter
+        this.listing.changeListing(true, { p: 1 });
+    }
+
+    _registerEvents() {
+        const checkboxes = DomAccess.querySelectorAll(this.el, this.options.checkboxSelector);
+
+        Iterator.iterate(checkboxes, (checkbox) => {
+            checkbox.addEventListener('change', this._onChangeFilter.bind(this, checkbox));
+        });
+    }
+
+    updateOpenedFilter(newFilter) {
+        const selector = '.filter-panel-item-dropdown';
+        this.el.querySelector(selector).innerHTML = newFilter.querySelector(selector).innerHTML;
+        // Delete plugin instance on element so the new instance will be created
+        PluginManagerSingleton.getPluginInstancesFromElement(this.el).delete(this._pluginName);
+    }
+
+    afterContentChange() {
+        if (!this.el.classList.contains('disabled')) {
+            this.listing.deregisterFilter(this);
+        }
+    }
+}

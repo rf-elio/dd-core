@@ -4,7 +4,7 @@ namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
 
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\SearchApi;
-use Elio\ElioSearch\Configuration\FactFinderConfigServiceInterface;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use OpenApi\Annotations as OA;
@@ -22,19 +22,19 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['store-api']])]
 class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 {
-    private FactFinderConfigServiceInterface $configService;
+    private ElioSearchConfigServiceInterface $configService;
     private SearchApi $searchApi;
     private ProductSearchRequestBuilder $searchRequestBuilder;
     private ProductListingResultTransformer $productListingResultTransformer;
 
     /**
-     * @param FactFinderConfigServiceInterface $configService
+     * @param ElioSearchConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param ProductListingResultTransformer $productListingResultTransformer
      */
     public function __construct(
-        FactFinderConfigServiceInterface $configService,
+        ElioSearchConfigServiceInterface $configService,
         SearchApi $searchApi,
         ProductSearchRequestBuilder $searchRequestBuilder,
         ProductListingResultTransformer  $productListingResultTransformer
@@ -56,11 +56,11 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 
     /**
      * @OA\Post(
-     *      path="/ff/campaign/advisor",
+     *      path="/elio-search/campaign/advisor",
      *      summary="Fetch a list of products",
      *      description="List products that match the given criteria. For performance ressons a limit should always be set.",
      *      operationId="readProduct",
-     *      tags={"Store API", "FF"},
+     *      tags={"Store API", "ElioSearch"},
      *      @OA\Parameter(name="Api-Basic-Parameters"),
      *      @OA\Response(
      *          response="200",
@@ -80,7 +80,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
      *          )
      *     )
      * )
-     * @Route("/store-api/ff/campaign/advisor", name="store-api.e_ff.campaign.advisor", methods={"GET", "POST"})
+     * @Route("/store-api/elio-search/campaign/advisor", name="store-api.e_elio-search.campaign.advisor", methods={"GET", "POST"})
      */
     public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse
     {

@@ -41,7 +41,7 @@ namespace Elio\ElioSearch\Core\Exception;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class InvalidTypeException extends FactFinderException
+class InvalidTypeException extends ElioSearchException
 {
     public function __construct(object $is, string $should)
     {

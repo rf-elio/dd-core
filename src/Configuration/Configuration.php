@@ -52,12 +52,12 @@ class Configuration extends Struct
      * @var array<string>
      */
     private array $loggingDebugIpFilter;
-    private bool $searchUseFactFinder;
+    private bool $searchUseElioSearch;
     private int $apiTimeout;
     private bool $trackCheckout;
     private bool $trackRequireConsent;
     private bool $active;
-    private bool $listingUseFactFinder;
+    private bool $listingUseElioSearch;
     /**
      * @var array<string>
      */
@@ -80,7 +80,7 @@ class Configuration extends Struct
      * @var array<string>
      */
     private array $botProtectionIpFilter;
-    private bool $suggestUseFactFinder;
+    private bool $suggestUseElioSearch;
     private bool $restrictionsParentCategories;
     private bool $restrictionsOverridingTopToDown;
     private string $apiContentChannel;
@@ -110,21 +110,21 @@ class Configuration extends Struct
      * @param bool $useAso
      * @param bool $loggingDebugActive
      * @param array<string> $loggingDebugIpFilter
-     * @param bool $searchUseFactFinder
+     * @param bool $searchUseElioSearch
      * @param bool $trackRequireConsent
      * @param bool $trackCart
      * @param bool $trackCheckout
      * @param bool $trackLogin
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
-     * @param bool $listingUseFactFinder
+     * @param bool $listingUseElioSearch
      * @param array<string> $additionalRequestParameters
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
      * @param array<string> $botProtectionSearchTermFilter
      * @param array<string> $botProtectionUserAgentFilter
      * @param array<string> $botProtectionIpFilter
-     * @param bool $suggestUseFactFinder
+     * @param bool $suggestUseElioSearch
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
      * @param int $restrictionsCacheTime
@@ -153,21 +153,21 @@ class Configuration extends Struct
         bool $useAso,
         bool $loggingDebugActive,
         array $loggingDebugIpFilter,
-        bool $searchUseFactFinder,
+        bool $searchUseElioSearch,
         bool $trackRequireConsent,
         bool $trackCart,
         bool $trackCheckout,
         bool $trackLogin,
         bool $trackProductView,
         array $disallowTrackingForUserAgents,
-        bool $listingUseFactFinder,
+        bool $listingUseElioSearch,
         array $additionalRequestParameters,
         bool $botProtectionActive,
         bool $botProtectionUseBadBotList,
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
         array $botProtectionIpFilter,
-        bool $suggestUseFactFinder,
+        bool $suggestUseElioSearch,
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown,
         int $restrictionsCacheTime,
@@ -194,12 +194,12 @@ class Configuration extends Struct
         $this->loggingDebugActive = $loggingDebugActive;
         $this->loggingDebugIpFilter = $loggingDebugIpFilter;
         $this->apiChannel = $apiChannel;
-        $this->searchUseFactFinder = $searchUseFactFinder;
+        $this->searchUseElioSearch = $searchUseElioSearch;
         $this->apiTimeout = $apiTimeout;
         $this->trackCheckout = $trackCheckout;
         $this->trackRequireConsent = $trackRequireConsent;
         $this->active = $active;
-        $this->listingUseFactFinder = $listingUseFactFinder;
+        $this->listingUseElioSearch = $listingUseElioSearch;
         $this->additionalRequestParameters = $additionalRequestParameters;
         $this->trackCart = $trackCart;
         $this->trackLogin = $trackLogin;
@@ -210,7 +210,7 @@ class Configuration extends Struct
         $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
         $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
         $this->botProtectionIpFilter = $botProtectionIpFilter;
-        $this->suggestUseFactFinder = $suggestUseFactFinder;
+        $this->suggestUseElioSearch = $suggestUseElioSearch;
         $this->restrictionsParentCategories = $restrictionsParentCategories;
         $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
         $this->apiContentChannel = $apiContentChannel;
@@ -269,9 +269,9 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isSearchUseFactFinder(): bool
+    public function isSearchUseElioSearch(): bool
     {
-        return $this->searchUseFactFinder;
+        return $this->searchUseElioSearch;
     }
 
     /**
@@ -309,9 +309,9 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isListingUseFactFinder(): bool
+    public function isListingUseElioSearch(): bool
     {
-        return $this->listingUseFactFinder;
+        return $this->listingUseElioSearch;
     }
 
     /**
@@ -397,9 +397,9 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isSuggestUseFactFinder(): bool
+    public function isSuggestUseElioSearch(): bool
     {
-        return $this->suggestUseFactFinder;
+        return $this->suggestUseElioSearch;
     }
 
     /**

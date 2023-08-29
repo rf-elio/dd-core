@@ -1,0 +1,28 @@
+{% block e_elio_search_advisor_campaign %}
+<div class="e-elio-search-advisor-campaign mb-3"
+     id="e-elio-search-advisor-campaign-{{ advisorCampaign.id }}"
+     data-elio-search-advisor-campaign-id="{{ advisorCampaign.id }}"
+>
+    {% block e_elio_search_advisor_campaign_item %}
+        <div class="e-elio-search-advisor-campaign-item">
+            {% sw_include '@ElioSearch/storefront/component/elio-search/advisor-campaign/questions.html.twig' with {
+                questions: advisorCampaign.questionPath,
+                mode: 'history'
+            } %}
+
+            {% sw_include '@ElioSearch/storefront/component/elio-search/advisor-campaign/questions.html.twig' with {
+                questions: advisorCampaign.activeQuestions,
+                mode: 'selection'
+            } %}
+
+            {% if advisorCampaign.answerPath %}
+                <div class="e-elio-search-advisor-campaign-item-reset">
+                    <button type="submit" class="btn btn-primary e-elio-search-advisor-campaign-answer">
+                        {{ "elioSearch.advisor-campaign.reset-btn"|trans|sw_sanitize }}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    {% endblock %}
+</div>
+{% endblock %}
