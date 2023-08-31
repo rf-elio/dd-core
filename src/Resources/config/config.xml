@@ -12,48 +12,12 @@
             <placeholder>example.ElioSearch.de</placeholder>
             <helpText>Die URL des ElioSearch Servers</helpText>
         </input-field>
-
-        <input-field>
-            <name>apiUsername</name>
-            <label>API user name</label>
-            <label lang="de-DE">API-Benutzername</label>
-            <placeholder>User</placeholder>
-            <helpText>Elio search API user with the necessary rights</helpText>
-            <helpText lang="de-DE">Elio search API-Benutzer mit der nötigen Berechtigung</helpText>
-        </input-field>
-
-        <input-field type="password">
-            <name>apiPassword</name>
-            <label>API password</label>
-            <label lang="de-DE">API-Passwort</label>
-            <placeholder>Password</placeholder>
-            <helpText>Password of ElioSearch API user</helpText>
-            <helpText lang="de-DE">Passwort des ElioSearch API-Benutzers</helpText>
-        </input-field>
-
         <input-field>
             <name>apiChannel</name>
-            <label>API channel</label>
-            <label lang="de-DE">API-Channel</label>
-            <helpText>Name of the used channel in ElioSearch to differentiate between languages</helpText>
-            <helpText lang="de-DE">Name des Channels in ElioSearch. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
-        </input-field>
-
-        <input-field>
-            <name>apiContentChannel</name>
-            <label>API channel for contents</label>
-            <label lang="de-DE">API-Channel für Inhalte</label>
-            <helpText>Name of the used channel in ElioSearch to differentiate between languages</helpText>
-            <helpText lang="de-DE">Name des Channels in ElioSearch. Für mehrere Sprachen werden unterschiedliche Channels benutzt.</helpText>
-        </input-field>
-
-        <input-field type="int">
-            <name>apiTimeout</name>
-            <label>API request timeout</label>
-            <label lang="de-DE">API Timeout</label>
-            <defaultValue>10</defaultValue>
-            <helpText>maximum request duration in seconds</helpText>
-            <helpText lang="de-DE">Maximale Laufzeit für Anfragen an ElioSearch in Sekunden</helpText>
+            <label>API Url</label>
+            <label lang="de-DE">API-Url</label>
+            <placeholder>example.ElioSearch.de</placeholder>
+            <helpText>Die URL des ElioSearch Servers</helpText>
         </input-field>
     </card>
     <card>
@@ -66,27 +30,6 @@
             <label lang="de-DE">ElioSearch benutzen</label>
             <defaultValue>false</defaultValue>
         </input-field>
-
-        <input-field type="bool">
-            <name>useAso</name>
-            <label>After search optimization active</label>
-            <label lang="de-DE">After Search Optimization benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useABTests</name>
-            <label>ElioSearch AB-Tests active</label>
-            <label lang="de-DE">ElioSearch AB-Tests benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useCache</name>
-            <label>ElioSearch Cache active</label>
-            <label lang="de-DE">ElioSearch Cache benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
     </card>
     <card>
         <title>Search configuration</title>
@@ -98,7 +41,6 @@
             <label lang="de-DE">Shopware Suche durch die ElioSearch-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
-
         <input-field type="bool">
             <name>searchUseContentChannel</name>
             <label>Show contents from content channel to search result page</label>
@@ -184,13 +126,6 @@
         </input-field>
 
         <input-field type="bool">
-            <name>replaceSimilarProducts</name>
-            <label>Replaces or adds a product slider to show similar products</label>
-            <label lang="de-DE">Produktslider für ähnliche Produkte von ElioSearch benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
             <name>useCategoryFilterLists</name>
             <label>Apply lists of blocked and allowed filter lists in categories</label>
             <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
@@ -225,70 +160,6 @@
             <helpText>Number in minutes</helpText>
             <helpText lang="de-DE">Number in minutes</helpText>
         </input-field>
-    </card>
-    <card>
-        <title>Product detail page configuration</title>
-        <title lang="de-DE">Produkt-Detailseite-Einstellungen</title>
-
-        <input-field type="bool">
-            <name>productDetailPageCampaignsActive</name>
-            <label>Product detail campaigns active</label>
-            <label lang="de-DE">Produkt-Detailseiten Kampagnen aktiv</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-    </card>
-    <card>
-        <title>Recommendations</title>
-        <title lang="de-DE">Recommendations</title>
-
-        <input-field type="bool">
-            <name>useProductDetailRecommendations</name>
-            <label>Display the ElioSearch product recommendation slider on product detail pages</label>
-            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useProductDetailSimilar</name>
-            <label>Display the ElioSearch similar slider on product detail pages</label>
-            <label lang="de-DE">ElioSearch ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="int">
-            <name>productDetailSliderLimit</name>
-            <label>Max number of products in product detail similar or reco slider</label>
-            <label lang="de-DE">Maximale Anzahl von Produkten im Ähnlicheartikel- oder Empfehlungs-Slider</label>
-            <defaultValue>24</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useCartRecommendations</name>
-            <label>Display the ElioSearch product recommendation slider on the cart page</label>
-            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Warenkorb anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useOffCanvasRecommendations</name>
-            <label>Display the ElioSearch product recommendation slider inside the offcanvas-cart</label>
-            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Offcanvas-Warenkorb anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
-            <name>useConfirmRecommendations</name>
-            <label>Display the ElioSearch product recommendation slider in the checkout confirm page</label>
-            <label lang="de-DE">ElioSearch Produktempfehlungen-Slider im Checkout anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <component name="sw-entity-multi-id-select">
-            <name>recommendationExcludedProducts</name>
-            <label>exclude selected products from recommendations</label>
-            <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
-            <entity>product</entity>
-        </component>
     </card>
     <card>
         <title>Tracking</title>
@@ -424,84 +295,6 @@
             <helpText>Ip addresses separated by pipes(|) </helpText>
             <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </component>
-    </card>
-    <card>
-        <title>Advisor campaign</title>
-        <input-field type="int">
-            <name>maxAdvisorProducts</name>
-            <label>Max count of product</label>
-            <label lang="de-DE">maximale Anzahl von Produkten</label>
-            <defaultValue>10</defaultValue>
-        </input-field>
-        <input-field type="text">
-            <name>searchTermForAdvisorCmsElement</name>
-            <label>Search term for the "Advisor campaign" cms element</label>
-            <label lang="de-DE">Search term for the "Advisor campaign" cms element</label>
-            <defaultValue>cms_element</defaultValue>
-        </input-field>
-        <input-field type="text">
-            <name>showPassedAdvisorAfterDays</name>
-            <label>Show passed advisor after (days)</label>
-            <label lang="de-DE">Show passed advisor after (days)</label>
-            <defaultValue>7</defaultValue>
-        </input-field>
-    </card>
-    <card>
-        <title>Logging and Report</title>
-        <title lang="de-DE">Logging und Reporting</title>
-
-        <input-field type="int">
-            <name>reportMaxAgeSuccess</name>
-            <label>Max age in days for successful reports (when is a cleanup performed)</label>
-            <label lang="de-DE">Zeitraum in Tagen bis Reports ohne Fehler gelöscht werden</label>
-            <defaultValue>3</defaultValue>
-        </input-field>
-
-        <input-field type="int">
-            <name>reportMaxAgeError</name>
-            <label>Max age in days for reports that contains errors (when is a cleanup performed)</label>
-            <label lang="de-DE">Zeitraum in Tagen bis Reports mit Fehlern gelöscht werden</label>
-            <defaultValue>30</defaultValue>
-        </input-field>
-
-        <input-field type="text">
-            <name>reportEmailSuccess</name>
-            <label>Email addresses for reports without errors</label>
-            <label lang="de-DE">E-Mail-Adresse für Reports ohne Auffälligkeiten</label>
-            <placeholder>test@test.test</placeholder>
-            <helpText>Multiple email addresses separated by pipes(|) </helpText>
-            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
-        </input-field>
-
-        <input-field type="text">
-            <name>reportEmailError</name>
-            <label>Email addresses for reports with errors</label>
-            <label lang="de-DE">E-Mail-Adresse für Reports mit Fehlermeldungen</label>
-            <placeholder>test@test.test</placeholder>
-            <helpText>Multiple email addresses separated by pipes(|) </helpText>
-            <helpText lang="de-DE">Mehrere Email-Adressen jeweils durch Pipes(|) getrennt</helpText>
-        </input-field>
-
-        <input-field type="single-select">
-            <name>logLevel</name>
-            <label>Log level</label>
-            <options>
-                <option>
-                    <id>prod</id>
-                    <name>productive</name>
-                    <name lang="de-DE">Produktiv</name>
-                </option>
-                <option>
-                    <id>dev</id>
-                    <name>development</name>
-                    <name lang="de-DE">Debugging</name>
-                </option>
-            </options>
-            <defaultValue>prod</defaultValue>
-            <helpText>log level</helpText>
-            <helpText lang="de-DE">Log Level</helpText>
-        </input-field>
-
     </card>
     <card>
         <title>Advanced</title>

@@ -45,15 +45,12 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class Configuration extends Struct
 {
-    protected string $apiChannel;
-    protected bool $useAso;
     protected bool $loggingDebugActive;
     /**
      * @var array<string>
      */
     private array $loggingDebugIpFilter;
     private bool $searchUseElioSearch;
-    private int $apiTimeout;
     private bool $trackCheckout;
     private bool $trackRequireConsent;
     private bool $active;
@@ -83,31 +80,20 @@ class Configuration extends Struct
     private bool $suggestUseElioSearch;
     private bool $restrictionsParentCategories;
     private bool $restrictionsOverridingTopToDown;
-    private string $apiContentChannel;
-    private bool $searchUseContentChannel;
     private array $suggestTypeLabels;
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
     private string $suggestProductNumberAttribute;
-    private bool $productDetailPageCampaignsActive;
-    private bool $useProductDetailRecommendations;
-    private bool $useProductDetailSimilar;
-    private array $recommendationExcludedProducts;
-    private int $productDetailSliderLimit;
-    private int $maxAdvisorProducts;
-    private string $searchTermForAdvisorCmsElement;
-    private int $showPassedAdvisorAfterDays;
     private bool $productRankingActive;
     private int $productRankingMaxOrderAge;
     private array $productRankingOrderStates;
     private array $productRankingOrderDeliveryStates;
+    private string $apiChannel;
+    private bool $searchUseContentChannel;
 
     /**
      * Configuration constructor.
      * @param bool $active
-     * @param string $apiChannel
-     * @param int $apiTimeout
-     * @param bool $useAso
      * @param bool $loggingDebugActive
      * @param array<string> $loggingDebugIpFilter
      * @param bool $searchUseElioSearch
@@ -128,19 +114,9 @@ class Configuration extends Struct
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
      * @param int $restrictionsCacheTime
-     * @param string $apiContentChannel
-     * @param bool $searchUseContentChannel
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
      * @param string $suggestProductNumberAttribute
-     * @param bool $productDetailPageCampaignsActive
-     * @param bool $useProductDetailRecommendations
-     * @param bool $useProductDetailSimilar
-     * @param array $recommendationExcludedProducts
-     * @param int $productDetailSliderLimit
-     * @param int $maxAdvisorProducts
-     * @param string $searchTermForAdvisorCmsElement
-     * @param int $showPassedAdvisorAfterDays
      * @param bool $productRankingActive
      * @param int $productRankingMaxOrderAge
      * @param array $productRankingOrderStates
@@ -149,8 +125,6 @@ class Configuration extends Struct
     public function __construct(
         bool $active,
         string $apiChannel,
-        int $apiTimeout,
-        bool $useAso,
         bool $loggingDebugActive,
         array $loggingDebugIpFilter,
         bool $searchUseElioSearch,
@@ -167,35 +141,23 @@ class Configuration extends Struct
         array $botProtectionSearchTermFilter,
         array $botProtectionUserAgentFilter,
         array $botProtectionIpFilter,
+        bool $searchUseContentChannel,
         bool $suggestUseElioSearch,
         bool $restrictionsParentCategories,
         bool $restrictionsOverridingTopToDown,
         int $restrictionsCacheTime,
-        string $apiContentChannel,
-        bool $searchUseContentChannel,
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
         string $suggestProductNumberAttribute,
-        bool $productDetailPageCampaignsActive,
-        bool $useProductDetailRecommendations,
-        bool $useProductDetailSimilar,
-        array $recommendationExcludedProducts,
-        int $productDetailSliderLimit,
-        int $maxAdvisorProducts,
-        string $searchTermForAdvisorCmsElement,
-        int $showPassedAdvisorAfterDays,
         bool $productRankingActive,
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
         array $productRankingOrderDeliveryStates,
     )
     {
-        $this->useAso = $useAso;
         $this->loggingDebugActive = $loggingDebugActive;
         $this->loggingDebugIpFilter = $loggingDebugIpFilter;
-        $this->apiChannel = $apiChannel;
         $this->searchUseElioSearch = $searchUseElioSearch;
-        $this->apiTimeout = $apiTimeout;
         $this->trackCheckout = $trackCheckout;
         $this->trackRequireConsent = $trackRequireConsent;
         $this->active = $active;
@@ -213,34 +175,25 @@ class Configuration extends Struct
         $this->suggestUseElioSearch = $suggestUseElioSearch;
         $this->restrictionsParentCategories = $restrictionsParentCategories;
         $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
-        $this->apiContentChannel = $apiContentChannel;
-        $this->searchUseContentChannel = $searchUseContentChannel;
         $this->suggestTypeLabels = $suggestTypeLabels;
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
         $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
-        $this->productDetailPageCampaignsActive = $productDetailPageCampaignsActive;
-        $this->useProductDetailRecommendations = $useProductDetailRecommendations;
-        $this->useProductDetailSimilar = $useProductDetailSimilar;
-        $this->recommendationExcludedProducts = $recommendationExcludedProducts;
-        $this->productDetailSliderLimit = $productDetailSliderLimit;
-        $this->maxAdvisorProducts = $maxAdvisorProducts;
-        $this->searchTermForAdvisorCmsElement = $searchTermForAdvisorCmsElement;
-        $this->showPassedAdvisorAfterDays = $showPassedAdvisorAfterDays;
         $this->productRankingActive = $productRankingActive;
         $this->productRankingMaxOrderAge = $productRankingMaxOrderAge;
         $this->productRankingOrderStates = $productRankingOrderStates;
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
+        $this->apiChannel = $apiChannel;
+        $this->searchUseContentChannel = $searchUseContentChannel;
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isUseAso(): bool
+    public function getApiChannel(): string
     {
-        return $this->useAso;
+        return $this->apiChannel;
     }
-
 
     /**
      * @return bool
@@ -259,27 +212,11 @@ class Configuration extends Struct
     }
 
     /**
-     * @return string
-     */
-    public function getApiChannel(): string
-    {
-        return $this->apiChannel;
-    }
-
-    /**
      * @return bool
      */
     public function isSearchUseElioSearch(): bool
     {
         return $this->searchUseElioSearch;
-    }
-
-    /**
-     * @return int
-     */
-    public function getApiTimeout(): int
-    {
-        return $this->apiTimeout;
     }
 
     /**
@@ -419,22 +356,6 @@ class Configuration extends Struct
     }
 
     /**
-     * @return string
-     */
-    public function getApiContentChannel(): string
-    {
-        return $this->apiContentChannel;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSearchUseContentChannel(): bool
-    {
-        return $this->searchUseContentChannel && !empty($this->apiContentChannel);
-    }
-
-    /**
      * @return array
      */
     public function getSuggestTypeLabels(): array
@@ -469,70 +390,6 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isProductDetailPageCampaignsActive(): bool
-    {
-        return $this->productDetailPageCampaignsActive;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUseProductDetailRecommendations(): bool
-    {
-        return $this->useProductDetailRecommendations;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUseProductDetailSimilar(): bool
-    {
-        return $this->useProductDetailSimilar;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRecommendationExcludedProducts(): array
-    {
-        return $this->recommendationExcludedProducts;
-    }
-
-    /**
-     * @return int
-     */
-    public function getProductDetailSliderLimit(): int
-    {
-        return $this->productDetailSliderLimit;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxAdvisorProducts(): int
-    {
-        return $this->maxAdvisorProducts;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSearchTermForAdvisorCmsElement(): string
-    {
-        return $this->searchTermForAdvisorCmsElement;
-    }
-
-    /**
-     * @return int
-     */
-    public function getShowPassedAdvisorAfterDays(): int
-    {
-        return $this->showPassedAdvisorAfterDays;
-    }
-
-    /**
-     * @return bool
-     */
     public function isProductRankingActive(): bool
     {
         return $this->productRankingActive;
@@ -560,5 +417,10 @@ class Configuration extends Struct
     public function getProductRankingOrderDeliveryStates(): array
     {
         return $this->productRankingOrderDeliveryStates;
+    }
+
+    public function isSearchUseContentChannel(): bool
+    {
+        return $this->searchUseContentChannel;
     }
 }
