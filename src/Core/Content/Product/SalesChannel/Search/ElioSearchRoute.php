@@ -127,6 +127,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
             );
             $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
 
+            // TODO: Remove it or return configuration
             try {
                 if ($config->isSearchUseContentChannel()) {
                     $contentSearchRequest = $this->contentSearchRequestBuilder->build($request, $context);
@@ -150,6 +151,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
             return new ProductSearchRouteResponse($shopwareProductListingResult);
         }
         catch (Throwable $e) {
+            dd('error', $e);
             $this->searchError($e->getMessage(), $this, [
                 'exception' => $e,
                 'request' => $request,

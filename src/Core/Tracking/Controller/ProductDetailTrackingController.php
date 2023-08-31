@@ -128,7 +128,7 @@ class ProductDetailTrackingController extends StorefrontController
         }
 
         $customerId = $salesChannelContext->getCustomer() ? $salesChannelContext->getCustomer()->getId() : null;
-        $trackingRequest = new ProductDetailTrackingRequest($config->getApiChannel());
+        $trackingRequest = new ProductDetailTrackingRequest();
         $trackingRequest->addEvent(
             $productNumber,
             $this->getTrackingSessionId($this->requestStack),

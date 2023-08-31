@@ -41,28 +41,6 @@
             <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
-<!--        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute"-->
-<!--                 decorates="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute"-->
-<!--                 decoration-priority="-3000"-->
-<!--                 public="true"-->
-<!--        >-->
-<!--            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail\FactFinderProductDetailRoute.inner" />-->
-<!--            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />-->
-<!--            <argument type="service" id="Elio\ElioSearch\Api\Records\RecordsApi" />-->
-<!--            <argument type="service" id="elio.fact_finder.core.logging.default" />-->
-<!--        </service>-->
-
-        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\CrossSelling\ElioSearchProductCrossSellingRoute"
-                 decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
-                 decoration-priority="-3000"
-                 public="true"
-        >
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\CrossSelling\ElioSearchProductCrossSellingRoute.inner" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Core\ProductBundle\ProductBundleService" />
-            <argument type="service" id="translator" />
-        </service>
-
         <service id="Elio\ElioSearch\Core\Content\Product\Subscriber\ProductSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>

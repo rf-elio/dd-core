@@ -86,9 +86,7 @@ class ProductSearchRequestBuilder
     ) : ProductSearchRequest
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        $searchRequest = $searchRequest ?? new ProductSearchRequest(
-            $config->getApiChannel()
-        );
+        $searchRequest = $searchRequest ?? new ProductSearchRequest($config->getApiChannel());
 
         $payload = $request->query->all();
         if(!empty($request->get('search'))) {

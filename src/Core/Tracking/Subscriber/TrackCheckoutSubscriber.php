@@ -135,7 +135,7 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $customerId = $order->getOrderCustomer() ? $order->getOrderCustomer()->getCustomerId() : null;
-        $request = new CheckoutTrackingRequest($config->getApiChannel());
+        $request = new CheckoutTrackingRequest();
 
         foreach ($order->getLineItems() as $lineItem) {
             if ($lineItem->getType() !== LineItem::PRODUCT_LINE_ITEM_TYPE) {

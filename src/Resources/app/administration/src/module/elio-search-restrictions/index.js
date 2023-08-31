@@ -13,8 +13,8 @@ import './page/elio-search-restrictions-customfilters-create';
 Shopware.Module.register('elio-search-restrictions', {
     type: 'plugin',
     name: 'ElioSearchRestrictions',
-    title: 'elio.search.restrictions.title',
-    description: 'elio.search.restrictions.description',
+    title: 'elio-search.restrictions.title',
+    description: 'elio-search.restrictions.description',
     color: '#014587',
     icon: 'default-action-tags',
 

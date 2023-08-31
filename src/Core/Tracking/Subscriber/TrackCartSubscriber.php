@@ -184,7 +184,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
         }
 
         $customerId = $salesChannelContext->getCustomer()?->getId();
-        $request = new CartTrackingRequest($config->getApiChannel());
+        $request = new CartTrackingRequest();
 
         foreach ($items as $item) {
             $lineItem = null;

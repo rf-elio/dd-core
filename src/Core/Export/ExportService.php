@@ -224,6 +224,7 @@ class ExportService
     {
         $generators = [];
         foreach ($this->generators as $generator) {
+            // TODO: remove testings code
             if ($generator instanceof ProductExportGenerator) {
                 return [$generator];
             }
@@ -254,6 +255,7 @@ class ExportService
     protected function getWriter(ExportEntity $export) : FileWriterInterface
     {
         foreach ($this->writers as $writer) {
+            // TODO: remove testings code
             if ($writer instanceof BatteryIncludedWriter) {
                 return $writer;
             }

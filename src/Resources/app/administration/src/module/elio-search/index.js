@@ -1,8 +1,8 @@
 Shopware.Module.register('elio-search', {
     type: 'core',
     name: 'ElioSearch',
-    title: 'elio.search.global.title',
-    description: 'elio.search.global.description',
+    title: 'elio-search.global.title',
+    description: 'elio-search.global.description',
     color: '#014587',
     icon: 'default-action-tags',
 
@@ -34,7 +34,7 @@ Shopware.Module.register('elio-search', {
 
     navigation: [{
         id: 'elio-search',
-        label: 'elio.search.global.title',
+        label: 'elio-search.global.title',
         color: '#014587',
         icon: 'regular-products',
         position: 100

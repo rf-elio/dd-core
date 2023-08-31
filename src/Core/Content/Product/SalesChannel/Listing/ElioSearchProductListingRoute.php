@@ -51,7 +51,6 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteRespon
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\ApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Throwable;
@@ -140,9 +139,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
 
         try {
             /** @var NavigationRequestProduct $navigationRequest */
-            $navigationRequest = $this->searchRequestBuilder->build(
-                $request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel())
-            );
+            $navigationRequest = $this->searchRequestBuilder->build($request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel()));
             $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $context);
             $this->addCustomFiltersToNavigationRequest($navigationRequest, $category);
 

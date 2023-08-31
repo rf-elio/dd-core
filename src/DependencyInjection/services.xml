@@ -4,21 +4,17 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
-        <import resource="basic.xml"/>
         <import resource="configuration.xml"/>
         <import resource="consent.xml"/>
         <import resource="bot-protection.xml"/>
-        <import resource="advisor-campaign.xml"/>
         <import resource="api.xml"/>
         <import resource="product.xml"/>
-        <import resource="product-bundle.xml"/>
         <import resource="ranking.xml"/>
         <import resource="tracking.xml"/>
         <import resource="storefront.xml"/>
         <import resource="export.xml"/>
         <import resource="features.xml"/>
         <import resource="filter-restrictions.xml"/>
-        <import resource="real-time-update.xml"/>
         <import resource="logging.xml"/>
     </imports>
 </container>
