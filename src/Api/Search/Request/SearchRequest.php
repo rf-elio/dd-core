@@ -21,12 +21,10 @@ abstract class SearchRequest extends ChannelRequest
     use CustomParametersTrait;
 
     protected string $query = '*';
-    protected bool $excludeProductsNotInRange = true;
     protected int $page = 1;
     protected ?array $sort = null;
     protected array $filter = [];
     protected ?array $additionalRequestParameters = null;
-    protected ?AdvisorStatus $advisorStatus = null;
     protected ?int $hitsPerPage = null;
 
     /**
@@ -129,22 +127,6 @@ abstract class SearchRequest extends ChannelRequest
             ];
         }
         $this->filter[$name]['values'][] = $value;
-    }
-
-    /**
-     * @return AdvisorStatus|null
-     */
-    public function getAdvisorStatus(): ?AdvisorStatus
-    {
-        return $this->advisorStatus;
-    }
-
-    /**
-     * @param AdvisorStatus|null $advisorStatus
-     */
-    public function setAdvisorStatus(?AdvisorStatus $advisorStatus): void
-    {
-        $this->advisorStatus = $advisorStatus;
     }
 
     /**

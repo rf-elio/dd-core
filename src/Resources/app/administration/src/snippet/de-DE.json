@@ -2,17 +2,7 @@
   "elio-search": {
     "global": {
       "title": "ElioSearch",
-      "description": "",
-      "errors": {
-        "unexpectedErrorTitle": "Fehler!",
-        "unexpectedErrorMessage": "Es ist ein Fehler aufgetreten."
-      }
-    },
-    "order": {
-      "detail": {
-        "orderReferenceLabel": "Bestellreferenznummer",
-        "deliveryDateLabel": "Wunschliefertermin"
-      }
+      "description": ""
     },
     "restrictions": {
       "title": "Filter Einschränkungen",

@@ -39,12 +39,14 @@ use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\Response\TrackingResponse;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -55,10 +57,13 @@ use Symfony\Component\HttpFoundation\Request;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ProductListingResultTransformer
+class ProductListingResultTransformer implements ProductListingResultTransformerInterface
 {
     public const ELIO_SEARCH_LISTING_MODE_PARAMETER = 'elio_search_listing_mode';
-    public const ELIO_SEARCH_LISTING_ADVISOR = 'advisor';
+
+    public function __construct(private readonly EventDispatcherInterface $eventDispatcher)
+    {
+    }
 
     /**
      * Transforms the ProductListingResponse to an shopware ProductListingResult
@@ -94,7 +99,10 @@ class ProductListingResultTransformer
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
 //        $this->addTracking($resultCollection, $shopwareProductListingResult);
         $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
-        return $shopwareProductListingResult;
+
+        $event = new ProductListingResultTransformerEvent($productListingResponse, $context);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getProductListingResult();
     }
 
 
@@ -179,32 +187,5 @@ class ProductListingResultTransformer
         /** @var TrackingResponse|null $trackingResponse */
         $trackingResponse = $resultCollection->get(TrackingResponse::class);
         $shopwareProductListingResult->addExtension(TrackingResponse::KEY, $trackingResponse);
-    }
-
-    /**
-     * @todo: description
-     * @param ProductListingResult $shopwareProductListingResult
-     * @param SearchRequest $searchRequest
-     * @param Request $request
-     * @return void
-     */
-    private function handleListingMode(
-        ProductListingResult $shopwareProductListingResult,
-        SearchRequest $searchRequest,
-        Request $request
-    ): void
-    {
-        $listingMode = $request->get(self::ELIO_SEARCH_LISTING_MODE_PARAMETER);
-
-        if ($listingMode === self::ELIO_SEARCH_LISTING_ADVISOR) {
-            $showListing = false;
-            if ($searchRequest->getAdvisorStatus() && !empty($searchRequest->getAdvisorStatus()->getAnswerPath())) {
-                $showListing = true;
-            }
-
-            $shopwareProductListingResult->addExtension('elio-search-advisor-listing', new ArrayEntity([
-                'showListing' => $showListing
-            ]));
-        }
     }
 }

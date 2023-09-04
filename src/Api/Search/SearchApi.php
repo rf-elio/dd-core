@@ -92,6 +92,7 @@ class SearchApi
      */
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
     {
+        $this->searchDebug('searchContent', $this, [$searchRequest, $context]);
         return new ResponseCollection();
     }
 
@@ -105,6 +106,7 @@ class SearchApi
      */
     public function navigation(NavigationRequestProduct $searchRequest, SalesChannelContext $context): ResponseCollection
     {
+        $this->searchDebug('navigation', $this, [$searchRequest, $context]);
         return new ResponseCollection();
     }
 }

@@ -9,9 +9,6 @@
                 "description": ""
             }
         },
-        "listing": {
-            "sorting": {}
-        },
         "content-listing": {
             "tab-products-label": "Produkte",
             "content-item-open-label": "Öffnen",
@@ -20,14 +17,6 @@
                 "category": "Kategorien",
                 "page": "Inhalte"
             }
-        },
-        "cross-selling": {
-            "tab-recommendations": "Empfehlungen",
-            "tab-similar": "Ähnliche Artikel"
-        },
-        "advisor-campaign": {
-            "reset-btn": "Zurücksetzten",
-            "no-products-found": "Für Ihre Auswahl wurden keine Produkte gefunden"
         }
     }
 }

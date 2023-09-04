@@ -5,11 +5,13 @@
 80legs
 ADmantX
 AIBOT
+ALittle\ Client
 ASPSeek
 Abonti
 Aboundex
 Aboundexbot
 Acunetix
+AdsTxtCrawlerTP
 AfD-Verbotsverfahren
 AhrefsBot
 AiHitBot
@@ -26,6 +28,7 @@ Anthill
 Apexoo
 Aspiegel
 Asterias
+Atomseobot
 Attach
 AwarioRssBot
 AwarioSmartBot
@@ -63,6 +66,7 @@ BuiltWith
 Bullseye
 BunnySlippers
 BuzzSumo
+Bytespider
 CATExplorador
 CCBot
 CODE87
@@ -76,6 +80,7 @@ CheeseBot
 CherryPicker
 ChinaClaw
 Chlooe
+Citoid
 Claritybot
 Cliqzbot
 Cloud\ mapping
@@ -87,6 +92,7 @@ CopyRightCheck
 Copyscape
 Cosmos
 Craftbot
+Crawling\ at\ Home\ Project
 CrazyWebCrawler
 Crescent
 CrunchBot
@@ -110,6 +116,7 @@ Discobot
 Discoverybot
 Dispatch
 DittoSpyder
+DnBCrawler-Analytics
 DnyzBot
 DomCopBot
 DomainAppender
@@ -152,6 +159,7 @@ Fuzz
 FyberSpider
 Fyrebot
 G-i-g-a-b-o-t
+GPTBot
 GT::WWW
 GalaxyBot
 Genieo
@@ -159,7 +167,6 @@ GermCrawler
 GetRight
 GetWeb
 Getintent
-Gigablast
 Gigabot
 Go!Zilla
 Go-Ahead-Got-It
@@ -182,6 +189,7 @@ Harvest
 Havij
 Heritrix
 Hloader
+HonoluluBot
 Humanlinks
 HybridBot
 IDBTE4M
@@ -215,6 +223,7 @@ Jorgee
 JustView
 Jyxobot
 Kenjin\ Spider
+Keybot\ Translation-Search-Machine
 Keyword\ Density
 Kinza
 Kozmosbot
@@ -222,6 +231,7 @@ LNSpiderguy
 LWP::Simple
 Lanshanbot
 Larbin
+Leap
 LeechFTP
 LeechGet
 LexiBot
@@ -234,7 +244,6 @@ Likse
 LinkScan
 LinkWalker
 Linkbot
-Linkdexbot
 LinkextractorPro
 LinkpadBot
 LinksManager
@@ -275,10 +284,12 @@ Metauri
 MicroMessenger
 Microsoft\ Data\ Access
 Microsoft\ URL\ Control
+Minefield
 Mister\ PiX
 Moblie Safari
 Mojeek
 Mojolicious
+MolokaiBot
 Morfeus\ Fucking\ Scanner
 Mozlila
 Mr.4x3
@@ -349,6 +360,7 @@ Pockey
 ProPowerBot
 ProWebWalker
 Probethenet
+Proximic
 Psbot
 Pu_iN
 Pump
@@ -393,9 +405,13 @@ ScreenerBot
 ScrepyBot
 Searchestate
 SearchmetricsBot
+Seekport
+SeekportBot
+SemanticJuice
 Semrush
 SemrushBot
 SentiBot
+SenutoBot
 SeoSiteCheckup
 SeobilityBot
 Seomoz
@@ -490,6 +506,7 @@ WWW-Collector-E
 WWW-Mechanize
 WWW::Mechanize
 WWWOFFLE
+Wallpapers
 Wallpapers/3.0
 WallpapersHD
 WeSEE
@@ -550,18 +567,23 @@ ZoomBot
 ZoominfoBot
 ZumBot
 ZyBorg
+adscanner
 archive.org_bot
 arquivo-web-crawler
 arquivo.pt
 autoemailspider
 backlink-check
+cah.io.community
 check1.exe
-coccocbot-web
+clark-crawler
+coccocbot
 cognitiveseo
 com.plumanalytics
 crawl.sogou.com
 crawler.feedback
 crawler4j
+dataforseo.com
+dataforseobot
 demandbase-bot
 domainsproject.org
 eCatch
@@ -573,6 +595,8 @@ instabid
 internetVista\ monitor
 ips-agent
 isitwp.com
+iubenda-radar
+linkdexbot
 lwp-request
 lwp-trivial
 magpie-crawler
@@ -581,6 +605,8 @@ mediawords
 muhstik-scan
 netEstate\ NE\ Crawler
 oBot
+openai
+openai.com
 page\ scorer
 pcBrowser
 plumanalytics
@@ -592,6 +618,7 @@ satoristudio.net
 scalaj-http
 scan.lol
 seobility
+seocompany.store
 seoscanners
 seostar
 serpstatbot
@@ -605,8 +632,12 @@ sysscan
 tAkeOut
 trendiction.com
 trendiction.de
+ubermetrics-technologies.com
 voyagerx.com
+webgains-bot
 webmeup-crawler
+webpros.com
+webprosbot
 x09Mozilla
 x22Mozilla
 xpymep1.exe

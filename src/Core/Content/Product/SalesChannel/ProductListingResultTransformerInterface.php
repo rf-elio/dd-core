@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Snippets;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
 
+use Elio\ElioSearch\Api\Response\ResponseCollection;
+use Elio\ElioSearch\Api\Search\Request\SearchRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Class Snippet
- * @package Elio\ElioSearch\Core\Snippets
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- */
-class Snippet
+interface ProductListingResultTransformerInterface
 {
-    public const SNIPPET_PREFIX = 'elioSearch.';
-    public const SNIPPET_LISTING_PREFIX = self::SNIPPET_PREFIX.'listing.';
-    public const SNIPPET_LISTING_SORTING_PREFIX = self::SNIPPET_LISTING_PREFIX.'sorting.';
+    public function transform(
+        ProductListingResponse $productListingResponse,
+        Criteria $criteria,
+        SalesChannelContext $context,
+        ResponseCollection $resultCollection,
+        SearchRequest $searchRequest,
+        Request $request
+    ): ProductListingResult;
 }

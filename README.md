@@ -1,8 +1,8 @@
-# sw6-ElioFactFinder
+# sw6-ElioSearch
 # Installation
 ## Commands
 The following commands must be configured to execute required background tasks
-*  `bin/console elio-ff:export:generate`: Executes the exports. This should be executed every 5 Minutes.
+*  `bin/console elio-search:export:generate`: Executes the exports. This should be executed every 5 Minutes.
 
 # Components
 ## Bot protection
@@ -38,10 +38,10 @@ New Export profiles can be configured in the shopware administration. To execute
 must be used.
 
 Commands:
-*  `bin/console elio-ff:export:generate`: Generates all due exports
-*  `bin/console elio-ff:export:generate {id}`: Generates a specific export on due
-*  `bin/console elio-ff:export:generate -f`: Refreshes all exports (interval ignored)
-*  `bin/console elio-ff:export:generate {id} -f`: Refreshes a specific export (interval ignored)
+*  `bin/console elio-search:export:generate`: Generates all due exports
+*  `bin/console elio-search:export:generate {id}`: Generates a specific export on due
+*  `bin/console elio-search:export:generate -f`: Refreshes all exports (interval ignored)
+*  `bin/console elio-search:export:generate {id} -f`: Refreshes a specific export (interval ignored)
 
 ### Events
 *  **FilterProductModelEvent**: Can be used to register additional fields that should be added to the product export.
@@ -51,7 +51,7 @@ Commands:
 ### Extensions
 #### Generator
 To add contents for suggest and content search provided by an additional plugin the generator must be registered with
-the tag "elio-ff.export.generator" to be executed during the export generation.
+the tag "elio-search.export.generator" to be executed during the export generation.
 
 The generator must implement the **ExportGeneratorInterface**. The suggested structure can be found below.
 
@@ -90,8 +90,8 @@ $item->set('ProductURL', new SeoRoute(
 
 
 ## Configuration Service
-The ff configuration service **FactFinderConfigService** should be used to access the ff plugin configuration at all
-places. FactFinderConfigService enforces to provide a sales channel id to make the plugin able to work with multiple
+The elioSearch configuration service **ElioSearchConfigService** should be used to access the elioSearch plugin configuration at all
+places. ElioSearchConfigService enforces to provide a sales channel id to make the plugin able to work with multiple
 sales channels.
 
 This service provides in addition an object orientated way to access any config field to make it easier to find usages
@@ -102,19 +102,19 @@ configuration service.
 *  **ConfigurationLoadedEvent**: Provides the ability to manipulate or extend the configuration.
 
 ### Service decoration
-*  **FactFinderConfigService**: FactFinderConfigService can be decorated to provide support for third party credential
+*  **ElioSearchConfigService**: ElioSearchConfigService can be decorated to provide support for third party credential
    providers.
 
 ## Exceptions
-### FactFinderException
-All exceptions should inherit from the FactFinderException to have a marker that this plugin cause the exception.
-Further more offers our FactFinderException an easy way to generate exception messages without using sprint all the
+### ElioSearchException
+All exceptions should inherit from the ElioSearchException to have a marker that this plugin cause the exception.
+Further more offers our ElioSearchException an easy way to generate exception messages without using sprint all the
 time.
 
 Usage:
 
 ```php
-class MyException extends FactFinderException
+class MyException extends ElioSearchException
 {
     public function __construct(object $is, string $should)
     {
@@ -135,5 +135,5 @@ throw new InvalidTypeException($message, TrackingMessage::class);
 ```
 
 # Api
-This plugin uses the ff rest api with an auto generated api client.
+This plugin uses the search rest api with an auto generated api client.
 OpenApi documentation: https://ng-demo.fact-finder.de/fact-finder/swagger-ui.html

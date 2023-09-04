@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,50 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Transform\Event;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Event;
 
-
-use Elio\ElioSearch\Api\Request\ApiRequest;
-use Elio\ElioSearch\Api\Request\RequestCollection;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class TransformRequestEvent
- * @package Elio\ElioSearch\Api\Transform\Event
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class ProductListingResultTransformerEvent
+ * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Event
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class TransformRequestEvent extends Event
+class ProductListingResultTransformerEvent extends Event
 {
-    private ApiRequest $apiRequest;
-    private RequestCollection $requestCollection;
-
-    /**
-     * TransformRequestEvent constructor.
-     * @param ApiRequest $apiRequest
-     * @param RequestCollection $requestCollection
-     */
-    public function __construct(ApiRequest $apiRequest, RequestCollection $requestCollection)
-    {
-        $this->apiRequest = $apiRequest;
-        $this->requestCollection = $requestCollection;
+    public function __construct(
+        private ProductListingResult $productListingResult,
+        private SalesChannelContext $salesChannelContext
+    ) {
     }
 
-    /**
-     * @return ApiRequest
-     */
-    public function getApiRequest(): ApiRequest
+    public function getProductListingResult(): ProductListingResult
     {
-        return $this->apiRequest;
+        return $this->productListingResult;
     }
 
-    /**
-     * @return RequestCollection
-     */
-    public function getRequestCollection(): RequestCollection
+    public function setProductListingResult(ProductListingResult $productListingResult): void
     {
-        return $this->requestCollection;
+        $this->productListingResult = $productListingResult;
+    }
+
+    public function getSalesChannelContext(): SalesChannelContext
+    {
+        return $this->salesChannelContext;
+    }
+
+    public function setSalesChannelContext(SalesChannelContext $salesChannelContext): void
+    {
+        $this->salesChannelContext = $salesChannelContext;
     }
 }

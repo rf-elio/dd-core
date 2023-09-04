@@ -38,7 +38,7 @@ use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\SearchApi;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Elio\ElioSearch\ElioSearch;
@@ -70,7 +70,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
     private ElioSearchConfigServiceInterface $configService;
     private SearchApi $searchApi;
     private ProductSearchRequestBuilder $searchRequestBuilder;
-    private ProductListingResultTransformer $productListingResultTransformer;
+    private ProductListingResultTransformerInterface $productListingResultTransformer;
     private EntityRepository $categoryRepository;
     private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
 
@@ -80,7 +80,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param ElioSearchConfigServiceInterface $configService
      * @param SearchApi $searchApi
-     * @param ProductListingResultTransformer $productListingResultTransformer
+     * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param EntityRepository $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
      * @param LoggerInterface $logger
@@ -90,7 +90,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         ProductSearchRequestBuilder      $searchRequestBuilder,
         ElioSearchConfigServiceInterface $configService,
         SearchApi                        $searchApi,
-        ProductListingResultTransformer  $productListingResultTransformer,
+        ProductListingResultTransformerInterface  $productListingResultTransformer,
         EntityRepository        $categoryRepository,
         CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
         LoggerInterface                  $logger

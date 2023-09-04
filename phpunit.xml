@@ -15,7 +15,7 @@
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
   </php>
   <testsuites>
-    <testsuite name="FACTFinder Plugin Tests">
+    <testsuite name="ElioSearch Plugin Tests">
       <directory>tests/</directory>
     </testsuite>
   </testsuites>

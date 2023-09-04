@@ -37,7 +37,7 @@ use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\SearchApi;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\Log\LoggerInterface;
@@ -64,7 +64,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
     private ContentSearchRequestBuilder $contentSearchRequestBuilder;
     private ElioSearchConfigServiceInterface $configService;
     private SearchApi $searchApi;
-    private ProductListingResultTransformer $productListingResultTransformer;
+    private ProductListingResultTransformerInterface $productListingResultTransformer;
 
     /**
      * ElioSearchRoute constructor.
@@ -73,7 +73,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
      * @param ContentSearchRequestBuilder $contentSearchRequestBuilder
      * @param ElioSearchConfigServiceInterface $configService
      * @param SearchApi $searchApi
-     * @param ProductListingResultTransformer $productListingResultTransformer
+     * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -82,7 +82,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
         ContentSearchRequestBuilder      $contentSearchRequestBuilder,
         ElioSearchConfigServiceInterface $configService,
         SearchApi                        $searchApi,
-        ProductListingResultTransformer  $productListingResultTransformer,
+        ProductListingResultTransformerInterface  $productListingResultTransformer,
         LoggerInterface                  $logger
     )
     {
