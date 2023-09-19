@@ -32,6 +32,8 @@
 
 namespace Elio\ElioSearch\Core\Sync\Collectors;
 
+use Elio\ElioSearch\Core\Sync\Collectors\Event\CriteriaPreparedEvent;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Elio\ElioSearch\Core\Sync\DataTypes\TypeInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
@@ -39,43 +41,53 @@ use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ProductCollector implements DataCollectorInterface
 {
-    public function __construct(private readonly EntityRepository $productRepository)
-    {
+    public const TYPE = 'elio-search-product';
+    public const LIMIT = 100;
+
+    public function __construct(
+        private readonly EntityRepository $productRepository,
+        private readonly EventDispatcherInterface $dispatcher
+    ) {
     }
 
     public function supports(string $type): bool
     {
-        // TODO: Implement supports() method.
+        return self::TYPE === $type;
     }
 
     /**
      * @return \Generator|TypeInterface[]
      */
-    public function collect(Context $context, ?Criteria $criteria = null): \Generator
+    public function collect(SalesChannelContext $context, ?Criteria $criteria = null): \Generator
     {
         if ($criteria === null) {
-            $criteria = $this->getCriteria();
+            $criteria = new Criteria();
         }
 
-        $iterator = new RepositoryIterator($this->productRepository, $context, $criteria);
+        $this->prepareCriteria($criteria);
+        $iterator = new RepositoryIterator($this->productRepository, $context->getContext(), $criteria);
         while ($products = $iterator->fetch()) {
             $collection = [];
             /** @var ProductEntity $product */
             foreach ($products as $product) {
-                // map product to data type
-                yield $product;
+                $collection[] = ProductType::mapFromProduct($product);
+//                return [
+//                    'en' => $product,
+//                    'de' => $product
+//                ];
             }
 
-//            yield $collection;
+            yield $collection;
         }
     }
 
-    protected function getCriteria(): Criteria
+    protected function prepareCriteria(Criteria $criteria): Criteria
     {
-        $criteria = new Criteria();
         $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
@@ -85,6 +97,9 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addFilter(new EqualsFilter('product.active', true));
 
-        return $criteria;
+        $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
+        $this->dispatcher->dispatch($event);
+
+        return $event->getCriteria();
     }
 }

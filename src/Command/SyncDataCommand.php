@@ -30,16 +30,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collectors;
+namespace Elio\ElioSearch\Command;
 
-use Elio\ElioSearch\Core\Sync\Converter\ConverterInterface;
+use Elio\ElioSearch\Core\Sync\SyncService;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
-interface DataCollectorInterface
+class SyncDataCommand extends Command
 {
-    public function supports(string $type): bool;
+    public function __construct(
+        private readonly SyncService $syncService,
+        private readonly LoggerInterface $logger
+    ) {
+        parent::__construct();
+    }
 
-    public function collect(SalesChannelContext $context, ?Criteria $criteria = null): \Generator;
+    protected function configure(): void
+    {
+        $this->setName('elio-search:profiles:sync');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $context = Context::createDefaultContext();
+
+        try {
+            $syncProfiles = $this->syncService->getSyncProfiles($context);
+            foreach ($syncProfiles as $syncProfile) {
+                $this->syncService->syncAll($syncProfile);
+            }
+        } catch (Exception $e) {
+            dd($e->getMessage(), $e->getTrace());
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return Command::FAILURE;
+        }
+
+        return Command::SUCCESS;
+    }
 }

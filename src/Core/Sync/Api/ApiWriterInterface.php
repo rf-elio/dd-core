@@ -32,10 +32,12 @@
 
 namespace Elio\ElioSearch\Core\Sync\Api;
 
+use Elio\ElioSearch\Core\Sync\DataTypes\TypeInterface;
+
 interface ApiWriterInterface
 {
-    public function supports();
-    public function create();
-    public function update();
-    public function delete();
+    public function supports(string $type);
+    public function create(TypeInterface $data);
+    public function update(TypeInterface $data);
+    public function delete(TypeInterface $data);
 }

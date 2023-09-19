@@ -30,49 +30,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioSearch\Core\Sync\Aggregate;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Elio\ElioSearch\Core\Sync\SyncProfileDefinition;
+use Elio\ElioSearch\Core\Sync\SyncProfileLanguageMapping;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
 use Shopware\Core\System\Language\LanguageDefinition;
 
-class SyncProfileLanguageMapping extends MappingEntityDefinition
+class LanguageExtension extends EntityExtension
 {
-    public const ENTITY_NAME = 'elio_search_sync_profile_languages';
-
-    /**
-     * @return string
-     */
-    public function getEntityName(): string
+    public function extendFields(FieldCollection $collection): void
     {
-        return self::ENTITY_NAME;
+        $collection->add(
+            (new ManyToManyAssociationField(
+                'syncProfiles',
+                SyncProfileDefinition::class,
+                SyncProfileLanguageMapping::class,
+                'language_id',
+                'sync_profile_id'
+            ))->addFlags(new Inherited())
+        );
     }
 
-    protected function defineFields(): FieldCollection
+    public function getDefinitionClass(): string
     {
-        return new FieldCollection([
-            (new FkField('sync_profile_id','syncProfileId',SyncProfileDefinition::class))
-                ->addFlags(new PrimaryKey(), new Required()),
-            (new FkField('language_id', 'languageId', LanguageDefinition::class))
-                ->addFlags(new PrimaryKey(), new Required()),
-
-            (new ManyToOneAssociationField(
-                'syncProfile',
-                'sync_profile_id',
-                SyncProfileDefinition::class,
-                'id'
-            )),
-            (new ManyToOneAssociationField(
-                'language',
-                'language_id',
-                LanguageDefinition::class,
-                'id'
-            ))
-        ]);
+        return LanguageDefinition::class;
     }
 }

@@ -32,37 +32,65 @@
 
 namespace Elio\ElioSearch\Core\Sync;
 
+use DateTimeImmutable;
+use Elio\ElioSearch\Core\Sync\Api\ApiService;
+use Elio\ElioSearch\Core\Sync\Export\ExportService;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 
 class SyncService
 {
-    public function __construct(private readonly EntityRepository $syncProfileRepository, private readonly iterable $profiles)
-    {
+    public function __construct(
+        private readonly ExportService $exportService,
+        private readonly ApiService $apiService,
+        private readonly EntityRepository $syncProfileRepository,
+        private readonly iterable $profiles,
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly LoggerInterface $logger,
+        private readonly EntityRepository $syncProfileRepository1,
+    ) {
     }
 
-    public function syncAll(SyncProfileEntity $syncProfile, Context $context): void
+    public function syncAll(SyncProfileEntity $syncProfile): void
     {
-        $profiles = $this->getProfile($syncProfile);
+        $salesChannel = $syncProfile->getSalesChannel();
+        if(!$salesChannel || !$salesChannel->getDomains()) {
+            $this->logger->info(
+                'Cannot generate product export: association "salesChannel.domains" is missing',
+                ['id' => $syncProfile->getId()]
+            );
 
-        foreach ($profiles as $profile) {
-            if ($profile->getType() === SyncConfig::PROFILE_SYNC) {
-                // call sync api service
-                continue;
-            }
-
-            if ($profile->getType() === SyncConfig::PROFILE_EXPORT) {
-                // call export service
-                continue;
-            }
-
-            throw new InvalidArgumentException(sprintf('Invalid profile type %s', $profile->getType()));
+            throw new RuntimeException(sprintf(
+                'Cannot generate product export "%s": association "salesChannel.domains" is missing',
+                $syncProfile->getName()
+            ));
         }
+
+        $languageId = $syncProfile->getLanguages()?->first()?->getId();
+        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
+
+        $this->startSync($syncProfile, $salesChannelContext->getContext());
+        $profile = $this->getProfile($syncProfile);
+        if ($syncProfile->getType() === SyncConfig::PROFILE_SYNC) {
+            $this->apiService->sync($profile, $syncProfile, $salesChannelContext);
+            return;
+        }
+
+        if ($syncProfile->getType() === SyncConfig::PROFILE_EXPORT) {
+            $this->exportService->export($profile, $syncProfile, $salesChannelContext);
+            return;
+        }
+
+        throw new InvalidArgumentException(sprintf('Invalid profile type %s', $syncProfile->getType()));
     }
 
     /**
@@ -72,8 +100,17 @@ class SyncService
     public function getSyncProfiles(Context $context): EntitySearchResult
     {
         $criteria = new Criteria();
+        $criteria->addAssociation('salesChannel.domains');
         $criteria->addFilter(new EqualsFilter('active', true));
         return $this->syncProfileRepository->search($criteria, $context);
+    }
+
+    protected function startSync(SyncProfileEntity $syncProfile, Context $context): void
+    {
+        $this->syncProfileRepository->update([[
+            'id' => $syncProfile->getId(),
+            'lastGenerationStartedAt' => new DateTimeImmutable()
+        ]], $context);
     }
 
     protected function getProfile(SyncProfileEntity $syncProfile): SyncProfileInterface

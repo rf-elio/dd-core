@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\ElioSearch\Core\Sync\SyncProfileDefinition">
+            <tag name="shopware.entity.definition" entity="elio_search_sync_profile"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\SyncProfileLanguageMapping">
+            <tag name="shopware.entity.definition" entity="elio_search_sync_profile_languages"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\Aggregate\LanguageExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\Api\EntityStatusDefinition">
+            <tag name="shopware.entity.definition" entity="elio_search_entity_status"/>
+        </service>
+
+        <!--   Export    -->
+        <service id="Elio\ElioSearch\Core\Sync\Export\ExportService">
+            <argument type="tagged" tag="elio-search.sync.convertor" />
+            <argument type="tagged" tag="elio-search.sync.collector" />
+            <argument type="tagged" tag="elio-search.sync.writer" />
+        </service>
+
+        <!--    Api Sync    -->
+        <service id="Elio\ElioSearch\Core\Sync\Indexer\ChangeSetService">
+            <argument type="service" id="elio_search_entity_status.repository" />
+            <argument type="tagged" tag="elio-search.sync.indexer" />
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Api\ApiService">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Indexer\ChangeSetService" />
+            <argument type="tagged" tag="elio-search.sync.api.writer" />
+            <argument type="tagged" tag="elio-search.sync.collector" />
+            <argument type="service" id="elio.search.core.logging.default" />
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\SyncService">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\ExportService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Api\ApiService" />
+            <argument type="service" id="elio_search_sync_profile.repository" />
+            <argument type="tagged" tag="elio-search.sync.profile" />
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <argument type="service" id="elio_search_sync_profile_languages.repository" />
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\Administration\Controller\SyncProfileController" public="true">
+            <argument type="tagged" tag="elio-search.sync.profile" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Elio\ElioSearch\Command\SyncDataCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

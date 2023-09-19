@@ -12,6 +12,7 @@
         <import resource="ranking.xml"/>
         <import resource="tracking.xml"/>
         <import resource="storefront.xml"/>
+        <import resource="sync-profile.xml"/>
         <import resource="export.xml"/>
         <import resource="features.xml"/>
         <import resource="filter-restrictions.xml"/>

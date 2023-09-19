@@ -37,15 +37,18 @@ namespace Elio\ElioSearch\Core\Sync\Profile;
  */
 interface SyncProfileInterface
 {
-    public function getType(): string;
+    public function getTypes(): array;
 
     public function getName(): string;
 
-    public function getDataTypes();
+    /**
+     * @return array
+     */
+    public function getDataTypes(): array;
 
     public function getConverter();
 
-    public function getFormats(): array;
+    public function getOutputs(): array;
 
     public function isMultiLanguageSupport(): bool;
 }

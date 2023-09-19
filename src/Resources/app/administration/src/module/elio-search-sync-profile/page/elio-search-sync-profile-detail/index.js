@@ -1,14 +1,14 @@
-import template from './elio-search-export-detail.html.twig';
-import './elio-search-export-detail.scss';
+import template from './elio-search-sync-profile-detail.html.twig';
+import './elio-search-sync-profile-detail.scss';
 
 const {Mixin} = Shopware;
 const {Criteria} = Shopware.Data;
 
-Shopware.Component.register('elio-search-export-detail', {
+Shopware.Component.register('elio-search-sync-profile-detail', {
     template: template,
     inject: [
         'repositoryFactory',
-        'elioSearchExport'
+        'elioSearchSyncProfile'
     ],
     mixins: [
         Mixin.getByName('notification'),
@@ -41,26 +41,23 @@ Shopware.Component.register('elio-search-export-detail', {
     data() {
         return {
             isNew: false,
-            elio_search_export: null,
+            elio_search_sync_profile: null,
             isLoading: false,
             isSaveSuccessful: false,
             // todo: fetch somehow with ajax to server or from configs or from file
-            typeList: [
-                {id: 'product', name: 'product'},
-                {id: 'content', name: 'content'}
-            ],
-            formatList: [
-                {id: 'csv', name: 'csv'},
-                // {id: 'xml', name: 'xml'}
-            ],
+            profiles: [],
+            types: [],
+            dataTypes: [],
+            outputList: [],
+            isMultiLanguageSupport: false,
             languageIdsList: [],
             categoryIdsList: [],
             salesChannelIdsList: [],
-            elio_search_export_mappings: [],
-            elio_search_export_mappings_newId: 0,
+            elio_search_sync_profile_mappings: [],
+            elio_search_sync_profile_newId: 0,
             isMappingsEmpty: true,
             isContent: false,
-            elio_search_export_config: {},
+            elio_search_sync_profile_config: {},
             commandForce: false,
             status: {
                 exists: false,
@@ -69,7 +66,9 @@ Shopware.Component.register('elio-search-export-detail', {
             isGenerating: false,
             updateTimer: null,
             updateInterval: 3000,
-            baseCategories: null
+            baseCategories: null,
+            newLanguageId: null,
+            currentLanguageId: null
         };
     },
 
@@ -79,10 +78,10 @@ Shopware.Component.register('elio-search-export-detail', {
 
     computed: {
         identifier() {
-            return this.placeholder(this.elio_search_export, 'name');
+            return this.placeholder(this.elio_search_sync_profile, 'name');
         },
-        exportRepository() {
-            return this.repositoryFactory.create('elio_search_export');
+        syncProfileRepository() {
+            return this.repositoryFactory.create('elio_search_sync_profile');
         },
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
@@ -94,19 +93,19 @@ Shopware.Component.register('elio-search-export-detail', {
             return this.repositoryFactory.create('category');
         },
         command() {
-            if (!this.elio_search_export) {
+            if (!this.elio_search_sync_profile) {
                 return '...';
             }
 
-            return 'bin/console elio-elio-search:export:generate ' + (this.commandForce ? '-f ' : '') + this.elio_search_export.id;
+            return 'bin/console elio-elio-search:export:generate ' + (this.commandForce ? '-f ' : '') + this.elio_search_sync_profile.id;
         },
         getDownloadUrl() {
-            return this.elioSearchExport.getDownloadUrl(
+            return this.elioSearchSyncProfile.getDownloadUrl(
                 this.exportId,
-                this.elio_search_export.salesChannel.name,
-                this.elio_search_export.language.locale.code,
-                this.elio_search_export.downloadUsername,
-                this.elio_search_export.downloadPassword
+                this.elio_search_sync_profile.salesChannel.name,
+                // this.elio_search_sync_profile.language.locale.code,
+                this.elio_search_sync_profile.downloadUsername,
+                this.elio_search_sync_profile.downloadPassword
             )
         }
     },
@@ -116,6 +115,7 @@ Shopware.Component.register('elio-search-export-detail', {
             this._fillSelectors();
             this._loadEntityData();
             this._updateStatus();
+            this._loadProfiles();
         },
 
         /**
@@ -154,19 +154,19 @@ Shopware.Component.register('elio-search-export-detail', {
 
             const criteria = new Criteria();
             criteria.addAssociation('salesChannel');
-            criteria.addAssociation('language.locale');
-            this.exportRepository.get(this.exportId, Shopware.Context.api, criteria).then((currenExport) => {
+            criteria.addAssociation('languages');
+            this.syncProfileRepository.get(this.exportId, Shopware.Context.api, criteria).then((currenExport) => {
                 if (currenExport == null) {
-                    that.$router.push({name: 'elio.search.export.list'});
+                    that.$router.push({name: 'elio.search.sync.profile.list'});
                 }
 
-                that.elio_search_export = currenExport;
-                if (that.elio_search_export.type === 'content') {
-                    that.isContent = true;
-                }
-                that.elio_search_export_mappings = that._prepareSavedMapping();
-                that.elio_search_export_mappings_newId = that.elio_search_export_mappings.length;
+                that.elio_search_sync_profile = currenExport;
+                that.elio_search_sync_profile_mappings = that._prepareSavedMapping();
+                that.elio_search_sync_profile_mappings_newId = that.elio_search_sync_profile_mappings.length;
                 that.isLoading = false;
+
+                const criteria = new Criteria();
+                criteria.setIds(currenExport.baseCategoryIds);
 
                 if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
                     const criteria = new Criteria();
@@ -180,7 +180,7 @@ Shopware.Component.register('elio-search-export-detail', {
             .catch((err) => {
                 console.log(err);
                 that.isLoading = false;
-                that.$router.push({name: 'elio.search.export.list'});
+                that.$router.push({name: 'elio.search.sync.profile.list'});
             });
         },
 
@@ -190,12 +190,12 @@ Shopware.Component.register('elio-search-export-detail', {
          */
         _loadTimingsData() {
             const that = this;
-            this.exportRepository.get(this.exportId, Shopware.Context.api, new Criteria())
+            this.syncProfileRepository.get(this.exportId, Shopware.Context.api, new Criteria())
                 .then((currenExport) => {
                     if (currenExport != null) {
-                        that.elio_search_export.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
-                        that.elio_search_export.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
-                        that.elio_search_export.nextGenerationDueAt = currenExport.nextGenerationDueAt;
+                        that.elio_search_sync_profile.lastGenerationStartedAt = currenExport.lastGenerationStartedAt;
+                        that.elio_search_sync_profile.lastGenerationFinishedAt = currenExport.lastGenerationFinishedAt;
+                        that.elio_search_sync_profile.nextGenerationDueAt = currenExport.nextGenerationDueAt;
                     }
                 })
                 .catch((err) => {
@@ -203,12 +203,49 @@ Shopware.Component.register('elio-search-export-detail', {
                 });
         },
 
+        _loadProfiles() {
+             this.elioSearchSyncProfile.getProfiles().then((response) => {
+                Object.entries(response.profiles).forEach(([key, data]) => {
+                    this.profiles.push({
+                        id: key,
+                        types: data['types'],
+                        name: data['name'],
+                        outputs: data['outputs'],
+                        dataTypes: data['dataTypes']
+                    })
+                });
+
+                this.onChangeProfile(this.profiles[0].id);
+            });
+        },
+
+        onChangeProfile(key) {
+            const outPutList = [];
+            const dataTypes = [];
+            const types = [];
+            const profile = this.profiles.find((profile) => profile.id = key);
+
+            profile.outputs.forEach((output) => {
+                outPutList.push({id: output, name: output})
+            });
+            profile.dataTypes.forEach((dataType) => {
+                dataTypes.push({id: dataType, name: dataType});
+            });
+            profile.types.forEach((type) => {
+                types.push({id: type, name: type});
+            });
+
+            this.types = types;
+            this.outputList = outPutList;
+            this.dataTypes = dataTypes;
+        },
+
         /**
          * Updates the current status of this export
          * @private
          */
         _updateStatus() {
-            this.elioSearchExport.getStatus(this.exportId).then((response) => {
+            this.elioSearchSyncProfile.getStatus(this.exportId).then((response) => {
                 this.status = response.data
             })
         },
@@ -218,7 +255,7 @@ Shopware.Component.register('elio-search-export-detail', {
          * @param categories
          */
         onChangeBaseCategory(categories) {
-            this.elio_search_export.baseCategoryIds = categories.getIds();
+            this.elio_search_sync_profile.baseCategoryIds = categories.getIds();
             this.baseCategories = categories;
         },
 
@@ -227,19 +264,19 @@ Shopware.Component.register('elio-search-export-detail', {
          * @returns {*}
          */
         onSave() {
-            this.elio_search_export.nextGenerationDueAt = null;
+            this.elio_search_sync_profile.nextGenerationDueAt = null;
             this.isSaveSuccessful = false;
             this.isLoading = true;
             const that = this;
             this._prepareMappingForSaving();
 
-            return this.exportRepository.save(this.elio_search_export).then(() => {
+            return this.syncProfileRepository.save(this.elio_search_sync_profile).then(() => {
                 that._loadEntityData();
                 that.isLoading = false;
                 that.isSaveSuccessful = true;
             }).catch((exception) => {
                 that.createNotificationError({
-                    message: this.$tc('elio-search-export.detail.messageSaveError', 0, {
+                    message: this.$tc('elio-search-sync-profile.detail.messageSaveError', 0, {
                         error: exception.message, // todo: add proper error message
                     })
                 });
@@ -253,7 +290,7 @@ Shopware.Component.register('elio-search-export-detail', {
         },
 
         onCancel() {
-            this.$router.push({name: 'elio.search.export.list'});
+            this.$router.push({name: 'elio.search.sync.profile.list'});
         },
 
         /**
@@ -263,12 +300,12 @@ Shopware.Component.register('elio-search-export-detail', {
             if (this.isMappingsEmpty) {
                 this.isMappingsEmpty = false;
             }
-            this.elio_search_export_mappings.push({
-                id: this.elio_search_export_mappings_newId,
-                source: this.$tc('elio-search-export.detail.mappingSourcePlaceholder'),
+            this.elio_search_sync_profile_mappings.push({
+                id: this.elio_search_sync_profile_mappings_newId,
+                source: this.$tc('elio-search-sync-profile.detail.mappingSourcePlaceholder'),
                 target: 'new_target'
             });
-            this.elio_search_export_mappings_newId = this.elio_search_export_mappings_newId + 1;
+            this.elio_search_sync_profile_mappings_newId = this.elio_search_sync_profile_mappings_newId + 1;
         },
 
         /**
@@ -276,7 +313,7 @@ Shopware.Component.register('elio-search-export-detail', {
          */
         onDeleteMapping(id) {
             let position = -1;
-            this.elio_search_export_mappings.forEach((mapping, key) => {
+            this.elio_search_sync_profile_mappings.forEach((mapping, key) => {
                 if (position === -1) {
                     if (mapping.id === id) {
                         position = key;
@@ -284,8 +321,8 @@ Shopware.Component.register('elio-search-export-detail', {
                 }
             });
             if (position !== -1) {
-                this.elio_search_export_mappings.splice(position, 1);
-                if (this.elio_search_export_mappings.length === 0) {
+                this.elio_search_sync_profile_mappings.splice(position, 1);
+                if (this.elio_search_sync_profile_mappings.length === 0) {
                     this.isMappingsEmpty = true;
                 }
             }
@@ -298,7 +335,7 @@ Shopware.Component.register('elio-search-export-detail', {
         _prepareMappingForSaving() {
             const mappings = [];
             // removing ids from saving
-            this.elio_search_export_mappings.forEach((mapping) => {
+            this.elio_search_sync_profile_mappings.forEach((mapping) => {
                 mappings.push(
                     {
                         source: mapping.source,
@@ -306,7 +343,7 @@ Shopware.Component.register('elio-search-export-detail', {
                     }
                 );
             });
-            this.elio_search_export.mapping = mappings;
+            this.elio_search_sync_profile.mapping = mappings;
         },
 
         /**
@@ -314,7 +351,7 @@ Shopware.Component.register('elio-search-export-detail', {
          * @private
          */
         _prepareSavedMapping() {
-            const mappings = Object.values(this.elio_search_export.mapping);
+            const mappings = Object.values(this.elio_search_sync_profile.mapping);
             let i = 0, result = [];
             mappings.forEach((mapping) => {
                 result.push(
@@ -337,12 +374,12 @@ Shopware.Component.register('elio-search-export-detail', {
          * Opens the download in a new window
          */
         onDownloadExport() {
-            window.open(this.elioSearchExport.getDownloadUrl(
+            window.open(this.elioSearchSyncProfile.getDownloadUrl(
                 this.exportId,
-                this.elio_search_export.salesChannel.name,
-                this.elio_search_export.language.locale.code,
-                this.elio_search_export.downloadUsername,
-                this.elio_search_export.downloadPassword
+                this.elio_search_sync_profile.salesChannel.name,
+                this.elio_search_sync_profile.language.locale.code,
+                this.elio_search_sync_profile.downloadUsername,
+                this.elio_search_sync_profile.downloadPassword
             ), '_blank');
         },
 
@@ -358,7 +395,7 @@ Shopware.Component.register('elio-search-export-detail', {
                     that.isGenerating = false;
                     that.createNotificationSuccess({
                         title: that.$tc('global.default.success'),
-                        message: that.$tc('elio-search-export.detail.messageGeneratingSuccess')
+                        message: that.$tc('elio-search-sync-profile.detail.messageGeneratingSuccess')
                     });
                     that._loadTimingsData();
                 } else {
@@ -367,12 +404,12 @@ Shopware.Component.register('elio-search-export-detail', {
             }, that.updateInterval || 3000);
 
             this.isGenerating = true;
-            this.elioSearchExport.generate(this.exportId).then((responce) => {
+            this.elioSearchSyncProfile.generate(this.exportId).then((responce) => {
                 console.log(responce);
-                that.elio_search_export.lastGenerationStartedAt = Date.now();
+                that.elio_search_sync_profile.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
                 that.createNotificationError({
-                    message: this.$tc('elio-search-export.detail.messageGeneratingError', 0, {
+                    message: this.$tc('elio-search-sync-profile.detail.messageGeneratingError', 0, {
                         error: exception.message, // todo: add proper error message
                     })
                 });

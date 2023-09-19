@@ -36,6 +36,7 @@ use Elio\ElioSearch\Core\Sync\Collectors\DataCollectorInterface;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ExportService
 {
@@ -47,19 +48,21 @@ class ExportService
     {
     }
 
-    public function export(SyncProfileInterface $profile, SyncProfileEntity $syncProfile, Context $context)
+    public function export(SyncProfileInterface $profile, SyncProfileEntity $syncProfile, SalesChannelContext $context): void
     {
         $converter = $this->getConverter($profile->getConverter());
         $writer = $this->getWriter($syncProfile);
-        // TODO: Clarify data types
-        $collection = $this->getCollector($profile->getDataTypes())->collect($context);
-
-        $stream = new OutputStream($writer, $syncProfile, $salesChannelContext);
-        $stream->open($salesChannelContext);
-
-        foreach ($collection as $item) {
-            $exportItem = $converter->conver($item, $salesChannelContext);
-            $stream->write($exportItem);
+        $collectors = $this->getCollectors($syncProfile->getDataType());
+        $stream = new OutputStream($writer, $syncProfile, $context);
+        $stream->open($context);
+        foreach ($collectors as $collector) {
+            $collection = $collector->collect($context);
+            foreach ($collection as $entities) {
+                foreach ($entities as $entity) {
+                    $exportItem = $converter->conver($entity, $context);
+                    $stream->write($exportItem);
+                }
+            }
         }
 
         $stream->close();
@@ -76,22 +79,31 @@ class ExportService
         throw new \InvalidArgumentException(sprintf('Converter %s not found', $converterClass));
     }
 
-    protected function getCollector(string $dataType): DataCollectorInterface
+    /**
+     * @param string $dataType
+     * @return DataCollectorInterface[]
+     */
+    protected function getCollectors(string $dataType): array
     {
+        $collectors = [];
         /** @var DataCollectorInterface $collector */
         foreach ($this->collectors as $collector) {
             if ($collector->supports($dataType)) {
-                return $collector;
+                $collectors[] = $collector;
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Converter %s not found', $dataType));
+        if (empty($collectors)) {
+            throw new \InvalidArgumentException('Collectors are not found');
+        }
+
+        return $collectors;
     }
 
     protected function getWriter(SyncProfileEntity $syncProfile)
     {
         foreach ($this->writers as $writer) {
-            if($writer->supports($syncProfile)) {
+            if($writer->supports($syncProfile->getFormat())) {
                 return $writer;
             }
         }

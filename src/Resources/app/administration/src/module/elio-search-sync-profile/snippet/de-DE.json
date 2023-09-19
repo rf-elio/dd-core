@@ -1,5 +1,5 @@
 {
-  "elio-search-export": {
+  "elio-search-sync-profile": {
     "title": "Export",
     "description": "",
     "buttonSave": "Save",
@@ -14,14 +14,16 @@
       "cardTitleBasicInfo" : "Basic information",
       "labelName": "Export Name",
       "labelActive": "Active",
+      "labelProfile": "Profile",
       "labelType": "Type",
+      "labelDataType": "Data Type",
       "labelFormat": "Format",
       "labelInterval": "Interval",
       "helpTextInterval": "CRON-valid interval string example: 0 * * * *",
-      "downloadUsername": "Download Username",
-      "downloadPassword": "Download Password",
+      "downloadUsername": "Download Benutzername",
+      "downloadPassword": "Download Passwort",
       "labelSalesChannel": "Sales Channel",
-      "labelLanguage": "Language",
+      "labelLanguages": "Languages",
       "baseCategoryLabel": "Base category",
       "labelExportCommand": "Export Command",
       "labelExportCommandForce": "Force",

@@ -1,9 +1,9 @@
-import template from './elio-search-export-list.html.twig';
+import template from './elio-search-sync-profile-list.html.twig';
 
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-search-export-list', {
+Shopware.Component.register('elio-search-sync-profile-list', {
     template: template,
 
     inject: [
@@ -36,7 +36,7 @@ Shopware.Component.register('elio-search-export-list', {
 
     computed: {
         exportRepository() {
-            return this.repositoryFactory.create('elio_search_export');
+            return this.repositoryFactory.create('elio_search_sync_profile');
         },
         exportColumns() {
             return this.getExportColumns();
@@ -44,12 +44,12 @@ Shopware.Component.register('elio-search-export-list', {
         exportCriteria() {
             var criteria = new Criteria();
             criteria.addAssociation('salesChannel');
-            criteria.addAssociation('language');
+            criteria.addAssociation('languages');
             criteria.setPage(this.page);
             criteria.setLimit(this.limit);
             criteria.setTotalCountMode(2);
             criteria.addSorting(
-                Criteria.sort('elio_search_export.'+this.sortBy, this.sortDirection)
+                Criteria.sort('elio_search_sync_profile.'+this.sortBy, this.sortDirection)
             );
             return criteria;
         }
@@ -111,45 +111,39 @@ Shopware.Component.register('elio-search-export-list', {
             return [
                 {
                     property: 'name',
-                    routerLink: 'elio.search.export.detail',
+                    routerLink: 'elio.search.sync.profile.detail',
                     primary: true,
-                    label: this.$tc('elio-search-export.list.columns.name'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.name'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'salesChannelId',
-                    label: this.$tc('elio-search-export.list.columns.salesChannel'),
-                    allowResize: false,
-                    visible: true
-                },
-                {
-                    property: 'languageId',
-                    label: this.$tc('elio-search-export.list.columns.language'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.salesChannel'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'active',
-                    label: this.$tc('elio-search-export.list.columns.active'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.active'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'type',
-                    label: this.$tc('elio-search-export.list.columns.type'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.type'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'format',
-                    label: this.$tc('elio-search-export.list.columns.format'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.format'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'lastGenerationFinishedAt',
-                    label: this.$tc('elio-search-export.list.columns.lastGenerationFinishedAt'),
+                    label: this.$tc('elio-search-sync-profile.list.columns.lastGenerationFinishedAt'),
                     allowResize: false,
                     visible: true
                 }

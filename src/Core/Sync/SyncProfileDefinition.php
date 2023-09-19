@@ -33,17 +33,21 @@
 namespace Elio\ElioSearch\Core\Sync;
 
 
+use Elio\ElioSearch\Core\Sync\Api\EntityStatusDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyIdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\Language\LanguageDefinition;
@@ -95,6 +99,8 @@ class SyncProfileDefinition extends EntityDefinition
             (new StringField('name', 'name'))->addFlags(new ApiAware(), new Required()),
             (new BoolField('active', 'active'))->addFlags(new ApiAware(), new Required()),
             (new StringField('profile', 'profile'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('type', 'type'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('dataType', 'dataType'))->addFlags(new ApiAware(), new Required()),
             (new StringField('format', 'format'))->addFlags(new ApiAware(), new Required()),
             (new StringField('interval', 'interval'))->addFlags(new ApiAware(), new Required()),
             (new JsonField('mapping', 'mapping'))->addFlags(new ApiAware()),
@@ -107,7 +113,7 @@ class SyncProfileDefinition extends EntityDefinition
             (new StringField('download_username', 'downloadUsername'))->addFlags(new ApiAware()),
             (new StringField('download_password', 'downloadPassword'))->addFlags(new ApiAware()),
             new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class, 'id', false),
-            new ManyToManyAssociationField('languages', LanguageDefinition::class, SyncProfileLanguageMapping::class, 'language_id', 'sync_profile_id'),
+            (new ManyToManyAssociationField('languages', LanguageDefinition::class, SyncProfileLanguageMapping::class, 'sync_profile_id', 'language_id')),
         ]);
     }
 }

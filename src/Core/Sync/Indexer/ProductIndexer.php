@@ -34,6 +34,7 @@ namespace Elio\ElioSearch\Core\Sync\Indexer;
 
 use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
 use Elio\ElioSearch\Core\Sync\Api\EntityStatusEntity;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -41,12 +42,21 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
-class ProductIndexer
+class ProductIndexer implements IndexerInterface
 {
-    public const TYPE = 'product';
+    public const TYPE = ProductType::class;
 
-    public function __construct(private EntityRepository $productRepository)
+    private array $created = [];
+    private array $updated = [];
+    private array $deleted = [];
+
+    public function __construct(private readonly EntityRepository $productRepository)
     {
+    }
+
+    public function supports(string $type): bool
+    {
+        return self::TYPE === $type;
     }
 
     public function index(string $syncProfileId, Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection
@@ -82,7 +92,7 @@ class ProductIndexer
 
     protected function hash(ProductEntity $product): string
     {
-        // TODO: hash required product data, maybe depend on some model
+        // TODO: hash required product data, maybe depend on some model. Add product hashed event
     }
 
     protected function addEntityStatus(
@@ -95,9 +105,9 @@ class ProductIndexer
         $entityStatus->setId($product->getId());
         $entityStatus->setSyncProfileId($syncProfileId);
         $entityStatus->setType(self::TYPE);
-        $entityStatus->setState('open'); // state doesn't need
         $entityStatus->setHashedContent($hash);
 
+        $this->created[] = $product->getId();
         $indexingStatusCollection->add($entityStatus);
     }
 
@@ -107,6 +117,8 @@ class ProductIndexer
         EntityStatusCollection $indexingStatusCollection
     ):void {
         $entityStatus->setHashedContent($hash);
+
+        $this->updated[] = $entityStatus->getId();
         $indexingStatusCollection->add($entityStatus);
     }
 
@@ -115,6 +127,23 @@ class ProductIndexer
         EntityStatusCollection $indexingStatusCollection
     ): void {
         $entityStatus->setDeletedAt(new \DateTimeImmutable());
+
+        $this->deleted[] = $entityStatus->getId();
         $indexingStatusCollection->add($entityStatus);
+    }
+
+    public function getCreated(): array
+    {
+        return $this->created;
+    }
+
+    public function getUpdated(): array
+    {
+        return $this->updated;
+    }
+
+    public function getDeleted(): array
+    {
+        return $this->deleted;
     }
 }

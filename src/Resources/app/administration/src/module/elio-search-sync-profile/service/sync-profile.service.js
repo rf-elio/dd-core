@@ -1,13 +1,13 @@
 /**
  * @private
  */
-export default class ExportService {
+export default class SyncProfileService {
     constructor(httpClient, loginService) {
         this.httpClient = httpClient;
         this.loginService = loginService;
         this.apiEndpoint = 'elio-search/export';
         this.contentType = 'application/vnd.api+json';
-        this.name = 'exportService';
+        this.name = 'syncProfileService';
     }
 
     /**
@@ -20,6 +20,15 @@ export default class ExportService {
         return await this.httpClient.get(
           `/_action/elio-search/export/status/${exportId}`,
           { headers: this.getBasicHeaders() });
+    }
+
+    getProfiles() {
+        return this.httpClient.get(
+            '/_action/elio-search/sync-profile/profiles',
+            {headers: this.getBasicHeaders()}
+        ).then((response) => {
+            return response.data;
+        });
     }
 
     /**

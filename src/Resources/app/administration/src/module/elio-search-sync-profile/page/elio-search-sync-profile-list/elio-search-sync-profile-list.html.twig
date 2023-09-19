@@ -1,25 +1,25 @@
-{% block elio_search_export_list_page %}
-    <sw-page class="elio-search-export-list">
+{% block elio_search_sync_profile_list_page %}
+    <sw-page class="elio-search-sync-profile-list">
         <template #smart-bar-actions>
             <sw-button
                     variant="primary"
-                    :router-link="{ name: 'elio.search.export.create' }"
+                    :router-link="{ name: 'elio.search.sync.profile.create' }"
             >
-                {{ $tc('elio-search-export.list.buttonCreate') }}
+                {{ $tc('elio-search-sync-profile.list.buttonCreate') }}
             </sw-button>
         </template>
 
         <template slot="content">
             <div>
-                {% block elio_search_export_list_grid %}
+                {% block elio_search_sync_profile_list_grid %}
                     <sw-entity-listing
                             v-if="exports"
-                            class="elio-search-exports-list-grid"
-                            identifier="elio-search-exports-list"
+                            class="elio-search-sync-profiles-list-grid"
+                            identifier="elio-search-sync-profiles-list"
                             :items="exports"
                             :columns="exportColumns"
-                            :repository="exportRepository"
-                            detailRoute="elio.search.export.detail"
+                            :repository="syncProfileRepository"
+                            detailRoute="elio.search.sync.profile.detail"
                             :disableDataFetching="true"
                             :isLoading="isLoading"
                             :showSelection="true"
@@ -30,57 +30,57 @@
                             :sortDirection="sortDirection"
                             @column-sort="onSortColumn">
 
-                        {% block elio_search_export_list_grid_columns_salesChannel %}
+                        {% block elio_search_sync_profile_list_grid_columns_salesChannel %}
                             <template #column-salesChannelId="{ item }">
                                 {{ item.salesChannel ? item.salesChannel.translated.name : '-' }}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_export_list_grid_columns_language %}
-                            <template #column-languageId="{ item }">
-                                {{ item.language ? item.language.name : '-' }}
-                            </template>
-                        {% endblock %}
+{#                        {% block elio_search_sync_profile_list_grid_columns_language %}#}
+{#                            <template #column-languageId="{ item }">#}
+{#                                {{ item.language ? item.language.name : '-' }}#}
+{#                            </template>#}
+{#                        {% endblock %}#}
 
-                        {% block elio_search_export_list_grid_columns_last_generation_time %}
+                        {% block elio_search_sync_profile_list_grid_columns_last_generation_time %}
                             <template #column-lastGenerationFinishedAt="{ item }">
                                 {{ item.lastGenerationFinishedAt ? formatDate(item.lastGenerationFinishedAt) : '-' }}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_export_list_grid_columns_actions %}
+                        {% block elio_search_sync_profile_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
-                                {% block elio_search_export_list_grid_columns_actions_detail %}
+                                {% block elio_search_sync_profile_list_grid_columns_actions_detail %}
                                     <sw-context-menu-item
-                                            :routerLink="{ name: 'elio.search.export.detail', params: { id: item.id } }">
-                                        {{ $tc('elio-search-export.list.contextMenuView') }}
+                                            :routerLink="{ name: 'elio.search.sync.profile.detail', params: { id: item.id } }">
+                                        {{ $tc('elio-search-sync-profile.list.contextMenuView') }}
                                     </sw-context-menu-item>
                                 {% endblock %}
 
-                                {% block elio_search_export_list_grid_columns_actions_delete %}
+                                {% block elio_search_sync_profile_list_grid_columns_actions_delete %}
                                     <sw-context-menu-item variant="danger"
                                                           @click="onDelete(item.id)">
-                                        {{ $tc('elio-search-export.list.contextMenuDelete') }}
+                                        {{ $tc('elio-search-sync-profile.list.contextMenuDelete') }}
                                     </sw-context-menu-item>
                                 {% endblock %}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_export_list_grid_action_modals %}
+                        {% block elio_search_sync_profile_list_grid_action_modals %}
                             <template slot="action-modals" slot-scope="{ item }">
                                 <sw-modal v-if="showDeleteModal === item.id"
                                           variant="small"
                                           :title="$tc('global.default.warning')"
                                           @modal-close="onCloseDeleteModal">
                                     <p>
-                                        {{ $tc('elio-search-export.list.textDeleteConfirm', 0, { name: item.name }) }}
+                                        {{ $tc('elio-search-sync-profile.list.textDeleteConfirm', 0, { name: item.name }) }}
                                     </p>
                                     <template slot="modal-footer">
                                         <sw-button @click="onCloseDeleteModal" size="small">
-                                            {{ $tc('elio-search-export.list.buttonCancel') }}
+                                            {{ $tc('elio-search-sync-profile.list.buttonCancel') }}
                                         </sw-button>
                                         <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
-                                            {{ $tc('elio-search-export.list.buttonDelete') }}
+                                            {{ $tc('elio-search-sync-profile.list.buttonDelete') }}
                                         </sw-button>
                                     </template>
                                 </sw-modal>
@@ -88,7 +88,7 @@
                         {% endblock %}
 
                         <template #pagination>
-                            {% block elio_search_export_list_grid_pagination %}
+                            {% block elio_search_sync_profile_list_grid_pagination %}
                                 <sw-pagination :page="page"
                                                :limit="limit"
                                                :total="total"

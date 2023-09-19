@@ -34,6 +34,7 @@ namespace Elio\ElioSearch\Core\Sync;
 
 
 use DateTimeInterface;
+use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\Language\LanguageCollection;
@@ -55,6 +56,8 @@ class SyncProfileEntity extends Entity
     protected string $name;
     protected bool $active;
     protected string $profile;
+    protected string $type;
+    protected string $dataType;
     protected string $format;
     protected string $interval;
     protected array $mapping = [];
@@ -159,6 +162,26 @@ class SyncProfileEntity extends Entity
         $this->profile = $profile;
     }
 
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getDataType(): string
+    {
+        return $this->dataType;
+    }
+
+    public function setDataType(string $dataType): void
+    {
+        $this->dataType = $dataType;
+    }
+
     /**
      * @return string
      */
@@ -256,17 +279,17 @@ class SyncProfileEntity extends Entity
     }
 
     /**
-     * @return LanguageEntity|null
+     * @return LanguageCollection|null
      */
-    public function getLanguage(): ?LanguageCollection
+    public function getLanguages(): ?LanguageCollection
     {
         return $this->languages;
     }
 
     /**
-     * @param LanguageCollection|null $languages
+     * @param LanguageCollection $languages
      */
-    public function setLanguage(?LanguageCollection $languages): void
+    public function setLanguages(LanguageCollection $languages): void
     {
         $this->languages = $languages;
     }

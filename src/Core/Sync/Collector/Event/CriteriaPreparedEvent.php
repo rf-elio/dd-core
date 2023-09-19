@@ -30,55 +30,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Administration\Controller;
+namespace Elio\ElioSearch\Core\Sync\Collectors\Event;
 
-use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class SyncProfileController
+ * Class CriteriaPreparedEvent
+ * @package Elio\ElioSearch\Core\Sync\Collectors\Event
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-#[Route(defaults: ['_routeScope' => ['administration']])]
-class SyncProfileController extends AbstractController
+class CriteriaPreparedEvent extends Event
 {
-    public function __construct(private readonly iterable $profiles)
-    {
+    public function __construct(
+        private readonly string $type,
+        private Criteria $criteria
+    ) {
     }
 
     /**
-     * @Route("/api/_action/elio-search/sync-profile/profiles", name="api.action.elio-search.sync-profile.profiles", methods={"GET"})
-     *
-     * @return JsonResponse
+     * @return string
      */
-    public function profiles(): JsonResponse
+    public function getType(): string
     {
-        $profiles = [];
-        /** @var SyncProfileInterface $profile */
-        foreach ($this->profiles as $profile) {
-            $name = $profile->getName();
-            if (array_key_exists($profile->getName(), $profiles)) {
-                return new JsonResponse([
-                    'error' => sprintf('Duplicated profile name %s', $name)
-                ], 400);
-            }
+        return $this->type;
+    }
 
-            $profiles[$name] = [
-                'name' => $name,
-                'types' => $profile->getTypes(),
-                'outputs' => $profile->getOutputs(),
-                'dataTypes' => $profile->getDataTypes(),
-                'isMultiLanguageSupport' => $profile->isMultiLanguageSupport()
-            ];
-        }
+    /**
+     * @param Criteria $criteria
+     * @return void
+     */
+    public function setCriteria(Criteria $criteria): void
+    {
+        $this->criteria = $criteria;
+    }
 
-        return new JsonResponse([
-            'profiles' => $profiles,
-        ]);
+    /**
+     * @return Criteria
+     */
+    public function getCriteria(): Criteria
+    {
+        return $this->criteria;
     }
 }

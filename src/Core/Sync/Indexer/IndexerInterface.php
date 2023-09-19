@@ -30,11 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioSearch\Core\Sync\Indexer;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
+use Shopware\Core\Framework\Context;
 
-class ContentType extends Struct
+interface IndexerInterface
 {
+    public function supports(string $type): bool;
 
+    public function index(string $syncProfileId, Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection;
+
+    public function getCreated();
+    public function getUpdated();
+    public function getDeleted();
 }
