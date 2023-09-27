@@ -15,7 +15,11 @@ class LanguageHelper
      */
     public static function getLanguageIdByContext(Context $context): ?string
     {
-        return $context->getLanguageIdChain()[0] ?? null;
+        if(count($context->getLanguageIdChain()) > 0) {
+            return $context->getLanguageIdChain()[0];
+        }
+
+        return null;
     }
 
     /**

@@ -30,14 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Converter;
+namespace Elio\ElioSearch\Core\Sync\Export\Converter;
 
 use Elio\ElioSearch\Core\Defaults;
 use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
 use Elio\ElioSearch\Core\Export\Generator\Product\ProductExportDefaults;
 use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
 use Elio\ElioSearch\Core\Export\SeoRoute;
+use Elio\ElioSearch\Core\Sync\Export\Converter\Exception\InvalidDataTypeException;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Elio\ElioSearch\Core\Sync\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
@@ -45,84 +48,127 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class ProductConverter
+/**
+ * Class ProductConverter
+ * @package Elio\ElioSearch\Core\Sync\Export\Converter
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
+class ProductConverter implements ConverterInterface
 {
-    private const PRODUCT_CHUNK_SIZE = 500;
     private const PRODUCT_THUMBNAIL_SIZE = 200;
 
     public function __construct(private readonly EntityRepository $productRepository)
     {
     }
 
-    public function getModel(): array
+    /**
+     * Converts product type to export item
+     *
+     * @param array $collection
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     * @return ExportItem
+     * @throws InvalidDataTypeException
+     */
+    public function convert(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context): ExportItem
     {
-        return [];
+        $product = array_values($collection)[0] ?? null;
+        if (!$product instanceof ProductType) {
+            throw new InvalidDataTypeException('Unsupported type');
+        }
+
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $item = new ExportItem();
+        $this->prepareBaseFields($item, $product, $context);
+        $this->prepareTranslatedFields($item, $collection);
+        $this->addMappedPropertiesToExportItem($product, $item, $syncProfile->getMapping(), $propertyAccessor);
+
+        return $item;
     }
 
     /**
-     * @param ProductEntity $entity
+     * Prepares base fields for export
+     *
+     * @param ExportItem $item
+     * @param ProductType $product
+     * @param SalesChannelContext $context
+     * @return void
      */
-    public function convert(ProductEntity $product, SalesChannelContext $context)
-    {
+    protected function prepareBaseFields(
+        ExportItem $item,
+        ProductType $product,
+        SalesChannelContext $context
+    ): void {
         $parentProduct = null;
         if($product->getParentId()) {
             /** @var ProductEntity|null  $parentProduct */
             $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
         }
 
-        $item = new ExportItem();
         $item->set(ProductExportDefaults::FIELD_ID, $product->getId());
-        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct->getProductNumber());
+        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct?->getProductNumber());
         $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getProductNumber());
         $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
-        $item->set(ProductExportDefaults::FIELD_NAME, $product->getName() ?? $translated['name'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_DESCRIPTION, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
-        $item->set(ProductExportDefaults::FIELD_META_TITLE, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
-
         [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
         $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));
         $item->set(ProductExportDefaults::FIELD_RED_PRICE, ValueUtil::formatPrice($redPrice));
-
-        $manufacturer = $product->getManufacturer();
-        if($manufacturer) {
-            $item->set(ProductExportDefaults::FIELD_MANUFACTURER, $manufacturer->getTranslation('name') ?? $manufacturer->getName());
-        }
-        $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH, $this->getCategoryPath($product));
         $item->set(ProductExportDefaults::FIELD_CATEGORY_IDS, $this->getCategoryIds($product));
         $item->set(ProductExportDefaults::FIELD_EAN, $product->getEan());
-        $item->set(ProductExportDefaults::FIELD_KEYWORDS, $product->getKeywords() ?? $translated['keywords'] ?? '');
-        $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
         $item->set(ProductExportDefaults::FIELD_STOCK, $product->getStock());
         $item->set(ProductExportDefaults::FIELD_CLOSEOUT, $product->getIsCloseout() ? 1 : 0);
         $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
         $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
-        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE, $this->getProductAttribute($this->getFilterableProductProperties($product)));
-        $item->set(ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE, $this->getProductAttribute($this->getNonFilterableProductProperties($product)));
-        $item->set(ProductExportDefaults::FIELD_TAGS, $this->getProductTags($product));
         $item->set(ProductExportDefaults::FIELD_SALES_COUNT, $product->getSales());
         $item->set(
             ProductExportDefaults::FIELD_RELEASE_DATE,
             $product->getReleaseDate() ? $product->getReleaseDate()->format(ExportDefaults::DATE_TIME_FORMAT) : ''
         );
 
-        if($product->getCover() && $product->getCover()->getMedia()) {
-            $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()->getMedia()->getUrl());
-            $item->set(ProductExportDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()->getMedia()->getThumbnails()));
-        }
-
+        $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()?->getMedia()?->getUrl());
+        $item->set(ProductExportDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()?->getMedia()?->getThumbnails()));
         $item->set(ProductExportDefaults::FIELD_PRODUCT_URL, new SeoRoute(
             ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
         ));
-
-        return $item;
     }
 
-    protected function translate()
+    /**
+     * Prepares translated fields for export
+     *
+     * @param ExportItem $item
+     * @param array $collection
+     * @return void
+     */
+    protected function prepareTranslatedFields(ExportItem $item, array $collection): void
     {
-        // TODO
+        $isMultiLanguages = false;
+        if (count($collection) > 1) {
+            $isMultiLanguages = true;
+        }
+
+        // TODO: Change language id to locale
+        foreach ($collection as $languageId => $product) {
+            $postfix = $isMultiLanguages ? '_' . $languageId : '';
+
+            $translated = $product->getTranslated();
+            $item->set(ProductExportDefaults::FIELD_NAME . $postfix, $product->getName() ?? $translated['name'] ?? '');
+            $item->set(ProductExportDefaults::FIELD_DESCRIPTION . $postfix, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
+            $item->set(ProductExportDefaults::FIELD_META_TITLE . $postfix, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
+            $item->set(ProductExportDefaults::FIELD_MANUFACTURER . $postfix, $product->getManufacturer()?->getTranslation('name') ?? $product->getManufacturer()?->getName());
+            $item->set(ProductExportDefaults::FIELD_KEYWORDS . $postfix, $product->getKeywords() ?? $translated['keywords'] ?? '');
+            $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS . $postfix, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
+            $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH . $postfix, $this->getCategoryPath($product));
+            $item->set(ProductExportDefaults::FIELD_ATTRIBUTE . $postfix, $this->getProductAttribute($this->getFilterableProductProperties($product)));
+            $item->set(ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE . $postfix, $this->getProductAttribute($this->getNonFilterableProductProperties($product)));
+            $item->set(ProductExportDefaults::FIELD_TAGS . $postfix, $this->getProductTags($product));
+        }
     }
+
 
     /**
      * Adds the fields that are defined in the dynamic mapping
@@ -130,13 +176,13 @@ class ProductConverter
      * - supports different levels and Collection::first()
      * - examples: manufacturer.name, price.first.gross
      * - can be extended to provide more options for mapping language
-     * @param ProductEntity $product
+     * @param ProductType $product
      * @param ExportItem $item
      * @param array $mappings
      * @param PropertyAccessorInterface $propertyAccessor
      */
     protected function addMappedPropertiesToExportItem(
-        ProductEntity $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
+        ProductType $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
     ): void
     {
         foreach ($mappings as $mapping) {

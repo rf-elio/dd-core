@@ -36,6 +36,7 @@ use DateTimeImmutable;
 use Elio\ElioSearch\Core\Sync\Api\ApiService;
 use Elio\ElioSearch\Core\Sync\Export\ExportService;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
+use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -47,20 +48,34 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 
+/**
+ * Class SyncService
+ * @package Elio\ElioSearch\Core\Sync
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
 class SyncService
 {
     public function __construct(
         private readonly ExportService $exportService,
         private readonly ApiService $apiService,
         private readonly EntityRepository $syncProfileRepository,
-        private readonly iterable $profiles,
+        private readonly iterable $profileConfigurations,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        private readonly LoggerInterface $logger,
-        private readonly EntityRepository $syncProfileRepository1,
+        private readonly LoggerInterface $logger
     ) {
     }
 
-    public function syncAll(SyncProfileEntity $syncProfile): void
+    /**
+     * Syncs data for profile
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @return void
+     * @throws Exception
+     */
+    public function sync(SyncProfileEntity $syncProfile): void
     {
         $salesChannel = $syncProfile->getSalesChannel();
         if(!$salesChannel || !$salesChannel->getDomains()) {
@@ -76,49 +91,125 @@ class SyncService
         }
 
         $languageId = $syncProfile->getLanguages()?->first()?->getId();
+
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
 
-        $this->startSync($syncProfile, $salesChannelContext->getContext());
-        $profile = $this->getProfile($syncProfile);
+        $this->setStartDate($syncProfile, $salesChannelContext->getContext());
+        $profileConfiguration = $this->getProfileConfiguration($syncProfile);
+
         if ($syncProfile->getType() === SyncConfig::PROFILE_SYNC) {
-            $this->apiService->sync($profile, $syncProfile, $salesChannelContext);
+            $this->apiService->sync($profileConfiguration, $syncProfile, $salesChannelContext);
+            $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;
         }
 
         if ($syncProfile->getType() === SyncConfig::PROFILE_EXPORT) {
-            $this->exportService->export($profile, $syncProfile, $salesChannelContext);
+            $this->exportService->export($profileConfiguration, $syncProfile, $salesChannelContext);
+            $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;
         }
 
-        throw new InvalidArgumentException(sprintf('Invalid profile type %s', $syncProfile->getType()));
+        throw new InvalidArgumentException(sprintf('Invalid profileConfiguration type %s', $syncProfile->getType()));
     }
 
     /**
+     * Gets all active profiles
+     *
      * @param Context $context
      * @return EntitySearchResult
      */
-    public function getSyncProfiles(Context $context): EntitySearchResult
+    public function getSyncProfileConfigurations(Context $context): EntitySearchResult
     {
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannel.domains');
+        $criteria->addAssociation('languages');
         $criteria->addFilter(new EqualsFilter('active', true));
         return $this->syncProfileRepository->search($criteria, $context);
     }
 
-    protected function startSync(SyncProfileEntity $syncProfile, Context $context): void
+    /**
+     * Get sync profile by id
+     *
+     * @param string $id
+     * @param Context $context
+     * @return SyncProfileEntity
+     */
+    public function getSyncProfileConfiguration(string $id, Context $context): SyncProfileEntity
+    {
+        $criteria = new Criteria([$id]);
+        $criteria->addAssociation('salesChannel.domains');
+        $criteria->addAssociation('languages');
+        $criteria->addFilter(new EqualsFilter('active', true));
+        if (!$syncProfile = $this->syncProfileRepository->search($criteria, $context)->first()) {
+            throw new InvalidArgumentException(sprintf('Sync profile for id %s not found', $id));
+        }
+
+        return $syncProfile;
+    }
+
+    /**
+     * Searches all due sync profiles
+     *
+     * @param Context $context
+     * @return SyncProfileCollection
+     */
+    public function getDueSyncProfileConfigurations(Context $context): SyncProfileCollection
+    {
+        $now = new DateTimeImmutable();
+        $syncProfiles = $this->getSyncProfileConfigurations($context);
+        $dueSyncProfiles = new SyncProfileCollection();
+        /** @var SyncProfileEntity $syncProfile */
+        foreach ($syncProfiles as $syncProfile) {
+            if (!$syncProfile->getNextGenerationDueAt() || $syncProfile->getNextGenerationDueAt() <= $now) {
+                $dueSyncProfiles->add($syncProfile);
+            }
+        }
+
+        return $dueSyncProfiles;
+    }
+
+    /**
+     * Changes generation started date for profile
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param Context $context
+     * @return void
+     */
+    protected function setStartDate(SyncProfileEntity $syncProfile, Context $context): void
     {
         $this->syncProfileRepository->update([[
             'id' => $syncProfile->getId(),
-            'lastGenerationStartedAt' => new DateTimeImmutable()
+            'lastGenerationStartedAt' => new DateTimeImmutable(),
         ]], $context);
     }
 
-    protected function getProfile(SyncProfileEntity $syncProfile): SyncProfileInterface
+    /**
+     * Changes generation finished date for profile
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param Context $context
+     * @return void
+     */
+    protected function setFinishDate(SyncProfileEntity $syncProfile, Context $context): void
     {
-        /** @var SyncProfileInterface $profile */
-        foreach ($this->profiles as $profile) {
-            if ($profile->getName() === $syncProfile->getProfile()) {
-                return $profile;
+        $this->syncProfileRepository->update([[
+            'id' => $syncProfile->getId(),
+            'lastGenerationFinishedAt' => new DateTimeImmutable(),
+        ]], $context);
+    }
+
+    /**
+     * Gets profile configuration
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @return SyncProfileInterface
+     */
+    protected function getProfileConfiguration(SyncProfileEntity $syncProfile): SyncProfileInterface
+    {
+        /** @var SyncProfileInterface $profileConfiguration */
+        foreach ($this->profileConfigurations as $profileConfiguration) {
+            if ($profileConfiguration->getName() === $syncProfile->getProfile()) {
+                return $profileConfiguration;
             }
         }
 

@@ -45,6 +45,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class SyncDataCommand
+ * @package Elio\ElioSearch\Command
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
 class SyncDataCommand extends Command
 {
     public function __construct(
@@ -56,7 +64,9 @@ class SyncDataCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:profiles:sync');
+        $this->setName('elio-search:profiles:sync')
+            ->addArgument('syncProfileId', InputArgument::OPTIONAL, 'Id of the sync profile that should be generated')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
     }
 
     /**
@@ -68,14 +78,26 @@ class SyncDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
+        $exportId = $input->getArgument('syncProfileId');
+        $force = $input->getOption('force');
 
         try {
-            $syncProfiles = $this->syncService->getSyncProfiles($context);
-            foreach ($syncProfiles as $syncProfile) {
-                $this->syncService->syncAll($syncProfile);
+            if($exportId) {
+                $syncProfileConfiguration = $this->syncService->getSyncProfileConfiguration($exportId, $context);
+                $this->syncService->sync($syncProfileConfiguration);
+                return Command::SUCCESS;
+            }
+
+            if($force) {
+                $syncProfileConfigurations = $this->syncService->getSyncProfileConfigurations($context);
+            } else {
+                $syncProfileConfigurations = $this->syncService->getDueSyncProfileConfigurations($context);
+            }
+
+            foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
+                $this->syncService->sync($syncProfileConfiguration);
             }
         } catch (Exception $e) {
-            dd($e->getMessage(), $e->getTrace());
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return Command::FAILURE;
         }

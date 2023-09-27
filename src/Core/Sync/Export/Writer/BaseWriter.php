@@ -32,8 +32,8 @@
 
 namespace Elio\ElioSearch\Core\Sync\Export\Writer;
 
-use Elio\ElioSearch\Core\Export\ExportItem;
-use Elio\ElioSearch\Core\Export\ExportStorageService;
+use Elio\ElioSearch\Core\Sync\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\Export\ExportStorageService;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use League\Flysystem\FilesystemException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

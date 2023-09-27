@@ -15,7 +15,7 @@ class Migration1694413915SyncProfile extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-CREATE TABLE `elio_search_sync_profile` (
+CREATE TABLE IF NOT EXISTS `elio_search_sync_profile` (
     `id` BINARY(16) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `active` TINYINT(1) NOT NULL DEFAULT '0',
@@ -44,7 +44,7 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-CREATE TABLE `elio_search_sync_profile_languages` (
+CREATE TABLE IF NOT EXISTS `elio_search_sync_profile_languages` (
     `sync_profile_id` BINARY(16) NOT NULL,
     `language_id` BINARY(16) NOT NULL,
     PRIMARY KEY (`sync_profile_id`,`language_id`),
@@ -66,18 +66,15 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-CREATE TABLE `elio_search_entity_status` (
+CREATE TABLE IF NOT EXISTS `elio_search_entity_status` (
     `id` BINARY(16) NOT NULL,
-    `sync_profile_id` BINARY(16) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
     `state` VARCHAR(255) NOT NULL,
     `hashed_content` VARCHAR(255) NOT NULL,
     `deleted_at` DATETIME(3) NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
-    PRIMARY KEY (`id`),
-    KEY `fk.elio_search_entity_status.sync_profile_id` (`sync_profile_id`),
-    CONSTRAINT `fk.elio_search_entity_status.sync_profile_id` FOREIGN KEY (`sync_profile_id`) REFERENCES `elio_search_sync_profile` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 

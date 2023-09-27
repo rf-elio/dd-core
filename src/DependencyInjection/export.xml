@@ -65,21 +65,5 @@
             <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
             <tag name="elio-search.export.writer"/>
         </service>
-
-        <!-- controller -->
-        <service id="Elio\ElioSearch\Core\Export\Controller\ExportController" public="true">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
-            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
-        <!-- message handler -->
-        <service id="Elio\ElioSearch\Core\Export\ExportGenerateHandler">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
-            <tag name="messenger.message_handler" />
-        </service>
     </services>
 </container>

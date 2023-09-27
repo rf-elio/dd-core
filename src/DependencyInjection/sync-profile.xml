@@ -20,22 +20,94 @@
             <tag name="shopware.entity.definition" entity="elio_search_entity_status"/>
         </service>
 
+        <!--   Sync    -->
+        <service id="Elio\ElioSearch\Core\Sync\Translator\Translator">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+        </service>
+
+        <!--   Collector    -->
+        <service id="Elio\ElioSearch\Core\Sync\Collector\ProductCollector">
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Translator\Translator" />
+            <tag name="elio-search.sync.collector"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Collector\CategoryCollector">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Translator\Translator" />
+            <tag name="elio-search.sync.collector"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Collector\LandingPageCollector">
+            <argument type="service" id="landing_page.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Translator\Translator" />
+            <tag name="elio-search.sync.collector"/>
+        </service>
+
+        <!-- writers -->
+        <service id="Elio\ElioSearch\Core\Sync\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\ExportStorageService" />
+            <tag name="elio-search.sync.writer"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\Writer\CleanupWriterDecorator"
+                 decorates="Elio\ElioSearch\Core\Sync\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\Writer\CleanupWriterDecorator.inner" />
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\Writer\SeoUrlWriterDecorator"
+                 decorates="Elio\ElioSearch\Core\Sync\Export\Writer\CSVFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\Writer\SeoUrlWriterDecorator.inner" />
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="router"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\Writer\XMLFileWriter">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\ExportStorageService" />
+            <tag name="elio-search.sync.writer"/>
+        </service>
+
         <!--   Export    -->
         <service id="Elio\ElioSearch\Core\Sync\Export\ExportService">
             <argument type="tagged" tag="elio-search.sync.convertor" />
             <argument type="tagged" tag="elio-search.sync.collector" />
             <argument type="tagged" tag="elio-search.sync.writer" />
+            <argument type="service" id="event_dispatcher" />
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\Converter\ProductConverter">
+            <argument type="service" id="product.repository" />
+            <tag name="elio-search.sync.convertor"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\Converter\ContentConverter">
+            <tag name="elio-search.sync.convertor"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Export\ExportStorageService">
+            <argument type="service" id="shopware.filesystem.private" />
         </service>
 
         <!--    Api Sync    -->
-        <service id="Elio\ElioSearch\Core\Sync\Indexer\ChangeSetService">
+        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\ProductIndexer">
+            <argument type="service" id="product.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <tag name="elio-search.sync.indexer"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\CategoryIndexer">
+            <argument type="service" id="category.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <tag name="elio-search.sync.indexer"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\LandingPageIndexer">
+            <argument type="service" id="landing_page.repository" />
+            <argument type="service" id="event_dispatcher" />
+            <tag name="elio-search.sync.indexer"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService">
             <argument type="service" id="elio_search_entity_status.repository" />
             <argument type="tagged" tag="elio-search.sync.indexer" />
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Api\ApiService">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Indexer\ChangeSetService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService" />
             <argument type="tagged" tag="elio-search.sync.api.writer" />
             <argument type="tagged" tag="elio-search.sync.collector" />
+            <argument type="service" id="event_dispatcher" />
             <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
@@ -51,6 +123,9 @@
 
         <service id="Elio\ElioSearch\Core\Sync\Administration\Controller\SyncProfileController" public="true">
             <argument type="tagged" tag="elio-search.sync.profile" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Export\ExportStorageService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -58,6 +133,11 @@
 
         <service id="Elio\ElioSearch\Command\SyncDataCommand">
             <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <tag name="console.command"/>
+        </service>
+        <service id="Elio\ElioSearch\Command\IndexingCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService" />
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>

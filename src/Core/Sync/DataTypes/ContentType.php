@@ -32,9 +32,145 @@
 
 namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
+use DateTimeInterface;
+use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCustomFieldsTrait;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\System\Tag\TagCollection;
 
-class ContentType extends Struct
+/**
+ * Class ContentType
+ * @package Elio\ElioSearch\Core\Sync\DataTypes
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
+class ContentType extends Struct implements TypeInterface
 {
+    use EntityCustomFieldsTrait;
+    use EntityIdTrait;
+    private ?string $name = null;
+    private ?string $type = null;
+    private ?string $description = null;
+    private ?string $title = null;
+    private ?string $seoText = null;
+    private ?SeoUrlCollection $seoUrls = null;
+    private ?string $keywords = null;
+    private ?MediaEntity $media = null;
+    private ?DateTimeInterface $createdAt = null;
+    private ?array $breadcrumb = null;
+    private ?TagCollection $tags = null;
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function getSeoText(): ?string
+    {
+        return $this->seoText;
+    }
+
+    public function setSeoText(?string $seoText): void
+    {
+        $this->seoText = $seoText;
+    }
+
+    public function getKeywords(): ?string
+    {
+        return $this->keywords;
+    }
+
+    public function setKeywords(?string $keywords): void
+    {
+        $this->keywords = $keywords;
+    }
+
+    public function getMedia(): ?MediaEntity
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?MediaEntity $media): void
+    {
+        $this->media = $media;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $dateTime): void
+    {
+        $this->createdAt = $dateTime;
+    }
+
+    public function getSeoUrls(): ?SeoUrlCollection
+    {
+        return $this->seoUrls;
+    }
+
+    public function setSeoUrls(?SeoUrlCollection $seoUrls): void
+    {
+        $this->seoUrls = $seoUrls;
+    }
+
+    public function getBreadcrumb(): ?array
+    {
+        return $this->breadcrumb;
+    }
+
+    public function setBreadcrumb(?array $breadcrumb): void
+    {
+        $this->breadcrumb = $breadcrumb;
+    }
+
+    public function getTags(): ?TagCollection
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?TagCollection $tags): void
+    {
+        $this->tags = $tags;
+    }
 }

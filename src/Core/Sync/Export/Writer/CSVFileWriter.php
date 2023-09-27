@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\Sync\Export\Writer;
 
 
 use Elio\ElioSearch\Core\Export\Exception\ExportValidationException;
-use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\Export\ExportItem;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -54,12 +54,12 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
 
     /**
      * Checks if the writer can be used for the given export
-     * @param SyncProfileEntity $syncProfile
+     * @param string $format
      * @return bool
      */
-    public function supports(SyncProfileEntity $syncProfile): bool
+    public function supports(string $format): bool
     {
-        return $syncProfile->getFormat() === self::TYPE;
+        return $format === self::TYPE;
     }
 
     /**
@@ -78,19 +78,19 @@ class CSVFileWriter extends BaseWriter implements FileWriterInterface
     protected function write($handle, ExportItem $item): void
     {
         if(!$this->headerWritten) {
-            fputcsv($handle, $this->model, self::SEPARATOR);
+            fputcsv($handle, $item->getKeys(), self::SEPARATOR);
             $this->headerWritten = true;
         }
 
-        $output = $item->getParams();
-        $orderedOutput = [];
+//        $output = $item->getParams();
+//        $orderedOutput = [];
+//
+//        foreach ($this->model as $key) {
+//            $orderedOutput[] = $output[$key] ?? '';
+//        }
 
-        foreach ($this->model as $key) {
-            $orderedOutput[] = $output[$key] ?? '';
-        }
-
-        $this->validateRow($orderedOutput);
-        fputcsv($handle, $orderedOutput, self::SEPARATOR);
+//        $this->validateRow($orderedOutput);
+        fputcsv($handle, $item->getParams(), self::SEPARATOR);
     }
 
     /**

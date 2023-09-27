@@ -30,14 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioSearch\Core\Sync\Export\Converter\Exception;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\TypeInterface;
+use Exception;
 
-interface ApiWriterInterface
+class InvalidDataTypeException extends Exception
 {
-    public function supports(string $type);
-    public function create(TypeInterface $data);
-    public function update(TypeInterface $data);
-    public function delete(TypeInterface $data);
 }

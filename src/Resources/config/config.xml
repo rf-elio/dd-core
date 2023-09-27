@@ -2,32 +2,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>API configuration</title>
-        <title lang="de-DE">API-Einstellungen</title>
-
-        <input-field>
-            <name>apiUrl</name>
-            <label>API Url</label>
-            <label lang="de-DE">API-Url</label>
-            <placeholder>example.ElioSearch.de</placeholder>
-            <helpText>Die URL des ElioSearch Servers</helpText>
-        </input-field>
-        <input-field>
-            <name>apiChannel</name>
-            <label>API Url</label>
-            <label lang="de-DE">API-Url</label>
-            <placeholder>example.ElioSearch.de</placeholder>
-            <helpText>Die URL des ElioSearch Servers</helpText>
-        </input-field>
-    </card>
-    <card>
         <title>Basic configuration</title>
         <title lang="de-DE">Grundeinstellungen</title>
 
         <input-field type="bool">
             <name>active</name>
             <label>ElioSearch active</label>
-            <label lang="de-DE">ElioSearch benutzen</label>
+            <label lang="de-DE">ElioSearch aktiv</label>
             <defaultValue>false</defaultValue>
         </input-field>
     </card>

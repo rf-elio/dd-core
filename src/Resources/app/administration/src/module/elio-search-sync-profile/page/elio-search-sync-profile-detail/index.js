@@ -236,6 +236,7 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             });
 
             this.types = types;
+            // TODO: Fetch list according to type
             this.outputList = outPutList;
             this.dataTypes = dataTypes;
         },

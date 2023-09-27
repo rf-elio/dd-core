@@ -60,10 +60,10 @@ class ExportGenerateHandler
     /**
      * Starts the export
      *
-     * @param ExportGenerateMessage $message
+     * @param SyncProfileMessage $message
      * @throws Exception
      */
-    public function __invoke(ExportGenerateMessage $message): void
+    public function __invoke(SyncProfileMessage $message): void
     {
         /*if(!$message instanceof ExportGenerateMessage) {
             throw new InvalidTypeException($message, ExportGenerateMessage::class);
@@ -78,7 +78,7 @@ class ExportGenerateHandler
     public static function getHandledMessages(): iterable
     {
         return [
-            ExportGenerateMessage::class
+            SyncProfileMessage::class
         ];
     }
 }

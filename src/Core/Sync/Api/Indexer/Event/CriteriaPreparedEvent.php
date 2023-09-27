@@ -30,18 +30,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Indexer;
+namespace Elio\ElioSearch\Core\Sync\Api\Indexer\Event;
 
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Symfony\Contracts\EventDispatcher\Event;
 
-interface IndexerInterface
+class CriteriaPreparedEvent extends Event
 {
-    public function supports(string $type): bool;
+    public function __construct(private Criteria $criteria, private readonly Context $context)
+    {
+    }
 
-    public function index(string $syncProfileId, Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection;
+    /**
+     * @return Criteria
+     */
+    public function getCriteria(): Criteria
+    {
+        return $this->criteria;
+    }
 
-    public function getCreated();
-    public function getUpdated();
-    public function getDeleted();
+    /**
+     * @param Criteria $criteria
+     */
+    public function setCriteria(Criteria $criteria): void
+    {
+        $this->criteria = $criteria;
+    }
+
+    /**
+     * @return Context
+     */
+    public function getContext(): Context
+    {
+        return $this->context;
+    }
 }

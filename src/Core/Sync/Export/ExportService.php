@@ -32,54 +32,89 @@
 
 namespace Elio\ElioSearch\Core\Sync\Export;
 
-use Elio\ElioSearch\Core\Sync\Collectors\DataCollectorInterface;
+use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
+use Elio\ElioSearch\Core\Sync\Export\Converter\ConverterInterface;
+use Elio\ElioSearch\Core\Sync\Export\Event\ExportGeneratedEvent;
+use Elio\ElioSearch\Core\Sync\Export\Exception\ExportNotSupportedException;
+use Elio\ElioSearch\Core\Sync\Export\Writer\FileWriterInterface;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Shopware\Core\Framework\Context;
+use InvalidArgumentException;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+/**
+ * Class ExportService
+ * @package Elio\ElioSearch\Core\Sync\Export
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
 class ExportService
 {
     public function __construct(
         private readonly iterable $converters,
         private readonly iterable $collectors,
-        private readonly iterable $writers
-    )
-    {
+        private readonly iterable $writers,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
+    /**
+     * Exports configured profile data to file
+     *
+     * @param SyncProfileInterface $profile
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     * @return void
+     */
     public function export(SyncProfileInterface $profile, SyncProfileEntity $syncProfile, SalesChannelContext $context): void
     {
-        $converter = $this->getConverter($profile->getConverter());
+        $converter = $this->getConverter($syncProfile, $profile->getConverters());
         $writer = $this->getWriter($syncProfile);
         $collectors = $this->getCollectors($syncProfile->getDataType());
         $stream = new OutputStream($writer, $syncProfile, $context);
         $stream->open($context);
         foreach ($collectors as $collector) {
-            $collection = $collector->collect($context);
-            foreach ($collection as $entities) {
-                foreach ($entities as $entity) {
-                    $exportItem = $converter->conver($entity, $context);
-                    $stream->write($exportItem);
-                }
+            $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context);
+            $currentItems = $collection->current() ?? [];
+            foreach ($currentItems as $entities) {
+                $exportItem = $converter->convert($entities, $syncProfile, $context);
+                $stream->write($exportItem);
             }
         }
 
         $stream->close();
+        $this->eventDispatcher->dispatch(new ExportGeneratedEvent($syncProfile, $context));
     }
 
-    protected function getConverter(string $converterClass)
+    /**
+     * Gets profile converter
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param array $converters
+     * @return ConverterInterface
+     */
+    protected function getConverter(SyncProfileEntity $syncProfile, array $converters): ConverterInterface
     {
+        if (!isset($converters[$syncProfile->getDataType()])) {
+            throw new InvalidArgumentException(sprintf('Converter for data type %s not found', $syncProfile->getDataType()));
+        }
+
+        $converterClass = $converters[$syncProfile->getDataType()];
         foreach ($this->converters as $converter) {
             if ($converter instanceof $converterClass) {
                 return $converter;
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Converter %s not found', $converterClass));
+        throw new InvalidArgumentException(sprintf('Converter %s not found', $converterClass));
     }
 
     /**
+     * Gets profile collector
+     *
      * @param string $dataType
      * @return DataCollectorInterface[]
      */
@@ -94,13 +129,19 @@ class ExportService
         }
 
         if (empty($collectors)) {
-            throw new \InvalidArgumentException('Collectors are not found');
+            throw new InvalidArgumentException('Collectors are not found');
         }
 
         return $collectors;
     }
 
-    protected function getWriter(SyncProfileEntity $syncProfile)
+    /**
+     * Gets profile writer
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @return FileWriterInterface
+     */
+    protected function getWriter(SyncProfileEntity $syncProfile): FileWriterInterface
     {
         foreach ($this->writers as $writer) {
             if($writer->supports($syncProfile->getFormat())) {

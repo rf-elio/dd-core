@@ -45,10 +45,10 @@ interface FileWriterInterface
 {
     /**
      * Checks if the writer can be used for the given export
-     * @param SyncProfileEntity $syncProfile
+     * @param string $format
      * @return bool
      */
-    public function supports(SyncProfileEntity $syncProfile) : bool;
+    public function supports(string $format) : bool;
 
     /**
      * Opens a new file handle that is used to write the export in

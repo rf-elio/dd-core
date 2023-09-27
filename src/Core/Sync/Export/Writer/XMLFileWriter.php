@@ -33,8 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync\Export\Writer;
 
 
-use Elio\ElioSearch\Core\Export\ExportEntity;
-use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\Export\ExportItem;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 
 /**
@@ -51,12 +50,12 @@ class XMLFileWriter extends BaseWriter implements FileWriterInterface
 
     /**
      * Checks if the writer can be used for the given export
-     * @param SyncProfileEntity $syncProfile
+     * @param string $format
      * @return bool
      */
-    public function supports(SyncProfileEntity $syncProfile): bool
+    public function supports(string $format): bool
     {
-        return $syncProfile->getFormat() === self::TYPE;
+        return $format === self::TYPE;
     }
 
     protected function write($handle, ExportItem $item): void

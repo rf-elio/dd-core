@@ -6,12 +6,9 @@
     <services>
         <!-- api -->
         <service id="Elio\ElioSearch\Api\Search\SearchApi">
-            <argument type="service" id="Elio\ElioSearch\Api\Transform\Transformer"/>
             <argument type="service" id="elio.search.core.logging.debug"/>
         </service>
-        <service id="Elio\ElioSearch\Api\Search\SuggestApi">
-            <argument type="service" id="Elio\ElioSearch\Api\Transform\Transformer"/>
-        </service>
+        <service id="Elio\ElioSearch\Api\Search\SuggestApi"/>
         <service id="Elio\ElioSearch\Api\Tracking\TrackingApi">
             <argument type="service" id="elio.search.core.logging.debug" />
         </service>

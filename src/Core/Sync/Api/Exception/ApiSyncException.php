@@ -30,12 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioSearch\Core\Sync\Api\Exception;
 
-class Translation
+use Exception;
+
+class ApiSyncException extends Exception
 {
-    public function __construct()
-    {
-        
-    }
+
 }

@@ -30,10 +30,10 @@ class CleanupWriterDecorator implements FileWriterInterface
     /**
      * All exports are supported for seo injection
      *
-     * @param SyncProfileEntity $syncProfile
+     * @param string $format
      * @return bool
      */
-    public function supports(SyncProfileEntity $syncProfile): bool
+    public function supports(string $format): bool
     {
         return true;
     }

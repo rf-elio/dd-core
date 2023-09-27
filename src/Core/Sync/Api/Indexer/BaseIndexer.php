@@ -30,120 +30,129 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Indexer;
+namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
 
 use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
 use Elio\ElioSearch\Core\Sync\Api\EntityStatusEntity;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Struct;
 
-class ProductIndexer implements IndexerInterface
+/**
+ * Class BaseIndexer
+ * @package Elio\ElioSearch\Core\Sync\Api\Indexer
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
+abstract class BaseIndexer implements IndexerInterface
 {
-    public const TYPE = ProductType::class;
-
-    private array $created = [];
-    private array $updated = [];
-    private array $deleted = [];
-
-    public function __construct(private readonly EntityRepository $productRepository)
-    {
+    public function __construct(
+        private readonly string $type,
+        private readonly EntityRepository $repository
+    ){
     }
 
-    public function supports(string $type): bool
+    /**
+     * Indexing entity states
+     *
+     * @param Context $context
+     * @param EntityStatusCollection $entitiesStatus
+     * @return EntityStatusCollection
+     */
+    public function index(Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection
     {
-        return self::TYPE === $type;
-    }
-
-    public function index(string $syncProfileId, Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $iterator = new RepositoryIterator($this->productRepository, $context, $criteria);
+        $criteria = $this->getCriteria($context);
+        $iterator = new RepositoryIterator($this->repository, $context, $criteria);
         $indexingStatusCollection = new EntityStatusCollection();
-        while ($products = $iterator->fetch()) {
-            /** @var ProductEntity $product */
-            foreach ($products as $product) {
-                $hash = $this->hash($product);
+        while ($entities = $iterator->fetch()) {
+            foreach ($entities as $entity) {
+                $hash = $this->hash($entity);
                 /** @var EntityStatusEntity $entityStatus */
-                if (!$entityStatus = $entitiesStatus->get($product->getId())) {
-                    $this->addEntityStatus($syncProfileId, $product, $hash, $indexingStatusCollection);
+                if (!$entityStatus = $entitiesStatus->get($entity->getId())) {
+                    $this->setCreated($this->type, $entity, $hash, $indexingStatusCollection);
                     continue;
                 }
 
                 if ($entityStatus->getHashedContent() !== $hash) {
-                    $this->updateEntityStatus($hash, $entityStatus, $indexingStatusCollection);
+                    $this->setUpdated($hash, $entityStatus, $indexingStatusCollection);
                 }
 
-                $entitiesStatus->remove($product->getId());
+                $entitiesStatus->remove($entity->getId());
             }
         }
 
         foreach ($entitiesStatus as $item) {
-            $this->deleteEntityStatus($item, $indexingStatusCollection);
+            $this->setDeleted($item, $indexingStatusCollection);
         }
 
         return $indexingStatusCollection;
     }
 
-    protected function hash(ProductEntity $product): string
+    /**
+     * Gets criteria
+     *
+     * @param Context $context
+     * @return Criteria
+     */
+    abstract protected function getCriteria(Context $context): Criteria;
+
+    /**
+     * Hash entity data
+     *
+     * @param Struct $struct
+     * @return string
+     */
+    protected function hash(Struct $struct): string
     {
-        // TODO: hash required product data, maybe depend on some model. Add product hashed event
+        return md5(serialize($struct));
     }
 
-    protected function addEntityStatus(
-        string $syncProfileId,
-        ProductEntity $product,
+    /**
+     * Adds created entity into collection
+     *
+     * @param string $type
+     * @param Struct $entity
+     * @param string $hash
+     * @param EntityStatusCollection $indexingStatusCollection
+     * @return void
+     */
+    protected function setCreated(
+        string $type,
+        Struct $entity,
         string $hash,
         EntityStatusCollection $indexingStatusCollection
     ): void {
         $entityStatus = new EntityStatusEntity();
-        $entityStatus->setId($product->getId());
-        $entityStatus->setSyncProfileId($syncProfileId);
-        $entityStatus->setType(self::TYPE);
+        $entityStatus->setId($entity->getId());
+        $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
+        $entityStatus->setType($type);
         $entityStatus->setHashedContent($hash);
 
-        $this->created[] = $product->getId();
         $indexingStatusCollection->add($entityStatus);
     }
 
-    protected function updateEntityStatus(
+    protected function setUpdated(
         string $hash,
         EntityStatusEntity $entityStatus,
         EntityStatusCollection $indexingStatusCollection
     ):void {
+        $entityStatus->setState(EntityStatusEntity::STATE_UPDATED);
         $entityStatus->setHashedContent($hash);
 
-        $this->updated[] = $entityStatus->getId();
         $indexingStatusCollection->add($entityStatus);
     }
 
-    protected function deleteEntityStatus(
+    protected function setDeleted(
         EntityStatusEntity $entityStatus,
         EntityStatusCollection $indexingStatusCollection
     ): void {
+        $entityStatus->setState(EntityStatusEntity::STATE_DELETED);
         $entityStatus->setDeletedAt(new \DateTimeImmutable());
 
-        $this->deleted[] = $entityStatus->getId();
         $indexingStatusCollection->add($entityStatus);
-    }
-
-    public function getCreated(): array
-    {
-        return $this->created;
-    }
-
-    public function getUpdated(): array
-    {
-        return $this->updated;
-    }
-
-    public function getDeleted(): array
-    {
-        return $this->deleted;
     }
 }

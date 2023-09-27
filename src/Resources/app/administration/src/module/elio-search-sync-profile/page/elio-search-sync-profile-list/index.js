@@ -35,7 +35,7 @@ Shopware.Component.register('elio-search-sync-profile-list', {
     },
 
     computed: {
-        exportRepository() {
+        syncProfileRepository() {
             return this.repositoryFactory.create('elio_search_sync_profile');
         },
         exportColumns() {
@@ -71,7 +71,7 @@ Shopware.Component.register('elio-search-sync-profile-list', {
         onConfirmDelete(id) {
             this.showDeleteModal = false;
 
-            return this.exportRepository.delete(id).then(() => {
+            return this.syncProfileRepository.delete(id).then(() => {
                 this.getList();
             });
         },
@@ -83,7 +83,7 @@ Shopware.Component.register('elio-search-sync-profile-list', {
             try {
                 var criteria = this.exportCriteria;
                 this.activeFilterNumber = criteria.filters.length;
-                await this.exportRepository.search(criteria, Shopware.Context.api)
+                await this.syncProfileRepository.search(criteria, Shopware.Context.api)
                     .then((exports) => {
                         operator.total = exports.total;
                         operator.exports = exports;

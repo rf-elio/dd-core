@@ -30,16 +30,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collectors;
+namespace Elio\ElioSearch\Core\Sync\Collector;
 
-use Elio\ElioSearch\Core\Sync\Converter\ConverterInterface;
-use Shopware\Core\Framework\Context;
+use Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+/**
+ * Interface DataCollectorInterface
+ * @package Elio\ElioSearch\Core\Sync\Collector
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ */
 interface DataCollectorInterface
 {
+    /**
+     * Checks if collector is supported
+     *
+     * @param string $type
+     * @return bool
+     */
     public function supports(string $type): bool;
 
-    public function collect(SalesChannelContext $context, ?Criteria $criteria = null): \Generator;
+    /**
+     * Collects entity data
+     *
+     * @param array $languageIds
+     * @param SalesChannelContext $context
+     * @param Criteria|null $criteria
+     * @return Generator
+     */
+    public function collect(array $languageIds, SalesChannelContext $context, ?Criteria $criteria = null): Generator;
 }

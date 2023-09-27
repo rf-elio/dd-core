@@ -46,30 +46,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
  */
 class EntityStatusEntity extends Entity
 {
+    public const STATE_CREATED = 'created';
+    public const STATE_UPDATED = 'updated';
+    public const STATE_DELETED = 'deleted';
+
     use EntityIdTrait;
-    protected ?string $syncProfileId = null;
     protected ?string $type = null;
     protected ?string $state = null;
     protected ?string $hashedContent = null;
-    protected ?\DateTimeInterface $deletedAt;
-    protected ?SyncProfileEntity $syncProfile;
-
-    /**
-     * @return string|null
-     */
-    public function getSyncProfileId(): ?string
-    {
-        return $this->syncProfileId;
-    }
-
-    /**
-     * @param string $syncProfileId
-     * @return void
-     */
-    public function setSyncProfileId(string $syncProfileId): void
-    {
-        $this->syncProfileId = $syncProfileId;
-    }
+    protected ?\DateTimeInterface $deletedAt = null;
 
     public function getType(): ?string
     {
@@ -109,15 +94,5 @@ class EntityStatusEntity extends Entity
     public function setDeletedAt(?\DateTimeInterface $deletedAt): void
     {
         $this->deletedAt = $deletedAt;
-    }
-
-    public function getSyncProfile(): ?SyncProfileEntity
-    {
-        return $this->syncProfile;
-    }
-
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
-    {
-        $this->syncProfile = $syncProfile;
     }
 }

@@ -116,7 +116,6 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
 
         $configuration = new Configuration(
             $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
-                $this->getConfigWithLanguagePrefix($config, 'apiChannel', $languagePrefix) ?? '',
             $this->getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
             $this->prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
             $this->getConfigWithLanguagePrefix($config, 'searchUseElioSearch', $languagePrefix) ?? false,

@@ -48,19 +48,6 @@ use Throwable;
  */
 class SuggestApi
 {
-    private Transformer $transformer;
-
-    /**
-     * SearchApi constructor.
-     * @param Transformer $transformer
-     */
-    public function __construct(
-        Transformer $transformer
-    )
-    {
-        $this->transformer = $transformer;
-    }
-
     /**
      * @param SuggestRequest $suggestRequest
      * @param SalesChannelContext $context

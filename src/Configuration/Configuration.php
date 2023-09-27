@@ -88,7 +88,6 @@ class Configuration extends Struct
     private int $productRankingMaxOrderAge;
     private array $productRankingOrderStates;
     private array $productRankingOrderDeliveryStates;
-    private string $apiChannel;
     private bool $searchUseContentChannel;
 
     /**
@@ -110,6 +109,7 @@ class Configuration extends Struct
      * @param array<string> $botProtectionSearchTermFilter
      * @param array<string> $botProtectionUserAgentFilter
      * @param array<string> $botProtectionIpFilter
+     * @param bool $searchUseContentChannel
      * @param bool $suggestUseElioSearch
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
@@ -124,7 +124,6 @@ class Configuration extends Struct
      */
     public function __construct(
         bool $active,
-        string $apiChannel,
         bool $loggingDebugActive,
         array $loggingDebugIpFilter,
         bool $searchUseElioSearch,
@@ -183,16 +182,7 @@ class Configuration extends Struct
         $this->productRankingMaxOrderAge = $productRankingMaxOrderAge;
         $this->productRankingOrderStates = $productRankingOrderStates;
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
-        $this->apiChannel = $apiChannel;
         $this->searchUseContentChannel = $searchUseContentChannel;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiChannel(): string
-    {
-        return $this->apiChannel;
     }
 
     /**

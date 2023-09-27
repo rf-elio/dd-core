@@ -58,15 +58,11 @@ class SearchApi
 
     /**
      * SearchApi constructor.
-     * @param Transformer $transformer
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Transformer $transformer,
         LoggerInterface $logger
-    )
-    {
-        $this->transformer = $transformer;
+    ){
         $this->logger = $logger;
     }
 

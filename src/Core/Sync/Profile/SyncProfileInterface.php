@@ -46,7 +46,7 @@ interface SyncProfileInterface
      */
     public function getDataTypes(): array;
 
-    public function getConverter();
+    public function getConverters(): array;
 
     public function getOutputs(): array;
 

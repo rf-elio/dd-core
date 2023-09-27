@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Aggregate;
+namespace Elio\ElioSearch\Core\Export;
 
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusDefinition;
-use Elio\ElioSearch\Core\Sync\SyncProfileDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+
+use Elio\ElioSearch\Core\Sync\SyncService;
+use Exception;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class SyncProfileExtension
- * @package Elio\ElioSearch\Core\Sync\Api\Aggregate
+ * Class SyncProfileHandler
+ * @package Elio\ElioSearch\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileExtension extends EntityExtension
+#[AsMessageHandler]
+class SyncProfileHandler
 {
-    public function extendFields(FieldCollection $collection): void
+    public function __construct(private readonly SyncService $syncService)
     {
-        $collection->add(new OneToManyAssociationField(
-            'entityStates', EntityStatusDefinition::class, 'sync_profile_id'
-        ));
     }
 
-    public function getDefinitionClass(): string
+    /**
+     * Starts the sync
+     *
+     * @param SyncProfileMessage $message
+     * @throws Exception
+     */
+    public function __invoke(SyncProfileMessage $message): void
     {
-        return SyncProfileDefinition::class;
+        $this->syncService->sync($message->getSyncProfile());
+    }
+
+    /**
+     * @return iterable<string>
+     */
+    public static function getHandledMessages(): iterable
+    {
+        return [
+            SyncProfileMessage::class
+        ];
     }
 }

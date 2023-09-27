@@ -82,13 +82,10 @@ class EntityStatusDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new ApiAware(), new PrimaryKey(), new Required()),
-            (new FkField('sync_profile_id', 'syncProfileId', SyncProfileDefinition::class))->addFlags(new ApiAware(), new PrimaryKey(), new Required()),
             (new StringField('type', 'type'))->addFlags(new Required()),
             (new StringField('state', 'state'))->addFlags(new Required()),
             (new StringField('hashed_content', 'hashedContent'))->addFlags(new Required()),
             (new DateTimeField('deleted_at', 'deletedAt'))->addFlags(new ApiAware()),
-
-            (new ManyToOneAssociationField('syncProfile', 'sync_profile_id', SyncProfileDefinition::class, 'id', false)),
         ]);
     }
 }

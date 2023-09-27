@@ -32,11 +32,14 @@
 
 namespace Elio\ElioSearch\Core\Sync\Api;
 
-use Elio\ElioSearch\Core\Sync\Indexer\ChangeSetService;
+use Elio\ElioSearch\Core\Sync\Api\Event\ApiSyncCompleteEvent;
+use Elio\ElioSearch\Core\Sync\Api\Exception\ApiSyncException;
+use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -54,66 +57,104 @@ class ApiService
         private readonly ChangeSetService $changeSetService,
         private readonly iterable $apiWriters,
         private readonly iterable $collectors,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LoggerInterface $logger
     ) {
     }
 
-    public function sync(SyncProfileInterface $profile, SyncProfileEntity $syncProfile, SalesChannelContext $context): void
+    /**
+     * Syncs profile data by api
+     *
+     * @param SyncProfileInterface $profileConfiguration
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     * @return void
+     * @throws Exception
+     */
+    public function sync(SyncProfileInterface $profileConfiguration, SyncProfileEntity $syncProfile, SalesChannelContext $context): void
     {
-        $changeSet = $this->changeSetService->changeSet($syncProfile->getType(), $syncProfile, $context->getContext());
+        $changeSet = $this->changeSetService->changeSet($syncProfile->getDataType(), $syncProfile, $context->getContext());
         if (!$this->hasSyncData($changeSet)) {
-            $this->logger->info(sprintf('No entries sync entries found for profile %s', $profile->getName()));
+            $this->logger->info(sprintf('No entries sync entries found for profile %s', $profileConfiguration->getName()));
             return;
         }
 
-        $apiWriter = $this->getApiWriter('');
+        $output = $this->getOutput($syncProfile->getFormat());
         foreach ($changeSet as $key => $ids) {
-            $collection = $this->getCollector($profile->getName())->collect($context, new Criteria($ids));
-            foreach ($collection as $entities) {
+            foreach ($this->getCollectors($syncProfile->getDataType()) as $collector) {
+                $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context, new Criteria($ids));
+                $currentItems = $collection->current() ?? [];
                 if ($key === ChangeSetService::KEY_CREATED) {
-                    $apiWriter->create($entities);
+                    $output->create($currentItems, $syncProfile, $context);
                     continue;
                 }
 
                 if ($key === ChangeSetService::KEY_UPDATED) {
-                    $apiWriter->update($entities);
+                    $output->update($currentItems, $syncProfile, $context);
                     continue;
                 }
 
                 if ($key === ChangeSetService::KEY_DELETED) {
-                    $apiWriter->delete($entities);
+                    $output->delete($currentItems, $syncProfile, $context);
                     continue;
                 }
 
-                /** TODO: Change to custom exception */
-                throw new \Exception(sprintf('Invalid key %s', $key));
+                throw new ApiSyncException(sprintf('Invalid key %s', $key));
             }
         }
+
+        $this->eventDispatcher->dispatch(new ApiSyncCompleteEvent($syncProfile, $context));
     }
 
-    protected function getCollector(string $name)
+    /**
+     * Gets profile collectors
+     *
+     * @param string $dataType
+     * @return DataCollectorInterface[]
+     * @throws ApiSyncException
+     */
+    protected function getCollectors(string $dataType): array
     {
+        $collectors = [];
+        /** @var DataCollectorInterface $collector */
         foreach ($this->collectors as $collector) {
-            if ($collector->supports($name)) {
-                return $collector;
+            if ($collector->supports($dataType)) {
+                $collectors[] = $collector;
             }
         }
 
-        // thr ex
+        if (empty($collectors)) {
+            throw new ApiSyncException('Collectors are not found');
+        }
+
+        return $collectors;
     }
 
-    protected function getApiWriter(string $name)
+    /**
+     * Gets profile api writer
+     *
+     * @param string $name
+     * @return OutputInterface
+     * @throws ApiSyncException
+     */
+    protected function getOutput(string $name): OutputInterface
     {
-        /** @var ApiWriterInterface $apiWriter */
+        /** @var OutputInterface $apiWriter */
         foreach ($this->apiWriters as $apiWriter) {
             if ($apiWriter->supports($name)) {
                 return $apiWriter;
             }
         }
 
-        // thr ex
+        throw new ApiSyncException('Api writer is not found');
     }
 
+    /**
+     * Checks if not synced data are exists
+     *
+     * @param array $changeSet
+     * @return bool
+     */
     private function hasSyncData(array $changeSet): bool
     {
         return !empty($changeSet[ChangeSetService::KEY_CREATED])

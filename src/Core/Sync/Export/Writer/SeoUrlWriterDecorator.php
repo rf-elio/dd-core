@@ -6,8 +6,7 @@ namespace Elio\ElioSearch\Core\Sync\Export\Writer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\Export\ExportEntity;
-use Elio\ElioSearch\Core\Export\SeoRoute;
+use Elio\ElioSearch\Core\Sync\Export\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -50,10 +49,10 @@ class SeoUrlWriterDecorator implements FileWriterInterface
     /**
      * All exports are supported for seo injection
      *
-     * @param SyncProfileEntity $syncProfile
+     * @param string $format
      * @return bool
      */
-    public function supports(SyncProfileEntity $syncProfile): bool
+    public function supports(string $format): bool
     {
         return true;
     }

@@ -32,7 +32,9 @@
 
 namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
+
 interface TypeInterface
 {
-
+    public function getId();
+    public function setId(string $id);
 }
