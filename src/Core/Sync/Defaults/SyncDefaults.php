@@ -30,19 +30,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Export\Generator;
+namespace Elio\ElioSearch\Core\Sync\Defaults;
 
 
 /**
- * Class ExportDefaults
- * @package Elio\ElioSearch\Core\Export\Generator
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class SyncDefaults
+ * @package Elio\ElioSearch\Core\Sync\Defaults
+ * @category Shopware
+ * @author elio GmbH <support@elio-systems.com>
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class ExportDefaults
+abstract class SyncDefaults
 {
     public const KEYWORD_SEPARATOR = ',';
     public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public const PROFILE_EXPORT = 'export';
+    public const PROFILE_SYNC = 'sync';
 }

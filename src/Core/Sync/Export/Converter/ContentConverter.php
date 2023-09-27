@@ -33,15 +33,14 @@
 namespace Elio\ElioSearch\Core\Sync\Export\Converter;
 
 use Elio\ElioSearch\Core\Defaults;
-use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
 use Elio\ElioSearch\Core\Sync\Defaults\ContentSyncDefaults;
 use Elio\ElioSearch\Core\Sync\Export\Converter\Exception\InvalidDataTypeException;
 use Elio\ElioSearch\Core\Sync\Export\ExportItem;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class ContentConverter

@@ -4,66 +4,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\ElioSearch\Core\Export\ExportDefinition">
-            <tag name="shopware.entity.definition"/>
-        </service>
 
-        <service id="Elio\ElioSearch\Command\ExportGenerateCommand">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportService" />
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Export\ExportService">
-            <argument type="service" id="elio_search_export.repository" />
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="logger" />
-            <argument type="tagged" tag="elio-search.export.generator" />
-            <argument type="tagged" tag="elio-search.export.writer" />
-        </service>
-
-        <!-- generators / product -->
-        <service id="Elio\ElioSearch\Core\Export\Generator\Product\ProductExportGenerator">
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="event_dispatcher" />
-            <argument type="service" id="sales_channel.repository" />
-            <argument type="service" id="Elio\ElioSearch\Core\Features\FeatureService" />
-            <tag name="elio-search.export.generator" />
-        </service>
-        <!-- generators / content -->
-        <service id="Elio\ElioSearch\Core\Export\Generator\Content\CategoryExportGenerator">
-            <argument type="service" id="category.repository" />
-            <argument type="service" id="router"/>
-            <tag name="elio-search.export.generator" />
-        </service>
-        <service id="Elio\ElioSearch\Core\Export\Generator\Content\LandingPagePartialGenerator">
-            <argument type="service" id="landing_page.repository" />
-            <tag name="elio-search.export.generator" />
-        </service>
-
-        <!-- storage -->
-        <service id="Elio\ElioSearch\Core\Export\ExportStorageService">
-            <argument type="service" id="shopware.filesystem.private" />
-        </service>
-
-        <!-- writers -->
-        <service id="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
-            <tag name="elio-search.export.writer"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Export\Writer\CleanupWriterDecorator"
-                 decorates="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\Writer\CleanupWriterDecorator.inner" />
-        </service>
-        <service id="Elio\ElioSearch\Core\Export\Writer\SeoUrlWriterDecorator"
-                 decorates="Elio\ElioSearch\Core\Export\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\Writer\SeoUrlWriterDecorator.inner" />
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="router"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Export\Writer\XMLFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Export\ExportStorageService" />
-            <tag name="elio-search.export.writer"/>
-        </service>
     </services>
 </container>

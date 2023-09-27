@@ -33,14 +33,14 @@
 namespace Elio\ElioSearch\Core\Sync\Export\Converter;
 
 use Elio\ElioSearch\Core\Defaults;
-use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
-use Elio\ElioSearch\Core\Export\Generator\Product\ProductExportDefaults;
-use Elio\ElioSearch\Core\Export\Generator\Util\ValueUtil;
-use Elio\ElioSearch\Core\Export\SeoRoute;
+use Elio\ElioSearch\Core\Sync\Defaults\ProductSyncDefaults;
+use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
 use Elio\ElioSearch\Core\Sync\Export\Converter\Exception\InvalidDataTypeException;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Elio\ElioSearch\Core\Sync\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\Export\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
@@ -111,28 +111,28 @@ class ProductConverter implements ConverterInterface
             $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
         }
 
-        $item->set(ProductExportDefaults::FIELD_ID, $product->getId());
-        $item->set(ProductExportDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct?->getProductNumber());
-        $item->set(ProductExportDefaults::FIELD_PRODUCT_ID, $product->getProductNumber());
-        $item->set(ProductExportDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
+        $item->set(ProductSyncDefaults::FIELD_ID, $product->getId());
+        $item->set(ProductSyncDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct?->getProductNumber());
+        $item->set(ProductSyncDefaults::FIELD_PRODUCT_ID, $product->getProductNumber());
+        $item->set(ProductSyncDefaults::FIELD_MANUFACTURER_NUMBER, $product->getManufacturerNumber());
         [$price, $redPrice] = $this->getProductPrice($product) ?? [null, null];
-        $item->set(ProductExportDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));
-        $item->set(ProductExportDefaults::FIELD_RED_PRICE, ValueUtil::formatPrice($redPrice));
-        $item->set(ProductExportDefaults::FIELD_CATEGORY_IDS, $this->getCategoryIds($product));
-        $item->set(ProductExportDefaults::FIELD_EAN, $product->getEan());
-        $item->set(ProductExportDefaults::FIELD_STOCK, $product->getStock());
-        $item->set(ProductExportDefaults::FIELD_CLOSEOUT, $product->getIsCloseout() ? 1 : 0);
-        $item->set(ProductExportDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
-        $item->set(ProductExportDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
-        $item->set(ProductExportDefaults::FIELD_SALES_COUNT, $product->getSales());
+        $item->set(ProductSyncDefaults::FIELD_PRICE, ValueUtil::formatPrice($price));
+        $item->set(ProductSyncDefaults::FIELD_RED_PRICE, ValueUtil::formatPrice($redPrice));
+        $item->set(ProductSyncDefaults::FIELD_CATEGORY_IDS, $this->getCategoryIds($product));
+        $item->set(ProductSyncDefaults::FIELD_EAN, $product->getEan());
+        $item->set(ProductSyncDefaults::FIELD_STOCK, $product->getStock());
+        $item->set(ProductSyncDefaults::FIELD_CLOSEOUT, $product->getIsCloseout() ? 1 : 0);
+        $item->set(ProductSyncDefaults::FIELD_RATING_AVERAGE, $product->getRatingAverage());
+        $item->set(ProductSyncDefaults::FIELD_SHIPPING_FREE, $product->getShippingFree());
+        $item->set(ProductSyncDefaults::FIELD_SALES_COUNT, $product->getSales());
         $item->set(
-            ProductExportDefaults::FIELD_RELEASE_DATE,
-            $product->getReleaseDate() ? $product->getReleaseDate()->format(ExportDefaults::DATE_TIME_FORMAT) : ''
+            ProductSyncDefaults::FIELD_RELEASE_DATE,
+            $product->getReleaseDate() ? $product->getReleaseDate()->format(SyncDefaults::DATE_TIME_FORMAT) : ''
         );
 
-        $item->set(ProductExportDefaults::FIELD_IMAGE_URL, $product->getCover()?->getMedia()?->getUrl());
-        $item->set(ProductExportDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()?->getMedia()?->getThumbnails()));
-        $item->set(ProductExportDefaults::FIELD_PRODUCT_URL, new SeoRoute(
+        $item->set(ProductSyncDefaults::FIELD_IMAGE_URL, $product->getCover()?->getMedia()?->getUrl());
+        $item->set(ProductSyncDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()?->getMedia()?->getThumbnails()));
+        $item->set(ProductSyncDefaults::FIELD_PRODUCT_URL, new SeoRoute(
             ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
         ));
     }
@@ -156,16 +156,16 @@ class ProductConverter implements ConverterInterface
             $postfix = $isMultiLanguages ? '_' . $languageId : '';
 
             $translated = $product->getTranslated();
-            $item->set(ProductExportDefaults::FIELD_NAME . $postfix, $product->getName() ?? $translated['name'] ?? '');
-            $item->set(ProductExportDefaults::FIELD_DESCRIPTION . $postfix, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
-            $item->set(ProductExportDefaults::FIELD_META_TITLE . $postfix, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
-            $item->set(ProductExportDefaults::FIELD_MANUFACTURER . $postfix, $product->getManufacturer()?->getTranslation('name') ?? $product->getManufacturer()?->getName());
-            $item->set(ProductExportDefaults::FIELD_KEYWORDS . $postfix, $product->getKeywords() ?? $translated['keywords'] ?? '');
-            $item->set(ProductExportDefaults::FIELD_SEARCH_KEYWORDS . $postfix, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
-            $item->set(ProductExportDefaults::FIELD_CATEGORY_PATH . $postfix, $this->getCategoryPath($product));
-            $item->set(ProductExportDefaults::FIELD_ATTRIBUTE . $postfix, $this->getProductAttribute($this->getFilterableProductProperties($product)));
-            $item->set(ProductExportDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE . $postfix, $this->getProductAttribute($this->getNonFilterableProductProperties($product)));
-            $item->set(ProductExportDefaults::FIELD_TAGS . $postfix, $this->getProductTags($product));
+            $item->set(ProductSyncDefaults::FIELD_NAME . $postfix, $product->getName() ?? $translated['name'] ?? '');
+            $item->set(ProductSyncDefaults::FIELD_DESCRIPTION . $postfix, ValueUtil::cleanValue($product->getDescription() ?? $translated['description'] ?? ''));
+            $item->set(ProductSyncDefaults::FIELD_META_TITLE . $postfix, ValueUtil::cleanValue($product->getMetaTitle() ?? $translated['metaTitle'] ?? ''));
+            $item->set(ProductSyncDefaults::FIELD_MANUFACTURER . $postfix, $product->getManufacturer()?->getTranslation('name') ?? $product->getManufacturer()?->getName());
+            $item->set(ProductSyncDefaults::FIELD_KEYWORDS . $postfix, $product->getKeywords() ?? $translated['keywords'] ?? '');
+            $item->set(ProductSyncDefaults::FIELD_SEARCH_KEYWORDS . $postfix, implode(', ', $product->getSearchKeywords() ?? $translated['customSearchKeywords'] ?? []));
+            $item->set(ProductSyncDefaults::FIELD_CATEGORY_PATH . $postfix, $this->getCategoryPath($product));
+            $item->set(ProductSyncDefaults::FIELD_ATTRIBUTE . $postfix, $this->getProductAttribute($this->getFilterableProductProperties($product)));
+            $item->set(ProductSyncDefaults::FIELD_ATTRIBUTE_NON_FILTERABLE . $postfix, $this->getProductAttribute($this->getNonFilterableProductProperties($product)));
+            $item->set(ProductSyncDefaults::FIELD_TAGS . $postfix, $this->getProductTags($product));
         }
     }
 

@@ -34,6 +34,7 @@ namespace Elio\ElioSearch\Core\Sync;
 
 use DateTimeImmutable;
 use Elio\ElioSearch\Core\Sync\Api\ApiService;
+use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
 use Elio\ElioSearch\Core\Sync\Export\ExportService;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Exception;
@@ -97,13 +98,13 @@ class SyncService
         $this->setStartDate($syncProfile, $salesChannelContext->getContext());
         $profileConfiguration = $this->getProfileConfiguration($syncProfile);
 
-        if ($syncProfile->getType() === SyncConfig::PROFILE_SYNC) {
+        if ($syncProfile->getType() === SyncDefaults::PROFILE_SYNC) {
             $this->apiService->sync($profileConfiguration, $syncProfile, $salesChannelContext);
             $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;
         }
 
-        if ($syncProfile->getType() === SyncConfig::PROFILE_EXPORT) {
+        if ($syncProfile->getType() === SyncDefaults::PROFILE_EXPORT) {
             $this->exportService->export($profileConfiguration, $syncProfile, $salesChannelContext);
             $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;

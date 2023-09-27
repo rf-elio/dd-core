@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Export\Generator\Util;
+namespace Elio\ElioSearch\Core\Sync\Util;
 
 
 use DateTimeInterface;
-use Elio\ElioSearch\Core\Export\Generator\ExportDefaults;
+use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
 
 /**
  * Class ValueUtil
@@ -100,7 +100,7 @@ class ValueUtil
      */
     public static function formatDate(DateTimeInterface $date) : string
     {
-        return $date->format(ExportDefaults::DATE_TIME_FORMAT);
+        return $date->format(SyncDefaults::DATE_TIME_FORMAT);
     }
 
     /**

@@ -32,8 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Translator;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -48,8 +50,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class Translator
 {
+    protected array $salesChannels = [];
+    protected ?LanguageCollection $languages = null;
+
     public function __construct(
-        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory
+        private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private readonly EntityRepository $languageRepository
     ) {
     }
 
@@ -61,6 +67,7 @@ class Translator
      * @param EntityRepository $repository
      * @param SalesChannelContext $context
      * @return array
+     * @throws TranslationException
      */
     public function prepareTranslationData(
         array $languageIds,
@@ -68,12 +75,23 @@ class Translator
         EntityRepository $repository,
         SalesChannelContext $context
     ): array {
-        $salesChannels = $this->getLanguageSalesChannels($context->getSalesChannelId(), $languageIds);
+        if (!$this->languages) {
+            $this->languages = $this->getLanguages($languageIds, $context->getContext());
+        }
+
+        if (empty($this->salesChannels)) {
+            $this->salesChannels = $this->getLanguageSalesChannels($context->getSalesChannelId(), $languageIds);
+        }
+
         $translationData = [];
-        foreach ($salesChannels as $salesChannel) {
+        foreach ($this->salesChannels as $salesChannel) {
+            $language = $this->languages->get($salesChannel->getLanguageId());
             $entities = $repository->search($criteria, $salesChannel->getContext());
             foreach ($entities as $entity) {
-                $translationData[$salesChannel->getLanguageId()][] = $entity;
+                $key = $language?->getLocale()
+                    ? explode('-', $language->getLocale()->getCode())[0]
+                    : $salesChannel->getSalesChannelId();
+                $translationData[$key][] = $entity;
             }
         }
 
@@ -95,5 +113,29 @@ class Translator
         }
 
         return $salesChannels;
+    }
+
+    /**
+     * Gets languages by provided ids
+     *
+     * @param array $ids
+     * @param Context $context
+     * @return LanguageCollection
+     * @throws TranslationException
+     */
+    protected function getLanguages(array $ids, Context $context): LanguageCollection
+    {
+        if (empty($ids)) {
+            throw new TranslationException('Language ids are empty');
+        }
+
+        $criteria = new Criteria($ids);
+        $criteria->addAssociation('locale');
+        $languages = $this->languageRepository->search($criteria, $context);
+        if ($languages->count() < 1) {
+            throw new TranslationException(sprintf('Languages for ids %s not found', implode(',', $ids)));
+        }
+
+        return $languages->getEntities();
     }
 }

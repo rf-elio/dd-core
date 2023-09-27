@@ -23,6 +23,7 @@
         <!--   Sync    -->
         <service id="Elio\ElioSearch\Core\Sync\Translator\Translator">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
+            <argument type="service" id="language.repository" />
         </service>
 
         <!--   Collector    -->
