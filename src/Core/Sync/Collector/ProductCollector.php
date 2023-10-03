@@ -35,7 +35,6 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
-use Elio\ElioSearch\Core\Sync\Translator\TranslationException;
 use Elio\ElioSearch\Core\Sync\Translator\Translator;
 use Generator;
 use Shopware\Core\Content\Product\ProductEntity;

@@ -98,9 +98,9 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
 //        $this->addTracking($resultCollection, $shopwareProductListingResult);
-        $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
+//        $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
 
-        $event = new ProductListingResultTransformerEvent($productListingResponse, $context);
+        $event = new ProductListingResultTransformerEvent($shopwareProductListingResult, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getProductListingResult();
     }

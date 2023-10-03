@@ -139,7 +139,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
 
         try {
             /** @var NavigationRequestProduct $navigationRequest */
-            $navigationRequest = $this->searchRequestBuilder->build($request, $criteria, $context, new NavigationRequestProduct($config->getApiChannel()));
+            $navigationRequest = $this->searchRequestBuilder->build($request, $criteria, $context, new NavigationRequestProduct(''));
             $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $context);
             $this->addCustomFiltersToNavigationRequest($navigationRequest, $category);
 

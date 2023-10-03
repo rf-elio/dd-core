@@ -10,22 +10,6 @@
 {% endif %}
 {% set disableEmptyFilter = false %}
 
-{# advisor campaigns #}
-{% block element_product_listing_wrapper_content %}
-    {% block element_product_listing_advisor %}
-        {% if searchResult and searchResult.hasExtension('AdvisorCampaignResponseCollection') %}
-            {% set advisorCampaignResponseCollection = searchResult.getExtension('AdvisorCampaignResponseCollection') %}
-            {% for advisorCampaign in advisorCampaignResponseCollection.advisorCampaignResponses %}
-                {% sw_include '@ElioSearch/storefront/component/elio-search/advisor-campaign/index.html.twig' with {
-                    advisorCampaign: advisorCampaign,
-                    searchResult: searchResult
-                } %}
-            {% endfor %}
-        {% endif %}
-    {% endblock %}
-    {{ parent() }}
-{% endblock %}
-
 {% block product_listing %}
     {% set elioSearchQuery = page.searchTerm %}
     {% set elioSearchPage = searchResult.page %}
@@ -44,10 +28,6 @@
 {# feedback text integration + cms advisor campaign handling #}
 {% block element_product_listing_row %}
     {% set showListing = true %}
-    {# we don't show the listing for cms campaigns if there is no selection done yet #}
-    {% if searchResult.hasExtension('elio-search-advisor-listing') %}
-        {% set showListing = searchResult.getExtension('elio-search-advisor-listing').showListing %}
-    {% endif %}
 
     {% if showListing %}
         {# feedback text #}
@@ -67,22 +47,5 @@
     {% endif %}
 {% endblock %}
 
-{# we don't show the no products message for cms advisor campaigns #}
-{% block element_product_listing_col_empty %}
-    {% if not searchResult.hasExtension('elio-search-advisor-listing') %}
-        {{ parent() }}
-    {% endif %}
-{% endblock %}
 
-{# we hide the sorting if we are on a cms advisor campaign and no selection was made by the user #}
-{% block element_product_listing_sorting %}
-    {% set showListing = true %}
-    {% if searchResult.hasExtension('elio-search-advisor-listing') %}
-        {% set showListing = searchResult.getExtension('elio-search-advisor-listing').showListing %}
-    {% endif %}
-
-    {% if showListing %}
-        {{ parent() }}
-    {% endif %}
-{% endblock %}
 

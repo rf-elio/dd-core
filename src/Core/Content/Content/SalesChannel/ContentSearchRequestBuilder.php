@@ -45,7 +45,7 @@ class ContentSearchRequestBuilder
     ) : ContentSearchRequest
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        $searchRequest = $searchRequest ?? new ContentSearchRequest($config->getApiChannel());
+        $searchRequest = $searchRequest ?? new ContentSearchRequest('');
         if(!empty($request->get('search'))) {
             $searchRequest->setQuery($request->get('search'));
         }
