@@ -41,5 +41,5 @@ interface OutputInterface
     public function supports(string $type);
     public function create(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context);
     public function update(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context);
-    public function delete(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context);
+    public function delete(array $ids, SyncProfileEntity $syncProfile, SalesChannelContext $context);
 }

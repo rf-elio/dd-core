@@ -97,7 +97,7 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 return '...';
             }
 
-            return 'bin/console elio-elio-search:export:generate ' + (this.commandForce ? '-f ' : '') + this.elio_search_sync_profile.id;
+            return 'bin/console elio-search:profiles:sync ' + (this.commandForce ? '-f ' : '') + this.elio_search_sync_profile.id;
         },
         getDownloadUrl() {
             return this.elioSearchSyncProfile.getDownloadUrl(

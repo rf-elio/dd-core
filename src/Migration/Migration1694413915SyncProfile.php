@@ -65,6 +65,7 @@ SQL;
 
         $connection->executeStatement($query);
 
+        // TODO: Add new fields to migration
         $query = <<<SQL
 CREATE TABLE IF NOT EXISTS `elio_search_entity_status` (
     `id` BINARY(16) NOT NULL,

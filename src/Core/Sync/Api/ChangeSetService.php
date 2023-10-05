@@ -94,7 +94,7 @@ class ChangeSetService
                 }
 
                 if ($entityStatus->getState() === EntityStatusEntity::STATE_DELETED) {
-                    $changeSet[self::KEY_DELETED][] = $entityStatus->getId();
+                    $changeSet[self::KEY_DELETED][] = $entityStatus->getEntityId();
                 }
             }
         }

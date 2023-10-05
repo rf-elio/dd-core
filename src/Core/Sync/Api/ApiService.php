@@ -82,6 +82,11 @@ class ApiService
         $output = $this->getOutput($syncProfile->getFormat());
         foreach ($changeSet as $key => $ids) {
             foreach ($this->getCollectors($syncProfile->getDataType()) as $collector) {
+                if ($key === ChangeSetService::KEY_DELETED) {
+                    $output->delete($ids, $syncProfile, $context);
+                    continue;
+                }
+
                 $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context, new Criteria($ids));
                 $currentItems = $collection->current() ?? [];
                 if ($key === ChangeSetService::KEY_CREATED) {
@@ -91,11 +96,6 @@ class ApiService
 
                 if ($key === ChangeSetService::KEY_UPDATED) {
                     $output->update($currentItems, $syncProfile, $context);
-                    continue;
-                }
-
-                if ($key === ChangeSetService::KEY_DELETED) {
-                    $output->delete($currentItems, $syncProfile, $context);
                     continue;
                 }
 

@@ -51,6 +51,7 @@ class EntityStatusEntity extends Entity
     public const STATE_DELETED = 'deleted';
 
     use EntityIdTrait;
+    protected ?string $entityId = null;
     protected ?string $type = null;
     protected ?string $state = null;
     protected ?string $hashedContent = null;
@@ -64,6 +65,16 @@ class EntityStatusEntity extends Entity
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getEntityId(): ?string
+    {
+        return $this->entityId;
+    }
+
+    public function setEntityId(?string $entityId): void
+    {
+        $this->entityId = $entityId;
     }
 
     public function getState(): ?string

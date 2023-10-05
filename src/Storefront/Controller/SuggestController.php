@@ -104,7 +104,7 @@ class SuggestController extends SearchController
         $searchTerm = $request->get('search') ?? '*';
         $suggestRequest->setQuery($searchTerm);
         $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
-//
+
         /** @var SuggestionResponse|null $suggestionResponse */
         $suggestionResponse = $resultCollection->get(SuggestionResponse::class);
 

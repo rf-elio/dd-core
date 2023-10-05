@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioSearch\Core\Sync\Profile;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Shopware\Core\Framework\Context;
-
-/**
- * Class SyncProfileMessage
- * @package Elio\ElioSearch\Core\Export
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-class SyncProfileMessage
+interface ExportProfileInterface extends SyncProfileInterface
 {
-    /**
-     * @param SyncProfileEntity $syncProfile
-     * @param Context $context
-     */
-    public function __construct(
-        private SyncProfileEntity $syncProfile,
-        private Context $context
-    ) {
-    }
-
-    /**
-     * @return Context
-     */
-    public function getContext(): Context
-    {
-        return $this->context;
-    }
-
-    /**
-     * @param Context $context
-     */
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
-    /**
-     * @return SyncProfileEntity
-     */
-    public function getSyncProfile(): SyncProfileEntity
-    {
-        return $this->syncProfile;
-    }
-
-    /**
-     * @param SyncProfileEntity $syncProfile
-     */
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
-    {
-        $this->syncProfile = $syncProfile;
-    }
+    public function getConverters(): array;
 }

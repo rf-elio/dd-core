@@ -157,6 +157,7 @@ class LandingPageCollector implements DataCollectorInterface
         $contentType->setCreatedAt($landingPage->getCreatedAt());
         $contentType->setTags($landingPage->getTags());
         $contentType->setCustomFields($landingPage->getCustomFields());
+        $contentType->addExtension('original', $landingPage);
 
         return $contentType;
     }

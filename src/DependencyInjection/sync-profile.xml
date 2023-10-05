@@ -142,5 +142,11 @@
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
+
+        <!-- message handler -->
+        <service id="Elio\ElioSearch\Core\Sync\SyncProfileHandler">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>

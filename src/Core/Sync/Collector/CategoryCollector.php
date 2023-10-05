@@ -162,6 +162,7 @@ class CategoryCollector implements DataCollectorInterface
         $contentType->setBreadcrumb($category->getBreadcrumb());
         $contentType->setTags($category->getTags());
         $contentType->setCustomFields($category->getCustomFields());
+        $contentType->addExtension('original', $category);
 
         return $contentType;
     }

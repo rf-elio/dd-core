@@ -32,10 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Administration\Controller;
 
-use Elio\ElioSearch\Core\Export\SyncProfileMessage;
 use Elio\ElioSearch\Core\Sync\Export\ExportStorageService;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioSearch\Core\Sync\SyncProfileMessage;
 use Elio\ElioSearch\Core\Sync\SyncService;
 use League\Flysystem\FilesystemException;
 use Shopware\Core\Framework\Context;

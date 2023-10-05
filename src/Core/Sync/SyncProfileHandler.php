@@ -30,10 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Export;
+namespace Elio\ElioSearch\Core\Sync;
 
 
-use Elio\ElioSearch\Core\Sync\SyncService;
 use Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

@@ -46,8 +46,6 @@ interface SyncProfileInterface
      */
     public function getDataTypes(): array;
 
-    public function getConverters(): array;
-
     public function getOutputs(): array;
 
     public function isMultiLanguageSupport(): bool;

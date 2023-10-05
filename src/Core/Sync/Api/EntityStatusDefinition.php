@@ -34,6 +34,7 @@ namespace Elio\ElioSearch\Core\Sync\Api;
 
 use Elio\ElioSearch\Core\Sync\SyncProfileDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
@@ -80,8 +81,10 @@ class EntityStatusDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        // TODO: Add new fields there and to the entity
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new ApiAware(), new PrimaryKey(), new Required()),
+            (new BlobField('entity_id', 'entityId'))->addFlags(new ApiAware()), // TODO: Add require
             (new StringField('type', 'type'))->addFlags(new Required()),
             (new StringField('state', 'state'))->addFlags(new Required()),
             (new StringField('hashed_content', 'hashedContent'))->addFlags(new Required()),
