@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
@@ -30,80 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
 /**
- * Class EntityStatusEntity
- * @package Elio\ElioSearch\Core\Sync\Api
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class ChangeSet
+ * @package Elio\ElioSearch\Core\Sync\ChangeSet
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class EntityStatusEntity extends Entity
+final class ChangeSetCollection
 {
-    public const STATE_CREATED = 'created';
-    public const STATE_UPDATED = 'updated';
-    public const STATE_DELETED = 'deleted';
+    private array $created = [];
+    private array $updated = [];
+    private array $deleted = [];
 
-    use EntityIdTrait;
-    protected ?string $entityId = null;
-    protected ?string $type = null;
-    protected ?string $state = null;
-    protected ?string $hashedContent = null;
-    protected ?\DateTimeInterface $deletedAt = null;
-
-    public function getType(): ?string
+    public function addCreated(string $entityType, string $entityId): void
     {
-        return $this->type;
+        if (!isset($this->created[$entityType])) {
+            $this->created[$entityType] = [];
+        }
+        $this->created[$entityType][] = $entityId;
     }
 
-    public function setType(string $type): void
+    public function addUpdated(string $entityType, string $entityId): void
     {
-        $this->type = $type;
+        if (!isset($this->updated[$entityType])) {
+            $this->updated[$entityType] = [];
+        }
+        $this->updated[$entityType][] = $entityId;
     }
 
-    public function getEntityId(): ?string
+    public function addDeleted(string $entityType, string $entityId): void
     {
-        return $this->entityId;
+        if (!isset($this->deleted[$entityType])) {
+            $this->deleted[$entityType] = [];
+        }
+        $this->deleted[$entityType][] = $entityId;
     }
 
-    public function setEntityId(?string $entityId): void
+    public function getCreated(): array
     {
-        $this->entityId = $entityId;
+        return $this->created;
     }
 
-    public function getState(): ?string
+    public function getUpdated(): array
     {
-        return $this->state;
+        return $this->updated;
     }
 
-    public function setState(?string $state): void
+    public function getDeleted(): array
     {
-        $this->state = $state;
+        return $this->deleted;
     }
 
-    public function getHashedContent(): ?string
+    public function isEmpty(): bool
     {
-        return $this->hashedContent;
-    }
-
-    public function setHashedContent(string $hashedContent): void
-    {
-        $this->hashedContent = $hashedContent;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): void
-    {
-        $this->deletedAt = $deletedAt;
+        return empty($this->created) && empty($this->updated) && empty($this->deleted);
     }
 }

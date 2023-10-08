@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
+use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
 use Shopware\Core\Framework\Context;
 
 interface IndexerInterface
@@ -48,9 +48,9 @@ interface IndexerInterface
     /**
      * Indexing data
      *
+     * @param EntityStatusCollection $currentEntityStatusCollection
      * @param Context $context
-     * @param EntityStatusCollection $entitiesStatus
      * @return EntityStatusCollection
      */
-    public function index(Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection;
+    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection;
 }

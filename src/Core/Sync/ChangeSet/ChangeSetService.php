@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
-use Elio\ElioSearch\Core\Sync\Api\Indexer\IndexerInterface;
+use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -49,25 +49,26 @@ class ChangeSetService
     public const KEY_UPDATED = 'updated';
     public const KEY_DELETED = 'deleted';
 
+    /**
+     * @param EntityRepository $entityStatusRepository
+     * @param IndexerInterface[] $indexers
+     */
     public function __construct(
         private readonly EntityRepository $entityStatusRepository,
         private readonly iterable $indexers
-    )
-    {
-    }
+    ) {}
 
     /**
      * Prepares change set array
      *
-     * @param string $dataType
      * @param SyncProfileEntity $syncProfile
      * @param Context $context
-     * @return array
+     * @return ChangeSetCollection
      */
-    public function changeSet(string $dataType, SyncProfileEntity $syncProfile, Context $context): array
+    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context): ChangeSetCollection
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('type', $dataType));
+        $criteria->addFilter(new EqualsFilter('dataType', $syncProfile->getDataType()));
         if ($syncProfile->getLastGenerationFinishedAt()) {
             $criteria->addFilter(new OrFilter([
                 new RangeFilter('createdAt', [
@@ -81,25 +82,28 @@ class ChangeSetService
             ]));
         }
         $iterator = new RepositoryIterator($this->entityStatusRepository, $context, $criteria);
-        $changeSet = [];
+
+        $changeSetCollection = new ChangeSetCollection();
         while ($entityStatuses = $iterator->fetch()) {
             /** @var EntityStatusEntity $entityStatus */
             foreach ($entityStatuses as $entityStatus) {
-                if ($entityStatus->getState() === EntityStatusEntity::STATE_CREATED) {
-                    $changeSet[self::KEY_CREATED][] = $entityStatus->getId();
-                }
+                switch ($entityStatus->getState()) {
+                    case EntityStatusEntity::STATE_CREATED:
+                        $changeSetCollection->addCreated($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        break;
 
-                if ($entityStatus->getState() === EntityStatusEntity::STATE_UPDATED) {
-                    $changeSet[self::KEY_UPDATED][] = $entityStatus->getId();
-                }
+                    case EntityStatusEntity::STATE_UPDATED:
+                        $changeSetCollection->addUpdated($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        break;
 
-                if ($entityStatus->getState() === EntityStatusEntity::STATE_DELETED) {
-                    $changeSet[self::KEY_DELETED][] = $entityStatus->getEntityId();
+                    case EntityStatusEntity::STATE_DELETED:
+                        $changeSetCollection->addDeleted($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        break;
                 }
             }
         }
 
-        return $changeSet;
+        return $changeSetCollection;
     }
 
     /**
@@ -111,10 +115,13 @@ class ChangeSetService
     public function index(Context $context): void
     {
         $entitiesStatus = $this->entityStatusRepository->search(new Criteria(), $context);
+        /** @var EntityStatusCollection $currentEntityStatusCollection */
+        $currentEntityStatusCollection = $entitiesStatus->getEntities();
+
         /** @var IndexerInterface $indexer */
         foreach ($this->indexers as $indexer) {
-            $entityStatuses = $indexer->index($context, $entitiesStatus->getEntities());
-            $this->saveStatusData($entityStatuses, $context);
+            $entityStatuses = $indexer->index($currentEntityStatusCollection, $context);
+            $this->persistEntityStatusCollection($entityStatuses, $context);
         }
     }
 
@@ -125,7 +132,7 @@ class ChangeSetService
      * @param Context $context
      * @return void
      */
-    protected function saveStatusData(
+    private function persistEntityStatusCollection(
         EntityStatusCollection $entityStatuses,
         Context $context
     ): void {
@@ -134,9 +141,12 @@ class ChangeSetService
         foreach ($entityStatuses as $entityStatus) {
             $upsertData[] = [
                 'id' => $entityStatus->getId(),
+                'entityType' => $entityStatus->getEntityType(),
+                'entityId' => $entityStatus->getEntityId(),
+                'identifier' => $entityStatus->getIdentifier(),
+                'dataType' => $entityStatus->getDataType(),
                 'state' => $entityStatus->getState(),
-                'type' => $entityStatus->getType(),
-                'hashedContent' => $entityStatus->getHashedContent(),
+                'hash' => $entityStatus->getHash(),
                 'deletedAt' => $entityStatus->getDeletedAt(),
             ];
         }

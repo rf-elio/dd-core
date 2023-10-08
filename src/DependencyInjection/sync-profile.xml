@@ -16,7 +16,7 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Sync\Api\EntityStatusDefinition">
+        <service id="Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusDefinition">
             <tag name="shopware.entity.definition" entity="elio_search_entity_status"/>
         </service>
 
@@ -85,27 +85,27 @@
         </service>
 
         <!--    Api Sync    -->
-        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\ProductIndexer">
+        <service id="Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\ProductIndexer">
             <argument type="service" id="product.repository" />
             <argument type="service" id="event_dispatcher" />
             <tag name="elio-search.sync.indexer"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\CategoryIndexer">
+        <service id="Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\CategoryIndexer">
             <argument type="service" id="category.repository" />
             <argument type="service" id="event_dispatcher" />
             <tag name="elio-search.sync.indexer"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Sync\Api\Indexer\LandingPageIndexer">
+        <service id="Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\LandingPageIndexer">
             <argument type="service" id="landing_page.repository" />
             <argument type="service" id="event_dispatcher" />
             <tag name="elio-search.sync.indexer"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService">
+        <service id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService">
             <argument type="service" id="elio_search_entity_status.repository" />
             <argument type="tagged" tag="elio-search.sync.indexer" />
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Api\ApiService">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="tagged" tag="elio-search.sync.api.writer" />
             <argument type="tagged" tag="elio-search.sync.collector" />
             <argument type="service" id="event_dispatcher" />
@@ -138,7 +138,7 @@
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioSearch\Command\IndexingCommand">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Api\ChangeSetService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>

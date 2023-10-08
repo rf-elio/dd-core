@@ -37,6 +37,7 @@ use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
 use Elio\ElioSearch\Core\Sync\Translator\Translator;
 use Generator;
+use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -68,10 +69,15 @@ class CategoryCollector implements DataCollectorInterface
      * Checks if collector is supported
      *
      * @param string $type
+     * @param string|null $entityType
      * @return bool
      */
-    public function supports(string $type): bool
+    public function supports(string $type, ?string $entityType = null): bool
     {
+        if ($entityType && $entityType !== CategoryDefinition::ENTITY_NAME) {
+            return false;
+        }
+
         return self::TYPE === $type;
     }
 

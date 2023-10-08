@@ -46,7 +46,10 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             isSaveSuccessful: false,
             // todo: fetch somehow with ajax to server or from configs or from file
             profiles: [],
-            types: [],
+            type: '',
+            features: {
+                multiLanguageSupport: false
+            },
             dataTypes: [],
             outputList: [],
             isMultiLanguageSupport: false,
@@ -208,7 +211,7 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 Object.entries(response.profiles).forEach(([key, data]) => {
                     this.profiles.push({
                         id: key,
-                        types: data['types'],
+                        type: data['type'],
                         name: data['name'],
                         outputs: data['outputs'],
                         dataTypes: data['dataTypes']
@@ -222,7 +225,7 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
         onChangeProfile(key) {
             const outPutList = [];
             const dataTypes = [];
-            const types = [];
+            const type = '';
             const profile = this.profiles.find((profile) => profile.id = key);
 
             profile.outputs.forEach((output) => {
@@ -231,14 +234,12 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             profile.dataTypes.forEach((dataType) => {
                 dataTypes.push({id: dataType, name: dataType});
             });
-            profile.types.forEach((type) => {
-                types.push({id: type, name: type});
-            });
 
-            this.types = types;
+            this.type = profile.type;
             // TODO: Fetch list according to type
             this.outputList = outPutList;
             this.dataTypes = dataTypes;
+            this.features = profile.features;
         },
 
         /**

@@ -63,7 +63,7 @@ class SyncService
         private readonly ExportService $exportService,
         private readonly ApiService $apiService,
         private readonly EntityRepository $syncProfileRepository,
-        private readonly iterable $profileConfigurations,
+        private readonly iterable $profileDefinitions,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly LoggerInterface $logger
     ) {
@@ -92,20 +92,19 @@ class SyncService
         }
 
         $languageId = $syncProfile->getLanguages()?->first()?->getId();
-
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
 
         $this->setStartDate($syncProfile, $salesChannelContext->getContext());
-        $profileConfiguration = $this->getProfileConfiguration($syncProfile);
+        $profileDefinition = $this->getProfileDefinition($syncProfile);
 
-        if ($syncProfile->getType() === SyncDefaults::PROFILE_SYNC) {
-            $this->apiService->sync($profileConfiguration, $syncProfile, $salesChannelContext);
+        if ($profileDefinition->getType() === SyncDefaults::PROFILE_SYNC) {
+            $this->apiService->sync($profileDefinition, $syncProfile, $salesChannelContext);
             $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;
         }
 
-        if ($syncProfile->getType() === SyncDefaults::PROFILE_EXPORT) {
-            $this->exportService->export($profileConfiguration, $syncProfile, $salesChannelContext);
+        if ($profileDefinition->getType() === SyncDefaults::PROFILE_EXPORT) {
+            $this->exportService->export($profileDefinition, $syncProfile, $salesChannelContext);
             $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
             return;
         }
@@ -205,12 +204,12 @@ class SyncService
      * @param SyncProfileEntity $syncProfile
      * @return SyncProfileInterface
      */
-    protected function getProfileConfiguration(SyncProfileEntity $syncProfile): SyncProfileInterface
+    protected function getProfileDefinition(SyncProfileEntity $syncProfile): SyncProfileInterface
     {
         /** @var SyncProfileInterface $profileConfiguration */
-        foreach ($this->profileConfigurations as $profileConfiguration) {
-            if ($profileConfiguration->getName() === $syncProfile->getProfile()) {
-                return $profileConfiguration;
+        foreach ($this->profileDefinitions as $profileDefinition) {
+            if ($profileDefinition->getName() === $syncProfile->getProfile()) {
+                return $profileDefinition;
             }
         }
 

@@ -46,7 +46,7 @@ class ExportStorageService
             self::BASE_DIR,
             $syncProfile->getId(),
             $syncProfile->getName(),
-            $syncProfile->getFormat()
+            $syncProfile->getOutput()
         );
     }
 
@@ -80,9 +80,9 @@ class ExportStorageService
         $headers = [
             'Content-Disposition' => HeaderUtils::makeDisposition(
                 'attachment',
-                $syncProfile->getName().'.'.$syncProfile->getFormat(),
+                $syncProfile->getName().'.'.$syncProfile->getOutput(),
                 // only printable ascii
-                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $syncProfile->getName().'.'.$syncProfile->getFormat())
+                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $syncProfile->getName().'.'.$syncProfile->getOutput())
             ),
             'Content-Length' => $this->fileSystem->fileSize($fileName),
             'Content-Type' => 'application/octet-stream',

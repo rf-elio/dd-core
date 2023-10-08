@@ -35,8 +35,10 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
+use Elio\ElioSearch\Core\Sync\Translator\TranslationException;
 use Elio\ElioSearch\Core\Sync\Translator\Translator;
 use Generator;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -55,7 +57,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ProductCollector implements DataCollectorInterface
 {
     public const TYPE = ProductType::class;
-    public const CHUNK_SIZE = 500;
+    public const CHUNK_SIZE = 1;
 
     public function __construct(
         private readonly EntityRepository $productRepository,
@@ -68,10 +70,15 @@ class ProductCollector implements DataCollectorInterface
      * Checks if collector is supported
      *
      * @param string $type
+     * @param string|null $entityType
      * @return bool
      */
-    public function supports(string $type): bool
+    public function supports(string $type, ?string $entityType = null): bool
     {
+        if ($entityType && $entityType !== ProductDefinition::ENTITY_NAME) {
+            return false;
+        }
+
         return self::TYPE === $type;
     }
 
@@ -82,6 +89,7 @@ class ProductCollector implements DataCollectorInterface
      * @param SalesChannelContext $context
      * @param Criteria|null $criteria
      * @return Generator
+     * @throws TranslationException
      */
     public function collect(array $languageIds, SalesChannelContext $context, ?Criteria $criteria = null): Generator
     {

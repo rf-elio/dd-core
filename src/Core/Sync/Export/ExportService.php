@@ -144,14 +144,14 @@ class ExportService
     protected function getWriter(SyncProfileEntity $syncProfile): FileWriterInterface
     {
         foreach ($this->writers as $writer) {
-            if($writer->supports($syncProfile->getFormat())) {
+            if($writer->supports($syncProfile->getOutput())) {
                 return $writer;
             }
         }
 
         throw new ExportNotSupportedException(sprintf(
             'Export "%s" with format "%s" is not supported by any of the registered file writers',
-            $syncProfile->getName(), $syncProfile->getFormat()
+            $syncProfile->getName(), $syncProfile->getOutput()
         ));
     }
 }

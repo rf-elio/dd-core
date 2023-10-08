@@ -32,8 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Api;
 
+use Elio\ElioSearch\Core\Sync\Api\Event\ApiSyncChangeSetEvent;
 use Elio\ElioSearch\Core\Sync\Api\Event\ApiSyncCompleteEvent;
 use Elio\ElioSearch\Core\Sync\Api\Exception\ApiSyncException;
+use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
 use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
 use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
@@ -73,33 +75,42 @@ class ApiService
      */
     public function sync(SyncProfileInterface $profileConfiguration, SyncProfileEntity $syncProfile, SalesChannelContext $context): void
     {
-        $changeSet = $this->changeSetService->changeSet($syncProfile->getDataType(), $syncProfile, $context->getContext());
-        if (!$this->hasSyncData($changeSet)) {
+        $changeSet = $this->changeSetService->getChangeSet($syncProfile, $context->getContext());
+        $this->eventDispatcher->dispatch(new ApiSyncChangeSetEvent($syncProfile, $changeSet, $context));
+
+        if ($changeSet->isEmpty()) {
             $this->logger->info(sprintf('No entries sync entries found for profile %s', $profileConfiguration->getName()));
             return;
         }
 
-        $output = $this->getOutput($syncProfile->getFormat());
-        foreach ($changeSet as $key => $ids) {
-            foreach ($this->getCollectors($syncProfile->getDataType()) as $collector) {
-                if ($key === ChangeSetService::KEY_DELETED) {
-                    $output->delete($ids, $syncProfile, $context);
-                    continue;
-                }
+        $output = $this->getOutput($syncProfile->getOutput());
 
+        foreach ($changeSet->getDeleted() as $ids) {
+            echo '<pre>'; var_dump('DELETE'); die();
+            $output->delete($ids, $syncProfile, $context);
+        }
+
+        foreach ($changeSet->getCreated() as $entityType => $ids) {
+            foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
                 $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context, new Criteria($ids));
                 $currentItems = $collection->current() ?? [];
-                if ($key === ChangeSetService::KEY_CREATED) {
-                    $output->create($currentItems, $syncProfile, $context);
-                    continue;
-                }
+                $output->create($currentItems, $syncProfile, $context);
+            }
 
-                if ($key === ChangeSetService::KEY_UPDATED) {
-                    $output->update($currentItems, $syncProfile, $context);
-                    continue;
-                }
 
-                throw new ApiSyncException(sprintf('Invalid key %s', $key));
+            foreach ($collectors as $collector) {
+                $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context, new Criteria($ids));
+                echo '<pre>'; var_dump($collection); die();
+                $currentItems = $collection->current() ?? [];
+                $output->create($currentItems, $syncProfile, $context);
+            }
+        }
+
+        foreach ($changeSet->getUpdated() as $ids) {
+            foreach ($collectors as $collector) {
+                $collection = $collector->collect($syncProfile->getLanguages()->getIds(), $context, new Criteria($ids));
+                $currentItems = $collection->current() ?? [];
+                $output->update($currentItems, $syncProfile, $context);
             }
         }
 
@@ -110,15 +121,16 @@ class ApiService
      * Gets profile collectors
      *
      * @param string $dataType
+     * @param string $entityType
      * @return DataCollectorInterface[]
      * @throws ApiSyncException
      */
-    protected function getCollectors(string $dataType): array
+    protected function getCollectors(string $dataType, string $entityType): array
     {
         $collectors = [];
         /** @var DataCollectorInterface $collector */
         foreach ($this->collectors as $collector) {
-            if ($collector->supports($dataType)) {
+            if ($collector->supports($dataType, $entityType)) {
                 $collectors[] = $collector;
             }
         }
@@ -147,18 +159,5 @@ class ApiService
         }
 
         throw new ApiSyncException('Api writer is not found');
-    }
-
-    /**
-     * Checks if not synced data are exists
-     *
-     * @param array $changeSet
-     * @return bool
-     */
-    private function hasSyncData(array $changeSet): bool
-    {
-        return !empty($changeSet[ChangeSetService::KEY_CREATED])
-            || !empty($changeSet[ChangeSetService::KEY_UPDATED])
-            || !empty($changeSet[ChangeSetService::KEY_DELETED]);
     }
 }

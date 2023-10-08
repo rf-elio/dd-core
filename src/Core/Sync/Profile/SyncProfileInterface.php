@@ -32,21 +32,15 @@
 
 namespace Elio\ElioSearch\Core\Sync\Profile;
 
-/**
- * TODO: PHP DOC
- */
 interface SyncProfileInterface
 {
-    public function getTypes(): array;
+    public const FEATURES = [
+        'multiLanguageSupport' => false
+    ];
 
+    public function getType(): string;
     public function getName(): string;
-
-    /**
-     * @return array
-     */
     public function getDataTypes(): array;
-
     public function getOutputs(): array;
-
-    public function isMultiLanguageSupport(): bool;
+    public function getFeatures(): array;
 }

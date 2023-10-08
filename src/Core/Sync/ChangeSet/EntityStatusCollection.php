@@ -30,67 +30,58 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
-
-use Elio\ElioSearch\Core\Sync\Api\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * Class ProductIndexer
- * @package Elio\ElioSearch\Core\Sync\Api\Indexer
+ * Class EntityStatusCollection
+ * @package Elio\ElioSearch\Core\Sync\Api
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class ProductIndexer extends BaseIndexer
+class EntityStatusCollection extends EntityCollection
 {
-    public const TYPE = ProductType::class;
-
-    public function __construct(
-        private readonly EntityRepository $productRepository,
-        private readonly EventDispatcherInterface $eventDispatcher
-    ){
-        parent::__construct(self::TYPE, $productRepository);
+    private array $map = [];
+    public function getExpectedClass(): string
+    {
+        return EntityStatusEntity::class;
     }
 
     /**
-     * Checks if indexer is supported
+     * Searches for the entity status entity by type and identifier
      *
      * @param string $type
-     * @return bool
+     * @param string $identifier
+     * @return EntityStatusEntity|null
      */
-    public function supports(string $type): bool
+    public function getEntityStatus(string $type, string $identifier): ?EntityStatusEntity
     {
-        return self::TYPE === $type;
+        $this->prepareEntityMap();
+        $id = $this->map[$this->getMapIdentifier($type, $identifier)] ?? null;
+
+        if (!$id) {
+            return null;
+        }
+
+        return $this->get($id);
     }
 
-    /**
-     * Gets criteria
-     *
-     * @param Context $context
-     * @return Criteria
-     */
-    protected function getCriteria(Context $context): Criteria
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociation('manufacturer.media');
-        $criteria->addAssociation('visibilities');
-        $criteria->addAssociation('media');
-        $criteria->addAssociation('cover');
-        $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('categories');
-        $criteria->addAssociation('tags');
+    private function prepareEntityMap() {
+        if (!empty($this->map)) {
+            return;
+        }
 
-        $event = new CriteriaPreparedEvent($criteria, $context);
-        $this->eventDispatcher->dispatch($event);
-        return $event->getCriteria();
+        /** @var EntityStatusEntity $element */
+        foreach ($this->elements as $element) {
+            $this->map[$this->getMapIdentifier($element->getEntityType(), $element->getIdentifier())] = $element->getId();
+        }
+    }
+
+    private function getMapIdentifier(string $type, string $identifier): string
+    {
+        return $type.'-'.$identifier;
     }
 }

@@ -56,9 +56,8 @@ class SyncProfileEntity extends Entity
     protected string $name;
     protected bool $active;
     protected string $profile;
-    protected string $type;
     protected string $dataType;
-    protected string $format;
+    protected string $output;
     protected string $interval;
     protected array $mapping = [];
     protected array $config = [];
@@ -162,16 +161,6 @@ class SyncProfileEntity extends Entity
         $this->profile = $profile;
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
     public function getDataType(): string
     {
         return $this->dataType;
@@ -185,17 +174,17 @@ class SyncProfileEntity extends Entity
     /**
      * @return string
      */
-    public function getFormat(): string
+    public function getOutput(): string
     {
-        return $this->format;
+        return $this->output;
     }
 
     /**
-     * @param string $format
+     * @param string $output
      */
-    public function setFormat(string $format): void
+    public function setOutput(string $output): void
     {
-        $this->format = $format;
+        $this->output = $output;
     }
 
     /**

@@ -30,22 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioSearch\Core\Sync\Api\Event;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetCollection;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
-/**
- * Class EntityStatusCollection
- * @package Elio\ElioSearch\Core\Sync\Api
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-class EntityStatusCollection extends EntityCollection
+class ApiSyncChangeSetEvent extends Event
 {
-    public function getExpectedClass(): string
+    public function __construct(
+        private readonly SyncProfileEntity $syncProfile,
+        private readonly ChangeSetCollection $changeSetCollection,
+        private readonly SalesChannelContext $context
+    ) {
+    }
+
+    public function getSyncProfile(): SyncProfileEntity
     {
-        return EntityStatusEntity::class;
+        return $this->syncProfile;
+    }
+
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
+
+    public function getChangeSetCollection(): ChangeSetCollection
+    {
+        return $this->changeSetCollection;
     }
 }

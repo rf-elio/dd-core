@@ -86,10 +86,10 @@ class SyncProfileController extends AbstractController
 
             $profiles[$name] = [
                 'name' => $name,
-                'types' => $profile->getTypes(),
+                'type' => $profile->getType(),
                 'outputs' => $profile->getOutputs(),
                 'dataTypes' => $profile->getDataTypes(),
-                'isMultiLanguageSupport' => $profile->isMultiLanguageSupport()
+                'features' => $profile->getFeatures()
             ];
         }
 

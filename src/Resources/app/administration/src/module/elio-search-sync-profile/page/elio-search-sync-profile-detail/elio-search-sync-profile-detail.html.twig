@@ -64,15 +64,6 @@
                                             @change="onChangeProfile">
                                     </sw-field>
                                     <sw-field
-                                            v-if="types"
-                                            v-model="elio_search_sync_profile.type"
-                                            type="select"
-                                            required
-                                            :options="types"
-                                            :label="$tc('elio-search-sync-profile.detail.labelType')"
-                                    >
-                                    </sw-field>
-                                    <sw-field
                                             v-if="dataTypes"
                                             v-model="elio_search_sync_profile.dataType"
                                             type="select"
@@ -82,20 +73,18 @@
                                     </sw-field>
                                     <sw-field
                                             v-if="outputList"
-                                            v-model="elio_search_sync_profile.format"
+                                            v-model="elio_search_sync_profile.output"
                                             type="select"
                                             required
                                             :options="outputList"
-                                            :label="$tc('elio-search-sync-profile.detail.labelFormat')">
+                                            :label="$tc('elio-search-sync-profile.detail.labelOutput')">
                                     </sw-field>
-
                                     <sw-field
                                             v-model="elio_search_sync_profile.active"
                                             type="switch"
                                             :label="$tc('elio-search-sync-profile.detail.labelActive')"
                                             :helpText="$tc('elio-search-sync-profile.detail.helpTextActive')">
                                     </sw-field>
-
                                 </div>
                                 <sw-field
                                         v-model="elio_search_sync_profile.interval"
@@ -108,22 +97,23 @@
 
                                 {% block elio_search_sync_profile_detail_basic_info_download_protection %}
 
-                                    <sw-field
-                                        v-model="elio_search_sync_profile.downloadUsername"
-                                        type="text"
-                                        required
-                                        :label="$tc('elio-search-sync-profile.detail.downloadUsername')"
-                                        :placeholder="placeholder(elio_search_sync_profile, 'downloadUsername', $tc('elio-search-sync-profile.detail.downloadUsername'))">
-                                    </sw-field>
+                                    <div v-if="type == 'export'">
+                                        <sw-field
+                                            v-model="elio_search_sync_profile.downloadUsername"
+                                            type="text"
+                                            required
+                                            :label="$tc('elio-search-sync-profile.detail.downloadUsername')"
+                                            :placeholder="placeholder(elio_search_sync_profile, 'downloadUsername', $tc('elio-search-sync-profile.detail.downloadUsername'))">
+                                        </sw-field>
 
-                                    <sw-field
-                                        v-model="elio_search_sync_profile.downloadPassword"
-                                        type="password"
-                                        required
-                                        :label="$tc('elio-search-sync-profile.detail.downloadPassword')"
-                                        :placeholder="placeholder(elio_search_sync_profile, 'downloadPassword', $tc('elio-search-sync-profile.detail.downloadPassword'))">
-                                    </sw-field>
-
+                                        <sw-field
+                                            v-model="elio_search_sync_profile.downloadPassword"
+                                            type="password"
+                                            required
+                                            :label="$tc('elio-search-sync-profile.detail.downloadPassword')"
+                                            :placeholder="placeholder(elio_search_sync_profile, 'downloadPassword', $tc('elio-search-sync-profile.detail.downloadPassword'))">
+                                        </sw-field>
+                                    </div>
                                 {% endblock %}
 
                                 {% block elio_search_sync_profile_detail_basic_info_saleschannel_language %}
@@ -184,25 +174,27 @@
                                         {% block elio_search_sync_profile_detail_basic_info_status %}
                                             <dt>{{ $tc('elio-search-sync-profile.detail.status.title') }}</dt>
                                             <dd>
-                                                <sw-field
-                                                        v-model="getDownloadUrl"
-                                                        type="text"
-                                                        readonly>
-                                                </sw-field>
-                                                <sw-button variant="primary"
-                                                           size="small"
-                                                           v-if="status.exists"
-                                                           :disabled="!status.exists"
-                                                           @click="onDownloadExport">
-                                                    {{ $tc('elio-search-sync-profile.detail.download') }}
-                                                </sw-button>
-                                                <sw-button variant="danger"
-                                                           size="small"
-                                                           v-if="!status.exists"
-                                                           :disabled="!status.exists"
-                                                           @click="onDownloadExport">
-                                                    {{ $tc('elio-search-sync-profile.detail.status.notExists') }}
-                                                </sw-button>
+                                                <div v-if="type == 'export'">
+                                                    <sw-field
+                                                            v-model="getDownloadUrl"
+                                                            type="text"
+                                                            readonly>
+                                                    </sw-field>
+                                                    <sw-button variant="primary"
+                                                               size="small"
+                                                               v-if="status.exists"
+                                                               :disabled="!status.exists"
+                                                               @click="onDownloadExport">
+                                                        {{ $tc('elio-search-sync-profile.detail.download') }}
+                                                    </sw-button>
+                                                    <sw-button variant="danger"
+                                                               size="small"
+                                                               v-if="!status.exists"
+                                                               :disabled="!status.exists"
+                                                               @click="onDownloadExport">
+                                                        {{ $tc('elio-search-sync-profile.detail.status.notExists') }}
+                                                    </sw-button>
+                                                </div>
                                                 <sw-button class="elio-search-sync-profile-button-generate"
                                                            variant="primary"
                                                            size="small"
@@ -235,8 +227,10 @@
                     </sw-container>
                 </sw-card>
 
-                <sw-card v-if="elio_search_sync_profile" :title="$tc('elio-search-sync-profile.detail.cardTitleConfig')" :isLoading="isLoading">
-                    <div v-if="elio_search_sync_profile.type === 'content'">
+                <sw-card v-if="elio_search_sync_profile && (elio_search_sync_profile.dataType === 'Elio\\ElioSearch\\Core\\Sync\\DataTypes\\ContentType' || type == 'export')"
+                         :title="$tc('elio-search-sync-profile.detail.cardTitleConfig')"
+                         :isLoading="isLoading">
+                    <div v-if="elio_search_sync_profile.dataType === 'Elio\\ElioSearch\\Core\\Sync\\DataTypes\\ContentType'">
                         <sw-field
                             v-model="elio_search_sync_profile.config.export_product_categories"
                             type="switch"
@@ -253,16 +247,19 @@
                                 :label="$tc('elio-search-sync-profile.detail.config.export_link_categories')">
                         </sw-field>
                     </div>
-                    <sw-field
-                            v-model="elio_search_sync_profile.config.trigger_import_search_data"
-                            type="switch"
-                            :label="$tc('elio-search-sync-profile.detail.config.trigger_import_search_data')">
-                    </sw-field>
-                    <sw-field
-                            v-model="elio_search_sync_profile.config.trigger_import_suggest_data"
-                            type="switch"
-                            :label="$tc('elio-search-sync-profile.detail.config.trigger_import_suggest_data')">
-                    </sw-field>
+
+                    <div v-if="type == 'export'">
+                        <sw-field
+                                v-model="elio_search_sync_profile.config.trigger_import_search_data"
+                                type="switch"
+                                :label="$tc('elio-search-sync-profile.detail.config.trigger_import_search_data')">
+                        </sw-field>
+                        <sw-field
+                                v-model="elio_search_sync_profile.config.trigger_import_suggest_data"
+                                type="switch"
+                                :label="$tc('elio-search-sync-profile.detail.config.trigger_import_suggest_data')">
+                        </sw-field>
+                    </div>
                 </sw-card>
 
                 <sw-card :class="[{'elio-search-mappings--empty':isMappingsEmpty}]"

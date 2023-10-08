@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
 use Elio\ElioSearch\Core\Sync\SyncProfileDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -81,13 +81,14 @@ class EntityStatusDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
-        // TODO: Add new fields there and to the entity
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new ApiAware(), new PrimaryKey(), new Required()),
-            (new BlobField('entity_id', 'entityId'))->addFlags(new ApiAware()), // TODO: Add require
-            (new StringField('type', 'type'))->addFlags(new Required()),
+            (new StringField('entity_type', 'entityType'))->addFlags(new ApiAware(), new Required()),
+            (new BlobField('entity_id', 'entityId'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('identifier', 'identifier'))->addFlags(new ApiAware(), new Required()),
+            (new StringField('data_type', 'dataType'))->addFlags(new Required()),
             (new StringField('state', 'state'))->addFlags(new Required()),
-            (new StringField('hashed_content', 'hashedContent'))->addFlags(new Required()),
+            (new StringField('hash', 'hash'))->addFlags(new Required()),
             (new DateTimeField('deleted_at', 'deletedAt'))->addFlags(new ApiAware()),
         ]);
     }

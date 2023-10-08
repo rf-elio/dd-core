@@ -30,56 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\LandingPage\LandingPageEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class IndexingCommand
- * @package Elio\ElioSearch\Command
+ * Class LandingPageIndexer
+ * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class IndexingCommand extends Command
+class LandingPageIndexer extends BaseIndexer
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
-    }
+    public const TYPE = ContentType::class;
 
-    protected function configure(): void
-    {
-        $this->setName('elio-search:index');
+    public function __construct(
+        EntityRepository $landingPageRepository,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {
+        parent::__construct(self::TYPE, $landingPageRepository);
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
+     * Gets criteria
+     *
+     * @param Context $context
+     * @return Criteria
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function getCriteria(Context $context): Criteria
     {
-        $context = Context::createDefaultContext();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addAssociation('salesChannels');
+        $criteria->addAssociation('tags');
+        $criteria->addAssociation('cmsPage');
 
-        try {
-            $this->changeSetService->index($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
+        $event = new CriteriaPreparedEvent($criteria, $context);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getCriteria();
+    }
+
+    protected function getEntityIdentifier(Struct $entity): string
+    {
+        if (!$entity instanceof LandingPageEntity) {
+            throw new InvalidTypeException($entity, LandingPageEntity::class);
         }
 
-        return Command::SUCCESS;
+        return $entity->getId();
     }
 }

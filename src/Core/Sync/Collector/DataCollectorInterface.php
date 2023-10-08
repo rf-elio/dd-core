@@ -50,9 +50,10 @@ interface DataCollectorInterface
      * Checks if collector is supported
      *
      * @param string $type
+     * @param string|null $entityType
      * @return bool
      */
-    public function supports(string $type): bool;
+    public function supports(string $type, ?string $entityType = null): bool;
 
     /**
      * Collects entity data

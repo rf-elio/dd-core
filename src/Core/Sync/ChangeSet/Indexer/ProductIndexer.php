@@ -30,44 +30,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\Api\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class LandingPageIndexer
- * @package Elio\ElioSearch\Core\Sync\Api\Indexer
+ * Class ProductIndexer
+ * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class LandingPageIndexer extends BaseIndexer
+class ProductIndexer extends BaseIndexer
 {
-    public const TYPE = ContentType::class;
+    public const TYPE = ProductType::class;
 
     public function __construct(
-        private readonly EntityRepository $landingPageRepository,
+        EntityRepository $productRepository,
         private readonly EventDispatcherInterface $eventDispatcher
-    ) {
-        parent::__construct(self::TYPE, $landingPageRepository);
-    }
-
-    /**
-     * Checks if indexer is supported
-     *
-     * @param string $type
-     * @return bool
-     */
-    public function supports(string $type): bool
-    {
-        return self::TYPE === $type;
+    ){
+        parent::__construct(self::TYPE, $productRepository);
     }
 
     /**
@@ -80,12 +73,25 @@ class LandingPageIndexer extends BaseIndexer
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociation('salesChannels');
+        $criteria->addAssociation('manufacturer.media');
+        $criteria->addAssociation('visibilities');
+        $criteria->addAssociation('media');
+        $criteria->addAssociation('cover');
+        $criteria->addAssociation('properties.group');
+        $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
-        $criteria->addAssociation('cmsPage');
 
         $event = new CriteriaPreparedEvent($criteria, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
+    }
+
+    protected function getEntityIdentifier(Struct $entity): string
+    {
+        if (!$entity instanceof ProductEntity) {
+            throw new InvalidTypeException($entity, ProductEntity::class);
+        }
+
+        return $entity->getProductNumber();
     }
 }

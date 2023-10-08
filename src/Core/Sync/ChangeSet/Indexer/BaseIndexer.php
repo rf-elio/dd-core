@@ -30,19 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusEntity;
+use DateTimeImmutable;
+use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
+use JsonException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class BaseIndexer
- * @package Elio\ElioSearch\Core\Sync\Api\Indexer
+ * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -53,43 +56,7 @@ abstract class BaseIndexer implements IndexerInterface
     public function __construct(
         private readonly string $type,
         private readonly EntityRepository $repository
-    ){
-    }
-
-    /**
-     * Indexing entity states
-     *
-     * @param Context $context
-     * @param EntityStatusCollection $entitiesStatus
-     * @return EntityStatusCollection
-     */
-    public function index(Context $context, EntityStatusCollection $entitiesStatus): EntityStatusCollection
-    {
-        $criteria = $this->getCriteria($context);
-        $iterator = new RepositoryIterator($this->repository, $context, $criteria);
-        $indexingStatusCollection = new EntityStatusCollection();
-        while ($entities = $iterator->fetch()) {
-            foreach ($entities as $entity) {
-                $hash = $this->hash($entity);
-                /** @var EntityStatusEntity $entityStatus */
-                if (!$entityStatus = $entitiesStatus->get($entity->getId())) {
-                    $this->setCreated($this->type, $entity, $hash, $indexingStatusCollection);
-                    continue;
-                }
-
-                if ($entityStatus->getHashedContent() !== $hash) {
-                    $this->setUpdated($hash, $entityStatus, $indexingStatusCollection);
-                }
-
-                $entitiesStatus->remove($entity->getId());
-            }
-        }
-
-        foreach ($entitiesStatus as $item) {
-            $this->setDeleted($item, $indexingStatusCollection);
-        }
-
-        return $indexingStatusCollection;
+    ) {
     }
 
     /**
@@ -101,49 +68,94 @@ abstract class BaseIndexer implements IndexerInterface
     abstract protected function getCriteria(Context $context): Criteria;
 
     /**
+     * Extracts the entity identifier (e.g. product number)
+     *
+     * @param Struct $entity
+     * @return string
+     */
+    abstract protected function getEntityIdentifier(Struct $entity): string;
+
+    /**
+     * Checks if indexer is supported
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function supports(string $type): bool
+    {
+        return $this->type === $type;
+    }
+
+    /**
+     * Indexing entity states
+     *
+     * @param EntityStatusCollection $currentEntityStatusCollection
+     * @param Context $context
+     * @return EntityStatusCollection
+     * @throws JsonException
+     */
+    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection
+    {
+        $criteria = $this->getCriteria($context);
+        $iterator = new RepositoryIterator($this->repository, $context, $criteria);
+        $newEntityStatusCollection = new EntityStatusCollection();
+
+        while ($entities = $iterator->fetch()) {
+            foreach ($entities as $entity) {
+                $entityStatus = $currentEntityStatusCollection->getEntityStatus(
+                    $entity->getApiAlias(), $this->getEntityIdentifier($entity)
+                ) ?? new EntityStatusEntity();
+
+                $this->prepareEntityStatusEntity(
+                    $entityStatus,
+                    $entity,
+                );
+
+                $newEntityStatusCollection->add($entityStatus);
+                $currentEntityStatusCollection->remove($entityStatus->getId());
+            }
+        }
+
+        // all note removed entities are deleted
+        foreach ($currentEntityStatusCollection as $item) {
+            $this->setDeleted($item, $newEntityStatusCollection);
+        }
+
+        return $newEntityStatusCollection;
+    }
+
+    /**
      * Hash entity data
      *
      * @param Struct $struct
      * @return string
+     * @throws JsonException
      */
     protected function hash(Struct $struct): string
     {
-        return md5(serialize($struct));
+        return md5(json_encode($struct, JSON_THROW_ON_ERROR));
     }
 
-    /**
-     * Adds created entity into collection
-     *
-     * @param string $type
-     * @param Struct $entity
-     * @param string $hash
-     * @param EntityStatusCollection $indexingStatusCollection
-     * @return void
-     */
-    protected function setCreated(
-        string $type,
-        Struct $entity,
-        string $hash,
-        EntityStatusCollection $indexingStatusCollection
-    ): void {
-        $entityStatus = new EntityStatusEntity();
-        $entityStatus->setId($entity->getId());
-        $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
-        $entityStatus->setType($type);
-        $entityStatus->setHashedContent($hash);
-
-        $indexingStatusCollection->add($entityStatus);
-    }
-
-    protected function setUpdated(
-        string $hash,
+    protected function prepareEntityStatusEntity(
         EntityStatusEntity $entityStatus,
-        EntityStatusCollection $indexingStatusCollection
-    ):void {
-        $entityStatus->setState(EntityStatusEntity::STATE_UPDATED);
-        $entityStatus->setHashedContent($hash);
+        Struct $entity
+    ): void {
+        $hash = $this->hash($entity);
 
-        $indexingStatusCollection->add($entityStatus);
+        if (!$entityStatus->hasId()) {
+            $entityStatus->setId(Uuid::randomHex());
+            $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
+        } elseif ($entityStatus->getHash() !== $hash) {
+            $entityStatus->setState(EntityStatusEntity::STATE_UPDATED);
+        }
+
+        $entityStatus->setEntityType($entity->getApiAlias());
+        if (method_exists($entity, 'getId')) {
+            $entityStatus->setEntityId($entity->getId());
+        }
+        $entityStatus->setIdentifier($this->getEntityIdentifier($entity));
+        $entityStatus->setDataType($this->type);
+        $entityStatus->setHash($hash);
     }
 
     protected function setDeleted(
@@ -151,7 +163,7 @@ abstract class BaseIndexer implements IndexerInterface
         EntityStatusCollection $indexingStatusCollection
     ): void {
         $entityStatus->setState(EntityStatusEntity::STATE_DELETED);
-        $entityStatus->setDeletedAt(new \DateTimeImmutable());
+        $entityStatus->setDeletedAt(new DateTimeImmutable());
 
         $indexingStatusCollection->add($entityStatus);
     }

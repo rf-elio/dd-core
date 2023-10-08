@@ -30,23 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api\Indexer;
+namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusEntity;
-use Elio\ElioSearch\Core\Sync\Api\Indexer\Event\CriteriaPreparedEvent;
+use Elio\ElioSearch\Core\Exception\InvalidTypeException;
+use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class CategoryIndexer
- * @package Elio\ElioSearch\Core\Sync\Api\Indexer
+ * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -57,21 +57,10 @@ class CategoryIndexer extends BaseIndexer
     public const TYPE = ContentType::class;
 
     public function __construct(
-        private readonly EntityRepository $categoryRepository,
+        EntityRepository $categoryRepository,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(self::TYPE, $categoryRepository);
-    }
-
-    /**
-     * Checks if indexer is supported
-     *
-     * @param string $type
-     * @return bool
-     */
-    public function supports(string $type): bool
-    {
-        return self::TYPE === $type;
     }
 
     /**
@@ -92,5 +81,14 @@ class CategoryIndexer extends BaseIndexer
         $event = new CriteriaPreparedEvent($criteria, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
+    }
+
+    protected function getEntityIdentifier(Struct $entity): string
+    {
+        if (!$entity instanceof CategoryEntity) {
+            throw new InvalidTypeException($entity, CategoryEntity::class);
+        }
+
+        return $entity->getId();
     }
 }

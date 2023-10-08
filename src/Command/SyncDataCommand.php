@@ -98,8 +98,8 @@ class SyncDataCommand extends Command
                 $this->syncService->sync($syncProfileConfiguration);
             }
         } catch (Exception $e) {
-            dd($e->getMessage(), $e->getTraceAsString());
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $output->writeln('<error>'.$e->getMessage().'</error>');
             return Command::FAILURE;
         }
 
