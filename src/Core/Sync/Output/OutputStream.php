@@ -52,8 +52,7 @@ class OutputStream
     public function __construct(
         private readonly iterable $outputs,
         private readonly SyncContext $syncContext
-    )
-    {
+    ) {
     }
 
     public function open(): void

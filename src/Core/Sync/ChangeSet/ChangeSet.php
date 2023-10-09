@@ -32,55 +32,68 @@
 
 namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * Class ChangeSet
+ * Class ChangeSetCollection
  * @package Elio\ElioSearch\Core\Sync\ChangeSet
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-final class ChangeSetCollection
+final class ChangeSet
 {
     private array $created = [];
     private array $updated = [];
     private array $deleted = [];
 
-    public function addCreated(string $entityType, string $entityId): void
+    public function addCreated(EntityStatusEntity $entityStatus): void
     {
+        $entityType = $entityStatus->getEntityType();
         if (!isset($this->created[$entityType])) {
-            $this->created[$entityType] = [];
+            $this->created[$entityType] = new EntityStatusCollection();
         }
-        $this->created[$entityType][] = $entityId;
+        $this->created[$entityType]->add($entityStatus);
     }
 
-    public function addUpdated(string $entityType, string $entityId): void
+    public function addUpdated(EntityStatusEntity $entityStatus): void
     {
+        $entityType = $entityStatus->getEntityType();
         if (!isset($this->updated[$entityType])) {
-            $this->updated[$entityType] = [];
+            $this->updated[$entityType] = new EntityStatusCollection();
         }
-        $this->updated[$entityType][] = $entityId;
+        $this->updated[$entityType]->add($entityStatus);
     }
 
-    public function addDeleted(string $entityType, string $entityId): void
+    public function addDeleted(EntityStatusEntity $entityStatus): void
     {
+        $entityType = $entityStatus->getEntityType();
         if (!isset($this->deleted[$entityType])) {
-            $this->deleted[$entityType] = [];
+            $this->deleted[$entityType] = new EntityStatusCollection();
         }
-        $this->deleted[$entityType][] = $entityId;
+        $this->deleted[$entityType]->add($entityStatus);
     }
 
+    /**
+     * @return EntityStatusCollection[]
+     */
     public function getCreated(): array
     {
         return $this->created;
     }
 
+    /**
+     * @return EntityStatusCollection[]
+     */
     public function getUpdated(): array
     {
         return $this->updated;
     }
 
+    /**
+     * @return EntityStatusCollection[]
+     */
     public function getDeleted(): array
     {
         return $this->deleted;
@@ -89,5 +102,26 @@ final class ChangeSetCollection
     public function isEmpty(): bool
     {
         return empty($this->created) && empty($this->updated) && empty($this->deleted);
+    }
+
+    public function countCreated(): int
+    {
+        return array_sum(array_map(static function ($entities) {
+            return count($entities);
+        }, $this->created));
+    }
+
+    public function countUpdated(): int
+    {
+        return array_sum(array_map(static function ($entities) {
+            return count($entities);
+        }, $this->updated));
+    }
+
+    public function countDeleted(): int
+    {
+        return array_sum(array_map(static function ($entities) {
+            return count($entities);
+        }, $this->deleted));
     }
 }

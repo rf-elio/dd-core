@@ -106,19 +106,25 @@ abstract class BaseIndexer implements IndexerInterface
                     $entity->getApiAlias(), $this->getEntityIdentifier($entity)
                 ) ?? new EntityStatusEntity();
 
-                $this->prepareEntityStatusEntity(
+                $changed = $this->prepareEntityStatusEntity(
                     $entityStatus,
                     $entity,
                 );
 
-                $newEntityStatusCollection->add($entityStatus);
+                if ($changed) {
+                    $newEntityStatusCollection->add($entityStatus);
+                }
                 $currentEntityStatusCollection->remove($entityStatus->getId());
             }
         }
 
         // all note removed entities are deleted
+        /** @var EntityStatusEntity $item */
         foreach ($currentEntityStatusCollection as $item) {
-            $this->setDeleted($item, $newEntityStatusCollection);
+            if (!$item->getDeletedAt()) {
+                $this->setDeleted($item);
+                $newEntityStatusCollection->add($item);
+            }
         }
 
         return $newEntityStatusCollection;
@@ -139,14 +145,17 @@ abstract class BaseIndexer implements IndexerInterface
     protected function prepareEntityStatusEntity(
         EntityStatusEntity $entityStatus,
         Struct $entity
-    ): void {
+    ): bool {
+        $changed = false;
         $hash = $this->hash($entity);
 
         if (!$entityStatus->hasId()) {
             $entityStatus->setId(Uuid::randomHex());
             $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
+            $changed = true;
         } elseif ($entityStatus->getHash() !== $hash) {
             $entityStatus->setState(EntityStatusEntity::STATE_UPDATED);
+            $changed = true;
         }
 
         $entityStatus->setEntityType($entity->getApiAlias());
@@ -156,15 +165,13 @@ abstract class BaseIndexer implements IndexerInterface
         $entityStatus->setIdentifier($this->getEntityIdentifier($entity));
         $entityStatus->setDataType($this->type);
         $entityStatus->setHash($hash);
+        return $changed;
     }
 
     protected function setDeleted(
-        EntityStatusEntity $entityStatus,
-        EntityStatusCollection $indexingStatusCollection
+        EntityStatusEntity $entityStatus
     ): void {
         $entityStatus->setState(EntityStatusEntity::STATE_DELETED);
         $entityStatus->setDeletedAt(new DateTimeImmutable());
-
-        $indexingStatusCollection->add($entityStatus);
     }
 }

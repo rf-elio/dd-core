@@ -69,7 +69,8 @@ class EntityStatusCollection extends EntityCollection
         return $this->get($id);
     }
 
-    private function prepareEntityMap() {
+    private function prepareEntityMap(): void
+    {
         if (!empty($this->map)) {
             return;
         }
@@ -83,5 +84,12 @@ class EntityStatusCollection extends EntityCollection
     private function getMapIdentifier(string $type, string $identifier): string
     {
         return $type.'-'.$identifier;
+    }
+
+    public function getEntityIds()
+    {
+        return array_map(static function (EntityStatusEntity $entity) {
+            return $entity->getEntityId();
+        }, $this->elements);
     }
 }

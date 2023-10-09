@@ -33,8 +33,8 @@
 namespace Elio\ElioSearch\Core\Sync\Translator;
 
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -52,18 +52,18 @@ trait TranslatorAware
      *
      * @param SalesChannelContextCollection $salesChannelContexts
      * @param Criteria $criteria
-     * @param EntityRepository $repository
+     * @param SalesChannelRepository $repository
      * @return array
      */
     public function prepareTranslationData(
         SalesChannelContextCollection $salesChannelContexts,
         Criteria $criteria,
-        EntityRepository $repository
+        SalesChannelRepository $repository
     ): array {
         $translationData = [];
         /** @var SalesChannelContext $salesChannelContext */
         foreach ($salesChannelContexts as $salesChannelContext) {
-            $entities = $repository->search($criteria, $salesChannelContext->getContext());
+            $entities = $repository->search($criteria, $salesChannelContext);
             foreach ($entities as $entity) {
                 $translationData[$salesChannelContext->getLanguageId()][] = $entity;
             }

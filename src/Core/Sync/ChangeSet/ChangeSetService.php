@@ -34,6 +34,7 @@ namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -42,6 +43,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class ChangeSetService
 {
@@ -52,20 +54,23 @@ class ChangeSetService
     /**
      * @param EntityRepository $entityStatusRepository
      * @param IndexerInterface[] $indexers
+     * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly EntityRepository $entityStatusRepository,
-        private readonly iterable $indexers
-    ) {}
+        private readonly iterable $indexers,
+        private readonly LoggerInterface $logger
+    ) {
+    }
 
     /**
      * Prepares change set array
      *
      * @param SyncProfileEntity $syncProfile
      * @param Context $context
-     * @return ChangeSetCollection
+     * @return ChangeSet
      */
-    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context): ChangeSetCollection
+    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context): ChangeSet
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('dataType', $syncProfile->getDataType()));
@@ -81,29 +86,29 @@ class ChangeSetService
                 ]),
             ]));
         }
-        $iterator = new RepositoryIterator($this->entityStatusRepository, $context, $criteria);
 
-        $changeSetCollection = new ChangeSetCollection();
+        $iterator = new RepositoryIterator($this->entityStatusRepository, $context, $criteria);
+        $changeSet = new ChangeSet();
         while ($entityStatuses = $iterator->fetch()) {
             /** @var EntityStatusEntity $entityStatus */
             foreach ($entityStatuses as $entityStatus) {
                 switch ($entityStatus->getState()) {
                     case EntityStatusEntity::STATE_CREATED:
-                        $changeSetCollection->addCreated($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        $changeSet->addCreated($entityStatus);
                         break;
 
                     case EntityStatusEntity::STATE_UPDATED:
-                        $changeSetCollection->addUpdated($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        $changeSet->addUpdated($entityStatus);
                         break;
 
                     case EntityStatusEntity::STATE_DELETED:
-                        $changeSetCollection->addDeleted($entityStatus->getEntityType(), $entityStatus->getEntityId());
+                        $changeSet->addDeleted($entityStatus);
                         break;
                 }
             }
         }
 
-        return $changeSetCollection;
+        return $changeSet;
     }
 
     /**
@@ -118,11 +123,19 @@ class ChangeSetService
         /** @var EntityStatusCollection $currentEntityStatusCollection */
         $currentEntityStatusCollection = $entitiesStatus->getEntities();
 
+        $this->logger->info('Changeset: Indexing started');
+
         /** @var IndexerInterface $indexer */
         foreach ($this->indexers as $indexer) {
             $entityStatuses = $indexer->index($currentEntityStatusCollection, $context);
             $this->persistEntityStatusCollection($entityStatuses, $context);
+            $this->logger->info('Changeset: Indexing', [
+                'indexer' => get_class($indexer),
+                'changes' => $entityStatuses->count()
+            ]);
         }
+
+        $this->logger->info('Changeset: Indexing finished');
     }
 
     /**
@@ -142,7 +155,7 @@ class ChangeSetService
             $upsertData[] = [
                 'id' => $entityStatus->getId(),
                 'entityType' => $entityStatus->getEntityType(),
-                'entityId' => $entityStatus->getEntityId(),
+                'entityId' => Uuid::fromHexToBytes($entityStatus->getEntityId()),
                 'identifier' => $entityStatus->getIdentifier(),
                 'dataType' => $entityStatus->getDataType(),
                 'state' => $entityStatus->getState(),

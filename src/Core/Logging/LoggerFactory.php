@@ -35,11 +35,13 @@ namespace Elio\ElioSearch\Core\Logging;
 
 use Elio\ElioSearch\Core\Logging\Handler\ElioSearchFilterHandler;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 
 /**
  * Class LoggerFactory
@@ -54,6 +56,7 @@ class LoggerFactory
     private string $rotatingFilePathPattern;
     private int $defaultFileRotationCount;
     private LogFilterContext $logFilterContext;
+    private AbstractProcessingHandler $consoleHandler;
 
     /**
      * LoggerFactory constructor.
@@ -64,12 +67,14 @@ class LoggerFactory
     public function __construct(
         string $rotatingFilePathPattern,
         int $defaultFileRotationCount,
-        LogFilterContext $logFilterContext
+        LogFilterContext $logFilterContext,
+        AbstractProcessingHandler $consoleHandler
     )
     {
         $this->rotatingFilePathPattern = $rotatingFilePathPattern;
         $this->defaultFileRotationCount = $defaultFileRotationCount;
         $this->logFilterContext = $logFilterContext;
+        $this->consoleHandler = $consoleHandler;
     }
 
     /**
@@ -91,6 +96,7 @@ class LoggerFactory
         $formatter = new JsonFormatter();
         $formatter->setJsonPrettyPrint(true);
         $handler->setFormatter($formatter);
+        $result->pushHandler($this->consoleHandler);
 
         if ($useLogFilter) {
             $result->pushHandler(new ElioSearchFilterHandler($handler, $this->logFilterContext));

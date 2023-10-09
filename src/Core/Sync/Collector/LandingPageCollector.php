@@ -43,6 +43,7 @@ use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -60,7 +61,7 @@ class LandingPageCollector implements DataCollectorInterface
     public const CHUNK_SIZE = 500;
 
     public function __construct(
-        private readonly EntityRepository $landingPageRepository,
+        private readonly SalesChannelRepository $landingPageRepository,
         private readonly EventDispatcherInterface $dispatcher
     ) {
     }
@@ -90,13 +91,10 @@ class LandingPageCollector implements DataCollectorInterface
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
-        if ($criteria === null) {
-            $criteria = new Criteria();
-        }
-
+        $criteria = $criteria ? clone $criteria : new Criteria();
         $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
-        $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context->getContext())->getIds();
+        $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($landingPageIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->landingPageRepository);

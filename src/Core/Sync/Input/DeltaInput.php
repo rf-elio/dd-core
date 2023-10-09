@@ -77,32 +77,42 @@ class DeltaInput implements InputInterface
     {
         $syncProfile = $syncContext->getSyncProfile();
         $contexts = $syncContext->getSalesChannelContexts();
-        $changeSet = $this->changeSetService->getChangeSet($syncProfile, $syncContext->getSalesChannelContexts()->getFirst()->getContext());
+        $changeSet = $this->changeSetService->getChangeSet(
+            $syncProfile,
+            $syncContext->getSalesChannelContexts()->getFirst()->getContext()
+        );
+
+        $this->logger->info('DeltaInput: ChangeSet count', [
+            'created' => $changeSet->countCreated(),
+            'updated' => $changeSet->countUpdated(),
+            'deleted' => $changeSet->countDeleted(),
+        ]);
 
         if ($changeSet->isEmpty()) {
-            $this->logger->info(sprintf('No entries sync entries found for profile %s', $syncContext->getProfileDefinition()->getName()));
+            $this->logger->info(sprintf('DeltaInput: No entries sync entries found for profile %s', $syncContext->getProfileDefinition()->getName()));
             return;
         }
 
-        foreach ($changeSet->getDeleted() as $ids) {
-            yield new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, $ids);
+        foreach ($changeSet->getDeleted() as $changeSetEntityCollection) {
+            yield new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, $changeSetEntityCollection);
         }
 
-        foreach ($changeSet->getCreated() as $entityType => $ids) {
+        foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
+            $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
-                $collection = $collector->collect($contexts, new Criteria($ids));
+                $collection = $collector->collect($contexts, $criteria);
                 /** @var TranslatedEntityCollection $currentData */
                 $currentData = $collection->current() ?? new TranslatedEntityCollection();
                 yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $currentData);
             }
         }
 
-        foreach ($changeSet->getUpdated() as $entityType => $ids) {
+        foreach ($changeSet->getUpdated() as $entityType => $changeSetEntityCollection) {
+            $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
-                $collection = $collector->collect($contexts, new Criteria($ids));
-                /** @var TranslatedEntityCollection $currentData */
-                $currentData = $collection->current() ?? new TranslatedEntityCollection();
-                yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $currentData);
+                foreach ($collector->collect($contexts, $criteria) as $collection) {
+                    yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $collection);
+                }
             }
         }
     }

@@ -78,7 +78,7 @@ class SyncService
     {
         $context = Context::createDefaultContext();
         $salesChannel = $syncProfile->getSalesChannel();
-        if(!$salesChannel || !$salesChannel->getDomains()) {
+        if (!$salesChannel || !$salesChannel->getDomains()) {
             $this->logger->info(
                 'Cannot generate product export: association "salesChannel.domains" is missing',
                 ['id' => $syncProfile->getId()]
@@ -104,6 +104,23 @@ class SyncService
         $syncContext = new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts);
         $input = $this->inputService->getInput($syncContext);
         $outputStream = $this->outputService->createOutputStream($syncContext);
+
+        $this->logger->info('Sync: Starting', [
+            'id' => $syncProfile->getId(),
+            'name' => $syncProfile->getName(),
+            'languages' => $syncProfile->getLanguages()?->getIds(),
+            'profileDefinition' => [
+                'name' => $profileDefinition->getName(),
+                'input' => $profileDefinition->getInput(),
+                'outputs' => $profileDefinition->getOutputs(),
+                'features' => $profileDefinition->getFeatures(),
+                'dataTypes' => $profileDefinition->getDataTypes(),
+            ],
+            'currentProfile' => [
+                'input' => get_class($input),
+                'dataType' => $syncProfile->getDataType(),
+            ]
+        ]);
 
         $this->setStartDate($syncProfile, $context);
         $outputStream->open();
@@ -182,10 +199,12 @@ class SyncService
      */
     protected function setStartDate(SyncProfileEntity $syncProfile, Context $context): void
     {
-        $this->syncProfileRepository->update([[
-            'id' => $syncProfile->getId(),
-            'lastGenerationStartedAt' => new DateTimeImmutable(),
-        ]], $context);
+        $this->syncProfileRepository->update([
+            [
+                'id' => $syncProfile->getId(),
+                'lastGenerationStartedAt' => new DateTimeImmutable(),
+            ]
+        ], $context);
     }
 
     /**
@@ -197,10 +216,12 @@ class SyncService
      */
     protected function setFinishDate(SyncProfileEntity $syncProfile, Context $context): void
     {
-        $this->syncProfileRepository->update([[
-            'id' => $syncProfile->getId(),
-            'lastGenerationFinishedAt' => new DateTimeImmutable(),
-        ]], $context);
+        $this->syncProfileRepository->update([
+            [
+                'id' => $syncProfile->getId(),
+                'lastGenerationFinishedAt' => new DateTimeImmutable(),
+            ]
+        ], $context);
     }
 
     /**

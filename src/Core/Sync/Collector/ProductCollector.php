@@ -37,14 +37,13 @@ use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
 use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\Translator\TranslationException;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -63,7 +62,7 @@ class ProductCollector implements DataCollectorInterface
     public const CHUNK_SIZE = 100;
 
     public function __construct(
-        private readonly EntityRepository $productRepository,
+        private readonly SalesChannelRepository $productRepository,
         private readonly EventDispatcherInterface $dispatcher
     ) {
     }
@@ -93,13 +92,9 @@ class ProductCollector implements DataCollectorInterface
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
-        if ($criteria === null) {
-            $criteria = new Criteria();
-        }
-
+        $criteria = $criteria ? clone $criteria : new Criteria();
         $context = $contexts->getFirst();
-        $this->prepareCriteria($criteria);
-        $productIds = $this->productRepository->searchIds($criteria, $context->getContext())->getIds();
+        $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
