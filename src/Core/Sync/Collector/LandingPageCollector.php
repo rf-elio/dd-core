@@ -35,14 +35,14 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
-use Elio\ElioSearch\Core\Sync\Translator\Translator;
+use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -55,13 +55,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class LandingPageCollector implements DataCollectorInterface
 {
+    use TranslatorAware;
     public const TYPE = ContentType::class;
     public const CHUNK_SIZE = 500;
 
     public function __construct(
         private readonly EntityRepository $landingPageRepository,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly Translator $translator
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 
@@ -84,22 +84,22 @@ class LandingPageCollector implements DataCollectorInterface
     /**
      * Collects translated data for landing page
      *
-     * @param array $languageIds
-     * @param SalesChannelContext $context
+     * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator
+     * @return Generator<TranslatedEntityCollection>
      */
-    public function collect(array $languageIds, SalesChannelContext $context, ?Criteria $criteria = null): Generator
+    public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         if ($criteria === null) {
             $criteria = new Criteria();
         }
 
+        $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
         $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context->getContext())->getIds();
         foreach (array_chunk($landingPageIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
-            $data = $this->translator->prepareTranslationData($languageIds, $criteria, $this->landingPageRepository, $context);
+            $data = $this->prepareTranslationData($contexts, $criteria, $this->landingPageRepository);
             yield $this->mapCollectedData($data);
         }
     }
@@ -127,20 +127,23 @@ class LandingPageCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return array
+     * @return TranslatedEntityCollection
      */
-    protected function mapCollectedData(array $data): array
+    protected function mapCollectedData(array $data): TranslatedEntityCollection
     {
-        $mappedData = [];
+        $translatedCollection = new TranslatedEntityCollection();
         foreach ($data as $languageId => $entities) {
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
-                $mappedData[$entity->getId()][$languageId] = $this->mapLandingPageToDataType($entity);
+                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
+                $translatedEntity->setId($entity->getId());
+                $translatedEntity->addTranslation($languageId, $this->mapLandingPageToDataType($entity));
+                $translatedCollection->set($entity->getId(), $translatedEntity);
             }
 
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $mappedData);
+        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
         $this->dispatcher->dispatch($event);
         return $event->getData();
     }
@@ -164,7 +167,6 @@ class LandingPageCollector implements DataCollectorInterface
         $contentType->setTags($landingPage->getTags());
         $contentType->setCustomFields($landingPage->getCustomFields());
         $contentType->addExtension('original', $landingPage);
-
         return $contentType;
     }
 }

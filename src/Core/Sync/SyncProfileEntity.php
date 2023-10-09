@@ -57,7 +57,6 @@ class SyncProfileEntity extends Entity
     protected bool $active;
     protected string $profile;
     protected string $dataType;
-    protected string $output;
     protected string $interval;
     protected array $mapping = [];
     protected array $config = [];
@@ -169,22 +168,6 @@ class SyncProfileEntity extends Entity
     public function setDataType(string $dataType): void
     {
         $this->dataType = $dataType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOutput(): string
-    {
-        return $this->output;
-    }
-
-    /**
-     * @param string $output
-     */
-    public function setOutput(string $output): void
-    {
-        $this->output = $output;
     }
 
     /**

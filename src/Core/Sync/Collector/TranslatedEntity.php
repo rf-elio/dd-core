@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Collector;
 
+
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class TranslatedEntity
+ * @package Elio\ElioSearch\Core\Sync\Collector
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class TranslatedEntity extends Struct
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    use EntityIdTrait;
+    private array $translations = [];
+
+    public function addTranslation(string $languageId, Struct $translation): void
+    {
+        $this->translations[$languageId] = $translation;
+    }
+
+    public function getFirst(): ?Struct
+    {
+        return array_values($this->translations)[0] ?? null;
+    }
+
+    /**
+     * Returns all translations
+     *
+     * @return array
+     */
+    public function getTranslations(): array
+    {
+        return $this->translations;
+    }
+
+    /**
+     * Returns all translations
+     *
+     * @param string $languageId
+     * @return Struct|null
+     */
+    public function getTranslation(string $languageId): ?Struct
+    {
+        return $this->translations[$languageId] ?? null;
+    }
 }

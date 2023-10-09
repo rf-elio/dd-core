@@ -30,19 +30,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output\File;
 
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
+ * Class ExportItem
+ * @package Elio\ElioSearch\Core\Sync\Output\File
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class ExportItem
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    private CONST MAX_VALUE_LENGTH = 49000;
+
+    /**
+     * @var array<string>
+     */
+    protected array $params = [];
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function set(string $key, mixed $value): void
+    {
+        if(is_string($value) && strlen($value) > self::MAX_VALUE_LENGTH) {
+            $value = mb_substr($value, 0, self::MAX_VALUE_LENGTH);
+        }
+
+        $this->params[$key] = $value;
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
+     * Returns the array keys of the current item
+     *
+     * @return array<string>
+     */
+    public function getKeys() : array
+    {
+        return array_keys($this->params);
+    }
 }

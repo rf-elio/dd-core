@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync;
 
-
-/**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-abstract class SyncDefaults
+interface ProfileInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public const FEATURES = [
+        'multiLanguageSupport' => false,
+        'deltaSupport' => true
+    ];
+
+    public function getName(): string;
+    public function getDataTypes(): array;
+    public function getInput(): string;
+    public function getOutputs(): array;
+    public function getFeatures(): array;
 }

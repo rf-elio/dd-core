@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output;
 
+use Elio\ElioSearch\Core\Sync\SyncContext;
+use Shopware\Core\Framework\Struct\Collection;
 
-/**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-abstract class SyncDefaults
+interface DeltaAwareInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public function create(Collection $collection, SyncContext $syncContext): void;
+    public function update(Collection $collection, SyncContext $syncContext): void;
+    public function delete(Collection $collection, SyncContext $syncContext): void;
 }

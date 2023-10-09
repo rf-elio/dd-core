@@ -35,7 +35,9 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
-use Elio\ElioSearch\Core\Sync\Translator\Translator;
+use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioSearch\Core\Sync\Translator\TranslationException;
+use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -55,13 +57,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class CategoryCollector implements DataCollectorInterface
 {
+    use TranslatorAware;
     public const TYPE = ContentType::class;
     public const CHUNK_SIZE = 500;
 
     public function __construct(
         private readonly EntityRepository $categoryRepository,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly Translator $translator
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 
@@ -84,22 +86,22 @@ class CategoryCollector implements DataCollectorInterface
     /**
      * Collects translated data for category
      *
-     * @param array $languageIds
-     * @param SalesChannelContext $context
+     * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator
+     * @return Generator<TranslatedEntityCollection>
      */
-    public function collect(array $languageIds, SalesChannelContext $context, ?Criteria $criteria = null): Generator
+    public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         if ($criteria === null) {
             $criteria = new Criteria();
         }
 
+        $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
         $categoryIds = $this->categoryRepository->searchIds($criteria, $context->getContext())->getIds();
         foreach (array_chunk($categoryIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
-            $data = $this->translator->prepareTranslationData($languageIds, $criteria, $this->categoryRepository, $context);
+            $data = $this->prepareTranslationData($contexts, $criteria, $this->categoryRepository);
             yield $this->mapCollectedData($data);
         }
     }
@@ -128,20 +130,23 @@ class CategoryCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return array
+     * @return TranslatedEntityCollection
      */
-    protected function mapCollectedData(array $data): array
+    protected function mapCollectedData(array $data): TranslatedEntityCollection
     {
-        $mappedData = [];
+        $translatedCollection = new TranslatedEntityCollection();
         foreach ($data as $languageId => $entities) {
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
-                $mappedData[$entity->getId()][$languageId] = $this->mapCategoryToDataType($entity);
+                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
+                $translatedEntity->setId($entity->getId());
+                $translatedEntity->addTranslation($languageId, $this->mapCategoryToDataType($entity));
+                $translatedCollection->set($entity->getId(), $translatedEntity);
             }
 
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $mappedData);
+        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
         $this->dispatcher->dispatch($event);
         return $event->getData();
     }
@@ -169,7 +174,6 @@ class CategoryCollector implements DataCollectorInterface
         $contentType->setTags($category->getTags());
         $contentType->setCustomFields($category->getCustomFields());
         $contentType->addExtension('original', $category);
-
         return $contentType;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
+use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
+use Elio\ElioSearch\Core\Sync\SyncContext;
+use Generator;
 
-/**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-abstract class SyncDefaults
+interface InputInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * Checks if the inputs supports the input type
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function supports(string $type): bool;
+
+    /**
+     * @param SyncContext $syncContext
+     * @return Generator<DeltaDataCollection>
+     */
+    public function read(SyncContext $syncContext): Generator;
 }

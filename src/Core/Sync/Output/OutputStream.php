@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
@@ -30,44 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector\Event;
+namespace Elio\ElioSearch\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\Collector\TranslatedEntity;
-use Elio\ElioSearch\Core\Sync\Collector\TranslatedEntityCollection;
-use Symfony\Contracts\EventDispatcher\Event;
+
+use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
+use Elio\ElioSearch\Core\Sync\SyncContext;
 
 /**
- * Class DataCollectedEvent
- * @package Elio\ElioSearch\Core\Sync\Collectors\Event
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class OutputStream
+ * @package Elio\ElioSearch\Core\Sync\Output
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class DataCollectedEvent extends Event
+class OutputStream
 {
     /**
-     * @param string $type
-     * @param TranslatedEntityCollection $data
+     * @param OutputInterface[] $outputs
      */
     public function __construct(
-        private readonly string $type,
-        private TranslatedEntityCollection $data
-    ) {
+        private readonly iterable $outputs,
+        private readonly SyncContext $syncContext
+    )
+    {
     }
 
-    public function getType(): string
+    public function open(): void
     {
-        return $this->type;
+        foreach ($this->outputs as $output) {
+            if ($output instanceof HandleInterface) {
+                $output->open($this->syncContext);
+            }
+        }
     }
 
-    public function setData(TranslatedEntityCollection $data): void
+    public function close(): void
     {
-        $this->data = $data;
+        foreach ($this->outputs as $output) {
+            if ($output instanceof HandleInterface) {
+                $output->close();
+            }
+        }
     }
 
-    public function getData(): TranslatedEntityCollection
+    public function write(DeltaDataCollection $dataCollection): void
     {
-        return $this->data;
+        foreach ($this->outputs as $output) {
+            if ($output instanceof DeltaAwareInterface) {
+                if ($dataCollection->getType() === DeltaDataCollection::TYPE_CREATED) {
+                    $output->create($dataCollection, $this->syncContext);
+                } elseif ($dataCollection->getType() === DeltaDataCollection::TYPE_UPDATED) {
+                    $output->update($dataCollection, $this->syncContext);
+                } elseif ($dataCollection->getType() === DeltaDataCollection::TYPE_DELETED) {
+                    $output->delete($dataCollection, $this->syncContext);
+                }
+            } elseif ($output instanceof WriteAwareInterface) {
+                $output->write($dataCollection, $this->syncContext);
+            }
+        }
     }
 }

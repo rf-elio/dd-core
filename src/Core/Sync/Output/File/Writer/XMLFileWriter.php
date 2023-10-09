@@ -30,19 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output\File\Writer;
 
+
+use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * Class XMLFileWriter
+ * @package Elio\ElioSearch\Core\Export\Writer
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class XMLFileWriter extends BaseWriter implements FileWriterInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public const TYPE = 'xml';
+
+    /**
+     * Checks if the writer can be used for the given export
+     * @param string $format
+     * @return bool
+     */
+    public function supports(string $format): bool
+    {
+        return $format === self::TYPE;
+    }
+
+    protected function write($handle, ExportItem $item): void
+    {
+        // TODO: Implement write() method.
+    }
 }

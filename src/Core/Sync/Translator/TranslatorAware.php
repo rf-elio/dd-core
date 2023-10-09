@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Translator;
 
+use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
+ * Class Translator
+ * @package Elio\ElioSearch\Core\Sync\Translator
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+trait TranslatorAware
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * Prepares translation data
+     *
+     * @param SalesChannelContextCollection $salesChannelContexts
+     * @param Criteria $criteria
+     * @param EntityRepository $repository
+     * @return array
+     */
+    public function prepareTranslationData(
+        SalesChannelContextCollection $salesChannelContexts,
+        Criteria $criteria,
+        EntityRepository $repository
+    ): array {
+        $translationData = [];
+        /** @var SalesChannelContext $salesChannelContext */
+        foreach ($salesChannelContexts as $salesChannelContext) {
+            $entities = $repository->search($criteria, $salesChannelContext->getContext());
+            foreach ($entities as $entity) {
+                $translationData[$salesChannelContext->getLanguageId()][] = $entity;
+            }
+        }
+
+        return $translationData;
+    }
 }

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
@@ -30,37 +30,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioSearch\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Generator;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+
+use Elio\ElioSearch\Core\Sync\Exception\OutputNotFoundException;
+use Elio\ElioSearch\Core\Sync\Output\Api\Exception\ApiSyncException;
+use Elio\ElioSearch\Core\Sync\ProfileInterface;
+use Elio\ElioSearch\Core\Sync\SyncContext;
 
 /**
- * Interface DataCollectorInterface
- * @package Elio\ElioSearch\Core\Sync\Collector
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class OutputService
+ * @package Elio\ElioSearch\Core\Sync\Output
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-interface DataCollectorInterface
+class OutputService
 {
-    /**
-     * Checks if collector is supported
-     *
-     * @param string $type
-     * @param string|null $entityType
-     * @return bool
-     */
-    public function supports(string $type, ?string $entityType = null): bool;
+    public function __construct(
+        private readonly iterable $outputs
+    )
+    {
+    }
+
+    public function createOutputStream(SyncContext $syncContext): OutputStream
+    {
+        return new OutputStream(
+            $this->getOutputs($syncContext->getProfileDefinition()),
+            $syncContext
+        );
+    }
 
     /**
-     * Collects entity data
-     *
-     * @param SalesChannelContextCollection $contexts
-     * @param Criteria|null $criteria
-     * @return Generator<TranslatedEntityCollection>
+     * @param ProfileInterface $profile
+     * @return OutputInterface[]
      */
-    public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator;
+    protected function getOutputs(ProfileInterface $profile): array
+    {
+        $outputs = [];
+
+        foreach ($profile->getOutputs() as $output) {
+            $outputs[] = $this->getOutput($output);
+        }
+
+        return $outputs;
+    }
+
+    /**
+     * Gets profile api writer
+     *
+     * @param string $name
+     * @return OutputInterface
+     */
+    protected function getOutput(string $name): OutputInterface
+    {
+        /** @var OutputInterface $apiWriter */
+        foreach ($this->outputs as $output) {
+            if ($output->supports($name)) {
+                return $output;
+            }
+        }
+
+        throw new OutputNotFoundException(sprintf('Output "%s" not found', $name));
+    }
 }

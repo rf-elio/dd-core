@@ -72,14 +72,6 @@
                                             :label="$tc('elio-search-sync-profile.detail.labelDataType')">
                                     </sw-field>
                                     <sw-field
-                                            v-if="outputList"
-                                            v-model="elio_search_sync_profile.output"
-                                            type="select"
-                                            required
-                                            :options="outputList"
-                                            :label="$tc('elio-search-sync-profile.detail.labelOutput')">
-                                    </sw-field>
-                                    <sw-field
                                             v-model="elio_search_sync_profile.active"
                                             type="switch"
                                             :label="$tc('elio-search-sync-profile.detail.labelActive')"

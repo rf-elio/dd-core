@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
+
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class InputDataCollection
+ * @package Elio\ElioSearch\Core\Sync\Input
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class InputDataCollection extends Collection
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public const TYPE_CREATED = 'created';
+    public const TYPE_UPDATED = 'updated';
+    public const TYPE_DELETED = 'deleted';
+
+    public function __construct(
+        private readonly string $type,
+        private readonly Collection $entities,
+    )
+    {
+        parent::__construct();
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getEntities(): Collection
+    {
+        return $this->entities;
+    }
 }

@@ -33,10 +33,8 @@
 namespace Elio\ElioSearch\Core\Sync;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\Api\ApiService;
-use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
-use Elio\ElioSearch\Core\Sync\Export\ExportService;
-use Elio\ElioSearch\Core\Sync\Profile\SyncProfileInterface;
+use Elio\ElioSearch\Core\Sync\Input\InputService;
+use Elio\ElioSearch\Core\Sync\Output\OutputService;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -60,10 +58,10 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 class SyncService
 {
     public function __construct(
-        private readonly ExportService $exportService,
-        private readonly ApiService $apiService,
         private readonly EntityRepository $syncProfileRepository,
         private readonly iterable $profileDefinitions,
+        private readonly InputService $inputService,
+        private readonly OutputService $outputService,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly LoggerInterface $logger
     ) {
@@ -78,6 +76,7 @@ class SyncService
      */
     public function sync(SyncProfileEntity $syncProfile): void
     {
+        $context = Context::createDefaultContext();
         $salesChannel = $syncProfile->getSalesChannel();
         if(!$salesChannel || !$salesChannel->getDomains()) {
             $this->logger->info(
@@ -91,25 +90,30 @@ class SyncService
             ));
         }
 
-        $languageId = $syncProfile->getLanguages()?->first()?->getId();
-        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId(), [SalesChannelContextService::LANGUAGE_ID => $languageId]);
+        $salesChannelContexts = new SalesChannelContextCollection();
+        foreach ($syncProfile->getLanguages() as $language) {
+            $salesChannelContexts->add($this->salesChannelContextFactory->create(
+                '',
+                $salesChannel->getId(),
+                [SalesChannelContextService::LANGUAGE_ID => $language->getId()]
+            ));
+            $salesChannelContexts->addLanguage($language);
+        }
 
-        $this->setStartDate($syncProfile, $salesChannelContext->getContext());
         $profileDefinition = $this->getProfileDefinition($syncProfile);
+        $syncContext = new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts);
+        $input = $this->inputService->getInput($syncContext);
+        $outputStream = $this->outputService->createOutputStream($syncContext);
 
-        if ($profileDefinition->getType() === SyncDefaults::PROFILE_SYNC) {
-            $this->apiService->sync($profileDefinition, $syncProfile, $salesChannelContext);
-            $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
-            return;
+        $this->setStartDate($syncProfile, $context);
+        $outputStream->open();
+
+        foreach ($input->read($syncContext) as $dataCollection) {
+            $outputStream->write($dataCollection);
         }
 
-        if ($profileDefinition->getType() === SyncDefaults::PROFILE_EXPORT) {
-            $this->exportService->export($profileDefinition, $syncProfile, $salesChannelContext);
-            $this->setFinishDate($syncProfile, $salesChannelContext->getContext());
-            return;
-        }
-
-        throw new InvalidArgumentException(sprintf('Invalid profileConfiguration type %s', $syncProfile->getType()));
+        $outputStream->close();
+        $this->setFinishDate($syncProfile, $context);
     }
 
     /**
@@ -139,6 +143,7 @@ class SyncService
         $criteria = new Criteria([$id]);
         $criteria->addAssociation('salesChannel.domains');
         $criteria->addAssociation('languages');
+        $criteria->addAssociation('languages.locale');
         $criteria->addFilter(new EqualsFilter('active', true));
         if (!$syncProfile = $this->syncProfileRepository->search($criteria, $context)->first()) {
             throw new InvalidArgumentException(sprintf('Sync profile for id %s not found', $id));
@@ -202,11 +207,11 @@ class SyncService
      * Gets profile configuration
      *
      * @param SyncProfileEntity $syncProfile
-     * @return SyncProfileInterface
+     * @return ProfileInterface
      */
-    protected function getProfileDefinition(SyncProfileEntity $syncProfile): SyncProfileInterface
+    protected function getProfileDefinition(SyncProfileEntity $syncProfile): ProfileInterface
     {
-        /** @var SyncProfileInterface $profileConfiguration */
+        /** @var ProfileInterface $profileConfiguration */
         foreach ($this->profileDefinitions as $profileDefinition) {
             if ($profileDefinition->getName() === $syncProfile->getProfile()) {
                 return $profileDefinition;

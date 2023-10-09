@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output\File\Event;
 
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
+ * Class ExportGeneratedEvent
+ * @package Elio\ElioSearch\Core\Sync\Output\File\Event
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class ExportGeneratedEvent extends Event
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    public function __construct(
+        private readonly SyncProfileEntity $syncProfile,
+        private readonly SalesChannelContext $context
+    ) {
+    }
+
+    public function getSyncProfile(): SyncProfileEntity
+    {
+        return $this->syncProfile;
+    }
+
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
 }

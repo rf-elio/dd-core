@@ -35,15 +35,17 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
+use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
+use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslationException;
-use Elio\ElioSearch\Core\Sync\Translator\Translator;
+use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -56,13 +58,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ProductCollector implements DataCollectorInterface
 {
+    use TranslatorAware;
     public const TYPE = ProductType::class;
-    public const CHUNK_SIZE = 1;
+    public const CHUNK_SIZE = 100;
 
     public function __construct(
         private readonly EntityRepository $productRepository,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly Translator $translator
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 
@@ -85,23 +87,22 @@ class ProductCollector implements DataCollectorInterface
     /**
      * Collects translated data for products
      *
-     * @param array $languageIds
-     * @param SalesChannelContext $context
+     * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator
-     * @throws TranslationException
+     * @return Generator<TranslatedEntityCollection>
      */
-    public function collect(array $languageIds, SalesChannelContext $context, ?Criteria $criteria = null): Generator
+    public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         if ($criteria === null) {
             $criteria = new Criteria();
         }
 
+        $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
         $productIds = $this->productRepository->searchIds($criteria, $context->getContext())->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
-            $data = $this->translator->prepareTranslationData($languageIds, $criteria, $this->productRepository, $context);
+            $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
             yield $this->mapCollectedData($data);
         }
     }
@@ -133,20 +134,26 @@ class ProductCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return array
+     * @return TranslatedEntityCollection
      */
-    protected function mapCollectedData(array $data): array
+    protected function mapCollectedData(array $data): TranslatedEntityCollection
     {
-        $mappedData = [];
+        $translatedCollection = new TranslatedEntityCollection();
         foreach ($data as $languageId => $entities) {
             /** @var ProductEntity $entity */
             foreach ($entities as $entity) {
-                $mappedData[$entity->getId()][$languageId] = ProductType::createFrom($entity);
+                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
+                $translatedEntity->setId($entity->getId());
+                $product = ProductType::createFrom($entity);
+                $product->addExtension(SeoRoute::class, new SeoRoute(
+                    ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
+                ));
+                $translatedEntity->addTranslation($languageId, $product);
+                $translatedCollection->set($entity->getId(), $translatedEntity);
             }
-
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $mappedData);
+        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
         $this->dispatcher->dispatch($event);
         return $event->getData();
     }

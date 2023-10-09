@@ -30,19 +30,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output\File\Writer;
 
+
+use Elio\ElioSearch\Core\Export\ExportItem;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * Interface FileWriterInterface
+ * @package Elio\ElioSearch\Core\Sync\Output\File\Writer
  */
-abstract class SyncDefaults
+interface FileWriterInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * Checks if the writer can be used for the given export
+     * @param string $format
+     * @return bool
+     */
+    public function supports(string $format) : bool;
+
+    /**
+     * Opens a new file handle that is used to write the export in
+     * @return resource
+     */
+    public function open(SalesChannelContext $context);
+
+    /**
+     * Registers the model of the item that are written
+     *
+     * @param array $model
+     */
+    public function registerModel(array $model) : void;
+
+    /**
+     * @param resource $handle
+     * @param ExportItem[] $items
+     */
+    public function writeList($handle, array $items) : void;
+
+    /**
+     * Closes the export and finalizes the file
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     * @param resource $handle
+     * @return void
+     */
+    public function close(SyncProfileEntity $syncProfile, SalesChannelContext $context, $handle) : void;
+
+    /**
+     * Abort the write process because of an error
+     * @param resource $handle
+     * @return void
+     */
+    public function abort($handle) : void;
 }

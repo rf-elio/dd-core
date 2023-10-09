@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
+
+use Elio\ElioSearch\Core\Sync\Exception\InputNotFoundException;
+use Elio\ElioSearch\Core\Sync\SyncContext;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class InputService
+ * @package Elio\ElioSearch\Core\Sync\Input
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class InputService
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * @param InputInterface[] $inputs
+     */
+    public function __construct(
+        private readonly iterable $inputs
+    ) {}
+
+    public function getInput(SyncContext $syncContext): InputInterface
+    {
+        return $this->getInputByName($syncContext->getProfileDefinition()->getInput());
+    }
+
+    protected function getInputByName(string $name): InputInterface
+    {
+        foreach ($this->inputs as $input) {
+            if ($input->supports($name)) {
+                return $input;
+            }
+        }
+
+        throw new InputNotFoundException(sprintf('Input with name "%s" not found', $name));
+    }
 }

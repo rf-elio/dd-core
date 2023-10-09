@@ -51,7 +51,6 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 multiLanguageSupport: false
             },
             dataTypes: [],
-            outputList: [],
             isMultiLanguageSupport: false,
             languageIdsList: [],
             categoryIdsList: [],
@@ -213,7 +212,6 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                         id: key,
                         type: data['type'],
                         name: data['name'],
-                        outputs: data['outputs'],
                         dataTypes: data['dataTypes']
                     })
                 });
@@ -223,21 +221,15 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
         },
 
         onChangeProfile(key) {
-            const outPutList = [];
             const dataTypes = [];
             const type = '';
             const profile = this.profiles.find((profile) => profile.id = key);
 
-            profile.outputs.forEach((output) => {
-                outPutList.push({id: output, name: output})
-            });
             profile.dataTypes.forEach((dataType) => {
                 dataTypes.push({id: dataType, name: dataType});
             });
 
             this.type = profile.type;
-            // TODO: Fetch list according to type
-            this.outputList = outPutList;
             this.dataTypes = dataTypes;
             this.features = profile.features;
         },

@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS `elio_search_sync_profile` (
     `active` TINYINT(1) NOT NULL DEFAULT '0',
     `profile` VARCHAR(255) NOT NULL,
     `dataType` VARCHAR(255) NOT NULL,
-    `output` VARCHAR(255) NOT NULL,
     `interval` VARCHAR(255) NOT NULL,
     `mapping` json NULL,
     `config` json NULL,

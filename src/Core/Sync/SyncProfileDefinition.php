@@ -100,7 +100,6 @@ class SyncProfileDefinition extends EntityDefinition
             (new BoolField('active', 'active'))->addFlags(new ApiAware(), new Required()),
             (new StringField('profile', 'profile'))->addFlags(new ApiAware(), new Required()),
             (new StringField('dataType', 'dataType'))->addFlags(new ApiAware(), new Required()),
-            (new StringField('output', 'output'))->addFlags(new ApiAware(), new Required()),
             (new StringField('interval', 'interval'))->addFlags(new ApiAware(), new Required()),
             (new JsonField('mapping', 'mapping'))->addFlags(new ApiAware()),
             (new JsonField('config', 'config'))->addFlags(new ApiAware()),

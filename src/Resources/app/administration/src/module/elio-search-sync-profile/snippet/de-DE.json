@@ -12,7 +12,7 @@
       "messageSaveError": "Error while saving: \"{error}\"",
       "textHeadline": "New Export",
       "cardTitleBasicInfo" : "Basic information",
-      "labelName": "Export Name",
+      "labelName": "Name",
       "labelActive": "Active",
       "labelProfile": "Profile",
       "labelType": "Type",

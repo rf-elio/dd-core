@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync;
 
+
+use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class SyncContext
+ * @package Elio\ElioSearch\Core\Sync
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-abstract class SyncDefaults
+class SyncContext
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * @param ProfileInterface $profileDefinition
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContextCollection $contexts
+     */
+    public function __construct(
+        protected readonly ProfileInterface $profileDefinition,
+        protected readonly SyncProfileEntity $syncProfile,
+        protected readonly SalesChannelContextCollection $contexts
+    ) {}
+
+    public function getProfileDefinition(): ProfileInterface
+    {
+        return $this->profileDefinition;
+    }
+
+    public function getSyncProfile(): SyncProfileEntity
+    {
+        return $this->syncProfile;
+    }
+
+    /**
+     * @return SalesChannelContextCollection
+     */
+    public function getSalesChannelContexts(): SalesChannelContextCollection
+    {
+        return $this->contexts;
+    }
 }

@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioSearch\Core\Sync\Output\File\Converter;
 
+use Elio\ElioSearch\Core\Sync\DataTypes\TypeInterface;
+use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-/**
- * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-abstract class SyncDefaults
+interface ConverterInterface
 {
-    public const KEYWORD_SEPARATOR = ',';
-    public const DATE_TIME_FORMAT = 'Y-m-d\TH:i:sP';
+    /**
+     * Converts data type to export item
+     *
+     * @param array $collection
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     * @return ExportItem
+     */
+    public function convert(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context): ExportItem;
 }
