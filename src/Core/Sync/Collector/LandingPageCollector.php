@@ -34,13 +34,13 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -57,7 +57,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class LandingPageCollector implements DataCollectorInterface
 {
     use TranslatorAware;
-    public const TYPE = ContentType::class;
+    public const TYPE = ContentDataType::class;
     public const CHUNK_SIZE = 500;
 
     public function __construct(
@@ -87,13 +87,13 @@ class LandingPageCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<TranslatedEntityCollection>
+     * @return Generator<EntityCollection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         $criteria = $criteria ? clone $criteria : new Criteria();
-        $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
+        $context = $contexts->getFirst();
         $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($landingPageIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
@@ -125,23 +125,22 @@ class LandingPageCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return TranslatedEntityCollection
+     * @return EntityCollection
      */
-    protected function mapCollectedData(array $data): TranslatedEntityCollection
+    protected function mapCollectedData(array $data): EntityCollection
     {
-        $translatedCollection = new TranslatedEntityCollection();
+        $mappedEntities = new EntityCollection();
         foreach ($data as $languageId => $entities) {
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
-                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
-                $translatedEntity->setId($entity->getId());
-                $translatedEntity->addTranslation($languageId, $this->mapLandingPageToDataType($entity));
-                $translatedCollection->set($entity->getId(), $translatedEntity);
+                $dataType = $this->mapLandingPageToDataType($entity);
+                $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
+                $mappedEntity->addDataTypeTranslation($languageId, $dataType);
+                $mappedEntities->set($dataType->getId(), $mappedEntity);
             }
-
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
+        $event = new DataCollectedEvent(self::TYPE, $mappedEntities);
         $this->dispatcher->dispatch($event);
         return $event->getData();
     }
@@ -150,11 +149,11 @@ class LandingPageCollector implements DataCollectorInterface
      * Maps landing page data to content type
      *
      * @param LandingPageEntity $landingPage
-     * @return ContentType
+     * @return ContentDataType
      */
-    protected function mapLandingPageToDataType(LandingPageEntity $landingPage): ContentType
+    protected function mapLandingPageToDataType(LandingPageEntity $landingPage): ContentDataType
     {
-        $contentType = new ContentType();
+        $contentType = new ContentDataType();
         $contentType->setId($landingPage->getId());
         $contentType->setName($landingPage->getName());
         $contentType->setTitle($landingPage->getMetaTitle());

@@ -30,23 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
 
-use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class TranslatedEntityCollection
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * Class TranslationAware
+ * @package Elio\ElioSearch\Core\Sync\DataTypes
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class TranslatedEntityCollection extends Collection
+trait TranslationAware
 {
-    public function getExpectedClass(): ?string
+    private array $dataTypeTranslations = [];
+
+    public function addDataTypeTranslation(string $languageId, DataTypeInterface $translation): void
     {
-        return TranslatedEntity::class;
+        $this->dataTypeTranslations[$languageId] = $translation;
+    }
+
+    /**
+     * Returns all translations
+     *
+     * @return DataTypeInterface[]
+     */
+    public function getDataTypeTranslations(): array
+    {
+        return $this->dataTypeTranslations;
+    }
+
+    /**
+     * Returns all translations
+     *
+     * @param string $languageId
+     * @return DataTypeInterface|null
+     */
+    public function getDataTypeTranslation(string $languageId): ?DataTypeInterface
+    {
+        return $this->dataTypeTranslations[$languageId] ?? null;
     }
 }

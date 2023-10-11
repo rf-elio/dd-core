@@ -24,6 +24,7 @@
         <!--   Collector    -->
         <service id="Elio\ElioSearch\Core\Sync\Collector\ProductCollector">
             <argument type="service" id="sales_channel.product.repository" />
+            <argument type="service" id="sales_channel.category.repository" />
             <argument type="service" id="event_dispatcher" />
             <tag name="elio-search.sync.collector"/>
         </service>
@@ -110,7 +111,6 @@
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Output\SeoRouteOutput">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="router"/>
             <tag name="elio-search.sync.api.output"/>
         </service>
 
@@ -137,7 +137,6 @@
 
         <service id="Elio\ElioSearch\Core\Sync\Api\SyncProfileController" public="true">
             <argument type="tagged" tag="elio-search.sync.profile" />
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\File\ExportStorageService" />
             <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
             <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">

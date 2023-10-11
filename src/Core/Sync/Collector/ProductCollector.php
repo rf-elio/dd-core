@@ -34,16 +34,20 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
+use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -58,11 +62,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ProductCollector implements DataCollectorInterface
 {
     use TranslatorAware;
-    public const TYPE = ProductType::class;
+    public const TYPE = ProductDataType::class;
     public const CHUNK_SIZE = 100;
 
     public function __construct(
         private readonly SalesChannelRepository $productRepository,
+        private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher
     ) {
     }
@@ -88,17 +93,19 @@ class ProductCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<TranslatedEntityCollection>
+     * @return Generator<EntityCollection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
+        $categories = $this->loadCategories($contexts);
         $criteria = $criteria ? clone $criteria : new Criteria();
+        $this->prepareCriteria($criteria);
         $context = $contexts->getFirst();
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
-            yield $this->mapCollectedData($data);
+            yield $this->mapCollectedData($data, $categories);
         }
     }
 
@@ -114,10 +121,9 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
         $criteria->addAssociation('cover');
+        $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
-        $criteria->addFilter(new EqualsFilter('active', true));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
@@ -129,27 +135,73 @@ class ProductCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return TranslatedEntityCollection
+     * @param CategoryCollection[] $categories
+     * @return EntityCollection
      */
-    protected function mapCollectedData(array $data): TranslatedEntityCollection
+    protected function mapCollectedData(array $data, array $categories): EntityCollection
     {
-        $translatedCollection = new TranslatedEntityCollection();
+        $mappedEntities = new EntityCollection();
         foreach ($data as $languageId => $entities) {
-            /** @var ProductEntity $entity */
+            $flatCategoryCollection = $categories[$languageId];
+
+            /** @var SalesChannelProductEntity $entity */
             foreach ($entities as $entity) {
-                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
-                $translatedEntity->setId($entity->getId());
-                $product = ProductType::createFrom($entity);
-                $product->addExtension(SeoRoute::class, new SeoRoute(
-                    ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
+                $productCategoryCollection = $entity->getCategories() ?? new CategoryCollection();
+                $entity->setCategories($productCategoryCollection);
+                foreach ($entity->getCategoryIds() as $categoryId) {
+                    if($category = $flatCategoryCollection->get($categoryId)) {
+                        $productCategoryCollection->add($category);
+                    }
+                }
+
+                $dataType = ProductDataType::createFrom($entity);
+                $dataType->addExtension(SeoRoute::class, new SeoRoute(
+                    ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
                 ));
-                $translatedEntity->addTranslation($languageId, $product);
-                $translatedCollection->set($entity->getId(), $translatedEntity);
+
+                $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
+                $mappedEntity->addDataTypeTranslation($languageId, $dataType);
+                $mappedEntities->set($dataType->getId(), $mappedEntity);
             }
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
+        $event = new DataCollectedEvent(self::TYPE, $mappedEntities);
         $this->dispatcher->dispatch($event);
         return $event->getData();
+    }
+
+    /**
+     * @param SalesChannelContextCollection $contexts
+     * @return CategoryCollection[]
+     */
+    protected function loadCategories(SalesChannelContextCollection $contexts): array
+    {
+        $categories = [];
+        /** @var SalesChannelContext $context */
+        foreach ($contexts as $context) {
+            $flatCategoryCollection = new CategoryCollection();
+            $criteria = new Criteria([$context->getSalesChannel()->getNavigationCategoryId()]);
+            foreach ($this->categoryRepository->search($criteria, $context) as $categoryEntity) {
+                $flatCategoryCollection->add($categoryEntity);
+                $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
+            }
+
+            $categories[$context->getLanguageId()] = $flatCategoryCollection;
+        }
+        return $categories;
+    }
+
+    protected function loadChildCategories(
+        CategoryEntity $parentCategoryEntity,
+        CategoryCollection $flatCategoryCollection,
+        SalesChannelContext $context
+    ): void {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('parentId', $parentCategoryEntity->getId()));
+        /** @var CategoryEntity $categoryEntity */
+        foreach ($this->categoryRepository->search($criteria, $context) as $categoryEntity) {
+            $flatCategoryCollection->add($categoryEntity);
+            $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
+        }
     }
 }

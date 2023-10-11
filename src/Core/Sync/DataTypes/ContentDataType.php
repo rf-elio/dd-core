@@ -48,10 +48,14 @@ use Shopware\Core\System\Tag\TagCollection;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class ContentType extends Struct implements TypeInterface
+class ContentDataType extends Struct implements DataTypeInterface
 {
     use EntityCustomFieldsTrait;
     use EntityIdTrait;
+    use IdentifierAware;
+    use DeletedAware;
+    use TranslationAware;
+
     private ?string $name = null;
     private ?string $type = null;
     private ?string $description = null;

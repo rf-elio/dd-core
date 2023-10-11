@@ -32,29 +32,28 @@
 
 namespace Elio\ElioSearch\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
-use Elio\ElioSearch\Core\Sync\Collector\TranslatedEntity;
+use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 
 interface DeltaAwareInterface
 {
     /**
-     * @param Collection<TranslatedEntity> $collection
+     * @param Collection<DataTypeInterface> $collection
      * @param SyncContext $syncContext
      * @return void
      */
     public function create(Collection $collection, SyncContext $syncContext): void;
 
     /**
-     * @param Collection<TranslatedEntity> $collection
+     * @param Collection<DataTypeInterface> $collection
      * @param SyncContext $syncContext
      * @return void
      */
     public function update(Collection $collection, SyncContext $syncContext): void;
 
     /**
-     * @param Collection<EntityStatusEntity> $collection
+     * @param Collection<DataTypeInterface> $collection
      * @param SyncContext $syncContext
      * @return void
      */

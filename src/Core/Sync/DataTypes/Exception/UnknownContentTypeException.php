@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
@@ -30,46 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Translator;
+namespace Elio\ElioSearch\Core\Sync\DataTypes\Exception;
 
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+
+use Elio\ElioSearch\Core\Exception\ElioSearchException;
 
 /**
- * Class Translator
- * @package Elio\ElioSearch\Core\Sync\Translator
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
+ * Class UnknownContentTypeException
+ * @package Elio\ElioSearch\Core\Sync\DataTypes\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-trait TranslatorAware
+class UnknownContentTypeException extends ElioSearchException
 {
-    /**
-     * Prepares translation data
-     *
-     * @param SalesChannelContextCollection $salesChannelContexts
-     * @param Criteria $criteria
-     * @param SalesChannelRepository $repository
-     * @return array
-     */
-    protected function prepareTranslationData(
-        SalesChannelContextCollection $salesChannelContexts,
-        Criteria $criteria,
-        SalesChannelRepository $repository
-    ): array {
-        $translationData = [];
-        /** @var SalesChannelContext $salesChannelContext */
-        foreach ($salesChannelContexts as $salesChannelContext) {
-            $entities = $repository->search($criteria, $salesChannelContext);
-            foreach ($entities as $entity) {
-                $translationData[$salesChannelContext->getLanguageId()][] = $entity;
-            }
-        }
 
-        return $translationData;
-    }
 }

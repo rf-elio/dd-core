@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -54,7 +54,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class LandingPageIndexer extends BaseIndexer
 {
-    public const TYPE = ContentType::class;
+    public const TYPE = ContentDataType::class;
 
     public function __construct(
         EntityRepository $landingPageRepository,

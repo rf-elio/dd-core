@@ -33,7 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync\Output\File\Converter;
 
 use Elio\ElioSearch\Core\Defaults;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\Defaults\ContentSyncDefaults;
 use Elio\ElioSearch\Core\Sync\Output\File\Converter\Exception\InvalidDataTypeException;
 use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
@@ -64,7 +64,7 @@ class ContentConverter implements ConverterInterface
     public function convert(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context): ExportItem
     {
         $content = array_values($collection)[0] ?? null;
-        if (!$content instanceof ContentType) {
+        if (!$content instanceof ContentDataType) {
             throw new InvalidDataTypeException('Unsupported type');
         }
 
@@ -81,10 +81,10 @@ class ContentConverter implements ConverterInterface
      * Prepares base fields for export
      *
      * @param ExportItem $item
-     * @param ContentType $content
+     * @param ContentDataType $content
      * @return void
      */
-    protected function prepareBaseFields(ExportItem $item, ContentType $content): void
+    protected function prepareBaseFields(ExportItem $item, ContentDataType $content): void
     {
         $item->set(ContentSyncDefaults::FIELD_ID, $content->getId());
         $item->set(ContentSyncDefaults::FIELD_TYPE, $content->getType());
@@ -107,7 +107,7 @@ class ContentConverter implements ConverterInterface
         }
 
         /**
-         * @var ContentType $content
+         * @var ContentDataType $content
          */
         // TODO: Change language id to locale
         foreach ($collection as $languageId => $content) {
@@ -128,10 +128,10 @@ class ContentConverter implements ConverterInterface
      * Get content url
      *
      * @param string $languageId
-     * @param ContentType $content
+     * @param ContentDataType $content
      * @return string|null
      */
-    protected function getUrl(string $languageId, ContentType $content): ?string
+    protected function getUrl(string $languageId, ContentDataType $content): ?string
     {
         return $content->getSeoUrls()?->filter(fn(SeoUrlEntity $seoUrl) => $seoUrl->getLanguageId() === $languageId)
             ->first()
@@ -141,10 +141,10 @@ class ContentConverter implements ConverterInterface
     /**
      * Creates the content tags string
      *
-     * @param ContentType $content
+     * @param ContentDataType $content
      * @return string
      */
-    protected function getTags(ContentType $content) : string
+    protected function getTags(ContentDataType $content) : string
     {
         if(!$content->getTags()) {
             return '';

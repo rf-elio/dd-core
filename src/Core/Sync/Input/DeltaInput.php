@@ -34,8 +34,13 @@ namespace Elio\ElioSearch\Core\Sync\Input;
 
 
 use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
 use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
-use Elio\ElioSearch\Core\Sync\Collector\TranslatedEntityCollection;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
+use Elio\ElioSearch\Core\Sync\DataTypes\Exception\UnknownContentTypeException;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
 use Elio\ElioSearch\Core\Sync\Input\Exception\NoSupportedCollectorFoundException;
 use Elio\ElioSearch\Core\Sync\SyncContext;
@@ -94,16 +99,37 @@ class DeltaInput implements InputInterface
         }
 
         foreach ($changeSet->getDeleted() as $changeSetEntityCollection) {
-            yield new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, $changeSetEntityCollection);
+            $deltaDataCollection = new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, []);
+            /** @var EntityStatusEntity $changeSetEntity */
+            foreach ($changeSetEntityCollection as $changeSetEntity) {
+                if ($changeSetEntity->getDataType() === ProductDataType::class) {
+                    $entity = new ProductDataType();
+                    $entity->setId($changeSetEntity->getEntityId());
+                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                    $deltaDataCollection->add($entity);
+                } elseif ($changeSetEntity->getDataType() === ContentDataType::class) {
+                    $entity = new ContentDataType();
+                    $entity->setId($changeSetEntity->getEntityId());
+                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                    $deltaDataCollection->add($entity);
+                } else {
+                    throw new UnknownContentTypeException(sprintf(
+                        'DataType "%s" given, but not supported', $changeSetEntity->getDataType()
+                    ));
+                }
+            }
+            yield $deltaDataCollection;
         }
 
         foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
-                $collection = $collector->collect($contexts, $criteria);
-                /** @var TranslatedEntityCollection $currentData */
-                $currentData = $collection->current() ?? new TranslatedEntityCollection();
-                yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $currentData);
+                foreach ($collector->collect($contexts, $criteria) as $collection) {
+                    $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
+                    yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $collection);
+                }
             }
         }
 
@@ -111,6 +137,7 @@ class DeltaInput implements InputInterface
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
                 foreach ($collector->collect($contexts, $criteria) as $collection) {
+                    $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
                     yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $collection);
                 }
             }
@@ -139,5 +166,14 @@ class DeltaInput implements InputInterface
         }
 
         return $collectors;
+    }
+
+    protected function mapEntityStatusBaseFields(EntityStatusCollection $entityStatusCollection, Collection $entities): void
+    {
+        $entityStatusCollection->fmap(function (EntityStatusEntity $entityStatusEntity) use ($entities) {
+            /** @var DataTypeInterface|null $dataTypeEntity */
+            $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId());
+            $dataTypeEntity?->setIdentifier($entityStatusEntity->getIdentifier());
+        });
     }
 }

@@ -34,12 +34,13 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -56,7 +57,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class CategoryCollector implements DataCollectorInterface
 {
     use TranslatorAware;
-    public const TYPE = ContentType::class;
+    public const TYPE = ContentDataType::class;
     public const CHUNK_SIZE = 500;
 
     public function __construct(
@@ -86,13 +87,13 @@ class CategoryCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<TranslatedEntityCollection>
+     * @return Generator<EntityCollection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         $criteria = $criteria ? clone $criteria : new Criteria();
-        $context = $contexts->getFirst();
         $this->prepareCriteria($criteria);
+        $context = $contexts->getFirst();
         $categoryIds = $this->categoryRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($categoryIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
@@ -125,23 +126,22 @@ class CategoryCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return TranslatedEntityCollection
+     * @return EntityCollection
      */
-    protected function mapCollectedData(array $data): TranslatedEntityCollection
+    protected function mapCollectedData(array $data): EntityCollection
     {
-        $translatedCollection = new TranslatedEntityCollection();
+        $mappedEntities = new EntityCollection();
         foreach ($data as $languageId => $entities) {
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
-                $translatedEntity = $translatedCollection->get($entity->getId()) ?? new TranslatedEntity();
-                $translatedEntity->setId($entity->getId());
-                $translatedEntity->addTranslation($languageId, $this->mapCategoryToDataType($entity));
-                $translatedCollection->set($entity->getId(), $translatedEntity);
+                $dataType = $this->mapCategoryToDataType($entity);
+                $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
+                $mappedEntity->addDataTypeTranslation($languageId, $dataType);
+                $mappedEntities->set($dataType->getId(), $mappedEntity);
             }
-
         }
 
-        $event = new DataCollectedEvent(self::TYPE, $translatedCollection);
+        $event = new DataCollectedEvent(self::TYPE, $mappedEntities);
         $this->dispatcher->dispatch($event);
         return $event->getData();
     }
@@ -150,11 +150,11 @@ class CategoryCollector implements DataCollectorInterface
      * Maps category data to content type
      *
      * @param CategoryEntity $category
-     * @return ContentType
+     * @return ContentDataType
      */
-    protected function mapCategoryToDataType(CategoryEntity $category): ContentType
+    protected function mapCategoryToDataType(CategoryEntity $category): ContentDataType
     {
-        $contentType = new ContentType();
+        $contentType = new ContentDataType();
         $contentType->setId($category->getId());
         $contentType->setName($category->getName());
         $contentType->setType($category->getType());

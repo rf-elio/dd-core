@@ -32,7 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Sync\Output\File\Converter;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\TypeInterface;
+use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

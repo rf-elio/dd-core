@@ -6,18 +6,12 @@ namespace Elio\ElioSearch\Core\Sync\Output;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\Sync\Collector\TranslatedEntity;
-use Elio\ElioSearch\Core\Sync\Output\File\Writer\FileWriterInterface;
+use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Struct\Collection;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class SeoRoute
@@ -32,22 +26,17 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
     public const TYPE = self::class;
 
     private Connection $connection;
-    private RouterInterface $router;
-    private array $routers;
     private ?SalesChannelContextCollection $salesChannelContexts;
     private array $baseUrl = [];
 
     /**
      * @param Connection $connection
-     * @param RouterInterface $router
      */
     public function __construct(
-        Connection $connection,
-        RouterInterface $router
+        Connection $connection
     )
     {
         $this->connection = $connection;
-        $this->router = $router;
         $this->salesChannelContexts = new SalesChannelContextCollection();
     }
 
@@ -69,17 +58,12 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
                     break;
                 }
             }
-
-            $router = clone $this->router;
-            $router->setContext(RequestContext::fromUri($this->baseUrl[$languageId]));
-            $this->routers[$languageId] = $router;
         }
     }
 
     public function close(): void
     {
         $this->baseUrl = [];
-        $this->routers = [];
         $this->salesChannelContexts = new SalesChannelContextCollection();
     }
 
@@ -102,9 +86,9 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
     {
         $routeResolveGroups = [];
 
-        /** @var TranslatedEntity $item */
+        /** @var DataTypeInterface $item */
         foreach ($items as $item) {
-            $seoRoute = $item->getTranslation($context->getLanguageId())?->getExtension(SeoRoute::class);
+            $seoRoute = $item->getDataTypeTranslation($context->getLanguageId())?->getExtension(SeoRoute::class);
 
             if(!$seoRoute) {
                 continue;
@@ -150,27 +134,6 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
             }
         }
     }
-
-    /**
-     * Resolves the technical url if no seo url is available
-     *
-     * @param SeoRoute[][][] $routeResolveGroups
-     */
-    protected function resolveUnresolved(array $routeResolveGroups) : void
-    {
-        foreach ($routeResolveGroups as $seoRouteGroups) {
-            foreach ($seoRouteGroups as $seoRouteGroup) {
-                foreach ($seoRouteGroup as $seoRoute) {
-                    if(!$seoRoute->isResolved()) {
-                        $seoRoute->setUrl($this->router->generate(
-                            $seoRoute->getRouteName(), $seoRoute->getParameters(), UrlGeneratorInterface::ABSOLUTE_URL
-                        ));
-                    }
-                }
-            }
-        }
-    }
-
 
     /**
      * @notice Copied by shopware's AbstractUrlProvider

@@ -30,53 +30,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
-
-use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * Class TranslatedEntity
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * Class DataTypeAware
+ * @package Elio\ElioSearch\Core\Sync\DataTypes
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class TranslatedEntity extends Struct
+trait IdentifierAware
 {
-    use EntityIdTrait;
-    private array $translations = [];
+    protected string $identifier = '';
 
-    public function addTranslation(string $languageId, Struct $translation): void
+    public function getIdentifier(): string
     {
-        $this->translations[$languageId] = $translation;
+        return $this->identifier;
     }
 
-    public function getFirst(): ?Struct
+    public function setIdentifier(string $identifier): void
     {
-        return array_values($this->translations)[0] ?? null;
-    }
-
-    /**
-     * Returns all translations
-     *
-     * @return array
-     */
-    public function getTranslations(): array
-    {
-        return $this->translations;
-    }
-
-    /**
-     * Returns all translations
-     *
-     * @param string $languageId
-     * @return Struct|null
-     */
-    public function getTranslation(string $languageId): ?Struct
-    {
-        return $this->translations[$languageId] ?? null;
+        $this->identifier = $identifier;
     }
 }

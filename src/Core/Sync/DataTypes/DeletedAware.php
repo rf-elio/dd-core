@@ -33,15 +33,17 @@
 namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
 
-/**
- * Class ProductTranslationCollection
- * @package Elio\ElioSearch\Core\Sync\DataTypes
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
- */
-class ProductTranslationCollection
+trait DeletedAware
 {
+    protected ?\DateTimeInterface $deletedAt = null;
 
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
 }

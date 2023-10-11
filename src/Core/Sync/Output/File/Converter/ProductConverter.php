@@ -36,7 +36,7 @@ use Elio\ElioSearch\Core\Defaults;
 use Elio\ElioSearch\Core\Sync\Defaults\ProductSyncDefaults;
 use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
 use Elio\ElioSearch\Core\Sync\Output\File\Converter\Exception\InvalidDataTypeException;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
 use Elio\ElioSearch\Core\Sync\Output\File\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
@@ -79,7 +79,7 @@ class ProductConverter implements ConverterInterface
     public function convert(array $collection, SyncProfileEntity $syncProfile, SalesChannelContext $context): ExportItem
     {
         $product = array_values($collection)[0] ?? null;
-        if (!$product instanceof ProductType) {
+        if (!$product instanceof ProductDataType) {
             throw new InvalidDataTypeException('Unsupported type');
         }
 
@@ -96,13 +96,13 @@ class ProductConverter implements ConverterInterface
      * Prepares base fields for export
      *
      * @param ExportItem $item
-     * @param ProductType $product
+     * @param ProductDataType $product
      * @param SalesChannelContext $context
      * @return void
      */
     protected function prepareBaseFields(
         ExportItem $item,
-        ProductType $product,
+        ProductDataType $product,
         SalesChannelContext $context
     ): void {
         $parentProduct = null;
@@ -176,13 +176,13 @@ class ProductConverter implements ConverterInterface
      * - supports different levels and Collection::first()
      * - examples: manufacturer.name, price.first.gross
      * - can be extended to provide more options for mapping language
-     * @param ProductType $product
+     * @param ProductDataType $product
      * @param ExportItem $item
      * @param array $mappings
      * @param PropertyAccessorInterface $propertyAccessor
      */
     protected function addMappedPropertiesToExportItem(
-        ProductType $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
+        ProductDataType $product, ExportItem $item, array $mappings, PropertyAccessorInterface $propertyAccessor
     ): void
     {
         foreach ($mappings as $mapping) {

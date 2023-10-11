@@ -32,7 +32,6 @@
 
 namespace Elio\ElioSearch\Core\Sync\Api;
 
-use Elio\ElioSearch\Core\Sync\Export\ExportStorageService;
 use Elio\ElioSearch\Core\Sync\ProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncProfileMessage;
@@ -59,9 +58,13 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['administration']])]
 class SyncProfileController extends AbstractController
 {
+    /**
+     * @param ProfileInterface[] $profiles
+     * @param SyncService $syncService
+     * @param MessageBusInterface $messageBus
+     */
     public function __construct(
         private readonly iterable $profiles,
-        private readonly ExportStorageService $exportStorageService,
         private readonly SyncService $syncService,
         private readonly MessageBusInterface $messageBus
     ){
@@ -86,7 +89,6 @@ class SyncProfileController extends AbstractController
 
             $profiles[$name] = [
                 'name' => $name,
-                'type' => $profile->getType(),
                 'dataTypes' => $profile->getDataTypes(),
                 'features' => $profile->getFeatures()
             ];

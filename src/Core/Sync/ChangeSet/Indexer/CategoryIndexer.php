@@ -34,10 +34,9 @@ namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentType;
+use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -54,7 +53,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class CategoryIndexer extends BaseIndexer
 {
-    public const TYPE = ContentType::class;
+    public const TYPE = ContentDataType::class;
 
     public function __construct(
         EntityRepository $categoryRepository,

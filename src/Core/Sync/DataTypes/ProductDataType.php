@@ -42,6 +42,9 @@ use Shopware\Core\Content\Product\ProductEntity;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class ProductType extends ProductEntity implements TypeInterface
+class ProductDataType extends ProductEntity implements DataTypeInterface
 {
+    use IdentifierAware;
+    use TranslationAware;
+    use DeletedAware;
 }

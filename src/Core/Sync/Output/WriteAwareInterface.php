@@ -32,10 +32,16 @@
 
 namespace Elio\ElioSearch\Core\Sync\Output;
 
+use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 
 interface WriteAwareInterface
 {
+    /**
+     * @param Collection<DataTypeInterface> $collection
+     * @param SyncContext $syncContext
+     * @return void
+     */
     public function write(Collection $collection, SyncContext $syncContext): void;
 }
