@@ -56,12 +56,12 @@ class SalesChannelContextCollection extends ArrayIterator
     }
 
     /**
-     * @param SalesChannelContext $salesChannelContexts
+     * @param SalesChannelContext $salesChannelContext
      * @return void
      */
-    public function add(SalesChannelContext $salesChannelContexts): void
+    public function add(SalesChannelContext $salesChannelContext): void
     {
-        $this->offsetSet($salesChannelContexts->getLanguageId(), $salesChannelContexts);
+        $this->offsetSet($salesChannelContext->getLanguageId(), $salesChannelContext);
     }
 
     public function getFirst(): SalesChannelContext

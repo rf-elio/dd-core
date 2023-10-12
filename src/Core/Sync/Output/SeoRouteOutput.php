@@ -12,6 +12,9 @@ use Elio\ElioSearch\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class SeoRoute
@@ -25,18 +28,14 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
 {
     public const TYPE = self::class;
 
-    private Connection $connection;
     private ?SalesChannelContextCollection $salesChannelContexts;
     private array $baseUrl = [];
 
-    /**
-     * @param Connection $connection
-     */
     public function __construct(
-        Connection $connection
+        private readonly Connection $connection,
+        private readonly RouterInterface $router,
     )
     {
-        $this->connection = $connection;
         $this->salesChannelContexts = new SalesChannelContextCollection();
     }
 
@@ -47,13 +46,12 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
 
     public function open(SyncContext $syncContext): void
     {
-        $contexts = $syncContext->getSalesChannelContexts();
-        $this->salesChannelContexts = $contexts;
+        $this->salesChannelContexts = $syncContext->getSalesChannelContexts();
 
-        foreach ($contexts as $languageId => $context) {
+        foreach ($this->salesChannelContexts as $languageId => $context) {
             $salesChannel = $context->getSalesChannel();
             foreach ($salesChannel->getDomains() as $domain) {
-                if ($domain->getLanguageId() === $salesChannel->getLanguageId()) {
+                if ($domain->getLanguageId() === $context->getLanguageId()) {
                     $this->baseUrl[$languageId] = rtrim($domain->getUrl(), '/');
                     break;
                 }
@@ -67,11 +65,15 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
         $this->salesChannelContexts = new SalesChannelContextCollection();
     }
 
+    /**
+     * @throws Exception
+     */
     public function write(Collection $collection, SyncContext $syncContext): void
     {
         foreach ($this->salesChannelContexts as $salesChannelContext) {
             $routeResolveGroups = $this->extractRoutes($collection, $salesChannelContext);
-            $this->resolveSeoUrls($routeResolveGroups);
+            $this->resolveSeoUrls($routeResolveGroups, $salesChannelContext);
+            $this->resolveUnresolved($routeResolveGroups, $salesChannelContext);
         }
     }
 
@@ -114,21 +116,41 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
      * @param SeoRoute[][][] $routeResolveGroups
      * @throws Exception
      */
-    protected function resolveSeoUrls(array $routeResolveGroups): void
+    protected function resolveSeoUrls(array $routeResolveGroups, SalesChannelContext $context): void
     {
         foreach ($routeResolveGroups as $routeName => $seoRouteGroups) {
             $ids = array_keys($seoRouteGroups);
 
-            /** @var SalesChannelContext $salesChannelContext */
-            foreach ($this->salesChannelContexts as $salesChannelContext) {
-                $seoUrls = $this->getSeoUrls($ids, $routeName, $salesChannelContext);
+            $seoUrls = $this->getSeoUrls($ids, $routeName, $context);
 
-                foreach ($seoUrls as $seoUrl) {
-                    $id = $seoUrl['id'];
-                    $path = $seoUrl['path'];
+            foreach ($seoUrls as $seoUrl) {
+                $id = $seoUrl['id'];
+                $path = $seoUrl['path'];
 
-                    foreach ($seoRouteGroups[$id] as $seoRoute) {
-                        $seoRoute->setUrl($this->baseUrl[$salesChannelContext->getLanguageId()] . '/' . $path);
+                foreach ($seoRouteGroups[$id] as $seoRoute) {
+                    $seoRoute->setUrl($this->baseUrl[$context->getLanguageId()] . '/' . $path);
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves the technical url if no seo url is available
+     *
+     * @param SeoRoute[][][] $routeResolveGroups
+     */
+    protected function resolveUnresolved(array $routeResolveGroups, SalesChannelContext $context) : void
+    {
+        $baseUrl = $this->baseUrl[$context->getLanguageId()];
+        $this->router->setContext(RequestContext::fromUri($baseUrl));
+
+        foreach ($routeResolveGroups as $seoRouteGroups) {
+            foreach ($seoRouteGroups as $seoRouteGroup) {
+                foreach ($seoRouteGroup as $seoRoute) {
+                    if(!$seoRoute->isResolved()) {
+                        $seoRoute->setUrl($this->router->generate(
+                            $seoRoute->getRouteName(), $seoRoute->getParameters(), UrlGeneratorInterface::ABSOLUTE_URL
+                        ));
                     }
                 }
             }
@@ -158,7 +180,7 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
             $sql,
             [
                 'routeName' => $routeName,
-                'languageId' => Uuid::fromHexToBytes($context->getSalesChannel()->getLanguageId()),
+                'languageId' => Uuid::fromHexToBytes($context->getLanguageId()),
                 'salesChannelId' => Uuid::fromHexToBytes($context->getSalesChannelId()),
                 'ids' => Uuid::fromHexToBytesList(array_values($ids)),
             ],

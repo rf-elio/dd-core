@@ -68,7 +68,7 @@ class SyncContext
     }
 
     /**
-     * @return SalesChannelContextCollection
+     * @return SalesChannelContextCollection<SalesChannelContext>
      */
     public function getSalesChannelContexts(): SalesChannelContextCollection
     {

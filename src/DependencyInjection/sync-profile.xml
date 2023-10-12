@@ -111,6 +111,7 @@
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Output\SeoRouteOutput">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="router"/>
             <tag name="elio-search.sync.api.output"/>
         </service>
 
