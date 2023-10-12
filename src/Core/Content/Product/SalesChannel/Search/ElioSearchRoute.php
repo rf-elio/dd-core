@@ -140,7 +140,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
                         $shopwareProductListingResult->addExtension(ContentListingResponse::class, $contentListingResponse);
                     }
                 }
-            } catch (Throwable $e) {dd($e->getMessage());
+            } catch (Throwable $e) {
                 $this->searchError($e->getMessage(), $this, [
                     'exception' => $e,
                     'request' => $request,
@@ -152,7 +152,6 @@ class ElioSearchRoute extends AbstractProductSearchRoute
             return new ProductSearchRouteResponse($shopwareProductListingResult);
         }
         catch (Throwable $e) {
-            dd($e->getMessage());
             $this->searchError($e->getMessage(), $this, [
                 'exception' => $e,
                 'request' => $request,

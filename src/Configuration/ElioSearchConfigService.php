@@ -54,7 +54,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class ElioSearchConfigService implements ElioSearchConfigServiceInterface
 {
     public const PLUGIN_CONFIG_PREFIX = 'ElioSearch.config';
-    protected const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
+    public const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
     private SystemConfigService $systemConfigService;
     private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
@@ -110,109 +110,46 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
 
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
         parse_str(
-            $this->getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
             $additionalRequestParameters
         );
 
         $configuration = new Configuration(
-            $this->getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
-            $this->prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'searchUseElioSearch', $languagePrefix) ?? false,
-            !empty($this->getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
-            !empty($this->getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
-            !empty($this->getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
-            !empty($this->getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
-            !empty($this->getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
-            $this->prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
-            !empty($this->getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
+            ConfigParserUtil::prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseElioSearch', $languagePrefix) ?? false,
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
+            ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
             $additionalRequestParameters,
-            $this->getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,
-            $this->prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
-            $this->prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
-            $this->prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'suggestUseElioSearch', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,
-            $this->prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
-            $this->prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix),
-            $this->getConfigWithLanguagePrefix($config, 'suggestProductNumberAttribute', $languagePrefix) ?? '',
-            $this->getConfigWithLanguagePrefix($config, 'productRankingActive', $languagePrefix) ?? false,
-            $this->getConfigWithLanguagePrefix($config, 'productRankingMaxOrderAge', $languagePrefix) ?? 14,
-            $this->getConfigWithLanguagePrefix($config, 'productRankingOrderStates', $languagePrefix) ?? [],
-            $this->getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive',  $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,
+            ConfigParserUtil::prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),
+            ConfigParserUtil::prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
+            ConfigParserUtil::prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestUseElioSearch', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,
+            ConfigParserUtil::prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
+            ConfigParserUtil::prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix),
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestProductNumberAttribute', $languagePrefix) ?? '',
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingActive', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingMaxOrderAge', $languagePrefix) ?? 14,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderStates', $languagePrefix) ?? [],
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
         $this->eventDispatcher->dispatch($event);
         $this->loadedConfigurations[$salesChannelId][$languagePrefix] = $event->getConfiguration();
         return $event->getConfiguration();
-    }
-
-    /**
-     * Prepares a pipe separated values list
-     *
-     * @param array $config
-     * @param string $value
-     * @param string $languagePrefix
-     * @return string[]
-     */
-    protected function prepareValueList(array $config, string $value, string $languagePrefix): array
-    {
-        $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
-            self::CONFIG_VALUE_SEPARATOR,
-            $config[$languagePrefix . $value] ?? ''
-        ) : explode(self::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
-        return array_filter($valueList);
-    }
-
-    /**
-     * Converts a key value pair string into an associative array
-     * key:value|hello:world
-     * ->
-     * [
-     *      "key" => "value",
-     *      "hello" => "world"
-     * ]
-     *
-     * @param array $config
-     * @param string $value
-     * @param string $languagePrefix
-     * @return array
-     */
-    protected function prepareValueListWithKeyValuePair(array $config, string $value, string $languagePrefix) : array
-    {
-        $valueList = $this->prepareValueList($config, $value, $languagePrefix);
-        $keyValuePairs = [];
-
-        foreach ($valueList as $keyValuePair) {
-            $split = explode(':', $keyValuePair);
-
-            if(count($split) === 2) {
-                $keyValuePairs[$split[0]] = $split[1];
-            }
-        }
-
-        return $keyValuePairs;
-    }
-
-    /**
-     * Returns plugin config for specified key with languagePrefix or default
-     * @param array $config
-     * @param string $key
-     * @param string $languagePrefix
-     * @return mixed
-     */
-    protected function getConfigWithLanguagePrefix(array $config, string $key, string $languagePrefix): mixed
-    {
-        if (array_key_exists($languagePrefix . $key, $config)) {
-            return $config[$languagePrefix . $key];
-        }
-
-        return $config[$key] ?? null;
     }
 
     /**

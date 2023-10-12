@@ -6,9 +6,8 @@
     {% set elioSearchAggregations = listing.aggregations.get('elio-search-default') %}
     {% for elioSearchAggregation in elioSearchAggregations.aggregations %}
         {% if elioSearchAggregation.extensions.elioSearch is defined %}
-            {% set parameterName = elioSearchAggregation.extensions.elio-search.parameterName %}
-            {% set style = elioSearchAggregation.extensions.elio-search.style %}
-
+            {% set parameterName = elioSearchAggregation.extensions.elioSearch.parameterName %}
+            {% set style = elioSearchAggregation.extensions.elioSearch.style %}
             {% if style == 'DEFAULT' %}
                 {% if not elioSearchAggregation.entities is empty %}
                     {% for property in elioSearchAggregation.entities %}

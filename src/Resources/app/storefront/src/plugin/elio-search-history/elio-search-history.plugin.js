@@ -171,23 +171,27 @@ export default class ElioSearchHistoryPlugin extends Plugin {
             const searchTerm = searchHistory.searchTerm;
 
             let searchTermListItem = document.createElement('li');
+            eSearchHistoryContainer.appendChild(searchTermListItem);
             searchTermListItem.classList.add("search-suggest-product", this.options.searchHistoryResultItemClassName);
 
-            let searchTermRow = document.createElement('div');
-            searchTermRow.classList.add("row", "align-items-center", "justify-content-space-between", "no-gutters");
-
-            let searchTermRowSearchTerm = document.createElement('a');
+            let searchTermLink = document.createElement('a');
+            searchTermLink.classList.add("search-suggest-product-link");
             let searchTermLinkHref = document.createAttribute('href');
-
             searchTermLinkHref.value = `${this.options.searchPageUrl}${encodeURIComponent(searchTerm)}`;
-            searchTermRowSearchTerm.setAttributeNode(searchTermLinkHref);
+            searchTermLink.setAttributeNode(searchTermLinkHref);
             let searchTermLinkTitle = document.createAttribute('title');
             searchTermLinkTitle.value = searchTerm;
-            searchTermRowSearchTerm.setAttributeNode(searchTermLinkTitle);
-            searchTermRowSearchTerm.classList.add("col", "search-suggest-product-name", "text-truncate", "search-suggest-product-link", "js-history-term");
+            searchTermLink.setAttributeNode(searchTermLinkTitle);
+
+            let searchTermRow = document.createElement('div');
+            searchTermRow.classList.add("row", "align-items-center", "g-0");
+
+            let searchTermCol = document.createElement('div');
+            searchTermCol.classList.add("col", "search-suggest-product-name");
+            searchTermRow.appendChild(searchTermCol);
 
             let searchTermTextNode = document.createTextNode(searchTerm);
-            searchTermRowSearchTerm.appendChild(searchTermTextNode);
+            searchTermCol.appendChild(searchTermTextNode);
 
             let searchTermRowRemoveSearchTerm = document.createElement('a');
             searchTermRowRemoveSearchTerm.setAttribute('searchHistoryIndex', searchHistoryIndex);
@@ -195,11 +199,10 @@ export default class ElioSearchHistoryPlugin extends Plugin {
             let searchTermRowRemoveSearchTermHref = document.createAttribute('href');
             searchTermRowRemoveSearchTermHref.value = `#`;
             searchTermRowRemoveSearchTerm.setAttributeNode(searchTermRowRemoveSearchTermHref);
-
-            searchTermRow.appendChild(searchTermRowSearchTerm);
             searchTermRow.appendChild(searchTermRowRemoveSearchTerm);
 
-            searchTermListItem.appendChild(searchTermRow);
+            searchTermLink.appendChild(searchTermRow);
+            searchTermListItem.appendChild(searchTermLink);
             eSearchHistoryContainer.appendChild(searchTermListItem);
         });
 

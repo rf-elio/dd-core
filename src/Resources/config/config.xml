@@ -183,7 +183,7 @@
 
         <component name="sw-textarea-field">
             <name>disallowTrackingForUserAgents</name>
-            <label>The tracking will be disabled for requests with the user agents listed here</label>
+            <label>Tracking will be disabled for requests with the user agents listed here</label>
             <label lang="de-DE">Das Tracking wird für Anfragen mit den hier aufgeführten User Agents deaktiviert</label>
             <placeholder>StormForger-X|Test</placeholder>
             <helpText>User agents separated by pipes(|) </helpText>

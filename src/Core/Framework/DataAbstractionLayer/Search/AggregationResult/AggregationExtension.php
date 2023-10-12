@@ -45,7 +45,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class AggregationExtension extends Struct
 {
-    public const KEY = 'elio-search';
+    public const KEY = 'elioSearch';
     public const PARAMETER_NAME_PREFIX = 'elio-search-';
     private string $style;
     private string $parameterName;
