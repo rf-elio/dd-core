@@ -109,7 +109,7 @@ class TrackLoginSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $request = new LoginTrackingRequest();
+        $request = new LoginTrackingRequest('');
         $request->addEvent($this->getTrackingSessionId($this->requestStack), $customer->getId());
         $requestCreatedEvent = new LoginTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
