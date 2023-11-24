@@ -69,6 +69,8 @@ class ElioSearch extends Plugin
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = 'category_custom_search_query';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = 'elio_search_ranking_product_order_count';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = 'elio_search_ranking_product_order_amount';
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING = 'elio_search_display_product_by_default_in_listing';
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH = 'elio_search_display_product_by_default_in_search';
 
     public const DEFAULT_ELIO_SEARCH_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
@@ -231,6 +233,22 @@ class ElioSearch extends Plugin
                     'de-DE' => 'Bestellwert'
                 ]
             ),
+            new CustomFieldStruct(
+                self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING,
+                'text',
+                [
+                    'en-GB' => 'Displayed product in listing',
+                    'de-DE' => 'Angezeigtes Produkt im Angebot'
+                ]
+            ),
+            new CustomFieldStruct(
+                self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH,
+                'text',
+                [
+                    'en-GB' => 'Displayed product in search',
+                    'de-DE' => 'Angezeigtes Produkt in der Suche'
+                ]
+            )
         )];
     }
 }

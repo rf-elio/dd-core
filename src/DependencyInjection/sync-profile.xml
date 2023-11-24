@@ -155,6 +155,13 @@
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
+        <service id="Elio\ElioSearch\Command\CleanupEntityStatusCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
+            <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <tag name="console.command"/>
+        </service>
 
         <!-- message handler -->
         <service id="Elio\ElioSearch\Core\Sync\SyncProfileHandler">

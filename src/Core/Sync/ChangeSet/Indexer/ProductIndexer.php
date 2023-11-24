@@ -33,16 +33,19 @@
 namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 
+use Doctrine\DBAL\Connection;
 use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class ProductIndexer
@@ -54,13 +57,14 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class ProductIndexer extends BaseIndexer
 {
-    public const TYPE = ProductDataType::class;
+    public const DATA_TYPE = ProductDataType::class;
+    public const ENTITY_TYPE = ProductDefinition::ENTITY_NAME;
 
     public function __construct(
         EntityRepository $productRepository,
         private readonly EventDispatcherInterface $eventDispatcher
     ){
-        parent::__construct(self::TYPE, $productRepository);
+        parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $productRepository);
     }
 
     /**

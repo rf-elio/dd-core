@@ -32,6 +32,8 @@
 
 namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
+use DateTimeImmutable;
+use Elio\ElioSearch\Core\Defaults as ElioSearchDefaults;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
@@ -136,6 +138,31 @@ class ChangeSetService
         }
 
         $this->logger->info('Changeset: Indexing finished');
+    }
+
+    /**
+     * Cleanup deleted entities status that older than provided date
+     *
+     * @param DateTimeImmutable $date
+     * @param Context $context
+     * @return void
+     */
+    public function cleanupToDate(DateTimeImmutable $date, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('state', EntityStatusEntity::STATE_DELETED));
+        $criteria->addFilter(new RangeFilter('deletedAt', [
+            RangeFilter::LTE => $date->format(ElioSearchDefaults::DATE_FORMAT)
+        ]));
+
+        $ids = $this->entityStatusRepository->searchIds($criteria, $context)->getIds();
+
+        $removedData = [];
+        foreach ($ids as $id) {
+            $removedData[] = ['id' => $id];
+        }
+
+        $this->entityStatusRepository->delete($removedData, $context);
     }
 
     /**

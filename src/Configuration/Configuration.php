@@ -89,6 +89,7 @@ class Configuration extends Struct
     private array $productRankingOrderStates;
     private array $productRankingOrderDeliveryStates;
     private bool $searchUseContentChannel;
+    private int $daysBeforeCleanUp;
 
     /**
      * Configuration constructor.
@@ -152,6 +153,7 @@ class Configuration extends Struct
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
         array $productRankingOrderDeliveryStates,
+        int $daysBeforeCleanUp
     )
     {
         $this->loggingDebugActive = $loggingDebugActive;
@@ -183,6 +185,7 @@ class Configuration extends Struct
         $this->productRankingOrderStates = $productRankingOrderStates;
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
         $this->searchUseContentChannel = $searchUseContentChannel;
+        $this->daysBeforeCleanUp = $daysBeforeCleanUp;
     }
 
     /**
@@ -412,5 +415,10 @@ class Configuration extends Struct
     public function isSearchUseContentChannel(): bool
     {
         return $this->searchUseContentChannel;
+    }
+
+    public function getDaysBeforeCleanUp(): int
+    {
+        return $this->daysBeforeCleanUp;
     }
 }

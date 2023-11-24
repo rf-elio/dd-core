@@ -46,4 +46,5 @@ class Defaults
     public const VALUE_SEPARATOR = '|';
     public const API_SCHEMA = 'https://';
     public const API_URI_POST_FIX = '/elio-search';
+    public const DATE_FORMAT = 'Y-m-d h:i:s';
 }

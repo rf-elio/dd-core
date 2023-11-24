@@ -312,4 +312,16 @@
             <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </component>
     </card>
+
+    <card>
+        <title>Cleanup</title>
+        <title lang="de-DE">Cleanup</title>
+
+        <input-field type="int">
+            <name>daysBeforeCleanup</name>
+            <label>Days before cleanup synced entities</label>
+            <label lang="de-DE">Tage vor der Bereinigung synchronisierter Entitäten</label>
+            <defaultValue>14</defaultValue>
+        </input-field>
+    </card>
 </config>

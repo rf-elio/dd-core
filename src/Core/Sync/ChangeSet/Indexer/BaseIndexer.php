@@ -33,6 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 use DateTimeImmutable;
+use Doctrine\DBAL\Connection;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
 use JsonException;
@@ -54,7 +55,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 abstract class BaseIndexer implements IndexerInterface
 {
     public function __construct(
-        private readonly string $type,
+        private readonly string $dataType,
+        private readonly string $entityType,
         private readonly EntityRepository $repository
     ) {
     }
@@ -83,7 +85,7 @@ abstract class BaseIndexer implements IndexerInterface
      */
     public function supports(string $type): bool
     {
-        return $this->type === $type;
+        return $this->dataType === $type;
     }
 
     /**
@@ -96,13 +98,14 @@ abstract class BaseIndexer implements IndexerInterface
      */
     public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection
     {
+        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
         $criteria = $this->getCriteria($context);
         $iterator = new RepositoryIterator($this->repository, $context, $criteria);
         $newEntityStatusCollection = new EntityStatusCollection();
 
         while ($entities = $iterator->fetch()) {
             foreach ($entities as $entity) {
-                $entityStatus = $currentEntityStatusCollection->getEntityStatus(
+                $entityStatus = $filteredEntityStatusCollection->getEntityStatus(
                     $entity->getApiAlias(), $this->getEntityIdentifier($entity)
                 ) ?? new EntityStatusEntity();
 
@@ -114,13 +117,13 @@ abstract class BaseIndexer implements IndexerInterface
                 if ($changed) {
                     $newEntityStatusCollection->add($entityStatus);
                 }
-                $currentEntityStatusCollection->remove($entityStatus->getId());
+                $filteredEntityStatusCollection->remove($entityStatus->getId());
             }
         }
 
         // all note removed entities are deleted
         /** @var EntityStatusEntity $item */
-        foreach ($currentEntityStatusCollection as $item) {
+        foreach ($filteredEntityStatusCollection as $item) {
             if (!$item->getDeletedAt()) {
                 $this->setDeleted($item);
                 $newEntityStatusCollection->add($item);
@@ -142,6 +145,12 @@ abstract class BaseIndexer implements IndexerInterface
         return md5(json_encode($struct, JSON_THROW_ON_ERROR));
     }
 
+    /**
+     * @param EntityStatusEntity $entityStatus
+     * @param Struct $entity
+     * @return bool
+     * @throws JsonException
+     */
     protected function prepareEntityStatusEntity(
         EntityStatusEntity $entityStatus,
         Struct $entity
@@ -163,11 +172,15 @@ abstract class BaseIndexer implements IndexerInterface
             $entityStatus->setEntityId($entity->getId());
         }
         $entityStatus->setIdentifier($this->getEntityIdentifier($entity));
-        $entityStatus->setDataType($this->type);
+        $entityStatus->setDataType($this->dataType);
         $entityStatus->setHash($hash);
         return $changed;
     }
 
+    /**
+     * @param EntityStatusEntity $entityStatus
+     * @return void
+     */
     protected function setDeleted(
         EntityStatusEntity $entityStatus
     ): void {
