@@ -32,13 +32,13 @@
 
 namespace Elio\ElioSearch\Command;
 
-use Elio\ElioSearch\Core\Defaults;
 use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
 use Elio\ElioSearch\Core\Sync\SyncProfileCollection;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
@@ -78,6 +78,7 @@ class CleanupEntityStatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
+        /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
 
         if ($this->hasNotSyncedProfile($syncProfiles)) {
@@ -93,11 +94,11 @@ class CleanupEntityStatusCommand extends Command
         $sortedProfile = $syncProfiles->first();
         $daysBeforeCleanup = $this->configService->get('daysBeforeCleanup') ?? 14;
         $cleanupDate = (new \DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ?->format(Defaults::DATE_FORMAT)))
+            ?->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
             ->modify('-' . $daysBeforeCleanup . 'day');
 
         try {
-            $this->changeSetService->cleanupToDate($cleanupDate, $context);
+            $this->changeSetService->cleanup($cleanupDate, $context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
             $output->writeln('<error>'.$e->getMessage().'</error>');

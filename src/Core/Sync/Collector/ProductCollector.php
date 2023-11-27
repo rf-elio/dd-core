@@ -123,6 +123,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('cover');
         $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
+        $criteria->addAssociation('options');
         $criteria->addAssociation('tags');
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);

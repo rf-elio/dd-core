@@ -147,7 +147,7 @@ class ChangeSetService
      * @param Context $context
      * @return void
      */
-    public function cleanupToDate(DateTimeImmutable $date, Context $context): void
+    public function cleanup(DateTimeImmutable $date, Context $context): void
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('state', EntityStatusEntity::STATE_DELETED));

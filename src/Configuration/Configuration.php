@@ -89,7 +89,7 @@ class Configuration extends Struct
     private array $productRankingOrderStates;
     private array $productRankingOrderDeliveryStates;
     private bool $searchUseContentChannel;
-    private int $daysBeforeCleanUp;
+    private int $maxCleanupAgeInDays;
 
     /**
      * Configuration constructor.
@@ -122,6 +122,7 @@ class Configuration extends Struct
      * @param int $productRankingMaxOrderAge
      * @param array $productRankingOrderStates
      * @param array $productRankingOrderDeliveryStates
+     * @param int $maxCleanupAgeInDays
      */
     public function __construct(
         bool $active,
@@ -153,7 +154,7 @@ class Configuration extends Struct
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
         array $productRankingOrderDeliveryStates,
-        int $daysBeforeCleanUp
+        int $maxCleanupAgeInDays
     )
     {
         $this->loggingDebugActive = $loggingDebugActive;
@@ -185,7 +186,7 @@ class Configuration extends Struct
         $this->productRankingOrderStates = $productRankingOrderStates;
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
         $this->searchUseContentChannel = $searchUseContentChannel;
-        $this->daysBeforeCleanUp = $daysBeforeCleanUp;
+        $this->maxCleanupAgeInDays = $maxCleanupAgeInDays;
     }
 
     /**
@@ -417,8 +418,8 @@ class Configuration extends Struct
         return $this->searchUseContentChannel;
     }
 
-    public function getDaysBeforeCleanUp(): int
+    public function getMaxCleanupAgeInDays(): int
     {
-        return $this->daysBeforeCleanUp;
+        return $this->maxCleanupAgeInDays;
     }
 }

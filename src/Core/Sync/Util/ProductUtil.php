@@ -58,29 +58,28 @@ class ProductUtil
             return $product->getChildCount() < 1 || $displayParent === true;
         }
 
-        $variantListingConfig = $parentProduct->getVariantListingConfig();
+        if (!$variantListingConfig = $parentProduct->getVariantListingConfig()) {
+            return false;
+        }
 
-        if ($product->getId() === $variantListingConfig?->getMainVariantId()) {
+        if ($product->getId() === $variantListingConfig->getMainVariantId()) {
             return true;
         }
 
-        if ($variantListingConfig?->getDisplayParent() === null && $variantListingConfig?->getMainVariantId() === null) {
-            if (empty($variantListingConfig?->getConfiguratorGroupConfig())) {
+        if ($variantListingConfig->getDisplayParent() === null && $variantListingConfig->getMainVariantId() === null) {
+            if (empty($variantListingConfig->getConfiguratorGroupConfig())) {
                 return false;
             }
 
-            $propertyGroupIds = array_column($variantListingConfig?->getConfiguratorGroupConfig(), 'id');
-            foreach ($product->getProperties() as $property) {
-                if (in_array($property->getGroupId(), $propertyGroupIds, true)) {
-                    return true;
+            $children = $parentProduct->getChildren() ?: [];
+            $displayGroups = [];
+            foreach ($children as $child) {
+                if (!in_array($child->getDisplayGroup(), $displayGroups, true)) {
+                    $displayGroups[$child->getId()] = $child->getDisplayGroup();
                 }
             }
 
-            foreach ($product->getOptions() as $option) {
-                if (in_array($option->getGroupId(), $propertyGroupIds, true)) {
-                    return true;
-                }
-            }
+            return array_key_exists($product->getId(), $displayGroups);
         }
 
         return false;

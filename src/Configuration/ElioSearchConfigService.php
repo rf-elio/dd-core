@@ -108,7 +108,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             return $this->loadedConfigurations[$salesChannelId][$languagePrefix];
         }
 
-        $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId);
+        $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId) ?? [];
         parse_str(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
             $additionalRequestParameters
@@ -144,7 +144,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingMaxOrderAge', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderStates', $languagePrefix) ?? [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'daysBeforeCleanup', $languagePrefix) ?? 14,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'maxCleanupAgeInDays', $languagePrefix) ?? 14,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

@@ -210,11 +210,11 @@ class ElioSearch extends Plugin
             ),
         ),
         (new CustomFieldSetStruct(
-            'ElioSearchProductRanking',
+            'ElioSearchProduct',
             [ProductDefinition::ENTITY_NAME],
             [
-                'en-GB' => 'ElioSearch product ranking',
-                'de-DE' => 'ElioSearch product ranking'
+                'en-GB' => 'ElioSearch product',
+                'de-DE' => 'ElioSearch product'
             ]
         ))->addCustomFields(
             new CustomFieldStruct(
@@ -235,18 +235,18 @@ class ElioSearch extends Plugin
             ),
             new CustomFieldStruct(
                 self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING,
-                'text',
+                'bool',
                 [
-                    'en-GB' => 'Displayed product in listing',
-                    'de-DE' => 'Angezeigtes Produkt im Angebot'
+                    'en-GB' => 'Displayed product/variant in listing',
+                    'de-DE' => 'Produkt/Variante im Listing zeigen'
                 ]
             ),
             new CustomFieldStruct(
                 self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH,
-                'text',
+                'bool',
                 [
-                    'en-GB' => 'Displayed product in search',
-                    'de-DE' => 'Angezeigtes Produkt in der Suche'
+                    'en-GB' => 'Displayed product/variant in search result',
+                    'de-DE' => 'Produkt/Variante im Suchergebnis zeigen'
                 ]
             )
         )];

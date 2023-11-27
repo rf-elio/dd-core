@@ -318,9 +318,9 @@
         <title lang="de-DE">Cleanup</title>
 
         <input-field type="int">
-            <name>daysBeforeCleanup</name>
-            <label>Days before cleanup synced entities</label>
-            <label lang="de-DE">Tage vor der Bereinigung synchronisierter Entitäten</label>
+            <name>maxCleanupAgeInDays</name>
+            <label>Max entity sync index age in days</label>
+            <label lang="de-DE">Maximales Alter des Sync Entity Indexes in Tagen</label>
             <defaultValue>14</defaultValue>
         </input-field>
     </card>
