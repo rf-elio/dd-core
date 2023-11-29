@@ -129,7 +129,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('cover');
         $criteria->addAssociation('properties');
         $criteria->addAssociation('properties.group');
-        $criteria->addAssociation('options');
+        $criteria->addAssociation('options.group');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
 
@@ -199,11 +199,15 @@ class ProductCollector implements DataCollectorInterface
                 $dataType->addExtension(SeoRoute::class, new SeoRoute(
                     ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
                 ));
+                
+                if (
+                    $entity->getParentId()
+                    && $parentProduct = ProductDataType::createFrom($parentProducts->get($entity->getParentId()))
+                ) {
+                    $parentProduct->setIdentifier($parentProduct->getProductNumber());
+                    $dataType->getVariant()->setParentProduct($parentProduct);
+                }
 
-                $dataType->getVariant()->setParentProduct(
-                    $entity->getParentId() ?
-                        ProductDataType::createFrom($parentProducts->get($entity->getParentId())) : null
-                );
                 $dataType->getVariant()->setDisplayByDefault(
                     ProductUtil::isDisplayedByDefault($entity, $dataType->getVariant()->getParentProduct())
                 );

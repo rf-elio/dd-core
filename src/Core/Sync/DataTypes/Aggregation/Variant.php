@@ -40,7 +40,7 @@ use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
  */
 class Variant
 {
-    private ?ProductDataType $parentProduct;
+    private ?ProductDataType $parentProduct = null;
     private bool $displayByDefault;
     private bool $displayByDefaultInListing;
     private bool $displayByDefaultInSearch;
