@@ -78,7 +78,7 @@ class LandingPageIndexer extends BaseIndexer
         $criteria->addAssociation('tags');
         $criteria->addAssociation('cmsPage');
 
-        $event = new CriteriaPreparedEvent($criteria, $context);
+        $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }

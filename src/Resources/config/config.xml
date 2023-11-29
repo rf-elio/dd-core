@@ -318,7 +318,7 @@
         <title lang="de-DE">Cleanup</title>
 
         <input-field type="int">
-            <name>maxCleanupAgeInDays</name>
+            <name>entityStatusMaxCleanupAgeInDays</name>
             <label>Max entity sync index age in days</label>
             <label lang="de-DE">Maximales Alter des Sync Entity Indexes in Tagen</label>
             <defaultValue>14</defaultValue>

@@ -112,6 +112,7 @@
         <service id="Elio\ElioSearch\Core\Sync\Output\SeoRouteOutput">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="elio.search.core.logging.default"/>
             <tag name="elio-search.sync.api.output"/>
         </service>
 
@@ -150,12 +151,12 @@
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
-        <service id="Elio\ElioSearch\Command\IndexingCommand">
+        <service id="Elio\ElioSearch\Command\IndexUpdateCommand">
             <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
-        <service id="Elio\ElioSearch\Command\CleanupEntityStatusCommand">
+        <service id="Elio\ElioSearch\Command\IndexCleanupCommand">
             <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
             <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />

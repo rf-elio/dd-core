@@ -33,8 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
 
-use Shopware\Core\Framework\Struct\Struct;
-
 /**
  * Class TranslationAware
  * @package Elio\ElioSearch\Core\Sync\DataTypes

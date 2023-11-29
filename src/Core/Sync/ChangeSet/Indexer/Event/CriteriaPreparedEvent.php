@@ -32,13 +32,18 @@
 
 namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event;
 
+use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class CriteriaPreparedEvent extends Event
 {
-    public function __construct(private Criteria $criteria, private readonly Context $context)
+    public function __construct(
+        private IndexerInterface $indexer,
+        private Criteria $criteria,
+        private readonly Context $context
+    )
     {
     }
 
@@ -64,5 +69,10 @@ class CriteriaPreparedEvent extends Event
     public function getContext(): Context
     {
         return $this->context;
+    }
+
+    public function getIndexer(): IndexerInterface
+    {
+        return $this->indexer;
     }
 }

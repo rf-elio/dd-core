@@ -32,15 +32,19 @@
 
 namespace Elio\ElioSearch\Core\Sync\Collector;
 
+use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioSearch\Core\Sync\Util\ProductUtil;
+use Elio\ElioSearch\ElioSearch;
 use Generator;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingEntity;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -62,6 +66,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ProductCollector implements DataCollectorInterface
 {
     use TranslatorAware;
+
     public const TYPE = ProductDataType::class;
     public const CHUNK_SIZE = 100;
 
@@ -105,7 +110,8 @@ class ProductCollector implements DataCollectorInterface
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
-            yield $this->mapCollectedData($data, $categories);
+            $parentProducts = $this->loadParentProducts($data, $context);
+            yield $this->mapCollectedData($data, $parentProducts, $categories);
         }
     }
 
@@ -125,6 +131,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('options');
         $criteria->addAssociation('tags');
+        $criteria->addAssociation('configuratorSettings');
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
@@ -133,14 +140,46 @@ class ProductCollector implements DataCollectorInterface
     }
 
     /**
+     * @param array $data
+     * @param SalesChannelContext $context
+     * @return EntityCollection<SalesChannelProductEntity>
+     */
+    protected function loadParentProducts(array $data, SalesChannelContext $context): EntityCollection
+    {
+        $parentProductIds = [];
+        foreach ($data as $entities) {
+            /** @var SalesChannelProductEntity $entity */
+            foreach ($entities as $entity) {
+                $parentProductIds[] = $entity->getParentId();
+            }
+        }
+
+        $parentProductIds = array_filter($parentProductIds);
+        $parentProductIds = array_unique($parentProductIds);
+
+        if (empty($parentProductIds)) {
+            return new EntityCollection();
+        }
+
+        $criteria = new Criteria($parentProductIds);
+        $criteria->addAssociation('children'); // children are required for ProductUtil::isDisplayedByDefault
+        return $this->productRepository->search($criteria, $context);
+
+    }
+
+    /**
      * Maps collected data to dataType
      *
      * @param array $data
+     * @param EntityCollection<SalesChannelProductEntity> $parentProducts
      * @param CategoryCollection[] $categories
      * @return EntityCollection
      */
-    protected function mapCollectedData(array $data, array $categories): EntityCollection
-    {
+    protected function mapCollectedData(
+        array $data,
+        EntityCollection $parentProducts,
+        array $categories
+    ): EntityCollection {
         $mappedEntities = new EntityCollection();
         foreach ($data as $languageId => $entities) {
             $flatCategoryCollection = $categories[$languageId];
@@ -150,15 +189,38 @@ class ProductCollector implements DataCollectorInterface
                 $productCategoryCollection = $entity->getCategories() ?? new CategoryCollection();
                 $entity->setCategories($productCategoryCollection);
                 foreach ($entity->getCategoryIds() as $categoryId) {
-                    if($category = $flatCategoryCollection->get($categoryId)) {
+                    if ($category = $flatCategoryCollection->get($categoryId)) {
                         $productCategoryCollection->add($category);
                     }
                 }
 
                 $dataType = ProductDataType::createFrom($entity);
+                $dataType->setVariant(new Variant());
                 $dataType->addExtension(SeoRoute::class, new SeoRoute(
                     ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
                 ));
+
+                $dataType->getVariant()->setParentProduct(
+                    $entity->getParentId() ?
+                        ProductDataType::createFrom($parentProducts->get($entity->getParentId())) : null
+                );
+                $dataType->getVariant()->setDisplayByDefault(
+                    ProductUtil::isDisplayedByDefault($entity, $dataType->getVariant()->getParentProduct())
+                );
+                $dataType->getVariant()->setDisplayByDefaultInListing(
+                    $entity->getCustomFields()[ElioSearch::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING] ??
+                    $dataType->getVariant()->isDisplayByDefault()
+                );
+                $dataType->getVariant()->setDisplayByDefaultInSearch(
+                    $entity->getCustomFields()[ElioSearch::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH] ??
+                    $dataType->getVariant()->isDisplayByDefault()
+                );
+
+                /** @var ProductConfiguratorSettingEntity $productConfiguratorSettings */
+                if($productConfiguratorSettings = $entity->getConfiguratorSettings()->first()) {
+                    $dataType->getVariant()->setPosition($productConfiguratorSettings->getPosition());
+                }
+
 
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);

@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Defaults as ElioSearchDefaults;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
@@ -152,7 +151,7 @@ class ChangeSetService
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('state', EntityStatusEntity::STATE_DELETED));
         $criteria->addFilter(new RangeFilter('deletedAt', [
-            RangeFilter::LTE => $date->format(ElioSearchDefaults::DATE_FORMAT)
+            RangeFilter::LTE => $date->format(Defaults::STORAGE_DATE_TIME_FORMAT)
         ]));
 
         $ids = $this->entityStatusRepository->searchIds($criteria, $context)->getIds();

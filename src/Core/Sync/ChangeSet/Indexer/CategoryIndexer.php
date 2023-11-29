@@ -79,7 +79,7 @@ class CategoryIndexer extends BaseIndexer
         $criteria->addAssociation('cmsPage');
         $criteria->addFilter(new EqualsFilter('active', true));
 
-        $event = new CriteriaPreparedEvent($criteria, $context);
+        $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }

@@ -32,31 +32,34 @@
 
 namespace Elio\ElioSearch\Command;
 
+use DateTimeImmutable;
+use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioSearch\Core\Sync\SyncProfileCollection;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Api\Context\SystemSource;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SyncDataCommand
+ * Class IndexCleanupCommand
  * @package Elio\ElioSearch\Command
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncDataCommand extends Command
+class IndexCleanupCommand extends Command
 {
     public function __construct(
         private readonly SyncService $syncService,
+        private readonly ChangeSetService $changeSetService,
+        private readonly SystemConfigService $configService,
         private readonly LoggerInterface $logger
     ) {
         parent::__construct();
@@ -64,9 +67,7 @@ class SyncDataCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:profiles:sync')
-            ->addArgument('syncProfileId', InputArgument::OPTIONAL, 'Id of the sync profile that should be generated')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
+        $this->setName('elio-search:index:cleanup');
     }
 
     /**
@@ -78,25 +79,22 @@ class SyncDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
-        $exportId = $input->getArgument('syncProfileId');
-        $force = $input->getOption('force');
+        /** @var SyncProfileCollection $syncProfiles */
+        $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
+
+        if ($this->hasNotExecutedSyncProfiles($syncProfiles)) {
+            $output->writeln('<error>Cannot cleanup because, sync profile(s) exists that have not been executed yet.</error>');
+            return Command::FAILURE;
+        }
+
+        $daysBeforeCleanup = $this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14;
+        $sortedProfile = $this->getLeastRecentlyFinishedSyncProfile($syncProfiles);
+        $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
+            ?->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
+            ->modify('-' . $daysBeforeCleanup . 'day');
 
         try {
-            if($exportId) {
-                $syncProfileConfiguration = $this->syncService->getSyncProfileConfiguration($exportId, $context);
-                $this->syncService->sync($syncProfileConfiguration);
-                return Command::SUCCESS;
-            }
-
-            if($force) {
-                $syncProfileConfigurations = $this->syncService->getSyncProfileConfigurations($context);
-            } else {
-                $syncProfileConfigurations = $this->syncService->getDueSyncProfileConfigurations($context);
-            }
-
-            foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
-                $this->syncService->sync($syncProfileConfiguration);
-            }
+            $this->changeSetService->cleanup($cleanupDate, $context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
@@ -107,5 +105,32 @@ class SyncDataCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Checks if there are any sync profiles for that we don't have an execution yet.
+     *
+     * @param SyncProfileCollection $syncProfiles
+     * @return bool
+     */
+    private function hasNotExecutedSyncProfiles(SyncProfileCollection $syncProfiles): bool
+    {
+        return $syncProfiles->filter(function (SyncProfileEntity $syncProfile) {
+            return $syncProfile->getLastGenerationFinishedAt() === null;
+        })->count() > 0;
+    }
+
+    /**
+     * Searches for the sync profile with the oldest generation finished at date.
+     *
+     * @param SyncProfileCollection $syncProfiles
+     * @return SyncProfileEntity
+     */
+    private function getLeastRecentlyFinishedSyncProfile(SyncProfileCollection $syncProfiles): SyncProfileEntity
+    {
+        $syncProfiles->sort(function (SyncProfileEntity $syncProfile) {
+            return $syncProfile->getLastGenerationFinishedAt()?->getTimestamp();
+        });
+        return $syncProfiles->first();
     }
 }

@@ -32,6 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
+use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
 use Shopware\Core\Content\Product\ProductEntity;
 
 /**
@@ -47,4 +48,16 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     use IdentifierAware;
     use TranslationAware;
     use DeletedAware;
+
+    private ?Variant $variant = null;
+
+    public function setVariant(?Variant $variant): void
+    {
+        $this->variant = $variant;
+    }
+
+    public function getVariant(): Variant
+    {
+        return $this->variant;
+    }
 }

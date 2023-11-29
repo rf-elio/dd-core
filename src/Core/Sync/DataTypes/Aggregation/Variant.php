@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright (c) 2023, elio GmbH.
  * All rights reserved.
@@ -30,56 +30,69 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioSearch\Core\Sync\DataTypes\Aggregation;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+
+use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 
 /**
- * Class IndexingCommand
- * @package Elio\ElioSearch\Command
- * @category Shopware
- * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * 
  */
-class IndexingCommand extends Command
+class Variant
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
+    private ?ProductDataType $parentProduct;
+    private bool $displayByDefault;
+    private bool $displayByDefaultInListing;
+    private bool $displayByDefaultInSearch;
+    private int $position = 0;
+
+    public function setDisplayByDefault(bool $displayByDefault): void
+    {
+        $this->displayByDefault = $displayByDefault;
     }
 
-    protected function configure(): void
+    public function getParentProduct(): ?ProductDataType
     {
-        $this->setName('elio-search:index');
+        return $this->parentProduct;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function setParentProduct(?ProductDataType $parentProduct): void
     {
-        $context = Context::createDefaultContext();
+        $this->parentProduct = $parentProduct;
+    }
 
-        try {
-            $this->changeSetService->index($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
+    public function isDisplayByDefaultInListing(): bool
+    {
+        return $this->displayByDefaultInListing;
+    }
 
-        return Command::SUCCESS;
+    public function setDisplayByDefaultInListing(bool $displayByDefaultInListing): void
+    {
+        $this->displayByDefaultInListing = $displayByDefaultInListing;
+    }
+
+    public function isDisplayByDefaultInSearch(): bool
+    {
+        return $this->displayByDefaultInSearch;
+    }
+
+    public function setDisplayByDefaultInSearch(bool $displayByDefaultInSearch): void
+    {
+        $this->displayByDefaultInSearch = $displayByDefaultInSearch;
+    }
+
+    public function isDisplayByDefault(): bool
+    {
+        return $this->displayByDefault;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
     }
 }

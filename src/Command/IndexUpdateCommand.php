@@ -33,32 +33,25 @@
 namespace Elio\ElioSearch\Command;
 
 use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioSearch\Core\Sync\SyncProfileCollection;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Elio\ElioSearch\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CleanupEntityStatusCommand
+ * Class IndexUpdateCommand
  * @package Elio\ElioSearch\Command
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class CleanupEntityStatusCommand extends Command
+class IndexUpdateCommand extends Command
 {
     public function __construct(
-        private readonly SyncService $syncService,
         private readonly ChangeSetService $changeSetService,
-        private readonly SystemConfigService $configService,
         private readonly LoggerInterface $logger
     ) {
         parent::__construct();
@@ -66,7 +59,7 @@ class CleanupEntityStatusCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:entity-status-cleanup');
+        $this->setName('elio-search:index:update');
     }
 
     /**
@@ -78,40 +71,18 @@ class CleanupEntityStatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
-        /** @var SyncProfileCollection $syncProfiles */
-        $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
-
-        if ($this->hasNotSyncedProfile($syncProfiles)) {
-            $output->writeln('<error>'. 'Not synced profile is exists' .'</error>');
-            return Command::FAILURE;
-        }
-
-        $syncProfiles->sort(function (SyncProfileEntity $syncProfile) {
-            return $syncProfile->getLastGenerationFinishedAt()?->getTimestamp();
-        });
-
-        /** @var SyncProfileEntity $sortedProfile */
-        $sortedProfile = $syncProfiles->first();
-        $daysBeforeCleanup = $this->configService->get('daysBeforeCleanup') ?? 14;
-        $cleanupDate = (new \DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ?->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
-            ->modify('-' . $daysBeforeCleanup . 'day');
 
         try {
-            $this->changeSetService->cleanup($cleanupDate, $context);
+            $this->changeSetService->index($context);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine()
+            ]);
             $output->writeln('<error>'.$e->getMessage().'</error>');
             return Command::FAILURE;
         }
 
         return Command::SUCCESS;
-    }
-
-    private function hasNotSyncedProfile(SyncProfileCollection $syncProfiles): bool
-    {
-        return $syncProfiles->filter(function (SyncProfileEntity $syncProfile) {
-            return $syncProfile->getLastGenerationFinishedAt() === null;
-        })->count() > 0;
     }
 }

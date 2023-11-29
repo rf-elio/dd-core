@@ -9,6 +9,7 @@ use Doctrine\DBAL\Exception;
 use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -34,6 +35,7 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
     public function __construct(
         private readonly Connection $connection,
         private readonly RouterInterface $router,
+        private readonly LoggerInterface $logger,
     )
     {
         $this->salesChannelContexts = new SalesChannelContextCollection();
@@ -70,7 +72,15 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
      */
     public function write(Collection $collection, SyncContext $syncContext): void
     {
+        /** @var SalesChannelContext $salesChannelContext */
         foreach ($this->salesChannelContexts as $salesChannelContext) {
+            if (!isset($this->baseUrl[$salesChannelContext->getLanguageId()])) {
+                $this->logger->error('SalesChannelDomain configuration missing', [
+                    'salesChannelId' => $salesChannelContext->getSalesChannelId(),
+                    'languageId' => $salesChannelContext->getLanguageId(),
+                ]);
+                continue;
+            }
             $routeResolveGroups = $this->extractRoutes($collection, $salesChannelContext);
             $this->resolveSeoUrls($routeResolveGroups, $salesChannelContext);
             $this->resolveUnresolved($routeResolveGroups, $salesChannelContext);

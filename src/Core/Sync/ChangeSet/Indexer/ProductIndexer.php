@@ -43,7 +43,9 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -76,7 +78,13 @@ class ProductIndexer extends BaseIndexer
     protected function getCriteria(Context $context): Criteria
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('active', true),
+            new AndFilter([
+                new EqualsFilter('active', null),
+                new EqualsFilter('parent.active', true)
+            ])
+        ]));
         $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
@@ -85,7 +93,7 @@ class ProductIndexer extends BaseIndexer
         $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
 
-        $event = new CriteriaPreparedEvent($criteria, $context);
+        $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }
@@ -95,7 +103,6 @@ class ProductIndexer extends BaseIndexer
         if (!$entity instanceof ProductEntity) {
             throw new InvalidTypeException($entity, ProductEntity::class);
         }
-
         return $entity->getProductNumber();
     }
 }

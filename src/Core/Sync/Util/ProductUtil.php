@@ -62,10 +62,18 @@ class ProductUtil
             return false;
         }
 
+        // only the parent product is allowed to be shown
+        if ($variantListingConfig->getDisplayParent()) {
+            return !$product->getParentId();
+        }
+
+        // specific variant selected
         if ($product->getId() === $variantListingConfig->getMainVariantId()) {
             return true;
         }
 
+
+        // specific property should be shown
         if ($variantListingConfig->getDisplayParent() === null && $variantListingConfig->getMainVariantId() === null) {
             if (empty($variantListingConfig->getConfiguratorGroupConfig())) {
                 return false;
