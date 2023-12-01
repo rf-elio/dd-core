@@ -37,14 +37,14 @@
                 {% endif %}
             {% elseif style == 'TREE' %}
                 {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-select.html.twig' with {
-                    elements: elioSearchAggregation.extensions.elioSearchTree.tree,
+                    elements: elioSearchAggregation.entities.extensions.elioSearchTree.tree,
                     sidebar: sidebar,
                     name: parameterName,
                     displayName: parameterName,
                     displayType: 'text',
                     pluginSelector: 'elio-search-filter-tree-select',
                     propertyName: parameterName,
-                    elioSearchTree: elioSearchAggregation.extensions.elioSearchTree
+                    elioSearchTree: elioSearchAggregation.entities.extensions.elioSearchTree
                 } %}
             {% endif %}
         {% endif %}

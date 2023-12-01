@@ -60,17 +60,19 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 class ElioSearch extends Plugin
 {
-    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = 'content_export_type';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = 'content_export_type_inherited';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = 'content_export_exclude';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = 'content_export_exclude_inherited';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = 'content_export_exclude_product_info';
-    public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = 'category_export_priority';
-    public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = 'category_custom_search_query';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = 'elio_search_ranking_product_order_count';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = 'elio_search_ranking_product_order_amount';
-    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING = 'elio_search_display_product_by_default_in_listing';
-    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH = 'elio_search_display_product_by_default_in_search';
+    public const CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT = 'ElioSearchProduct';
+    public const CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE = 'ElioSearchContentExportCategory';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type_inherited';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_inherited';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_product_info';
+    public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_export_priority';
+    public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_custom_search_query';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_count';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_amount';
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default_in_listing';
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default_in_search';
 
     public const DEFAULT_ELIO_SEARCH_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
@@ -90,6 +92,7 @@ class ElioSearch extends Plugin
 
     /**
      * @param ActivateContext $activateContext
+     * @throws ElioFoundationInstallerException
      */
     public function activate(ActivateContext $activateContext): void
     {
@@ -102,6 +105,7 @@ class ElioSearch extends Plugin
 
     /**
      * @param UpdateContext $updateContext
+     * @throws ElioFoundationInstallerException
      */
     public function postUpdate(UpdateContext $updateContext): void
     {
@@ -135,11 +139,11 @@ class ElioSearch extends Plugin
     private function getCustomFieldSets(): array
     {
         return [(new CustomFieldSetStruct(
-            'ElioSearchContentExportCategory',
+            self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE,
             [CategoryDefinition::ENTITY_NAME, LandingPageDefinition::ENTITY_NAME],
             [
                 'en-GB' => 'ElioSearch content export',
-                'de-DE' => 'ElioSearch Content Export'
+                'de-DE' => 'ElioSearch Content Export',
             ]
         ))->addCustomFields(
             new CustomFieldStruct(
@@ -147,7 +151,7 @@ class ElioSearch extends Plugin
                 'text',
                 [
                     'en-GB' => 'Type',
-                    'de-DE' => 'Typ'
+                    'de-DE' => 'Typ',
                 ]
             ),
             new CustomFieldStruct(
@@ -155,7 +159,7 @@ class ElioSearch extends Plugin
                 'text',
                 [
                     'en-GB' => 'Type for sub categories',
-                    'de-DE' => 'Typ für Unterkategorien'
+                    'de-DE' => 'Typ für Unterkategorien',
                 ]
             ),
             new CustomFieldStruct(
@@ -163,7 +167,7 @@ class ElioSearch extends Plugin
                 'bool',
                 [
                     'en-GB' => 'Exclude in content export',
-                    'de-DE' => 'Aus dem Content Export ausschließen'
+                    'de-DE' => 'Aus dem Content Export ausschließen',
                 ]
             ),
             new CustomFieldStruct(
@@ -171,7 +175,7 @@ class ElioSearch extends Plugin
                 'bool',
                 [
                     'en-GB' => 'Exclude sub categories in content export',
-                    'de-DE' => 'Unterkategorien vom Content Export ausschließen'
+                    'de-DE' => 'Unterkategorien vom Content Export ausschließen',
                 ]
             ),
             new CustomFieldStruct(
@@ -179,7 +183,7 @@ class ElioSearch extends Plugin
                 'bool',
                 [
                     'en-GB' => 'Exclude product info in keywords',
-                    'de-DE' => 'Produktinformationen in den Keywords ausschließen'
+                    'de-DE' => 'Produktinformationen in den Keywords ausschließen',
                 ]
             ),
             new CustomFieldStruct(
@@ -187,12 +191,12 @@ class ElioSearch extends Plugin
                 'text',
                 [
                     'en-GB' => 'Priority',
-                    'de-DE' => 'Priorität'
+                    'de-DE' => 'Priorität',
                 ],
                 null,
                 [
                     'en-GB' => '50',
-                    'de-DE' => '50'
+                    'de-DE' => '50',
                 ]
             ),
             new CustomFieldStruct(
@@ -200,55 +204,55 @@ class ElioSearch extends Plugin
                 'text',
                 [
                     'en-GB' => 'Custom search query',
-                    'de-DE' => 'Individuelle Suchanfrage'
+                    'de-DE' => 'Individuelle Suchanfrage',
                 ],
                 null,
                 [
                     'en-GB' => 'brandline={category.name}&Manufacturer={parent.name}',
-                    'de-DE' => 'brandline={category.name}&Manufacturer={parent.name}'
+                    'de-DE' => 'brandline={category.name}&Manufacturer={parent.name}',
                 ]
             ),
         ),
-        (new CustomFieldSetStruct(
-            'ElioSearchProduct',
-            [ProductDefinition::ENTITY_NAME],
-            [
-                'en-GB' => 'ElioSearch product',
-                'de-DE' => 'ElioSearch product'
-            ]
-        ))->addCustomFields(
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
-                'int',
+            (new CustomFieldSetStruct(
+                self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT,
+                [ProductDefinition::ENTITY_NAME],
                 [
-                    'en-GB' => 'Order count',
-                    'de-DE' => 'Anzahl Bestellungen'
+                    'en-GB' => 'ElioSearch product',
+                    'de-DE' => 'ElioSearch product',
                 ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
-                'float',
-                [
-                    'en-GB' => 'Order amount',
-                    'de-DE' => 'Bestellwert'
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING,
-                'bool',
-                [
-                    'en-GB' => 'Displayed product/variant in listing',
-                    'de-DE' => 'Produkt/Variante im Listing zeigen'
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH,
-                'bool',
-                [
-                    'en-GB' => 'Displayed product/variant in search result',
-                    'de-DE' => 'Produkt/Variante im Suchergebnis zeigen'
-                ]
-            )
-        )];
+            ))->addCustomFields(
+                new CustomFieldStruct(
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
+                    'int',
+                    [
+                        'en-GB' => 'Order count',
+                        'de-DE' => 'Anzahl Bestellungen',
+                    ]
+                ),
+                new CustomFieldStruct(
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
+                    'float',
+                    [
+                        'en-GB' => 'Order amount',
+                        'de-DE' => 'Bestellwert',
+                    ]
+                ),
+                new CustomFieldStruct(
+                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING,
+                    'bool',
+                    [
+                        'en-GB' => 'Displayed product/variant in listing',
+                        'de-DE' => 'Produkt/Variante im Listing zeigen',
+                    ]
+                ),
+                new CustomFieldStruct(
+                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH,
+                    'bool',
+                    [
+                        'en-GB' => 'Displayed product/variant in search result',
+                        'de-DE' => 'Produkt/Variante im Suchergebnis zeigen',
+                    ]
+                )
+            )];
     }
 }
