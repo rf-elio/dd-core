@@ -32,6 +32,8 @@
 
 namespace Elio\ElioSearch\Storefront\TwigExtension;
 
+use Psr\Cache\InvalidArgumentException;
+use Shopware\Core\Framework\Adapter\Cache\CacheValueCompressor;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -39,7 +41,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SystemConfig\CachedSystemConfigLoader;
 use Shopware\Storefront\Framework\Twig\TemplateConfigAccessor;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -55,13 +60,16 @@ class ConfigLanguageBased extends AbstractExtension
 
     private TemplateConfigAccessor $config;
     private EntityRepository $languageRepository;
+    private CacheInterface $cache;
 
     public function __construct(
         TemplateConfigAccessor $config,
-        EntityRepository $languageRepository
+        EntityRepository $languageRepository,
+        CacheInterface $cache
     ) {
         $this->config = $config;
         $this->languageRepository = $languageRepository;
+        $this->cache = $cache;
     }
 
     public function getName(): string
@@ -82,25 +90,45 @@ class ConfigLanguageBased extends AbstractExtension
      * @param array $context
      * @param string $key
      * @return array|bool|float|int|string|null
+     * @throws InvalidArgumentException
      */
     public function configByLanguage(array $context, string $key): float|int|bool|array|string|null
     {
-        $languagePrefix = $this->getLanguagePrefix($this->getLanguageId($context));
         $salesChannelId = $this->getSalesChannelId($context);
+        $languageId = $this->getLanguageId($context);
 
-        $parts = explode('.', $key);
-        /* @phpstan-ignore-next-line */
-        if (empty($parts)) {
-            return null;
-        }
-        $parts[count($parts) - 1] = $languagePrefix . $parts[count($parts) - 1];
+        $cacheKey = $this->generateKey($salesChannelId, $languageId, $key);
+        $config = $this->cache->get($cacheKey, function (ItemInterface $item) use ($salesChannelId, $languageId, $key) {
+            $languagePrefix = $this->getLanguagePrefix($languageId);
 
-        $config = $this->config->config(implode('.', $parts), $salesChannelId);
-        if ($config === null) {
-            $config = $this->config->config($key, $salesChannelId);
-        }
+            $parts = explode('.', $key);
+            /* @phpstan-ignore-next-line */
+            if (empty($parts)) {
+                return null;
+            }
+            $parts[count($parts) - 1] = $languagePrefix . $parts[count($parts) - 1];
 
-        return $config;
+            $config = $this->config->config(implode('.', $parts), $salesChannelId);
+            if ($config === null) {
+                $config = $this->config->config($key, $salesChannelId);
+            }
+
+            $item->tag([CachedSystemConfigLoader::CACHE_TAG]);
+            return CacheValueCompressor::compress($config);
+        });
+
+        return CacheValueCompressor::uncompress($config);
+    }
+
+    /**
+     * @param string $salesChannelId
+     * @param string $languageId
+     * @param string $key
+     * @return string
+     */
+    private function generateKey(string $salesChannelId, string $languageId, string $key): string
+    {
+        return 'language-based-config-'.md5(json_encode([$salesChannelId, $languageId, $key]));
     }
 
     /**

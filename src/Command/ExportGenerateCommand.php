@@ -69,8 +69,8 @@ class ExportGenerateCommand extends Command
     protected function configure(): void
     {
         $this->setName('elio-search:export:generate')
-             ->addArgument('exportId', InputArgument::OPTIONAL, 'Id of the export that should be generated')
-             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
+            ->addArgument('exportId', InputArgument::OPTIONAL, 'Id of the export that should be generated')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
     }
 
     /**
@@ -85,11 +85,11 @@ class ExportGenerateCommand extends Command
         $exportId = $input->getArgument('exportId');
         $context = new Context(new SystemSource());
 
-        $consoleMessage = 'Loading all exports';
+        $consoleMessage = 'Loading all syncs';
         $criteria = new Criteria();
         if($exportId) {
             $criteria->addFilter(new EqualsFilter('id', $exportId));
-            $consoleMessage = 'Loading export "'.$exportId.'"';
+            $consoleMessage = 'Loading sync "'.$exportId.'"';
         }
 
         if($force) {
@@ -103,12 +103,12 @@ class ExportGenerateCommand extends Command
         $output->writeln('<info>'.$consoleMessage.'</info>');
 
         if($dueExports->count() <= 0) {
-            $output->writeln('<comment>No exports to execute found</comment>');
+            $output->writeln('<comment>No syncs to execute found</comment>');
         }
 
         foreach ($dueExports as $dueExport) {
             $output->writeln(sprintf(
-                '<info>Generating export: "%s" with id "%s"</info>', $dueExport->getName(), $dueExport->getId()
+                '<info>Generating sync: "%s" with id "%s"</info>', $dueExport->getName(), $dueExport->getId()
             ));
             $this->exportService->generate($dueExport, $context);
         }

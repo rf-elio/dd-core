@@ -1,16 +1,16 @@
 {
   "elio-search-sync-profile": {
-    "title": "Export",
+    "title": "Sync",
     "description": "",
     "buttonSave": "Save",
     "buttonCancel": "Cancel",
     "create": {
-      "new-export-name": "Neuer Export"
+      "new-export-name": "New Sync"
     },
     "detail": {
-      "placeholderName": "New_Export_Name",
+      "placeholderName": "NewSync_Name",
       "messageSaveError": "Error while saving: \"{error}\"",
-      "textHeadline": "New Export",
+      "textHeadline": "New Sync",
       "cardTitleBasicInfo" : "Basic information",
       "labelName": "Name",
       "labelActive": "Active",
@@ -26,13 +26,13 @@
       "labelLanguage": "Language",
       "labelLanguages": "Languages",
       "baseCategoryLabel": "Base category",
-      "labelExportCommand": "Export Command",
+      "labelExportCommand": "Sync Command",
       "labelExportCommandForce": "Force",
       "labelDetails": "Details",
       "labelLastGenerationStarted": "Last Generation Started",
       "labelLastGenerationFinished": "Last Generation Finished",
       "labelNextGenerationDueAt": "Next Generation At",
-      "helpTextActive": "If export active - it will be exported",
+      "helpTextActive": "If sync active - it will be synced",
       "cardTitleConfig": "Additional configuration",
       "noConfigAvailable": "No additional configuration available for this type",
       "cardTitleMappings": "Mappings",
@@ -50,24 +50,24 @@
         "path": "Path: "
       },
       "config": {
-        "export_product_categories": "Export product categories",
-        "export_structure_categories": "Export structure categories",
-        "export_link_categories": "Export link categories",
-        "export_footer_categories": "Export footer categories",
-        "export_service_categories": "Export service categories",
+        "export_product_categories": "Sync product categories",
+        "export_structure_categories": "Sync structure categories",
+        "export_link_categories": "Sync link categories",
+        "export_footer_categories": "Sync footer categories",
+        "export_service_categories": "Sync service categories",
         "trigger_import_search_data": "Trigger: Import Search Data",
         "trigger_import_suggest_data": "Trigger: Import Suggest Data"
       },
       "download": "Download",
       "buttonGenerate": "Generate",
       "buttonGenerateInProgress": "Generating",
-      "messageGeneratingError": "Export isn't generated cause of errors: \"{error}\"",
-      "messageGeneratingSuccess": "Export generated successfully"
+      "messageGeneratingError": "Sync isn't generated cause of errors: \"{error}\"",
+      "messageGeneratingSuccess": "Sync generated successfully"
     },
     "list": {
-      "buttonCreate": "Create Export",
+      "buttonCreate": "Create Sync",
       "columns": {
-        "id": "Export ID",
+        "id": "Sync ID",
         "name": "Name",
         "active": "Active",
         "type": "Type",
@@ -78,7 +78,7 @@
       },
       "contextMenuView": "Edit",
       "contextMenuDelete": "Delete",
-      "textDeleteConfirm": "Are you sure you really want to delete the export \"{name}\"?",
+      "textDeleteConfirm": "Are you sure you really want to delete the sync \"{name}\"?",
       "buttonCancel": "Cancel",
       "buttonDelete": "Delete"
     }

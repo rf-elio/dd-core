@@ -12,6 +12,7 @@
         <service id="Elio\ElioSearch\Storefront\TwigExtension\ConfigLanguageBased">
             <argument type="service" id="Shopware\Storefront\Framework\Twig\TemplateConfigAccessor"/>
             <argument type="service" id="language.repository"/>
+            <argument type="service" id="cache.object"/>
             <tag name="twig.extension"/>
         </service>
     </services>
