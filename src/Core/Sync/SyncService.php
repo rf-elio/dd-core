@@ -80,12 +80,12 @@ class SyncService
         $salesChannel = $syncProfile->getSalesChannel();
         if (!$salesChannel || !$salesChannel->getDomains()) {
             $this->logger->info(
-                'Cannot generate product export: association "salesChannel.domains" is missing',
+                'Cannot generate product sync: association "salesChannel.domains" is missing',
                 ['id' => $syncProfile->getId()]
             );
 
             throw new RuntimeException(sprintf(
-                'Cannot generate product export "%s": association "salesChannel.domains" is missing',
+                'Cannot generate product sync "%s": association "salesChannel.domains" is missing',
                 $syncProfile->getName()
             ));
         }
