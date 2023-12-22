@@ -289,6 +289,15 @@
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
+
+        <input-field type="int">
+            <name>productThumbnailSize</name>
+            <label>Product Thumbnail Size</label>
+            <label lang="de-DE">Produkt-Thumbnail Größe</label>
+            <defaultValue>200</defaultValue>
+            <helpText>The size of thumbnail for product image that will be send to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
+            <helpText lang="de-DE">Die Größe der Thumbnail des Produktbilds, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. In den Kategorie-Listing werden normale Bilder verwendet.</helpText>
+        </input-field>
     </card>
 
     <card>
