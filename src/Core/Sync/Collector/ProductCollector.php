@@ -132,6 +132,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('options.group');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
+        $criteria->addAssociation('elioSearchProductSorting');
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);

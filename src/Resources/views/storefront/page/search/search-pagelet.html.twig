@@ -2,7 +2,7 @@
 
 {% block element_product_listing_wrapper %}
     <div class="e-elio-search-listing-properties"
-         data-headline="{{ "search.headline"|trans({'%count%': page.listing.total,'%searchTerm%': page.searchTerm})|escape }}"
+         data-total="{{ page.listing.total }}"
     ></div>
 
     <div class="cms-element-sidebar-filter row">

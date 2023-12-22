@@ -25,10 +25,10 @@
             {% set contentListingResponse = page.listing.getExtension('Elio\\ElioSearch\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}
                 {% block page_search_headline %}
-                    <h1 class="search-headline e-elio-search-listing-properties-headline">
+                    <h1 class="search-headline">
                         {% block page_search_headline_text %}
                             {{ "search.headline"|trans({
-                                '%count%': page.listing.total,
+                                '%count%': '<span class="e-elio-search-listing-properties-total">' ~ page.listing.total ~ '</span>',
                                 '%searchTerm%': searchTerm,
                             })|raw }}
                         {% endblock %}

@@ -1,7 +1,4 @@
 {
-    "search" : {
-        "headline" : "{0} No results for \"%searchTerm%\" | {1} One result for \"%searchTerm%\" | ]1,Inf[ %count% results for \"%searchTerm%\""
-    },
     "elioSearch": {
         "cookies": {
             "tracking": {
