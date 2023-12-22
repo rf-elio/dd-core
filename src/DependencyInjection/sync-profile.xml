@@ -68,6 +68,7 @@
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Output\File\Converter\ProductConverter">
             <argument type="service" id="product.repository" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
             <tag name="elio-search.sync.convertor"/>
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Output\File\Converter\ContentConverter">
