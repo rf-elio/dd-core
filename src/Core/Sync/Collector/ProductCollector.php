@@ -181,7 +181,9 @@ class ProductCollector implements DataCollectorInterface
         EntityCollection $parentProducts,
         array $categories
     ): EntityCollection {
+        /** @var EntityCollection<ProductDataType> $mappedEntities */
         $mappedEntities = new EntityCollection();
+
         foreach ($data as $languageId => $entities) {
             $flatCategoryCollection = $categories[$languageId];
 
@@ -200,7 +202,7 @@ class ProductCollector implements DataCollectorInterface
                 $dataType->addExtension(SeoRoute::class, new SeoRoute(
                     ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
                 ));
-                
+
                 if (
                     $entity->getParentId()
                     && $parentProduct = ProductDataType::createFrom($parentProducts->get($entity->getParentId()))
@@ -208,7 +210,9 @@ class ProductCollector implements DataCollectorInterface
                     $parentProduct->setIdentifier($parentProduct->getProductNumber());
                     $dataType->getVariant()->setParentProduct($parentProduct);
                 }
-
+                $dataType->getVariant()->setGroupingKey(
+                    ProductUtil::getGroupingKey($entity, $dataType->getVariant()->getParentProduct())
+                );
                 $dataType->getVariant()->setDisplayByDefault(
                     ProductUtil::isDisplayedByDefault($entity, $dataType->getVariant()->getParentProduct())
                 );
@@ -220,12 +224,10 @@ class ProductCollector implements DataCollectorInterface
                     $entity->getCustomFields()[ElioSearch::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH] ??
                     $dataType->getVariant()->isDisplayByDefault()
                 );
-
                 /** @var ProductConfiguratorSettingEntity $productConfiguratorSettings */
-                if($productConfiguratorSettings = $entity->getConfiguratorSettings()->first()) {
+                if ($productConfiguratorSettings = $entity->getConfiguratorSettings()->first()) {
                     $dataType->getVariant()->setPosition($productConfiguratorSettings->getPosition());
                 }
-
 
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);

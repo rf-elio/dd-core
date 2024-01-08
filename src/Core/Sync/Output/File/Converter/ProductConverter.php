@@ -38,9 +38,10 @@ use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
 use Elio\ElioSearch\Core\Sync\Output\File\Converter\Exception\InvalidDataTypeException;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\Output\File\ExportItem;
-use Elio\ElioSearch\Core\Sync\Output\File\SeoRoute;
+use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
+use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
@@ -61,11 +62,11 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class ProductConverter implements ConverterInterface
 {
-    private const PRODUCT_THUMBNAIL_SIZE = 200;
+    public function __construct(
+        private readonly EntityRepository $productRepository,
+        private ElioSearchConfigService $configService,
+    ) {}
 
-    public function __construct(private readonly EntityRepository $productRepository)
-    {
-    }
 
     /**
      * Converts product type to export item
@@ -106,10 +107,14 @@ class ProductConverter implements ConverterInterface
         SalesChannelContext $context
     ): void {
         $parentProduct = null;
-        if($product->getParentId()) {
+
+        if ($product->getParentId()) {
             /** @var ProductEntity|null  $parentProduct */
             $parentProduct = $this->productRepository->search(new Criteria([$product->getParentId()]), $context->getContext())->first();
         }
+
+        $thumbnailSize = $this->configService->getByContext($context)->getProductThumbnailSize();
+        $thumbnailUrl = $this->getThumbnailUrl($product->getCover()?->getMedia()?->getThumbnails(), $thumbnailSize);
 
         $item->set(ProductSyncDefaults::FIELD_ID, $product->getId());
         $item->set(ProductSyncDefaults::FIELD_MASTER_PRODUCT_NUMBER, $parentProduct?->getProductNumber());
@@ -129,9 +134,8 @@ class ProductConverter implements ConverterInterface
             ProductSyncDefaults::FIELD_RELEASE_DATE,
             $product->getReleaseDate() ? $product->getReleaseDate()->format(SyncDefaults::DATE_TIME_FORMAT) : ''
         );
-
         $item->set(ProductSyncDefaults::FIELD_IMAGE_URL, $product->getCover()?->getMedia()?->getUrl());
-        $item->set(ProductSyncDefaults::FIELD_THUMBNAIL_URL, $this->getThumbnailUrl($product->getCover()?->getMedia()?->getThumbnails()));
+        $item->set(ProductSyncDefaults::FIELD_THUMBNAIL_URL, $thumbnailUrl);
         $item->set(ProductSyncDefaults::FIELD_PRODUCT_URL, new SeoRoute(
             ProductPageSeoUrlRoute::ROUTE_NAME, $product->getId(), ['productId' => $product->getId()]
         ));
@@ -392,13 +396,12 @@ class ProductConverter implements ConverterInterface
      * @param MediaThumbnailCollection|null $thumbnailCollection
      * @return string
      */
-    protected function getThumbnailUrl(?MediaThumbnailCollection $thumbnailCollection): string
+    protected function getThumbnailUrl(?MediaThumbnailCollection $thumbnailCollection, int $targetSize): string
     {
         if (!$thumbnailCollection || $thumbnailCollection->count() <= 0) {
             return '';
         }
 
-        $targetSize = self::PRODUCT_THUMBNAIL_SIZE;
         $bestMatching = null;
         $bestMatchingSizeDifference = 0;
         foreach ($thumbnailCollection as $thumbnail) {

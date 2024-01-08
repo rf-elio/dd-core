@@ -32,7 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Util;
 
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
+use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
 
 /**
  * Class ProductUtil
@@ -91,5 +94,54 @@ class ProductUtil
         }
 
         return false;
+    }
+
+    public static function getGroupingKey(ProductEntity $product, ?ProductEntity $parentProduct): string
+    {
+        $masterProductNumber = $parentProduct?->getProductNumber() ?? $product->getProductNumber();
+        $configuratorGroupConfig = $product->getVariantListingConfig()?->getConfiguratorGroupConfig();
+
+        $groupingKey = $masterProductNumber;
+
+        if (!$configuratorGroupConfig) {
+            return $groupingKey;
+        }
+
+        /** @var array{id:string,representation:string,expressionForListings:bool} $configuratorGroupConfig */
+
+        $ids = array_map(function ($groupConfig) {
+            if (!($groupConfig['expressionForListings'] ?? false)) {
+                return null;
+            }
+
+            return $groupConfig['id'] ?: null;
+        }, $configuratorGroupConfig ?: []);
+
+        $ids = array_filter($ids, fn ($id) => $id !== null);
+
+        /** @var array<string,object{name:string,value:string}> */
+        $options = $product
+            ->getOptions()
+            ->filter(function (PropertyGroupOptionEntity $propertyGroupOption) use ($ids) {
+                return in_array($propertyGroupOption->getGroupId(), $ids);
+            })
+            ->map(function (PropertyGroupOptionEntity $propertyGroupOption) {
+                $propertyGroup = $propertyGroupOption->getGroup();
+
+                $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
+                $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
+
+                return (object)compact('name', 'value');
+            });
+
+        $slugger = new AsciiSlugger();
+
+        $optionPairs = array_map(fn ($option) => strtolower($slugger->slug($option->name) . ':' . $slugger->slug($option->value)), $options);
+
+        asort($optionPairs); // make sure it is consistant
+
+        $groupingKey = rtrim(implode('@', [$groupingKey, implode(';', $optionPairs)]), '@');
+
+        return $groupingKey;
     }
 }
