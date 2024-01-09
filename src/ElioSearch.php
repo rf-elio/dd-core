@@ -71,9 +71,7 @@ class ElioSearch extends Plugin
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_custom_search_query';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_count';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_amount';
-    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default_in_listing';
-    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default_in_search';
-
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default';
     public const DEFAULT_ELIO_SEARCH_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     /**
@@ -238,19 +236,11 @@ class ElioSearch extends Plugin
                     ]
                 ),
                 new CustomFieldStruct(
-                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_LISTING,
+                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT,
                     'bool',
                     [
-                        'en-GB' => 'Displayed product/variant in listing',
-                        'de-DE' => 'Produkt/Variante im Listing zeigen',
-                    ]
-                ),
-                new CustomFieldStruct(
-                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT_IN_SEARCH,
-                    'bool',
-                    [
-                        'en-GB' => 'Displayed product/variant in search result',
-                        'de-DE' => 'Produkt/Variante im Suchergebnis zeigen',
+                        'en-GB' => 'Displayed product/variant in search result / navigation',
+                        'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
                     ]
                 )
             )];

@@ -59,6 +59,7 @@ class Configuration extends Struct
      * @var array<string>
      */
     private array $additionalRequestParameters;
+    private int $suggestThumbnailSize;
     private bool $trackCart;
     private bool $trackLogin;
     private bool $trackProductView;
@@ -106,6 +107,7 @@ class Configuration extends Struct
      * @param array $disallowTrackingForUserAgents
      * @param bool $listingUseElioSearch
      * @param array<string> $additionalRequestParameters
+     * @param int $suggestThumbnailSize
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
      * @param array<string> $botProtectionSearchTermFilter
@@ -139,6 +141,7 @@ class Configuration extends Struct
         array $disallowTrackingForUserAgents,
         bool $listingUseElioSearch,
         array $additionalRequestParameters,
+        int $suggestThumbnailSize,
         bool $botProtectionActive,
         bool $botProtectionUseBadBotList,
         array $botProtectionSearchTermFilter,
@@ -168,6 +171,7 @@ class Configuration extends Struct
         $this->active = $active;
         $this->listingUseElioSearch = $listingUseElioSearch;
         $this->additionalRequestParameters = $additionalRequestParameters;
+        $this->suggestThumbnailSize = $suggestThumbnailSize;
         $this->trackCart = $trackCart;
         $this->trackLogin = $trackLogin;
         $this->trackProductView = $trackProductView;
@@ -255,6 +259,14 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSuggestThumbnailSize(): int
+    {
+        return $this->suggestThumbnailSize;
     }
 
     /**

@@ -26,6 +26,7 @@
             <argument type="service" id="sales_channel.product.repository" />
             <argument type="service" id="sales_channel.category.repository" />
             <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
             <tag name="elio-search.sync.collector"/>
         </service>
         <service id="Elio\ElioSearch\Core\Sync\Collector\CategoryCollector">
@@ -37,26 +38,6 @@
             <argument type="service" id="sales_channel.landing_page.repository" />
             <argument type="service" id="event_dispatcher" />
             <tag name="elio-search.sync.collector"/>
-        </service>
-
-        <!-- writers -->
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\File\ExportStorageService" />
-            <tag name="elio-search.sync.writer"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Writer\CleanupWriterDecorator"
-                 decorates="Elio\ElioSearch\Core\Sync\Output\File\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\File\Writer\CleanupWriterDecorator.inner" />
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Writer\SeoUrlWriterDecorator"
-                 decorates="Elio\ElioSearch\Core\Sync\Output\File\Writer\CSVFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\File\Writer\SeoUrlWriterDecorator.inner" />
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="router"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Writer\XMLFileWriter">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\File\ExportStorageService" />
-            <tag name="elio-search.sync.writer"/>
         </service>
 
         <!-- Product sorting -->
@@ -90,25 +71,6 @@
             <argument type="service" id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService" />
             <tag name="console.command"/>
         </service>
-
-        <!--   Export    -->
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\ExportService">
-            <argument type="tagged" tag="elio-search.sync.convertor" />
-            <argument type="tagged" tag="elio-search.sync.collector" />
-            <argument type="tagged" tag="elio-search.sync.writer" />
-            <argument type="service" id="event_dispatcher" />
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Converter\ProductConverter">
-            <argument type="service" id="product.repository" />
-            <tag name="elio-search.sync.convertor"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\Converter\ContentConverter">
-            <tag name="elio-search.sync.convertor"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Sync\Output\File\ExportStorageService">
-            <argument type="service" id="shopware.filesystem.private" />
-        </service>
-
 
         <!--    Api Sync    -->
         <service id="Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\ProductIndexer">

@@ -32,7 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Util;
 
+use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 
 /**
  * Class ProductUtil
@@ -44,6 +47,33 @@ use Shopware\Core\Content\Product\ProductEntity;
  */
 class ProductUtil
 {
+
+    /**
+     * Searches for the best matching thumbnail
+     *
+     * @param MediaThumbnailCollection|null $thumbnailCollection
+     * @param int $targetSize
+     * @return string
+     */
+    public static function getThumbnailUrl(?MediaThumbnailCollection $thumbnailCollection, int $targetSize): string
+    {
+        if (!$thumbnailCollection || $thumbnailCollection->count() <= 0) {
+            return '';
+        }
+
+        $bestMatching = null;
+        $bestMatchingSizeDifference = 0;
+        foreach ($thumbnailCollection as $thumbnail) {
+            $targetSizeDifference = abs($targetSize - $thumbnail->getWidth());
+            if (!$bestMatching || $targetSizeDifference < $bestMatchingSizeDifference) {
+                $bestMatching = $thumbnail;
+                $bestMatchingSizeDifference = $targetSizeDifference;
+            }
+        }
+
+        return $bestMatching ? $bestMatching->getUrl() : '';
+    }
+
     /**
      * Checks if product should be displayed by default
      *
@@ -91,5 +121,60 @@ class ProductUtil
         }
 
         return false;
+    }
+
+    /**
+     * Generates a grouping key for a product
+     *
+     * @param ProductEntity $product The product for which the grouping key is generated
+     * @param ProductEntity|null $parentProduct The parent product, if available
+     * @return string The grouping key
+     */
+    public static function getGroupingKey(ProductEntity $product, ?ProductEntity $parentProduct): string
+    {
+        $masterProductNumber = $parentProduct?->getProductNumber() ?? $product->getProductNumber();
+        $configuratorGroupConfig = $product->getVariantListingConfig()?->getConfiguratorGroupConfig();
+        $groupingKey = $masterProductNumber;
+
+        if (!$configuratorGroupConfig) {
+            return $groupingKey;
+        }
+
+        /** @var array{id:string,representation:string,expressionForListings:bool} $configuratorGroupConfig */
+
+        $ids = array_map(function ($groupConfig) {
+            if (!($groupConfig['expressionForListings'] ?? false)) {
+                return null;
+            }
+
+            return $groupConfig['id'] ?: null;
+        }, $configuratorGroupConfig ?: []);
+
+        $ids = array_filter($ids, fn ($id) => $id !== null);
+
+        /** @var array<string,object{name:string,value:string}> */
+        $options = $product
+            ->getOptions()
+            ->filter(function (PropertyGroupOptionEntity $propertyGroupOption) use ($ids) {
+                return in_array($propertyGroupOption->getGroupId(), $ids);
+            })
+            ->map(function (PropertyGroupOptionEntity $propertyGroupOption) {
+                $propertyGroup = $propertyGroupOption->getGroup();
+
+                $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
+                $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
+
+                return (object)compact('name', 'value');
+            });
+
+        $slugger = new AsciiSlugger();
+
+        $optionPairs = array_map(fn ($option) => strtolower($slugger->slug($option->name) . ':' . $slugger->slug($option->value)), $options);
+
+        asort($optionPairs); // make sure it is consistant
+
+        $groupingKey = rtrim(implode('@', [$groupingKey, implode(';', $optionPairs)]), '@');
+
+        return $groupingKey;
     }
 }

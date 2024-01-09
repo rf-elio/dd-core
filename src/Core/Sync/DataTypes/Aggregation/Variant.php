@@ -36,15 +36,27 @@ namespace Elio\ElioSearch\Core\Sync\DataTypes\Aggregation;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 
 /**
- * 
+ *
  */
 class Variant
 {
     private ?ProductDataType $parentProduct = null;
+    private string $groupingKey;
     private bool $displayByDefault;
     private bool $displayByDefaultInListing;
     private bool $displayByDefaultInSearch;
     private int $position = 0;
+
+
+    public function getGroupingKey(): string
+    {
+        return $this->groupingKey;
+    }
+
+    public function setGroupingKey(string $groupingKey): void
+    {
+        $this->groupingKey = $groupingKey;
+    }
 
     public function setDisplayByDefault(bool $displayByDefault): void
     {
@@ -59,26 +71,6 @@ class Variant
     public function setParentProduct(?ProductDataType $parentProduct): void
     {
         $this->parentProduct = $parentProduct;
-    }
-
-    public function isDisplayByDefaultInListing(): bool
-    {
-        return $this->displayByDefaultInListing;
-    }
-
-    public function setDisplayByDefaultInListing(bool $displayByDefaultInListing): void
-    {
-        $this->displayByDefaultInListing = $displayByDefaultInListing;
-    }
-
-    public function isDisplayByDefaultInSearch(): bool
-    {
-        return $this->displayByDefaultInSearch;
-    }
-
-    public function setDisplayByDefaultInSearch(bool $displayByDefaultInSearch): void
-    {
-        $this->displayByDefaultInSearch = $displayByDefaultInSearch;
     }
 
     public function isDisplayByDefault(): bool
