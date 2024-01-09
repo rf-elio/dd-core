@@ -127,7 +127,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
             $additionalRequestParameters,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productThumbnailSize', $languagePrefix) ?? 200,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,
             ConfigParserUtil::prepareValueList($config, 'botProtectionSearchTermFilter', $languagePrefix),

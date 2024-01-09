@@ -53,7 +53,7 @@ class Variant
         return $this->groupingKey;
     }
 
-    public function setGroupingKey(string $groupingKey)
+    public function setGroupingKey(string $groupingKey): void
     {
         $this->groupingKey = $groupingKey;
     }
@@ -71,26 +71,6 @@ class Variant
     public function setParentProduct(?ProductDataType $parentProduct): void
     {
         $this->parentProduct = $parentProduct;
-    }
-
-    public function isDisplayByDefaultInListing(): bool
-    {
-        return $this->displayByDefaultInListing;
-    }
-
-    public function setDisplayByDefaultInListing(bool $displayByDefaultInListing): void
-    {
-        $this->displayByDefaultInListing = $displayByDefaultInListing;
-    }
-
-    public function isDisplayByDefaultInSearch(): bool
-    {
-        return $this->displayByDefaultInSearch;
-    }
-
-    public function setDisplayByDefaultInSearch(bool $displayByDefaultInSearch): void
-    {
-        $this->displayByDefaultInSearch = $displayByDefaultInSearch;
     }
 
     public function isDisplayByDefault(): bool

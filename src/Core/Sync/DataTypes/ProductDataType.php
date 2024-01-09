@@ -50,6 +50,7 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     use DeletedAware;
 
     private ?Variant $variant = null;
+    private ?string $thumbnailUrl = null;
 
     public function setVariant(?Variant $variant): void
     {
@@ -59,5 +60,15 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     public function getVariant(): Variant
     {
         return $this->variant;
+    }
+
+    public function getThumbnailUrl(): ?string
+    {
+        return $this->thumbnailUrl;
+    }
+
+    public function setThumbnailUrl(?string $thumbnailUrl): void
+    {
+        $this->thumbnailUrl = $thumbnailUrl;
     }
 }

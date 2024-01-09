@@ -85,6 +85,15 @@
             <helpText>Defines which attribute contains the product number in the elio search api response.</helpText>
             <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der elio search Api Antwort enthält.</helpText>
         </input-field>
+
+        <input-field type="int">
+            <name>suggestThumbnailSize</name>
+            <label>Thumbnail Size</label>
+            <label lang="de-DE">Thumbnail Größe</label>
+            <defaultValue>200</defaultValue>
+            <helpText>The size of thumbnail for image that will be send to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
+            <helpText lang="de-DE">Die Größe der Thumbnail, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. In den Kategorie-Listing werden normale Bilder verwendet.</helpText>
+        </input-field>
     </card>
     <card>
         <title>Listing configuration</title>
@@ -297,15 +306,6 @@
             <helpText>If enabled sorting strategy is "Merge Strategie", if disabled - "Sort by category strategy".</helpText>
             <helpText lang="de-DE">Wenn aktiviert, ist die Sortierstrategie "Merge Strategie", wenn deaktiviert - "Sort by category strategy".</helpText>
             <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="int">
-            <name>productThumbnailSize</name>
-            <label>Product Thumbnail Size</label>
-            <label lang="de-DE">Produkt-Thumbnail Größe</label>
-            <defaultValue>200</defaultValue>
-            <helpText>The size of thumbnail for product image that will be send to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
-            <helpText lang="de-DE">Die Größe der Thumbnail des Produktbilds, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. In den Kategorie-Listing werden normale Bilder verwendet.</helpText>
         </input-field>
     </card>
 

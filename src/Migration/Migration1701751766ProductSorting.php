@@ -15,7 +15,7 @@ class Migration1701751766ProductSorting extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-CREATE TABLE `elio_search_product_sorting` (
+CREATE TABLE IF NOT EXISTS `elio_search_product_sorting` (
     `id` BINARY(16) NOT NULL,
     `product_id` BINARY(16) NOT NULL,
     `product_version_id` BINARY(16) NOT NULL,

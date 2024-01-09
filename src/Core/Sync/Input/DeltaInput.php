@@ -65,8 +65,7 @@ class DeltaInput implements InputInterface
         private readonly ChangeSetService $changeSetService,
         private readonly iterable $collectors,
         private readonly LoggerInterface $logger
-    )
-    {
+    ) {
     }
 
     public function supports(string $type): bool
@@ -94,7 +93,8 @@ class DeltaInput implements InputInterface
         ]);
 
         if ($changeSet->isEmpty()) {
-            $this->logger->info(sprintf('DeltaInput: No entries sync entries found for profile %s', $syncContext->getProfileDefinition()->getName()));
+            $this->logger->info(sprintf('DeltaInput: No entries sync entries found for profile %s',
+                $syncContext->getProfileDefinition()->getName()));
             return;
         }
 
@@ -168,8 +168,10 @@ class DeltaInput implements InputInterface
         return $collectors;
     }
 
-    protected function mapEntityStatusBaseFields(EntityStatusCollection $entityStatusCollection, Collection $entities): void
-    {
+    protected function mapEntityStatusBaseFields(
+        EntityStatusCollection $entityStatusCollection,
+        Collection $entities
+    ): void {
         $entityStatusCollection->fmap(function (EntityStatusEntity $entityStatusEntity) use ($entities) {
             /** @var DataTypeInterface|null $dataTypeEntity */
             $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId());

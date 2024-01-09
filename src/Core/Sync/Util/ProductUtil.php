@@ -32,10 +32,10 @@
 
 namespace Elio\ElioSearch\Core\Sync\Util;
 
+use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
-use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
 
 /**
  * Class ProductUtil
@@ -47,6 +47,33 @@ use Elio\ElioSearch\Core\Sync\Util\ValueUtil;
  */
 class ProductUtil
 {
+
+    /**
+     * Searches for the best matching thumbnail
+     *
+     * @param MediaThumbnailCollection|null $thumbnailCollection
+     * @param int $targetSize
+     * @return string
+     */
+    public static function getThumbnailUrl(?MediaThumbnailCollection $thumbnailCollection, int $targetSize): string
+    {
+        if (!$thumbnailCollection || $thumbnailCollection->count() <= 0) {
+            return '';
+        }
+
+        $bestMatching = null;
+        $bestMatchingSizeDifference = 0;
+        foreach ($thumbnailCollection as $thumbnail) {
+            $targetSizeDifference = abs($targetSize - $thumbnail->getWidth());
+            if (!$bestMatching || $targetSizeDifference < $bestMatchingSizeDifference) {
+                $bestMatching = $thumbnail;
+                $bestMatchingSizeDifference = $targetSizeDifference;
+            }
+        }
+
+        return $bestMatching ? $bestMatching->getUrl() : '';
+    }
+
     /**
      * Checks if product should be displayed by default
      *
@@ -96,11 +123,17 @@ class ProductUtil
         return false;
     }
 
+    /**
+     * Generates a grouping key for a product
+     *
+     * @param ProductEntity $product The product for which the grouping key is generated
+     * @param ProductEntity|null $parentProduct The parent product, if available
+     * @return string The grouping key
+     */
     public static function getGroupingKey(ProductEntity $product, ?ProductEntity $parentProduct): string
     {
         $masterProductNumber = $parentProduct?->getProductNumber() ?? $product->getProductNumber();
         $configuratorGroupConfig = $product->getVariantListingConfig()?->getConfiguratorGroupConfig();
-
         $groupingKey = $masterProductNumber;
 
         if (!$configuratorGroupConfig) {
