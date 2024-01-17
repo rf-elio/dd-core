@@ -134,7 +134,9 @@ class ProductSearchRequestBuilder
             return;
         }
 
-        [$field, $order] = explode('.', $payload[self::PARAM_SORT]);
+        $parts = explode('.', $payload[self::PARAM_SORT]);
+        $order = array_pop($parts);
+        $field = implode('.', $parts);
         $searchRequest->setSort($field, $order);
     }
 

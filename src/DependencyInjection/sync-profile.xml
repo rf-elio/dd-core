@@ -66,8 +66,8 @@
                 <argument type="service" id="service_container" />
             </call>
         </service>
-        <!--    REMOVE    -->
-        <service id="Elio\ElioSearch\Command\TestCommand">
+
+        <service id="Elio\ElioSearch\Command\ProductSortCommand">
             <argument type="service" id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService" />
             <tag name="console.command"/>
         </service>

@@ -41,7 +41,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TestCommand extends Command
+class ProductSortCommand extends Command
 {
     public function __construct(private readonly ProductSortingService $productSortingService)
     {
@@ -50,7 +50,7 @@ class TestCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:test');
+        $this->setName('elio-search:product-sort');
     }
 
     /**

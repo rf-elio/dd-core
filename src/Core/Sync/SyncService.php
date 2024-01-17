@@ -143,7 +143,7 @@ class SyncService
     {
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages');
+        $criteria->addAssociation('languages.locale');
         $criteria->addFilter(new EqualsFilter('active', true));
         return $this->syncProfileRepository->search($criteria, $context);
     }
@@ -159,7 +159,6 @@ class SyncService
     {
         $criteria = new Criteria([$id]);
         $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages');
         $criteria->addAssociation('languages.locale');
         $criteria->addFilter(new EqualsFilter('active', true));
         if (!$syncProfile = $this->syncProfileRepository->search($criteria, $context)->first()) {

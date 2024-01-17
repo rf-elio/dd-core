@@ -94,6 +94,4 @@ class NavigationRequestProduct extends ProductSearchRequest
     {
         return $this->customFilters;
     }
-
-
 }

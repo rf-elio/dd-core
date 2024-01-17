@@ -57,6 +57,13 @@ class ProductSortingService
     ) {
     }
 
+    /**
+     * Creates product positions for category
+     *
+     * @param Context $context
+     * @return void
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function sort(Context $context): void
     {
         $isMergeSortingStrategy = $this->configService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX . '.mergeSortingStrategy') ?? false;
@@ -91,6 +98,12 @@ class ProductSortingService
         }
     }
 
+    /**
+     * Prepares sorting data for merge
+     *
+     * @return array
+     * @throws \Doctrine\DBAL\Exception
+     */
     private function prepareSortByMergeStrategyData(): array
     {
         $result = $this->connection->createQueryBuilder()
@@ -106,7 +119,6 @@ class ProductSortingService
             ->leftJoin('c', 'product_category_tree', 'pct', 'c.id = pct.category_id')
             ->leftJoin('pct', 'product', 'p', 'p.id = pct.product_id and p.version_id = pct.product_version_id')
             ->orderBy('c.level', 'DESC')
-//            ->setMaxResults(100)
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -118,18 +130,12 @@ class ProductSortingService
                 $position = count($sorting[$row['id']]) + 1;
             }
 
-//            if (isset($offset[$row['parent_id']])) {
-//
-//            } elseif (isset($sorting[$row['parent_id']])) {
-//                $offset[$row['parent_id']] = $row['child_count'];
-//            }
-
             if (!in_array($row['id'], json_decode($row['category_ids'], false), true)) {
                 if (isset($offset[$row['id']])) {
-                    $offset[$row['category_ids']] += $row['child_count'];
-                    $position = $offset[$row['category_ids']];
+                    $offset[$row['id']] += $row['child_count'];
+                    $position = $offset[$row['id']];
                 } else {
-                    $offset[$row['category_ids']] = $position;
+                    $offset[$row['id']] = $position;
                 }
             }
 
@@ -139,28 +145,9 @@ class ProductSortingService
                 'productVersionId' => $row['product_version_id'],
                 'position' => $position,
             ];
-
-
-//            if (isset($row['parent_id'], $offset['parentId']) && !isset($offset[$row['parent_id'][$row['id']]])) {
-//                $offset[$row['parent_id']][] = $row['id'];
-//            }
-//
-//            $position = isset($row['parent_id'], $offset[$row['parent_id']]) ? count($offset[$row['parent_id']]) : 1;
-//            if (isset($sorting[$row['id']])) {
-//                $position += count($sorting[$row['id']]) + 1 + $row['child_count'];
-//            }
-//
-//            $sorting[$row['id']][] = [
-//                'categoryId' => $row['id'],
-//                'productId' => $row['product_id'],
-//                'productVersionId' => $row['product_version_id'],
-//                'position' => $position,
-//            ];
         }
 
         return $sorting;
-
-//        dd($sorting['cb170cb934f34031953446e5a68cd782'][27012], $sorting['cb170cb934f34031953446e5a68cd782'][27013]);
     }
 
     /**
@@ -200,90 +187,5 @@ class ProductSortingService
         }
 
         return $sorting;
-    }
-
-    public function draft()
-    {
-        $result = $this->connection->createQueryBuilder()
-            ->select(
-                'LOWER(HEX(c.id)) as id',
-                'LOWER(HEX(c.parent_id)) as parent_id',
-                'c.child_count',
-                'LOWER(HEX(p.id)) as product_id',
-                'LOWER(HEX(p.version_id)) as product_version_id',
-                'p.category_ids',
-                'p.category_tree'
-            )
-            ->from('category', 'c')
-            ->leftJoin('c', 'product_category', 'pc', 'c.id = pc.category_id')
-            ->leftJoin('pc', 'product', 'p', 'p.id = pc.product_id and p.version_id = pc.product_version_id')
-            ->orderBy('c.level', 'DESC')
-            //            ->setMaxResults(100)
-            ->executeQuery()
-            ->fetchAllAssociative();
-
-        $data = [];
-        foreach ($result as $row) {
-            if ($row['product_id'] === null) {
-                continue;
-            }
-
-            $position = 1;
-            if (isset($data[$row['id']])) {
-                $position = count($data[$row['id']]) + 1;
-            }
-
-            $data[$row['id']][] = [
-                'parentId' => $row['parent_id'],
-                'productId' => $row['product_id'],
-                'categoryTree' => json_decode($row['category_tree'], false),
-                'position' => $position,
-            ];
-        }
-
-        foreach ($result as $row) {
-            if ((int)$row['child_count'] === 0) {
-                continue;
-            }
-
-            $position = 0;
-            if (isset($data[$row['id']])) {
-                $position = count($data[$row['id']]);
-            }
-
-            foreach ($data as $categoryId => $items) {
-                if ($categoryId === $row['id']) {
-                    continue;
-                }
-
-                $productIds = isset($data[$row['id']]) ? array_column($data[$row['id']], 'productId') : [];
-
-                foreach ($items as $item) {
-                    if (in_array($item['productId'], $productIds, true)) {
-                        continue;
-                    }
-
-                    if (in_array($row['id'], $item['categoryTree'], true)) {
-                        $data[$row['id']][] = [
-                            'parentId' => $row['parent_id'],
-                            'productId' => $item['productId'],
-                            'categoryTree' => $item['categoryTree'],
-                            'position' => ++$position,
-                        ];
-                    }
-                }
-            }
-        }
-
-        $ids = $this->connection->createQueryBuilder()
-            ->select('LOWER(HEX(id)) as id')
-            ->from('product')
-            ->executeQuery()
-            ->fetchAllNumeric();
-
-        $productIds = array_merge(...$ids);
-        dd(array_diff($productIds, array_column($data['cb170cb934f34031953446e5a68cd782'], 'productId')));
-
-        dd($data['cb170cb934f34031953446e5a68cd782'][26993]);
     }
 }
