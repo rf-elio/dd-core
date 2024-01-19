@@ -79,41 +79,46 @@ class FilterDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-           (new IdField('id', 'id'))->addFlags(
-               new ApiAware(),
-               new Required(),
-               new PrimaryKey()
-           ),
-           (new StringField('technical_name', 'technicalName'))->addFlags(
-               new ApiAware(),
-               new Required()
-           ),
-           (new TranslatedField('propertyName'))->addFlags(new ApiAware()),
-           (new BoolField('is_custom', 'isCustom'))->addFlags(
-               new ApiAware(),
-               new Required()
-           ),
-           (new FkField('property_id', 'propertyId', PropertyGroupDefinition::class))->addFlags(
-               new ApiAware()
-           ),
-           (new TranslationsAssociationField(
-               FilterDefinitionTranslationDefinition::class,
-               'elio_search_filter_id'
-           ))->addFlags(new Required(), new CascadeDelete()),
-           new ManyToManyAssociationField(
-               'filterRestrictions',
-               FilterRestrictionsDefinition::class,
-               FilterRestrictionsFilterMapping::class,
-               'filter_id',
-               'filter_restriction_id'
-           ),
-           new OneToOneAssociationField(
-               'property',
-               'propertyId',
-               'id',
-               PropertyGroupDefinition::class,
-               false
-           ),
+            (new IdField('id', 'id'))->addFlags(
+                new ApiAware(),
+                new Required(),
+                new PrimaryKey()
+            ),
+            (new StringField('technical_name', 'technicalName'))->addFlags(
+                new ApiAware(),
+                new Required()
+            ),
+            (new StringField('type', 'type'))->addFlags(
+                new ApiAware(),
+                new Required()
+            ),
+            (new TranslatedField('propertyName'))->addFlags(new ApiAware()),
+            (new BoolField('is_custom', 'isCustom'))->addFlags(
+                new ApiAware(),
+                new Required()
+            ),
+
+            (new FkField('property_id', 'propertyId', PropertyGroupDefinition::class))->addFlags(
+                new ApiAware()
+            ),
+            (new TranslationsAssociationField(
+                FilterDefinitionTranslationDefinition::class,
+                'elio_search_filter_id'
+            ))->addFlags(new Required(), new CascadeDelete()),
+            new ManyToManyAssociationField(
+                'filterRestrictions',
+                FilterRestrictionsDefinition::class,
+                FilterRestrictionsFilterMapping::class,
+                'filter_id',
+                'filter_restriction_id'
+            ),
+            new OneToOneAssociationField(
+                'property',
+                'propertyId',
+                'id',
+                PropertyGroupDefinition::class,
+                false
+            ),
         ]);
     }
 }

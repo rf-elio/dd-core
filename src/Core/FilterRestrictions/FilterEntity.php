@@ -47,6 +47,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
  */
 class FilterEntity extends Entity
 {
+    public const FILTER_TYPE_FILTER = 'filter';
+    public const FILTER_TYPE_SORTING = 'sorting';
+
     use EntityIdTrait;
 
     /**
@@ -58,6 +61,7 @@ class FilterEntity extends Entity
      * @var string
      */
     protected string $technicalName;
+    protected string $type;
 
     /**
      * @var bool
@@ -178,6 +182,23 @@ class FilterEntity extends Entity
     public function setTechnicalName(string $technicalName): void
     {
         $this->technicalName = $technicalName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return void
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     /**

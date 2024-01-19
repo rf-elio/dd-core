@@ -43,13 +43,11 @@ class ProductExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void
     {
-        $collection->add(
-            (new OneToManyAssociationField(
-                'elioSearchProductSorting',
-                ProductSortingDefinition::class,
-                'product_id'
-            ))->addFlags(new Inherited())
-        );
+        $collection->add(new OneToManyAssociationField(
+            'elioSearchProductSorting',
+            ProductSortingDefinition::class,
+            'product_id'
+        ));
     }
 
 

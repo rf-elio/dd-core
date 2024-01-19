@@ -32,6 +32,7 @@
 
 namespace Elio\ElioSearch\Command;
 
+use Elio\ElioSearch\Core\FilterRestrictions\FilterEntity;
 use Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -67,6 +68,11 @@ class SynchronizePropertiesToFiltersCommand extends Command
     {
         $this->setName('elio-search:filters:sync')
             ->addArgument(
+                'type',
+                InputArgument::REQUIRED,
+                'Created filter type'
+            )
+            ->addArgument(
                 'propertyId',
                 InputArgument::OPTIONAL,
                 'Property id that should be synced. Optional. If not provided all properties will be synchronized.'
@@ -83,12 +89,21 @@ class SynchronizePropertiesToFiltersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $propertyId = $input->getArgument('propertyId');
+        $type = $input->getArgument('type');
+
+        if (!in_array($type, [FilterEntity::FILTER_TYPE_FILTER, FilterEntity::FILTER_TYPE_SORTING])) {
+            $output->writeln(sprintf(
+                'Type must be one of %s, %s', FilterEntity::FILTER_TYPE_FILTER, FilterEntity::FILTER_TYPE_SORTING
+            ));
+            return Command::FAILURE;
+        }
+
         $context = new Context(new SystemSource());
         try {
             if ($propertyId) {
-                $this->syncOne($context, $output, $propertyId);
+                $this->syncOne($context, $output, $propertyId, $type);
             } else {
-                $this->syncAll($context, $output);
+                $this->syncAll($context, $output, $type);
             }
         } catch (Throwable $e) {
             return Command::FAILURE;
@@ -103,11 +118,12 @@ class SynchronizePropertiesToFiltersCommand extends Command
      * @param Context $context
      * @param OutputInterface $output
      * @param string $propertyId
+     * @param string $type
      */
-    private function syncOne(Context $context, OutputInterface $output, string $propertyId): void
+    private function syncOne(Context $context, OutputInterface $output, string $propertyId, string $type): void
     {
         $output->writeln(sprintf('<info>Sync property with id : "%s"</info>', $propertyId));
-        $this->filterService->syncOne($context, $propertyId);
+        $this->filterService->syncOne($context, $propertyId, $type);
     }
 
     /**
@@ -116,9 +132,9 @@ class SynchronizePropertiesToFiltersCommand extends Command
      * @param Context $context
      * @param OutputInterface $output
      */
-    private function syncAll(Context $context, OutputInterface $output): void
+    private function syncAll(Context $context, OutputInterface $output, string $type): void
     {
         $output->writeln('<info>PropertyId is not defined, sync all...</info>');
-        $this->filterService->syncAll($context);
+        $this->filterService->syncAll($context, $type);
     }
 }

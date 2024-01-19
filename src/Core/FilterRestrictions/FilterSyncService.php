@@ -86,12 +86,13 @@ class FilterSyncService
      * @param Context $context
      * @param string $propertyId
      */
-    public function syncOne(Context $context, string $propertyId): void
+    public function syncOne(Context $context, string $propertyId, string $type): void
     {
         /** @var PropertyGroupEntity $property */
         $property = $this->propertyRepository->search(new Criteria([$propertyId]), $context)->first();
         $criteria = new Criteria();
         $criteria->addAssociation('translations');
+        $criteria->addFilter(new EqualsFilter('type', $type));
         $criteria->addFilter(
             new EqualsFilter('propertyId', $property->getId())
         );
@@ -103,15 +104,16 @@ class FilterSyncService
             $this->update($filter->first(), $property->getName(), $propertyTranslations->getElements(), $context);
         } else {
             // creating
-            $this->create($property->getId(), $property->getName(), $propertyTranslations->getElements(), $context);
+            $this->create($property->getId(), $property->getName(), $propertyTranslations->getElements(), $type, $context);
         }
     }
 
     /**
      * Sync all properties to filters, sync propertyNames, creating new filters, deleting old filters
      * @param Context $context
+     * @param string $type
      */
-    public function syncAll(Context $context): void
+    public function syncAll(Context $context, string $type): void
     {
         /**
          * Getting all properties
@@ -133,6 +135,7 @@ class FilterSyncService
          */
         $criteria = new Criteria();
         $criteria->addAssociation('translations');
+        $criteria->addFilter(new EqualsFilter('type', $type));
         $criteria->addFilter(
             new EqualsAnyFilter('propertyId', array_keys($propertiesTranslations))
         );
@@ -179,7 +182,7 @@ class FilterSyncService
         $propertyIdsToCreate = array_diff_key($propertiesTranslations, $propertiesNamesUpdated);
         try {
             foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
-                $this->create($propertyId, $propertiesNames[$propertyId], $propertyTranslations, $context);
+                $this->create($propertyId, $propertiesNames[$propertyId], $propertyTranslations, $type, $context);
             }
         } catch (Throwable $e) {
             $this->logger->error(
@@ -200,7 +203,7 @@ class FilterSyncService
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context) : void
+    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context): void
     {
         $this->filterRepository->update(
             [[
@@ -228,9 +231,17 @@ class FilterSyncService
      * @param string $propertyId
      * @param string $propertyName
      * @param array $propertyTranslations
+     * @param string $type
      * @param Context $context
      */
-    private function create(string $propertyId, string $propertyName, array $propertyTranslations, Context $context) : void
+    private function create
+    (
+        string $propertyId,
+        string $propertyName,
+        array $propertyTranslations,
+        string $type,
+        Context $context
+    ): void
     {
         $newFilterId = Uuid::randomHex();
         $this->filterRepository->create(
@@ -238,6 +249,7 @@ class FilterSyncService
                 'id' => $newFilterId,
                 'propertyName' => $propertyName,
                 'technicalName' => $propertyName,
+                'type' => $type,
                 'propertyId' => $propertyId,
                 'isCustom' => false
             ]],
@@ -261,7 +273,7 @@ class FilterSyncService
      * @param array $filtersIdsToDelete
      * @param Context $context
      */
-    private function delete(array $filtersIdsToDelete, Context $context) : void
+    private function delete(array $filtersIdsToDelete, Context $context): void
     {
         $dataToDelete = [];
         foreach ($filtersIdsToDelete as $id) {

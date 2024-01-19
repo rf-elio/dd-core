@@ -52,6 +52,8 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
@@ -137,6 +139,10 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
         $criteria->addAssociation('elioSearchProductSorting');
+
+        $criteria->addFilter(new NotFilter(MultiFilter::CONNECTION_AND, [
+            new EqualsFilter('categories.id', null)
+        ]));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);

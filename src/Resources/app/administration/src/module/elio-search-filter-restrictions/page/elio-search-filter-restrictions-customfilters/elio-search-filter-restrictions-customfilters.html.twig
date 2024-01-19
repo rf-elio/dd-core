@@ -1,0 +1,83 @@
+{% block elio_search_filter_restrictions_customfilters_page %}
+    <sw-meteor-card>
+        <h1>{{ $tc('elio-search.restrictions.filter.tabs.customfilters') }}</h1>
+
+        {% block elio_search_filter_restrictions_customfilters_content %}
+        <div class="elio-elio-search-filter-restrictions-customfilters-list__content">
+
+            {% block elio_search_filter_restrictions_customfilters_grid %}
+            <sw-entity-listing
+                    class="elio-search-filter-restrictions-customfilters-list-grid"
+                    identifier="elio-search-filter-restrictions-customfilters-list"
+                    :items="filtersGroup"
+                    :columns="filtersColumns"
+                    :repository="filtersRepository"
+                    :isLoading="isLoading"
+
+                    :showSelection="false"
+                    :showSettings="true"
+                    :allowColumnEdit="false"
+                    :fullPage="false"
+                    :compactMode="true"
+
+                    :sortBy="sortBy"
+                    :sortDirection="sortDirection"
+                    @column-sort="onSortColumn"
+                    @page-change="onPageChange"
+                    :disableDataFetching="true"
+                    ref="filterList">
+
+                <template slot="column-propertyName" slot-scope="{ item }">
+                    <router-link :to="{ name: 'elio.search.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
+                        {{ item.translated.propertyName }}
+                    </router-link>
+                </template>
+
+                {% block elio_search_filter_restrictions_customfilters_grid_columns_actions %}
+                <template slot="actions" slot-scope="{ item }">
+                    {% block elio_search_filter_restrictions_customfilters_grid_columns_actions_detail %}
+                    <sw-context-menu-item
+                            :routerLink="{ name: 'elio.search.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
+                        {{ $tc('elio-search.restrictions.filter.customFilters.contextMenuView') }}
+                    </sw-context-menu-item>
+                    {% endblock %}
+
+                    {% block elio_search_filter_restrictions_customfilters_grid_columns_actions_delete %}
+                        <sw-context-menu-item variant="danger"
+                                              @click="onDelete(item.id)">
+                            {{ $tc('elio-search.restrictions.filter.customFilters.contextMenuDelete') }}
+                        </sw-context-menu-item>
+                    {% endblock %}
+                </template>
+                {% endblock %}
+
+                {% block elio_search_filter_restrictions_customfilters_grid_action_modals %}
+                    <template slot="action-modals" slot-scope="{ item }">
+                        <sw-modal v-if="showDeleteModal === item.id"
+                                  variant="small"
+                                  :title="$tc('global.default.warning')"
+                                  @modal-close="onCloseDeleteModal">
+                            <p>
+                                {{ $tc('elio-search.restrictions.filter.customFilters.textDeleteConfirm', 0, { propertyName: item.translated.propertyName }) }}
+                            </p>
+
+                            <template slot="modal-footer">
+                                <sw-button @click="onCloseDeleteModal" size="small">
+                                    {{ $tc('elio-search.restrictions.filter.customFilters.buttonCancel') }}
+                                </sw-button>
+
+                                <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
+                                    {{ $tc('elio-search.restrictions.filter.customFilters.buttonDelete') }}
+                                </sw-button>
+                            </template>
+                        </sw-modal>
+                    </template>
+                {% endblock %}
+
+            </sw-entity-listing>
+            {% endblock %}
+        </div>
+        {% endblock %}
+
+    </sw-meteor-card>
+{% endblock %}

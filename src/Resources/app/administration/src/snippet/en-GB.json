@@ -5,54 +5,110 @@
       "description": ""
     },
     "restrictions": {
-      "title": "Filter restrictions",
-      "description": "",
-      "tabs": {
-        "global": "Global",
-        "search": "Search",
-        "navigation": "Navigation",
-        "customfilters": "Custom Filters",
-        "category": "Filter Restrictions"
-      },
-      "filters": {
-        "messageSaveError": "Error while saving",
-        "buttonSave": "Save",
-        "buttonCancel": "Cancel",
-        "detail": {
-          "cardTitleGroupInfo" : "Basic information",
-          "labelName": "Property Name",
-          "labelTechnicalName": "Technical Name",
-          "textHeadline": "New Property"
-        },
-        "placeholderPropertyName": "Property Name",
-        "placeholderTechnicalName": "Technical Name"
-      },
-      "customFilters": {
-        "contextMenuView": "Edit",
-        "contextMenuDelete": "Delete",
-        "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
-        "buttonCancel": "Cancel",
-        "buttonDelete": "Delete"
-      },
-      "ruler": {
-        "inheritance": "Inherited from all-saleschannel settings",
+      "filter": {
+        "title": "Filter restrictions",
+        "description": "",
         "tabs": {
-          "permissions": "Permissions",
-          "available": {
-            "header": "Available filters"
+          "global": "Global",
+          "search": "Search",
+          "navigation": "Navigation",
+          "customfilters": "Custom Filters",
+          "category": "Filter Restrictions"
+        },
+        "filters": {
+          "messageSaveError": "Error while saving",
+          "buttonSave": "Save",
+          "buttonCancel": "Cancel",
+          "detail": {
+            "cardTitleGroupInfo" : "Basic information",
+            "labelName": "Property Name",
+            "labelTechnicalName": "Technical Name",
+            "textHeadline": "New Property"
           },
-          "allowed": {
-            "header": "Allowed filters",
-            "permissions": {
-              "allowAll": "Allow all",
-              "allowOnlySelected": "Allow only selected"
+          "placeholderPropertyName": "Property Name",
+          "placeholderTechnicalName": "Technical Name"
+        },
+        "customFilters": {
+          "contextMenuView": "Edit",
+          "contextMenuDelete": "Delete",
+          "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+          "buttonCancel": "Cancel",
+          "buttonDelete": "Delete"
+        },
+        "ruler": {
+          "inheritance": "Inherited from all-saleschannel settings",
+          "tabs": {
+            "permissions": "Permissions",
+            "available": {
+              "header": "Available filters"
+            },
+            "allowed": {
+              "header": "Allowed filters",
+              "permissions": {
+                "allowAll": "Allow all",
+                "allowOnlySelected": "Allow only selected"
+              }
+            },
+            "blocked": {
+              "header": "Blocked filters",
+              "permissions": {
+                "blockAll": "Exclude all",
+                "blockOnlySelected": "Exclude only selected"
+              }
             }
+          }
+        }
+      },
+      "sorting": {
+        "title": "Sorting restrictions",
+        "description": "",
+        "tabs": {
+          "global": "Global",
+          "search": "Search",
+          "navigation": "Navigation",
+          "customfilters": "Custom Filters",
+          "category": "Sorting Restrictions"
+        },
+        "filters": {
+          "messageSaveError": "Error while saving",
+          "buttonSave": "Save",
+          "buttonCancel": "Cancel",
+          "detail": {
+            "cardTitleGroupInfo" : "Basic information",
+            "labelName": "Property Name",
+            "labelTechnicalName": "Technical Name",
+            "textHeadline": "New Property"
           },
-          "blocked": {
-            "header": "Blocked filters",
-            "permissions": {
-              "blockAll": "Exclude all",
-              "blockOnlySelected": "Exclude only selected"
+          "placeholderPropertyName": "Property Name",
+          "placeholderTechnicalName": "Technical Name"
+        },
+        "customFilters": {
+          "contextMenuView": "Edit",
+          "contextMenuDelete": "Delete",
+          "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+          "buttonCancel": "Cancel",
+          "buttonDelete": "Delete"
+        },
+        "ruler": {
+          "inheritance": "Inherited from all-saleschannel settings",
+          "tabs": {
+            "permissions": "Permissions",
+            "available": {
+              "header": "Available filters"
+            },
+            "allowed": {
+              "header": "Allowed filters",
+              "permissions": {
+                "allowAll": "Allow all",
+                "allowOnlySelected": "Allow only selected"
+              }
+            },
+            "blocked": {
+              "header": "Blocked filters",
+              "permissions": {
+                "blockAll": "Exclude all",
+                "blockOnlySelected": "Exclude only selected"
+              }
             }
           }
         }

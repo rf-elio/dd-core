@@ -1,0 +1,66 @@
+.ruler {
+  display: flex;
+}
+.ruler-tab {
+  width: 30%;
+  margin-right: auto;
+}
+.ruler-tab-filter-list{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.2);
+  padding: 10px 10px 50px;
+  height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-color: rgba(39,97,216,.9) rgba(255,255,255,.1);
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+}
+.ruler-tab-filter-list--main {
+  height: 500px;
+}
+.ruler-tab-filter-list--inactive {
+  background: rgba(0,0,0,0.1);
+  overflow-y: hidden;
+}
+.ruler-tab-permissions{
+  height: 100px;
+  padding: 0px 10px;
+}
+.ruler-tab-permissions-header {
+  margin-bottom: 10px;
+}
+.ruler-tab-permission-inputgroup {
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+.filter {
+  width: 100%;
+  border: 1px solid #d1d9e0;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 14px;
+  margin: 0 6px 6px 0;
+  padding: 8px 12px;
+  background: #f9fafb;
+  color: #52667a;
+  cursor: default;
+}
+.elio-search-filter-restrictions-sales-channel-picker {
+  max-width: 960px;
+  margin: 0 auto 40px auto;
+}
+.elio-search-filter-restrictions-sales-channel-picker--category {
+  max-width: 800px;
+}
+.elio-search-filter-restrictions-ruler-inheritance-block {
+  display: flex;
+  margin-bottom: 25px;
+}
+.elio-search-filter-restrictions-ruler-inheritance {
+  width: 22px;
+}

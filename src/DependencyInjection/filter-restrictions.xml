@@ -22,6 +22,7 @@
 
         <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterService">
             <argument type="service" id="elio_search_filter_restrictions.repository" />
+            <argument type="service" id="elio_search_filter.repository" />
             <argument type="service" id="category.repository" />
             <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
         </service>

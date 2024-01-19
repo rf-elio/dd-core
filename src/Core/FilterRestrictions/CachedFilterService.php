@@ -38,6 +38,8 @@ use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -85,17 +87,23 @@ class CachedFilterService implements FilterInterface
      * @param SalesChannelContext $salesChannelContext
      * @param int $level
      * @param ApiRequest $request
+     * @param string $type
      * @return array
      * @throws InvalidArgumentException|CacheException
      */
-    public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
+    public function getFilterRestrictionConfiguration(
+        SalesChannelContext $salesChannelContext,
+        int $level,
+        ApiRequest $request,
+        string $type
+    ): array
     {
         $config = $this->configService->getByContext($salesChannelContext);
         $cacheTime = $config->getRestrictionsCacheTime();
         $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
 
         $item = $this->cache->getItem(
-            $this->generateCacheKey($salesChannelContext, $level, $categoryId)
+            $this->generateCacheKey($salesChannelContext, $level, $type, $categoryId)
         );
 
         try {
@@ -106,7 +114,40 @@ class CachedFilterService implements FilterInterface
         }
 
         $item->set(
-            $this->decorated->getFilters($salesChannelContext, $level, $request)
+            $this->decorated->getFilterRestrictionConfiguration($salesChannelContext, $level, $request, $type)
+        );
+        $item = CacheCompressor::compress($item, $item->get());
+        $item->expiresAfter($cacheTime * 60); // in seconds
+        $item->tag($this->generateTags());
+        $this->cache->save($item);
+
+        return CacheCompressor::uncompress($item);
+    }
+
+    /**
+     * Gets filters by provided type
+     *
+     * @param string $type
+     * @param SalesChannelContext $context
+     * @return EntitySearchResult
+     * @throws CacheException
+     * @throws InvalidArgumentException
+     */
+    public function getFilterByType(string $type, SalesChannelContext $context): EntitySearchResult
+    {
+        $config = $this->configService->getByContext($context);
+        $cacheTime = $config->getRestrictionsCacheTime();
+
+        $item = $this->cache->getItem('elio_search.cached_filter_service.filters.' . $type);
+        try {
+            if ($item->isHit() && $item->get()) {
+                return CacheCompressor::uncompress($item);
+            }
+        } catch (Throwable $e) {
+        }
+
+        $item->set(
+            $this->decorated->getFilterByType($type, $context)
         );
         $item = CacheCompressor::compress($item, $item->get());
         $item->expiresAfter($cacheTime * 60); // in seconds
@@ -119,16 +160,18 @@ class CachedFilterService implements FilterInterface
     /**
      * @param SalesChannelContext $salesChannelContext
      * @param int $level
+     * @param string $type
      * @param string|null $categoryId
      * @return string
      */
     public function generateCacheKey(
         SalesChannelContext $salesChannelContext,
         int $level,
+        string $type,
         ?string $categoryId = null
     ): string {
         return 'elio_search.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
-            ) . '_' . $level . ($categoryId ? '_' . $categoryId : '');
+            ) . '_' . $type . '_' . $level . ($categoryId ? '_' . $categoryId : '');
     }
 
     /**

@@ -33,6 +33,8 @@
 namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Elio\ElioSearch\Api\Request\ApiRequest;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -58,7 +60,21 @@ interface FilterInterface
      * @param SalesChannelContext $salesChannelContext
      * @param int $level
      * @param ApiRequest $request
+     * @param string $type
      * @return array
      */
-    public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array;
+    public function getFilterRestrictionConfiguration(
+        SalesChannelContext $salesChannelContext,
+        int $level, ApiRequest $request,
+        string $type
+    ): array;
+
+    /**
+     * Gets filters by provided type
+     *
+     * @param string $type
+     * @param SalesChannelContext $context
+     * @return EntitySearchResult
+     */
+    public function getFilterByType(string $type, SalesChannelContext $context): EntitySearchResult;
 }

@@ -94,6 +94,7 @@ class FilterRestrictionsSetup
                         'id' => $newFilterId,
                         'propertyName' => $filterName,
                         'technicalName' => $filterName,
+                        'type' => 'filter',
                         'isCustom' => true
                     ]
                 ],

@@ -42,6 +42,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -62,24 +63,19 @@ class FilterService implements FilterInterface
     public const LEVEL_CATEGORY = 10;
     private const MAX_DEEP_CATEGORY = 20;
 
-    private EntityRepository $filterRestrictionsRepository;
-    private EntityRepository $categoryRepository;
-    private ElioSearchConfigService $configService;
-
     /**
      * FilterService constructor.
      * @param EntityRepository $filterRestrictionsRepository
+     * @param EntityRepository $filterRepository
      * @param EntityRepository $categoryRepository
      * @param ElioSearchConfigService $configService
      */
     public function __construct(
-        EntityRepository $filterRestrictionsRepository,
-        EntityRepository $categoryRepository,
-        ElioSearchConfigService $configService
+        private readonly EntityRepository $filterRestrictionsRepository,
+        private readonly EntityRepository $filterRepository,
+        private readonly EntityRepository $categoryRepository,
+        private readonly ElioSearchConfigService $configService
     ) {
-        $this->filterRestrictionsRepository = $filterRestrictionsRepository;
-        $this->categoryRepository = $categoryRepository;
-        $this->configService = $configService;
     }
 
     /**
@@ -95,9 +91,15 @@ class FilterService implements FilterInterface
      * @param SalesChannelContext $salesChannelContext
      * @param int $level
      * @param ApiRequest $request
+     * @param string $type
      * @return array
      */
-    public function getFilters(SalesChannelContext $salesChannelContext, int $level, ApiRequest $request): array
+    public function getFilterRestrictionConfiguration(
+        SalesChannelContext $salesChannelContext,
+        int $level,
+        ApiRequest $request,
+        string $type
+    ): array
     {
         $context = $salesChannelContext->getContext();
         $languageId = LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext);
@@ -110,21 +112,21 @@ class FilterService implements FilterInterface
 
         // Global Level
         $salesChannelId = $salesChannelContext->getSalesChannelId();
-        $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'global');
+        $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'global', $type);
         $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions, true);
         $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions, true);
 
         // Applying overriding restrictions
         if ($level === self::LEVEL_SEARCH) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'search');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'search', $type);
             $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
             $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
         } elseif ($level === self::LEVEL_NAVIGATION) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation', $type);
             $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
             $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
         } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation');
+            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation', $type);
             $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
             $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
 
@@ -151,7 +153,7 @@ class FilterService implements FilterInterface
             }
 
             foreach ($categoriesTreeIds as $currentCategoryId) {
-                $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, '', $currentCategoryId);
+                $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, '', $type, $currentCategoryId);
                 if (count($restrictions->getElements()) != 0) {
                     $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
                     $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
@@ -160,6 +162,20 @@ class FilterService implements FilterInterface
         }
 
         return [$allowedFilters, $blockedFilters];
+    }
+
+    /**
+     * Gets filters by provided type
+     *
+     * @param string $type
+     * @param SalesChannelContext $context
+     * @return EntitySearchResult
+     */
+    public function getFilterByType(string $type, SalesChannelContext $context): EntitySearchResult
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('type', $type));
+        return $this->filterRepository->search($criteria, $context->getContext());
     }
 
     /**
@@ -243,7 +259,7 @@ class FilterService implements FilterInterface
         $returning = [];
         /** @var FilterEntity $filter */
         foreach ($filterCollection as $filter) {
-            $returning[$filter->getId()] = $filter->getPropertyName();
+            $returning[$filter->getTechnicalName()] = $filter->getPropertyName();
         }
         return $returning;
     }
@@ -253,6 +269,7 @@ class FilterService implements FilterInterface
      * @param string $languageId
      * @param Context $context
      * @param string $layer
+     * @param string $type
      * @param string|null $categoryId
      * @return EntityCollection
      */
@@ -261,21 +278,22 @@ class FilterService implements FilterInterface
         string $languageId,
         Context $context,
         string $layer,
-        string $categoryId = null
+        string $type,
+        ?string $categoryId = null
     ): EntityCollection {
-        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $categoryId);
+        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $type, $categoryId);
         $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         if (count($restrictions->getElements()) == 0) {
             // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all languages for this salesChannelId
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, null, $layer, $categoryId);
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, null, $layer, $type, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
             if (count($restrictions->getElements()) == 0) {
                 // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all salesChannels for this languageId
-                $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $categoryId);
+                $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $type, $categoryId);
                 $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
                 if (count($restrictions->getElements()) == 0) {
                     // if config for all salesChannels AND languageId wasn't set up, then we get settings for all salesChannels for all languages
-                    $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $categoryId);
+                    $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $type, $categoryId);
                     $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
                 }
             }
@@ -288,6 +306,7 @@ class FilterService implements FilterInterface
      * @param string|null $salesChannelId
      * @param string|null $languageId
      * @param string $layer
+     * @param string $type
      * @param string|null $categoryId
      * @return Criteria
      */
@@ -295,10 +314,12 @@ class FilterService implements FilterInterface
         ?string $salesChannelId,
         ?string $languageId,
         string $layer,
-        string $categoryId = null
+        string $type,
+        ?string $categoryId = null
     ): Criteria {
         $criteria = new Criteria();
         $criteria->addAssociation('filters');
+        $criteria->addFilter(new EqualsFilter('filters.type', $type));
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),
             new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('isInherited', true)])
