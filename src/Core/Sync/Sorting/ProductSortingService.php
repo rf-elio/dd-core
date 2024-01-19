@@ -108,7 +108,7 @@ class ProductSortingService
     {
         $result = $this->connection->createQueryBuilder()
             ->select(
-                'LOWER(HEX(c.id)) as id',
+                'LOWER(HEX(c.id)) as category_id',
                 'LOWER(HEX(c.parent_id)) as parent_id',
                 'c.child_count',
                 'LOWER(HEX(p.id)) as product_id',
@@ -126,21 +126,21 @@ class ProductSortingService
         $offset = [];
         foreach ($result as $row) {
             $position = 1;
-            if (isset($sorting[$row['id']])) {
-                $position = count($sorting[$row['id']]) + 1;
+            if (isset($sorting[$row['category_id']])) {
+                $position = count($sorting[$row['category_id']]) + 1;
             }
 
-            if (!in_array($row['id'], json_decode($row['category_ids'], false), true)) {
-                if (isset($offset[$row['id']])) {
-                    $offset[$row['id']] += $row['child_count'];
-                    $position = $offset[$row['id']];
+            if (!in_array($row['category_id'], json_decode($row['category_ids'], false), true)) {
+                if (isset($offset[$row['category_id']])) {
+                    $offset[$row['category_id']] += $row['child_count'];
+                    $position = $offset[$row['category_id']];
                 } else {
-                    $offset[$row['id']] = $position;
+                    $offset[$row['category_id']] = $position;
                 }
             }
 
-            $sorting[$row['id']][] = [
-                'categoryId' => $row['id'],
+            $sorting[$row['category_id']][] = [
+                'categoryId' => $row['category_id'],
                 'productId' => $row['product_id'],
                 'productVersionId' => $row['product_version_id'],
                 'position' => $position,
