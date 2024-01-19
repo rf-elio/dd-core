@@ -84,7 +84,6 @@ class Configuration extends Struct
     private array $suggestTypeLabels;
     private int $restrictionsCacheTime;
     private array $suggestAcceptedTypes;
-    private string $suggestProductNumberAttribute;
     private bool $productRankingActive;
     private int $productRankingMaxOrderAge;
     private array $productRankingOrderStates;
@@ -120,7 +119,6 @@ class Configuration extends Struct
      * @param int $restrictionsCacheTime
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
-     * @param string $suggestProductNumberAttribute
      * @param bool $productRankingActive
      * @param int $productRankingMaxOrderAge
      * @param array $productRankingOrderStates
@@ -154,7 +152,6 @@ class Configuration extends Struct
         int $restrictionsCacheTime,
         array $suggestTypeLabels,
         array $suggestAcceptedTypes,
-        string $suggestProductNumberAttribute,
         bool $productRankingActive,
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
@@ -187,7 +184,6 @@ class Configuration extends Struct
         $this->suggestTypeLabels = $suggestTypeLabels;
         $this->restrictionsCacheTime = $restrictionsCacheTime;
         $this->suggestAcceptedTypes = $suggestAcceptedTypes;
-        $this->suggestProductNumberAttribute = $suggestProductNumberAttribute;
         $this->productRankingActive = $productRankingActive;
         $this->productRankingMaxOrderAge = $productRankingMaxOrderAge;
         $this->productRankingOrderStates = $productRankingOrderStates;
@@ -387,14 +383,6 @@ class Configuration extends Struct
     public function getSuggestAcceptedTypes(): array
     {
         return $this->suggestAcceptedTypes;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSuggestProductNumberAttribute(): string
-    {
-        return $this->suggestProductNumberAttribute;
     }
 
     /**

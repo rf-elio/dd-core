@@ -76,16 +76,6 @@
             <defaultValue>true</defaultValue>
         </input-field>
 
-        <input-field type="text">
-            <name>suggestProductNumberAttribute</name>
-            <label>Mapping: Product number attribute</label>
-            <label lang="de-DE">Mapping: Produktnummer-Attribute</label>
-            <placeholder>MasterProductNumber</placeholder>
-            <defaultValue>MasterProductNumber</defaultValue>
-            <helpText>Defines which attribute contains the product number in the elio search api response.</helpText>
-            <helpText lang="de-DE">Definiert welches Attribute die Produktnummer in der elio search Api Antwort enthält.</helpText>
-        </input-field>
-
         <input-field type="int">
             <name>suggestThumbnailSize</name>
             <label>Thumbnail Size</label>

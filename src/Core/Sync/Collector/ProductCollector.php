@@ -140,10 +140,6 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('configuratorSettings');
         $criteria->addAssociation('elioSearchProductSorting');
 
-        $criteria->addFilter(new NotFilter(MultiFilter::CONNECTION_AND, [
-            new EqualsFilter('categories.id', null)
-        ]));
-
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
 
@@ -204,7 +200,7 @@ class ProductCollector implements DataCollectorInterface
             foreach ($entities as $entity) {
                 $productCategoryCollection = $entity->getCategories() ?? new CategoryCollection();
                 $entity->setCategories($productCategoryCollection);
-                foreach ($entity->getCategoryIds() as $categoryId) {
+                foreach ($entity->getCategoryIds() ?? [] as $categoryId) {
                     if ($category = $flatCategoryCollection->get($categoryId)) {
                         $productCategoryCollection->add($category);
                     }

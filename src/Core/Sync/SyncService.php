@@ -33,6 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync;
 
 use DateTimeImmutable;
+use Elio\ElioSearch\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
 use Elio\ElioSearch\Core\Sync\Input\InputService;
 use Elio\ElioSearch\Core\Sync\Output\OutputService;
 use Exception;
@@ -86,6 +87,13 @@ class SyncService
 
             throw new RuntimeException(sprintf(
                 'Cannot generate product sync "%s": association "salesChannel.domains" is missing',
+                $syncProfile->getName()
+            ));
+        }
+
+        if (($syncProfile->getLanguages()?->count() ?? 0) <= 0) {
+            throw new NoLanguagesInSyncConfiguredException(sprintf(
+                'No languages in sync "%s" configured',
                 $syncProfile->getName()
             ));
         }
