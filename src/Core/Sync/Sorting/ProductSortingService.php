@@ -33,7 +33,11 @@
 namespace Elio\ElioSearch\Core\Sync\Sorting;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use DomainException;
 use Elio\ElioSearch\Configuration\ElioSearchConfigService;
+use Elio\ElioSearch\Core\Util\Tree\Node;
+use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -54,7 +58,8 @@ class ProductSortingService
         private readonly Connection $connection,
         private readonly SystemConfigService $configService,
         private readonly EntityRepository $productSortingRepository
-    ) {
+    )
+    {
     }
 
     /**
@@ -62,17 +67,11 @@ class ProductSortingService
      *
      * @param Context $context
      * @return void
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function sort(Context $context): void
     {
-        $isMergeSortingStrategy = $this->configService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX . '.mergeSortingStrategy') ?? false;
-        if ($isMergeSortingStrategy) {
-            $data = $this->prepareSortByMergeStrategyData();
-        } else {
-            $data = $this->prepareSortByCategoryStrategy();
-        }
-
+        $data = $this->prepareSortingData();
         $productSortingIds = $this->productSortingRepository->searchIds(new Criteria(), $context)->getIds();
         foreach (array_chunk($productSortingIds, 500) as $chunk) {
             $this->productSortingRepository->delete(array_map(static function ($productSortingId) {
@@ -81,16 +80,13 @@ class ProductSortingService
         }
 
         $createdData = [];
-        foreach ($data as $categorySortingData) {
-            foreach ($categorySortingData as $item) {
-                $createdData[] = [
-                    'id' => Uuid::randomHex(),
-                    'productId' => $item['productId'],
-                    'productVersionId' => $item['productVersionId'],
-                    'categoryId' => $item['categoryId'],
-                    'position' => $item['position']
-                ];
-            }
+        foreach ($data as $item) {
+            $createdData[] = [
+                'id' => Uuid::randomHex(),
+                'productId' => $item['productId'],
+                'categoryId' => $item['categoryId'],
+                'position' => $item['position']
+            ];
         }
 
         foreach (array_chunk($createdData, 500) as $chunk) {
@@ -99,93 +95,323 @@ class ProductSortingService
     }
 
     /**
-     * Prepares sorting data for merge
+     * Changes position for product in category and recalculates product position in all parent categories
+     *
+     * @param int $position
+     * @param string $categoryId
+     * @param string $productId
+     * @param Context $context
+     * @return void
+     * @throws Exception
+     */
+    public function changePosition(int $position, string $categoryId, string $productId, Context $context): void
+    {
+        $categoriesSortingData = $this->getCategoriesSortingData();
+        $sortingData = [];
+        $currentProductPositions = [];
+        foreach ($categoriesSortingData as $item) {
+            $currentProductPositions[$item['id'] . '_' . $item['productId']] = [
+                'productSortingId' => $item['productSortingId'],
+                'position' => (int)$item['position']
+            ];
+
+            if ($item['id'] === $categoryId) {
+                $sortingData[] = $item;
+            }
+        }
+
+        if (empty($sortingData)) {
+            throw new DomainException('Category data is not set for provided category');
+        }
+
+        $productKey = array_search($productId, array_column($sortingData, 'productId'));
+        $currentPosition = $sortingData[$productKey]['position'];
+
+        $updatedData = [];
+        foreach ($sortingData as $key => $productPosition) {
+            if ($key === $productKey) {
+                $updatedData[] = [
+                    'id' => $productPosition['productSortingId'],
+                    'position' => $position
+                ];
+                continue;
+            }
+
+            if ($position > $currentPosition && $productPosition['position'] <= $position) {
+                $updatedData[] = [
+                    'id' => $productPosition['productSortingId'],
+                    'position' => $productPosition['position'] - 1
+                ];
+                continue;
+            }
+
+            if ($position < $currentPosition && $productPosition['position'] < $currentPosition) {
+                $updatedData[] = [
+                    'id' => $productPosition['productSortingId'],
+                    'position' => $productPosition['position'] + 1
+                ];
+            }
+        }
+
+        $this->productSortingRepository->update($updatedData, $context);
+
+        $categoriesSortingData = $this->getCategoriesSortingData();
+        $productSortPositions = $this->generateProductSortPositionsForCategory($categoriesSortingData);
+        $isMergeSortingStrategy = $this->configService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX . '.mergeSortingStrategy') ?? false;
+        $updatedData = [];
+        foreach ($productSortPositions as $categoryId => $productPosition) {
+            if ($isMergeSortingStrategy) {
+                $sorted = $this->calculateSortingByMergeStrategy($productPosition);
+            } else {
+                $sorted = $this->calculateSortingByCategoryStrategy($productPosition);
+            }
+
+            foreach ($sorted as $item) {
+                if ($currentProductPositions[$categoryId . '_' . $item['productId']]['position'] !== $item['position']) {
+                    $updatedData[] = [
+                        'id' => $currentProductPositions[$categoryId . '_' . $item['productId']]['productSortingId'],
+                        'position' => $item['position']
+                    ];
+                }
+            }
+        }
+
+        foreach (array_chunk($updatedData, 500) as $chunk) {
+            $this->productSortingRepository->update($chunk, $context);
+        }
+    }
+
+    /**
+     * Processes product sort for provided category tree
+     *
+     * @param Node $node
+     * @param \ArrayObject $arrayObject
+     * @param bool $sortChild
+     * @return array
+     */
+    protected function processProductSort(Node $node, \ArrayObject $arrayObject, bool $sortChild = false): array
+    {
+        if (empty($node->getChildNodes())) {
+            if ($sortChild) {
+                $arr = $node->getValue()['products'];
+                usort($arr, static function ($a, $b) {
+                    return $a['position'] <=> $b['position'];
+                });
+
+                $arrayObject[$node->getId()] = $arr;
+            }
+
+            return $node->getValue()['products'];
+        }
+
+        $arr = [];
+        foreach ($node->getChildNodes() as $childNode) {
+            $productPositions = $this->processProductSort($childNode, $arrayObject, $sortChild);
+            foreach ($productPositions as $productPosition) {
+                $arr[] = $productPosition;
+            }
+        }
+
+        usort($arr, static function ($a, $b) {
+            return $a['position'] <=> $b['position'];
+        });
+
+        $arrayObject[$node->getId()] = $arr;
+        return $arr;
+    }
+
+    /**
+     * Prepares sorting data
      *
      * @return array
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
-    private function prepareSortByMergeStrategyData(): array
+    protected function prepareSortingData(): array
     {
-        $result = $this->connection->createQueryBuilder()
+        $categorySortingData = $this->connection->createQueryBuilder()
             ->select(
-                'LOWER(HEX(c.id)) as category_id',
-                'LOWER(HEX(c.parent_id)) as parent_id',
-                'c.child_count',
-                'LOWER(HEX(p.id)) as product_id',
-                'LOWER(HEX(p.version_id)) as product_version_id',
-                'p.category_ids'
+                'LOWER(HEX(c.id)) as id',
+                'LOWER(HEX(c.parent_id)) as parentId',
+                'LOWER(HEX(pct.product_id)) as productId',
+                'LOWER(HEX(pct.product_version_id)) as productVersionId'
             )
             ->from('category', 'c')
-            ->leftJoin('c', 'product_category_tree', 'pct', 'c.id = pct.category_id')
-            ->leftJoin('pct', 'product', 'p', 'p.id = pct.product_id and p.version_id = pct.product_version_id')
-            ->orderBy('c.level', 'DESC')
+            ->leftJoin('c', 'product_category', 'pct', 'c.id = pct.category_id')
             ->executeQuery()
             ->fetchAllAssociative();
 
+        $productSortPositions = $this->generateProductSortPositionsForCategory($categorySortingData, true);
         $sorting = [];
-        $offset = [];
-        foreach ($result as $row) {
-            $position = 1;
-            if (isset($sorting[$row['category_id']])) {
-                $position = count($sorting[$row['category_id']]) + 1;
+        $isMergeSortingStrategy = $this->configService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX . '.mergeSortingStrategy') ?? false;
+        foreach ($productSortPositions as $categoryId => $productPosition) {
+            if ($isMergeSortingStrategy) {
+                $sorted = $this->calculateSortingByMergeStrategy($productPosition);
+            } else {
+                $sorted = $this->calculateSortingByCategoryStrategy($productPosition);
             }
-
-            if (!in_array($row['category_id'], json_decode($row['category_ids'], false), true)) {
-                if (isset($offset[$row['category_id']])) {
-                    $offset[$row['category_id']] += $row['child_count'];
-                    $position = $offset[$row['category_id']];
-                } else {
-                    $offset[$row['category_id']] = $position;
-                }
+            foreach ($sorted as $item) {
+                $sorting[] = [
+                    'categoryId' => $categoryId,
+                    'productId' => $item['productId'],
+                    'position' => $item['position'],
+                ];
             }
-
-            $sorting[$row['category_id']][] = [
-                'categoryId' => $row['category_id'],
-                'productId' => $row['product_id'],
-                'productVersionId' => $row['product_version_id'],
-                'position' => $position,
-            ];
         }
 
         return $sorting;
     }
 
     /**
-     * Prepares sorting data for category strategy
+     * Generates an array with product position for category
+     *
+     * @param array $categorySortingData
+     * @param bool $sortChild
+     * @return array
+     */
+    protected function generateProductSortPositionsForCategory(array $categorySortingData, bool $sortChild = false): array
+    {
+        $categories = $this->prepareCategories($categorySortingData);
+
+        $tree = new RandomAddTree();
+        foreach ($categories as $category) {
+            $tree->add($category['id'], $category['parentId'], $category);
+        }
+
+        $nodes = $tree->create();
+
+        $productSortPositions = new \ArrayObject();
+        foreach ($nodes as $node) {
+            $this->processProductSort($node, $productSortPositions, $sortChild);
+        }
+
+        $result = [];
+        foreach ($productSortPositions as $id => $productPositions) {
+            foreach ($productPositions as $productPosition) {
+                $result[$id][$productPosition['position']][] = [
+                    'productId' => $productPosition['id'],
+                    'categoryId' => $productPosition['categoryId']
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Gets category data with product positions
      *
      * @return array
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
-    private function prepareSortByCategoryStrategy(): array
+    protected function getCategoriesSortingData(): array
     {
-        $result = $this->connection->createQueryBuilder()
+        return $this->connection->createQueryBuilder()
             ->select(
                 'LOWER(HEX(c.id)) as id',
-                'LOWER(HEX(p.id)) as product_id',
-                'LOWER(HEX(p.version_id)) as product_version_id'
+                'LOWER(HEX(c.parent_id)) as parentId',
+                'LOWER(HEX(esps.id)) as productSortingId',
+                'LOWER(HEX(esps.product_id)) as productId',
+                'esps.position'
             )
             ->from('category', 'c')
-            ->leftJoin('c', 'product_category_tree', 'pct', 'c.id = pct.category_id')
-            ->leftJoin('pct', 'product', 'p', 'p.id = pct.product_id and p.version_id = pct.product_version_id')
-            ->orderBy('c.level', 'DESC')
+            ->innerJoin('c', 'elio_search_product_sorting', 'esps', 'esps.category_id = c.id')
             ->executeQuery()
             ->fetchAllAssociative();
+    }
 
+    /**
+     * Calculates sorting for current product positions using category strategy
+     *
+     * @param array $productPositions
+     * @return array
+     */
+    protected function calculateSortingByMergeStrategy(array $productPositions): array
+    {
         $sorting = [];
-        foreach ($result as $row) {
-            $position = 1;
-            if (isset($sorting[$row['id']])) {
-                $position = count($sorting[$row['id']]) + 1;
-            }
+        $position = 1;
+        foreach ($productPositions as $productPosition) {
+            foreach ($productPosition as $item) {
+                $sorting[] = [
+                    'productId' => $item['productId'],
+                    'position' => $position
+                ];
 
-            $sorting[$row['id']][] = [
-                'categoryId' => $row['id'],
-                'productId' => $row['product_id'],
-                'productVersionId' => $row['product_version_id'],
-                'position' => $position,
-            ];
+                $position++;
+            }
         }
 
         return $sorting;
+    }
+
+    /**
+     * Calculates sorting for current product positions using category strategy
+     *
+     * @param array $productPositions
+     * @return array
+     */
+    protected function calculateSortingByCategoryStrategy(array $productPositions): array
+    {
+        $resorted = [];
+        foreach ($productPositions as $position => $productPosition) {
+            foreach ($productPosition as $item) {
+                $resorted[$item['categoryId']][] = [
+                    'productId' => $item['productId'],
+                    'position' => $position
+                ];
+            }
+        }
+
+        $sorting = [];
+        $position = 1;
+        foreach ($resorted as $items) {
+            foreach ($items as $item) {
+                $sorting[] = [
+                    'productId' => $item['productId'],
+                    'position' => $position
+                ];
+
+                $position++;
+            }
+        }
+
+        return $sorting;
+    }
+
+    /**
+     * Prepares category data with product positions in it
+     *
+     * @param array $categoriesSortingData
+     * @return array
+     */
+    protected function prepareCategories(array $categoriesSortingData): array
+    {
+        $categories = [];
+        foreach ($categoriesSortingData as $item) {
+            if (isset($categories[$item['id']])) {
+                $categories[$item['id']]['products'][] = [
+                    'id' => $item['productId'],
+                    'categoryId' => $item['id'],
+                    'productSortingId' => $item['productSortingId'] ?? null,
+                    'position' => $item['position'] ?? count($categories[$item['id']]['products']) + 1
+                ];
+
+                continue;
+            }
+
+            $categories[$item['id']] = [
+                'id' => $item['id'],
+                'parentId' => $item['parentId'],
+                'products' => [
+                    [
+                        'id' => $item['productId'],
+                        'categoryId' => $item['id'],
+                        'productSortingId' => $item['productSortingId'] ?? null,
+                        'position' => $item['position'] ?? 1
+                    ]
+                ]
+            ];
+        }
+
+        return array_values($categories);
     }
 }

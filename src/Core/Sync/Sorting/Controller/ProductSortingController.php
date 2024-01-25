@@ -38,7 +38,9 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class ProductSortingController
@@ -61,7 +63,7 @@ class ProductSortingController extends AbstractController
      * @param Context $context
      * @return JsonResponse
      */
-    #[Route(path: '/api/_action/elio-search/product-sorting', name: 'api.action.elio-search.product-sorting', methods: ['POST'])]
+    #[Route(path: '/api/_action/elio-search/product-sorting/sort', name: 'api.action.elio-search.product-sorting.sort', methods: ['POST'])]
     public function sort(Context $context): JsonResponse
     {
         try {
@@ -72,6 +74,35 @@ class ProductSortingController extends AbstractController
                 'trace' => $e->getTraceAsString()
             ]);
             return new JsonResponse('Something went wrong', 500);
+        }
+
+        return new JsonResponse();
+    }
+
+    /**
+     * @param Request $request
+     * @param Context $context
+     * @return JsonResponse
+     */
+    #[Route(path: '/api/_action/elio-search/product-sorting/position', name: 'api.action.elio-search.product-sorting.position', methods: ['PATCH'])]
+    public function changePosition(Request $request, Context $context): JsonResponse
+    {
+        $position = $request->get('position');
+        $categoryId = $request->get('categoryId');
+        $productId = $request->get('productId');
+
+        if (!$position || !$categoryId || !$productId) {
+            return new JsonResponse('Position, categoryId or productId is not set', 400);
+        }
+
+        try {
+            $this->productSortingService->changePosition($position, $categoryId, $productId, $context);
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage(), [
+                'plugin' => 'ElioSearch',
+                'trace' => $e->getTraceAsString()
+            ]);
+            return new JsonResponse($e->getMessage(), 500);
         }
 
         return new JsonResponse();

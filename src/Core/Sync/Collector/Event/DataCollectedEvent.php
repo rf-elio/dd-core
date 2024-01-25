@@ -32,7 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Sync\Collector\Event;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\Struct\Collection;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -51,7 +51,7 @@ class DataCollectedEvent extends Event
      */
     public function __construct(
         private readonly string $type,
-        private EntityCollection $data
+        private Collection $data
     ) {
     }
 
@@ -60,12 +60,12 @@ class DataCollectedEvent extends Event
         return $this->type;
     }
 
-    public function setData(EntityCollection $data): void
+    public function setData(Collection $data): void
     {
         $this->data = $data;
     }
 
-    public function getData(): EntityCollection
+    public function getData(): Collection
     {
         return $this->data;
     }

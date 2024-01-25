@@ -40,9 +40,9 @@ use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Generator;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -87,7 +87,7 @@ class CategoryCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<StructCollection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -126,11 +126,11 @@ class CategoryCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return EntityCollection
+     * @return StructCollection
      */
-    protected function mapCollectedData(array $data): EntityCollection
+    protected function mapCollectedData(array $data): StructCollection
     {
-        $mappedEntities = new EntityCollection();
+        $mappedEntities = new StructCollection();
         foreach ($data as $languageId => $entities) {
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
