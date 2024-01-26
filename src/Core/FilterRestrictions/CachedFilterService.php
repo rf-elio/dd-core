@@ -75,53 +75,17 @@ class CachedFilterService implements FilterInterface
     }
 
     /**
-     * Get all allowed/blocked filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
+     * Returns a list with allowed filter names
      *
-     * Returns array [
-     *              [ array of allowed filters with keys filterId and values filterName],
-     *              [ array of blocked filters with keys filterId and values filterName]
-     * ]
-     *
-     * if array of allowed/blocked filters is null - it means allow/block everything
-     *
-     * @param SalesChannelContext $salesChannelContext
-     * @param int $level
+     * @param array $items
+     * @param string $restrictionType
      * @param ApiRequest $request
-     * @param string $type
-     * @return array
-     * @throws InvalidArgumentException|CacheException
+     * @param SalesChannelContext $context
+     * @return mixed
      */
-    public function getFilterRestrictionConfiguration(
-        SalesChannelContext $salesChannelContext,
-        int $level,
-        ApiRequest $request,
-        string $type
-    ): array
+    public function filter(array $items, string $restrictionType, ApiRequest $request, SalesChannelContext $context): array
     {
-        $config = $this->configService->getByContext($salesChannelContext);
-        $cacheTime = $config->getRestrictionsCacheTime();
-        $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
-
-        $item = $this->cache->getItem(
-            $this->generateCacheKey($salesChannelContext, $level, $type, $categoryId)
-        );
-
-        try {
-            if ($item->isHit() && $item->get()) {
-                return CacheCompressor::uncompress($item);
-            }
-        } catch (Throwable $e) {
-        }
-
-        $item->set(
-            $this->decorated->getFilterRestrictionConfiguration($salesChannelContext, $level, $request, $type)
-        );
-        $item = CacheCompressor::compress($item, $item->get());
-        $item->expiresAfter($cacheTime * 60); // in seconds
-        $item->tag($this->generateTags());
-        $this->cache->save($item);
-
-        return CacheCompressor::uncompress($item);
+        return $this->decorated->filter($items, $restrictionType, $request, $context);
     }
 
     /**
@@ -187,7 +151,7 @@ class CachedFilterService implements FilterInterface
      * @param string[] $keys
      * @throws InvalidArgumentException
      */
-    public function removeItems(array $keys)
+    public function removeItems(array $keys): void
     {
         if ($keys) {
             $this->cache->deleteItems($keys);
@@ -198,7 +162,7 @@ class CachedFilterService implements FilterInterface
      * Clears the whole cache pool
      * @throws InvalidArgumentException
      */
-    public function clearCache()
+    public function clearCache(): void
     {
         $this->cache->invalidateTags($this->generateTags());
     }

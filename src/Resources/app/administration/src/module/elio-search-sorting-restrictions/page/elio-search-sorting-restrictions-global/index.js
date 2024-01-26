@@ -11,7 +11,7 @@ Shopware.Component.register('elio-search-sorting-restrictions-global', {
 
     computed: {
         type() {
-            return 'global';
+            return 'global-sorting';
         }
     },
 

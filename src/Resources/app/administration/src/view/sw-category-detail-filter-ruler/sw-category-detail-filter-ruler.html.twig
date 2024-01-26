@@ -10,13 +10,8 @@
                  :isLoading="isLoading">
             <elio-search-filter-restriction-ruler :isCategory="true"
                                   :categoryId="category.id"
+                                  :layer="type"
                                   ref="ruler"></elio-search-filter-restriction-ruler>
-        </sw-card>
-        <sw-card :title="$tc('elio-search.restrictions.sorting.tabs.global')"
-                 :isLoading="isLoading">
-            <elio-search-sorting-restriction-ruler :isCategory="true"
-                                           :categoryId="category.id"
-                                           ref="ruler"></elio-search-sorting-restriction-ruler>
         </sw-card>
     </div>
 {% endblock %}

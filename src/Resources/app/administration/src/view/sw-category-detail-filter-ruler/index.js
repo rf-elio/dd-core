@@ -1,10 +1,10 @@
-import template from './sw-category-detail-ruler.html.twig';
+import template from './sw-category-detail-filter-ruler.html.twig';
 
 const { Component, Mixin } = Shopware;
 const { mapState, mapGetters } = Component.getComponentHelper();
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-category-detail-ruler', {
+Shopware.Component.register('elio-category-detail-filter-ruler', {
     template: template,
 
     props: {
@@ -31,7 +31,10 @@ Shopware.Component.register('elio-category-detail-ruler', {
     computed: {
         ...mapState('swCategoryDetail', [
             'category',
-        ])
+        ]),
+        type() {
+            return 'navigation-filter';
+        }
     },
 
     methods: {

@@ -87,6 +87,7 @@ class FilterEntity extends Entity
      * @var FilterDefinitionTranslationCollection|null
      */
     protected $translations;
+    protected bool $displayedByDefault = false;
 
     /**
      * @return string|null
@@ -215,5 +216,15 @@ class FilterEntity extends Entity
     public function setTranslations(?FilterDefinitionTranslationCollection $translations): void
     {
         $this->translations = $translations;
+    }
+
+    public function isDisplayedByDefault(): bool
+    {
+        return $this->displayedByDefault;
+    }
+
+    public function setIsDisplayedByDefault(bool $isDisplayedByDefault): void
+    {
+        $this->displayedByDefault = $isDisplayedByDefault;
     }
 }

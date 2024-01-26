@@ -11,7 +11,7 @@ Shopware.Component.register('elio-search-filter-restrictions-search', {
 
     computed: {
         type() {
-            return 'search';
+            return 'search-filter';
         }
     },
 

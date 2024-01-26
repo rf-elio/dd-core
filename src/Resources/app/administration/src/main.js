@@ -6,7 +6,8 @@ import './module/elio-search-filter-restrictions/index';
 import './module/elio-search-sorting-restrictions/index';
 import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';
-import './view/sw-category-detail-ruler/index';
+import './view/sw-category-detail-filter-ruler/index';
+import './view/sw-category-detail-sorting-ruler/index';
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
@@ -18,9 +19,18 @@ Shopware.Module.register('sw-category-tab-ruler', {
     routeMiddleware(next, currentRoute) {
         if (currentRoute.name === 'sw.category.detail') {
             currentRoute.children.push({
-                name: 'sw.category.detail.ruler',
-                path: 'ruler',
-                component: 'elio-category-detail-ruler',
+                name: 'sw.category.detail.filter.ruler',
+                path: 'filter-ruler',
+                component: 'elio-category-detail-filter-ruler',
+                meta: {
+                    parentPath: 'sw.category.index',
+                    privilege: 'category.viewer'
+                }
+            });
+            currentRoute.children.push({
+                name: 'sw.category.detail.sorting.ruler',
+                path: 'sorting-ruler',
+                component: 'elio-category-detail-sorting-ruler',
                 meta: {
                     parentPath: 'sw.category.index',
                     privilege: 'category.viewer'

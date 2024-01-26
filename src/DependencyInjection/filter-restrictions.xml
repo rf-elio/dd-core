@@ -25,6 +25,7 @@
             <argument type="service" id="elio_search_filter.repository" />
             <argument type="service" id="category.repository" />
             <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
+            <argument type="service" id="logger"/>
         </service>
         <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService">
             <argument type="service" id="property_group.repository" />

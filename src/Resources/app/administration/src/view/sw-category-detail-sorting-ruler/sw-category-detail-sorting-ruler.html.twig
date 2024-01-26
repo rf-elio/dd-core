@@ -1,0 +1,17 @@
+{% block elio_search_restrictions_category_page %}
+    <div class="sw-category-detail-base">
+        <div class="elio-search-restrictions-sales-channel-picker elio-search-restrictions-sales-channel-picker--category">
+            <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                     @change-sales-channel-id="onSalesChannelChanged">
+            </sw-sales-channel-switch>
+        </div>
+
+        <sw-card :title="$tc('elio-search.restrictions.sorting.tabs.global')"
+                 :isLoading="isLoading">
+            <elio-search-sorting-restriction-ruler :isCategory="true"
+                                  :categoryId="category.id"
+                                  :layer="type"
+                                  ref="ruler"></elio-search-sorting-restriction-ruler>
+        </sw-card>
+    </div>
+{% endblock %}

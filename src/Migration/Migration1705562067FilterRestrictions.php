@@ -16,7 +16,8 @@ class Migration1705562067FilterRestrictions extends MigrationStep
     {
         $query = <<<SQL
 ALTER TABLE `elio_search_filter`
-    ADD `type` VARCHAR(255) NULL AFTER `technical_name`;
+    ADD `type` VARCHAR(255) NULL AFTER `technical_name`,
+    ADD `displayed_by_default` TINYINT(1) DEFAULT '0' AFTER `is_custom`;
 SQL;
 
         $connection->executeStatement($query);

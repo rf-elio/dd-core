@@ -32,12 +32,14 @@
 
 namespace Elio\ElioSearch\Core\FilterRestrictions;
 
+use Core\FilterRestrictions\Exception\FilterApplyException;
 use Elio\ElioSearch\Api\Request\ApiRequest;
 use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioSearch\Configuration\Configuration;
 use Elio\ElioSearch\Configuration\ElioSearchConfigService;
-use Elio\ElioSearch\Configuration\LanguageHelper;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -63,105 +65,26 @@ class FilterService implements FilterInterface
     public const LEVEL_CATEGORY = 10;
     private const MAX_DEEP_CATEGORY = 20;
 
+    public const RESTRICTION_GLOBAL = 'global';
+    public const RESTRICTION_SEARCH = 'search';
+    public const RESTRICTION_NAVIGATION = 'navigation';
+
     /**
      * FilterService constructor.
      * @param EntityRepository $filterRestrictionsRepository
      * @param EntityRepository $filterRepository
      * @param EntityRepository $categoryRepository
      * @param ElioSearchConfigService $configService
+     * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly EntityRepository $filterRestrictionsRepository,
         private readonly EntityRepository $filterRepository,
         private readonly EntityRepository $categoryRepository,
-        private readonly ElioSearchConfigService $configService
-    ) {
-    }
-
-    /**
-     * Get all allowed/blocked filters for such salesChannelId and level (if it is category level => categoryId have to be provided)
-     *
-     * Returns array [
-     *              [ array of allowed filters with keys filterId and values filterName],
-     *              [ array of blocked filters with keys filterId and values filterName]
-     * ]
-     *
-     * if array of allowed/blocked filters is null - it means allow/block everything
-     *
-     * @param SalesChannelContext $salesChannelContext
-     * @param int $level
-     * @param ApiRequest $request
-     * @param string $type
-     * @return array
-     */
-    public function getFilterRestrictionConfiguration(
-        SalesChannelContext $salesChannelContext,
-        int $level,
-        ApiRequest $request,
-        string $type
-    ): array
+        private readonly ElioSearchConfigService $configService,
+        private readonly LoggerInterface $logger
+    )
     {
-        $context = $salesChannelContext->getContext();
-        $languageId = LanguageHelper::getLanguageIdBySalesChannelContext($salesChannelContext);
-        $categoryId = $request instanceof NavigationRequestProduct ? $request->getCategoryId() : null;
-        $allowedFilters = null; //everything allowed by default
-        $blockedFilters = []; // nothing blocked by default
-
-        $config = $this->configService->getByContext($salesChannelContext);
-        $configParentCategories = $config->isRestrictionsParentCategories();
-
-        // Global Level
-        $salesChannelId = $salesChannelContext->getSalesChannelId();
-        $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'global', $type);
-        $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions, true);
-        $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions, true);
-
-        // Applying overriding restrictions
-        if ($level === self::LEVEL_SEARCH) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'search', $type);
-            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
-            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
-        } elseif ($level === self::LEVEL_NAVIGATION) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation', $type);
-            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
-            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
-        } elseif ($level === self::LEVEL_CATEGORY && $categoryId) {
-            $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, 'navigation', $type);
-            $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
-            $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
-
-            $categoriesTreeIds = [];
-            if ($configParentCategories) {
-                $maxDeepLevel = 0;
-                /** @var CategoryEntity|null $category */
-                $category = $this->categoryRepository->search(new Criteria([$categoryId]), $context)->first();
-                if ($category) {
-                    while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
-                        $categoriesTreeIds[] = $category->getId();
-                        /** @var CategoryEntity|null $category */
-                        $category = $this->categoryRepository->search(
-                            new Criteria([$category->getParentId()]),
-                            $context
-                        )->first();
-                        $maxDeepLevel++;
-                    }
-                    $categoriesTreeIds[] = $category->getId(); // most top category
-                }
-                $categoriesTreeIds = array_reverse($categoriesTreeIds);
-            } else {
-                $categoriesTreeIds[] = $categoryId;
-            }
-
-            foreach ($categoriesTreeIds as $currentCategoryId) {
-                $restrictions = $this->getRestrictions($salesChannelId, $languageId, $context, '', $type, $currentCategoryId);
-                if (count($restrictions->getElements()) != 0) {
-                    $allowedFilters = $this->applyAllowedRestrictions($allowedFilters, $restrictions);
-                    $blockedFilters = $this->applyBlockedRestrictions($blockedFilters, $restrictions);
-                }
-            }
-        }
-
-        return [$allowedFilters, $blockedFilters];
     }
 
     /**
@@ -179,97 +102,189 @@ class FilterService implements FilterInterface
     }
 
     /**
-     * @param array|null $parentFilters
-     * @param EntityCollection $restrictions
-     * @param bool $overrideParent
-     * @return array|null
+     * Returns a list with allowed filter names
+     *
+     * @param array $items
+     * @param string $restrictionType
+     * @param ApiRequest $request
+     * @param SalesChannelContext $context
+     * @return array
+     * @throws FilterApplyException
      */
-    protected function applyAllowedRestrictions(
-        ?array $parentFilters,
-        EntityCollection $restrictions,
-        bool $overrideParent = false
-    ): ?array
+    public function filter(array $items, string $restrictionType, ApiRequest $request, SalesChannelContext $context): array
     {
-        $result = $parentFilters;
+        $config = $this->configService->getByContext($context);
+
+        if ($config->isRestrictionsOverridingTopToDown()) {
+            return $this->filterRestrictionsOverridingTopToDown($items, $restrictionType, $config, $request, $context);
+        } else {
+            return $this->filterRestrictionsOverridingDownToTop($items, $restrictionType, $config, $request, $context);
+        }
+    }
+
+    /**
+     * Returns a list with allowed filter names when restrictions overridden from top to down
+     *
+     * @param array $items
+     * @param string $restrictionType
+     * @param Configuration $config
+     * @param ApiRequest $request
+     * @param SalesChannelContext $context
+     * @return array
+     * @throws FilterApplyException
+     */
+    protected function filterRestrictionsOverridingTopToDown(array $items, string $restrictionType, Configuration $config, ApiRequest $request, SalesChannelContext $context): array
+    {
+        /** @var FilterRestrictionsCollection $restrictions */
+        $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_GLOBAL . '-' . $restrictionType);
+        $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+
+        if ($request instanceof NavigationRequestProduct) {
+            /** @var FilterRestrictionsCollection $restrictions */
+            $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_NAVIGATION . '-' . $restrictionType);
+            $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+
+            if ($categoryId = $request->getCategoryId()) {
+                $items = $this->applyRestrictionsForCategory($items, $categoryId, $config->isRestrictionsParentCategories(), $restrictionType, $context);
+            }
+        } elseif ($request instanceof ProductSearchRequest) {
+            /** @var FilterRestrictionsCollection $restrictions */
+            $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_SEARCH . '-' . $restrictionType);
+            $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Returns a list with allowed filter names when restrictions overridden from down to top
+     *
+     * @param array $items
+     * @param string $restrictionType
+     * @param Configuration $config
+     * @param ApiRequest $request
+     * @param SalesChannelContext $context
+     * @return array
+     * @throws FilterApplyException
+     */
+    protected function filterRestrictionsOverridingDownToTop(array $items, string $restrictionType, Configuration $config, ApiRequest $request, SalesChannelContext $context): array
+    {
+        if ($request instanceof NavigationRequestProduct) {
+            if ($categoryId = $request->getCategoryId()) {
+                $items = $this->applyRestrictionsForCategory($items, $categoryId, $config->isRestrictionsParentCategories(), $restrictionType, $context);
+            }
+
+            /** @var FilterRestrictionsCollection $restrictions */
+            $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_NAVIGATION . '-' . $restrictionType);
+            $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+        } elseif ($request instanceof ProductSearchRequest) {
+            /** @var FilterRestrictionsCollection $restrictions */
+            $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_SEARCH . '-' . $restrictionType);
+            $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+        }
+
+        /** @var FilterRestrictionsCollection $restrictions */
+        $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_GLOBAL . '-' . $restrictionType);
+        return $this->getAllowedItems($items, $restrictionType, $restrictions);
+    }
+
+    /**
+     * Returns a list with allowed filter names for category restriction
+     *
+     * @param array $items
+     * @param string $categoryId
+     * @param bool $restrictParentCategories
+     * @param string $restrictionType
+     * @param SalesChannelContext $context
+     * @return array
+     * @throws FilterApplyException
+     */
+    protected function applyRestrictionsForCategory(
+        array $items,
+        string $categoryId,
+        bool $restrictParentCategories,
+        string $restrictionType,
+        SalesChannelContext $context
+    ): array
+    {
+        $categoriesTreeIds = [];
+        if ($restrictParentCategories) {
+            $maxDeepLevel = 0;
+            if ($category = $this->categoryRepository->search(new Criteria([$categoryId]), $context->getContext())->first()) {
+                while ($category->getParentId() && $maxDeepLevel < self::MAX_DEEP_CATEGORY) {
+                    $categoriesTreeIds[] = $category->getId();
+                    /** @var CategoryEntity|null $category */
+                    $category = $this->categoryRepository->search(new Criteria([$category->getParentId()]), $context->getContext())
+                        ->first();
+
+                    $maxDeepLevel++;
+                }
+
+                $categoriesTreeIds[] = $category->getId(); // most top category
+            }
+            $categoriesTreeIds = array_reverse($categoriesTreeIds);
+        } else {
+            $categoriesTreeIds[] = $categoryId;
+        }
+
+        foreach ($categoriesTreeIds as $categoriesTreeId) {
+            /** @var FilterRestrictionsCollection $restrictions */
+            $restrictions = $this->getRestrictions($context->getSalesChannelId(), $context->getLanguageId(), $context->getContext(), self::RESTRICTION_NAVIGATION . '-' . $restrictionType, $categoriesTreeId);
+            $items = $this->getAllowedItems($items, $restrictionType, $restrictions);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Gets a list with allowed names for one restriction type
+     *
+     * @param array $items
+     * @param string $restrictionType
+     * @param FilterRestrictionsCollection $restrictions
+     * @return array
+     * @throws FilterApplyException
+     */
+    protected function getAllowedItems(array $items, string $restrictionType, FilterRestrictionsCollection $restrictions): array
+    {
+        if ($restrictions->count() === 0) {
+            return $items;
+        }
+
+        if ($restrictions->count() > 2) {
+            $this->logger->error(sprintf('More than 2 restrictions exists for %s type', $restrictionType));
+            throw new FilterApplyException(sprintf('More than 2 restrictions exists for %s type', $restrictionType));
+        }
+
+        $allowAll = false;
+        $blockAll = false;
+        $allowList = [];
+        $blockList = [];
         /** @var FilterRestrictionsEntity $restriction */
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) {
-                if ($restriction->isAllChecked()) { // if Allow/Block All checked
-                    if ($overrideParent) {
-                        $result = null;
-                    } else {
-                        //only apply filters allowed in parent and current level
-                        $result = $parentFilters;
-                    }
-                } else { // if allow/block only selected checked (default)
-                    $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
-                    if ($overrideParent) {
-                        $result = array_values($restrictionFilters);
-                    } else {
-                        //only apply filters allowed in parent and current level
-                        $result = $parentFilters === null ? $restrictionFilters : array_intersect($parentFilters, $restrictionFilters);
-                    }
-                }
+                $allowAll = $restriction->isAllChecked();
+                $allowList = $restriction->getFilters()->map(function (FilterEntity $filter) {
+                    return $filter->getTechnicalName();
+                });
+            } else {
+                $blockAll = $restriction->isAllChecked();
+                $blockList = $restriction->getFilters()->map(function (FilterEntity $filter) {
+                    return $filter->getTechnicalName();
+                });;
             }
         }
-        return $result;
+
+        return $this->applyFilter($allowAll, $blockAll, $allowList, $blockList, $items);
     }
 
     /**
-     * @param array|null $parentFilters
-     * @param EntityCollection $restrictions
-     * @param bool $overrideParent
-     * @return array|null
-     */
-    protected function applyBlockedRestrictions(
-        ?array $parentFilters,
-        EntityCollection $restrictions,
-        bool $overrideParent = false
-    ): ?array
-    {
-        $result = $parentFilters;
-        /** @var FilterRestrictionsEntity $restriction */
-        foreach ($restrictions as $restriction) {
-            if (!$restriction->isAllowed()) {
-                if ($restriction->isAllChecked()) { // if Allow/Block All checked
-                    //parent filters don't matter if everything is blocked on current level
-                    $result = null;
-                } else { // if allow/block only selected checked (default)
-                    $restrictionFilters = $this->transformToSimpleForm($restriction->getFilters());
-                    if ($overrideParent) {
-                        $result = array_values($restrictionFilters);
-                    } else {
-                        //combine filters blocked in parent and current level
-                        $result = array_unique(array_merge($restrictionFilters, $parentFilters));
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Returns array with keys of filterId and values filterPropertyName
-     * for all filters in provided FilterCollection;
-     * @param FilterCollection|null $filterCollection
-     * @return array
-     */
-    private function transformToSimpleForm(?FilterCollection $filterCollection): array
-    {
-        $returning = [];
-        /** @var FilterEntity $filter */
-        foreach ($filterCollection as $filter) {
-            $returning[$filter->getTechnicalName()] = $filter->getPropertyName();
-        }
-        return $returning;
-    }
-
-    /**
+     * Return restrictions
+     *
      * @param string $salesChannelId
      * @param string $languageId
      * @param Context $context
      * @param string $layer
-     * @param string $type
      * @param string|null $categoryId
      * @return EntityCollection
      */
@@ -278,22 +293,22 @@ class FilterService implements FilterInterface
         string $languageId,
         Context $context,
         string $layer,
-        string $type,
         ?string $categoryId = null
-    ): EntityCollection {
-        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $type, $categoryId);
+    ): EntityCollection
+    {
+        $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, $languageId, $layer, $categoryId);
         $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
         if (count($restrictions->getElements()) == 0) {
             // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all languages for this salesChannelId
-            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, null, $layer, $type, $categoryId);
+            $criteria = $this->getFilterRestrictionsCriteria($salesChannelId, null, $layer, $categoryId);
             $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
             if (count($restrictions->getElements()) == 0) {
                 // if config for specified salesChannelId AND languageId wasn't set up, then we get settings for all salesChannels for this languageId
-                $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $type, $categoryId);
+                $criteria = $this->getFilterRestrictionsCriteria(null, $languageId, $layer, $categoryId);
                 $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
                 if (count($restrictions->getElements()) == 0) {
                     // if config for all salesChannels AND languageId wasn't set up, then we get settings for all salesChannels for all languages
-                    $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $type, $categoryId);
+                    $criteria = $this->getFilterRestrictionsCriteria(null, null, $layer, $categoryId);
                     $restrictions = $this->filterRestrictionsRepository->search($criteria, $context)->getEntities();
                 }
             }
@@ -310,16 +325,15 @@ class FilterService implements FilterInterface
      * @param string|null $categoryId
      * @return Criteria
      */
-    private function getFilterRestrictionsCriteria(
+    protected function getFilterRestrictionsCriteria(
         ?string $salesChannelId,
         ?string $languageId,
         string $layer,
-        string $type,
         ?string $categoryId = null
-    ): Criteria {
+    ): Criteria
+    {
         $criteria = new Criteria();
         $criteria->addAssociation('filters');
-        $criteria->addFilter(new EqualsFilter('filters.type', $type));
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),
             new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('isInherited', true)])
@@ -334,11 +348,41 @@ class FilterService implements FilterInterface
             $criteria->addFilter(
                 new EqualsFilter('categoryId', $categoryId)
             );
+            $criteria->addFilter(
+                new EqualsFilter('layer', $layer)
+            );
         } else {
             $criteria->addFilter(
                 new EqualsFilter('layer', $layer)
             );
+            $criteria->addFilter(
+                new EqualsFilter('isCategory', false)
+            );
         }
         return $criteria;
+    }
+
+    /**
+     * Applies filter restriction for provided names
+     *
+     * @param bool $allowAll
+     * @param bool $blockAll
+     * @param array $allowList
+     * @param array $blockList
+     * @param array $items
+     * @return array
+     */
+    protected function applyFilter(bool $allowAll, bool $blockAll, array $allowList, array $blockList, array $items): array
+    {
+        $filterItems = [];
+        foreach ($items as $item) {
+            $allowed = $allowAll || in_array($item, $allowList);
+            $blocked = ($blockAll && !in_array($item, $allowList)) || in_array($item, $blockList);
+            if ($allowed && !$blocked) {
+                $filterItems[] = $item;
+            }
+        }
+
+        return $filterItems;
     }
 }

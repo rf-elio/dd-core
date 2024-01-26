@@ -77,6 +77,7 @@
             "cardTitleGroupInfo" : "Basic information",
             "labelName": "Property Name",
             "labelTechnicalName": "Technical Name",
+            "displayByDefault": "Display by default",
             "textHeadline": "New Property"
           },
           "placeholderPropertyName": "Property Name",

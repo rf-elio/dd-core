@@ -2,9 +2,15 @@
     {% parent %}
     <sw-tabs-item
             v-show="isPage"
-            :route="{ name: 'sw.category.detail.ruler', params: { id: $route.params.id } }"
-            :title="$tc('elio-search.restrictions.tabs.category')">
-        {{ $tc('elio-search.restrictions.tabs.category') }}
+            :route="{ name: 'sw.category.detail.filter.ruler', params: { id: $route.params.id } }"
+            :title="$tc('elio-search.restrictions.filter.tabs.category')">
+        {{ $tc('elio-search.restrictions.filter.tabs.category') }}
+    </sw-tabs-item>
+    <sw-tabs-item
+            v-show="isPage"
+            :route="{ name: 'sw.category.detail.sorting.ruler', params: { id: $route.params.id } }"
+            :title="$tc('elio-search.restrictions.sorting.tabs.category')">
+        {{ $tc('elio-search.restrictions.sorting.tabs.category') }}
     </sw-tabs-item>
 {% endblock %}
 

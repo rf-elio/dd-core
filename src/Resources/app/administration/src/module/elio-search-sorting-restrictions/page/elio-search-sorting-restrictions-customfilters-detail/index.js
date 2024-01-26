@@ -109,6 +109,10 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters-deta
             this.isSaveSuccessful = false;
             this.isLoading = true;
 
+            if (this.filter.displayedByDefault) {
+                this.removeDefaultForFilters()
+            }
+
             return this.filterRepository.save(this.filter).then(() => {
                 this.loadEntityData();
                 this.isLoading = false;
@@ -124,6 +128,19 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters-deta
 
         onCancel() {
             this.$router.push({ name: 'elio.search.sorting.restrictions.index.customfilters' });
+        },
+
+        async removeDefaultForFilters() {
+            const criteria = new Criteria(this.page, this.limit);
+            criteria.addFilter(Criteria.equals('type', 'sorting'));
+            criteria.addFilter(Criteria.equals('displayedByDefault', true));
+            await this.filterRepository.search(criteria, Shopware.Context.api)
+            .then(filters => {
+                filters.forEach(filter => {
+                    filter.displayedByDefault = false;
+                    this.filterRepository.save(filter)
+                });
+            })
         }
     }
 });

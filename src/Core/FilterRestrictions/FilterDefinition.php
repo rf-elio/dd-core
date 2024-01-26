@@ -97,6 +97,10 @@ class FilterDefinition extends EntityDefinition
                 new ApiAware(),
                 new Required()
             ),
+            (new BoolField('displayed_by_default', 'displayedByDefault'))->addFlags(
+                new ApiAware(),
+                new Required()
+            ),
 
             (new FkField('property_id', 'propertyId', PropertyGroupDefinition::class))->addFlags(
                 new ApiAware()

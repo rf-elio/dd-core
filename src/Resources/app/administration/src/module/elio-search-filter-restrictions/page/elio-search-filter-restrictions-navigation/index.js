@@ -11,7 +11,7 @@ Shopware.Component.register('elio-search-filter-restrictions-navigation', {
 
     computed: {
         type() {
-            return 'navigation';
+            return 'navigation-filter';
         }
     },
 

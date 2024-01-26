@@ -236,7 +236,6 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
             try {
                 var criteria = new Criteria();
                 criteria.addAssociation('filters')
-                criteria.addFilter(Criteria.equals('filters.type', 'sorting'))
                 if (this.isCategory && this.categoryId != null) {
                     criteria.addFilter(
                         Criteria.multi(
@@ -245,7 +244,8 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                                 Criteria.equals('elio_search_filter_restrictions.isCategory', true),
                                 Criteria.equals('elio_search_filter_restrictions.categoryId', this.categoryId),
                                 Criteria.equals('elio_search_filter_restrictions.salesChannelId', this.salesChannelId),
-                                Criteria.equals('elio_search_filter_restrictions.languageId', this.languageId)
+                                Criteria.equals('elio_search_filter_restrictions.languageId', this.languageId),
+                                Criteria.equals('elio_search_filter_restrictions.layer', this.layer),
                             ]
                         )
                     );
@@ -300,6 +300,7 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
                             } else {
+                                filterRestriction.layer = this.layer;
                                 filterRestriction.categoryId = this.categoryId;
                             }
                             filterRestriction.isAllowed = true;
@@ -324,6 +325,7 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                             if (!this.isCategory) {
                                 filterRestriction.layer = this.layer;
                             } else {
+                                filterRestriction.layer = this.layer;
                                 filterRestriction.categoryId = this.categoryId;
                             }
                             filterRestriction.isAllowed = false;
@@ -382,7 +384,6 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
             // Removing old links from elio_search_filter_restrictions_filters table
             var criteria = new Criteria();
             criteria.addAssociation('filters');
-            criteria.addFilter(Criteria.equals('filters.type', 'sorting'));
             criteria.addFilter(
                 Criteria.multi(
                     'OR',

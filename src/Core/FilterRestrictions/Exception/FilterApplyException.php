@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,40 +30,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Core\FilterRestrictions\Exception;
 
-use Elio\ElioSearch\Api\Request\ApiRequest;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Interface FilterInterface
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * Class FilterApplyException
+ * @package Core\FilterRestrictions\Exception
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
- * @author Andrey Baev <anb@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (
+ * https://www.elio-systems.com)
  */
-interface FilterInterface
+class FilterApplyException extends \Exception
 {
-    /**
-     * Gets filters by provided type
-     *
-     * @param string $type
-     * @param SalesChannelContext $context
-     * @return EntitySearchResult
-     */
-    public function getFilterByType(string $type, SalesChannelContext $context): EntitySearchResult;
 
-    /**
-     * Returns a list with allowed filter names
-     *
-     * @param array $items
-     * @param string $restrictionType
-     * @param ApiRequest $request
-     * @param SalesChannelContext $context
-     * @return mixed
-     */
-    public function filter(array $items, string $restrictionType, ApiRequest $request, SalesChannelContext $context): array;
 }
