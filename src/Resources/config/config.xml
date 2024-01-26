@@ -288,15 +288,6 @@
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
-
-        <input-field type="bool">
-            <name>mergeSortingStrategy</name>
-            <label>Merge sorting strategy</label>
-            <label lang="de-DE">Sortierstrategie</label>
-            <helpText>If enabled sorting strategy is "Merge Strategie", if disabled - "Sort by category strategy".</helpText>
-            <helpText lang="de-DE">Wenn aktiviert, ist die Sortierstrategie "Merge Strategie", wenn deaktiviert - "Sort by category strategy".</helpText>
-            <defaultValue>true</defaultValue>
-        </input-field>
     </card>
 
     <card>

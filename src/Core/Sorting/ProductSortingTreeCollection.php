@@ -30,29 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Sorting\Aggregate;
+namespace Elio\ElioSearch\Core\Sorting;
 
-use Elio\ElioSearch\Core\Sync\Sorting\ProductSortingDefinition;
-use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
-class ProductExtension extends EntityExtension
+class ProductSortingTreeCollection extends EntityCollection
 {
-    public function extendFields(FieldCollection $collection): void
+    protected function getExpectedClass(): string
     {
-        $collection->add(new OneToManyAssociationField(
-            'elioSearchProductSorting',
-            ProductSortingDefinition::class,
-            'product_id'
-        ));
-    }
-
-
-    public function getDefinitionClass(): string
-    {
-        return ProductDefinition::class;
+        return ProductSortingTreeEntity::class;
     }
 }

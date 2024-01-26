@@ -30,31 +30,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Sorting\Aggregate;
+namespace Elio\ElioSearch\Core\Sorting\Aggregate;
 
-use Elio\ElioSearch\Core\Sync\Sorting\ProductSortingDefinition;
-use Shopware\Core\Content\Category\CategoryDefinition;
+use Elio\ElioSearch\Core\Sorting\ProductSortingTreeDefinition;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
-class CategoryExtension extends EntityExtension
+class ProductExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void
     {
-        $collection->add(
-            (new OneToManyAssociationField(
-                'elioSearchProductSorting',
-                ProductSortingDefinition::class,
-                'category_id'
-            ))->addFlags(new Inherited())
-        );
+        $collection->add(new OneToManyAssociationField(
+            'elioSearchProductSorting',
+            ProductSortingTreeDefinition::class,
+            'product_id'
+        ));
     }
 
 
     public function getDefinitionClass(): string
     {
-        return CategoryDefinition::class;
+        return ProductDefinition::class;
     }
 }

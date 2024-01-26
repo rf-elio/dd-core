@@ -40,38 +40,6 @@
             <tag name="elio-search.sync.collector"/>
         </service>
 
-        <!-- Product sorting -->
-        <service id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingDefinition">
-            <tag name="shopware.entity.definition" entity="elio_search_product_sorting"/>
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Sync\Sorting\Aggregate\CategoryExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Sync\Sorting\Aggregate\ProductExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService">
-            <argument type="service" id="Doctrine\DBAL\Connection" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="elio_search_product_sorting.repository" />
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Sync\Sorting\Controller\ProductSortingController" public="true">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService" />
-            <argument type="service" id="logger" />
-            <call method="setContainer">
-                <argument type="service" id="service_container" />
-            </call>
-        </service>
-
-        <service id="Elio\ElioSearch\Command\ProductSortCommand">
-            <argument type="service" id="Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService" />
-            <tag name="console.command"/>
-        </service>
-
         <!--    Api Sync    -->
         <service id="Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\ProductIndexer">
             <argument type="service" id="product.repository" />

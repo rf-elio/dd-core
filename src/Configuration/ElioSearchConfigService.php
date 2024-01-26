@@ -144,8 +144,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingMaxOrderAge', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderStates', $languagePrefix) ?? [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'mergeSortingStrategy', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);

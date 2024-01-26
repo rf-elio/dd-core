@@ -11,6 +11,7 @@
         <import resource="product.xml"/>
         <import resource="ranking.xml"/>
         <import resource="tracking.xml"/>
+        <import resource="sort.xml"/>
         <import resource="storefront.xml"/>
         <import resource="sync-profile.xml"/>
         <import resource="export.xml"/>

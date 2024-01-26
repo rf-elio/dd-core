@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Sorting;
+namespace Elio\ElioSearch\Core\Sorting;
 
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -47,7 +47,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
  * Class ProductSortingDefinition
- * @package Elio\ElioSearch\Core\Sync\Sorting
+ * @package Elio\ElioSearch\Core\Sorting
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

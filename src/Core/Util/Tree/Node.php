@@ -10,7 +10,7 @@ namespace Elio\ElioSearch\Core\Util\Tree;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class Node
+class Node implements \JsonSerializable
 {
     /**
      * @var string
@@ -31,7 +31,7 @@ class Node
     /**
      * @var mixed
      */
-    private $value;
+    protected $value;
 
     /**
      * Node constructor.
@@ -149,5 +149,20 @@ class Node
             'value' => $this->value,
             'children' => $children
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return get_object_vars($this);
+    }
+
+    public function setValue(mixed $value): void
+    {
+        $this->value = $value;
+    }
+
+    public function setChildNodes(array $childNodes): void
+    {
+        $this->childNodes = $childNodes;
     }
 }

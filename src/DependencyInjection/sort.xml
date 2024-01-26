@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- Product sorting -->
+        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingDefinition">
+            <tag name="shopware.entity.definition" entity="elio_search_product_sorting"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingTreeDefinition">
+            <tag name="shopware.entity.definition" entity="elio_search_product_sorting_tree"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sorting\Aggregate\CategoryExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+        <service id="Elio\ElioSearch\Core\Sorting\Aggregate\ProductExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="elio_search_product_sorting_tree.repository" />
+        </service>
+
+        <service id="Elio\ElioSearch\Command\ProductSortUpdateCommand">
+            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

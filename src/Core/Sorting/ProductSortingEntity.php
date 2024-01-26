@@ -30,39 +30,70 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioSearch\Core\Sorting;
 
-use Elio\ElioSearch\Core\Sync\Sorting\ProductSortingService;
-use Exception;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class ProductSortCommand extends Command
+class ProductSortingEntity extends Entity
 {
-    public function __construct(private readonly ProductSortingService $productSortingService)
+    use EntityIdTrait;
+
+    protected ?string $productId = null;
+    protected ?string $categoryId = null;
+    protected ?ProductEntity $product = null;
+    protected ?CategoryEntity $category = null;
+    protected ?int $position = null;
+
+    public function getProductId(): ?string
     {
-        parent::__construct();
+        return $this->productId;
     }
 
-    protected function configure(): void
+    public function setProductId(string $productId): void
     {
-        $this->setName('elio-search:product-sort');
+        $this->productId = $productId;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function getCategoryId(): ?string
     {
-       $this->productSortingService->sort(Context::createDefaultContext());
+        return $this->categoryId;
+    }
 
-        return Command::SUCCESS;
+    public function setCategoryId(string $categoryId): void
+    {
+        $this->categoryId = $categoryId;
+    }
+
+    public function getProduct(): ?ProductEntity
+    {
+        return $this->product;
+    }
+
+    public function setProduct(ProductEntity $product): void
+    {
+        $this->product = $product;
+    }
+
+    public function getCategory(): ?CategoryEntity
+    {
+        return $this->category;
+    }
+
+    public function setCategory(CategoryEntity $category): void
+    {
+        $this->category = $category;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
     }
 }

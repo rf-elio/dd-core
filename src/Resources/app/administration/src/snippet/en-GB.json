@@ -6,14 +6,14 @@
     },
     "restrictions": {
       "filter": {
-        "title": "Filter restrictions",
+        "title": "Filter Configuration",
         "description": "",
         "tabs": {
           "global": "Global",
           "search": "Search",
           "navigation": "Navigation",
           "customfilters": "Custom Filters",
-          "category": "Filter Restrictions"
+          "category": "Filter Configuration"
         },
         "filters": {
           "messageSaveError": "Error while saving",
@@ -60,14 +60,14 @@
         }
       },
       "sorting": {
-        "title": "Sorting restrictions",
+        "title": "Sorting Configuration",
         "description": "",
         "tabs": {
           "global": "Global",
           "search": "Search",
           "navigation": "Navigation",
           "customfilters": "Custom Filters",
-          "category": "Sorting Restrictions"
+          "category": "Sorting Configuration"
         },
         "filters": {
           "messageSaveError": "Error while saving",

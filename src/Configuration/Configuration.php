@@ -90,7 +90,6 @@ class Configuration extends Struct
     private array $productRankingOrderDeliveryStates;
     private bool $searchUseContentChannel;
     private int $entityStatusMaxCleanupAgeInDays;
-    private bool $mergeSortingStrategy;
 
     /**
      * Configuration constructor.
@@ -124,7 +123,6 @@ class Configuration extends Struct
      * @param array $productRankingOrderStates
      * @param array $productRankingOrderDeliveryStates
      * @param int $entityStatusMaxCleanupAgeInDays
-     * @param bool $mergeSortingStrategy
      */
     public function __construct(
         bool $active,
@@ -156,8 +154,7 @@ class Configuration extends Struct
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
         array $productRankingOrderDeliveryStates,
-        int $entityStatusMaxCleanupAgeInDays,
-        bool $mergeSortingStrategy
+        int $entityStatusMaxCleanupAgeInDays
     )
     {
         $this->loggingDebugActive = $loggingDebugActive;
@@ -190,7 +187,6 @@ class Configuration extends Struct
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->entityStatusMaxCleanupAgeInDays = $entityStatusMaxCleanupAgeInDays;
-        $this->mergeSortingStrategy = $mergeSortingStrategy;
     }
 
     /**
@@ -425,10 +421,5 @@ class Configuration extends Struct
     public function getEntityStatusMaxCleanupAgeInDays(): int
     {
         return $this->entityStatusMaxCleanupAgeInDays;
-    }
-
-    public function isMergeSortingStrategy(): bool
-    {
-        return $this->mergeSortingStrategy;
     }
 }
