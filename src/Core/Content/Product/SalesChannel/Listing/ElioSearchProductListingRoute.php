@@ -163,7 +163,6 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
 
             return new ProductListingRouteResponse($shopwareProductListingResult);
         } catch (Throwable $e) {
-            echo '<pre>'; var_dump($e->getMessage()); die();
             $this->searchError($e->getMessage(), $this, [
                 'exception' => $e,
                 'categoryId' => $categoryId,
