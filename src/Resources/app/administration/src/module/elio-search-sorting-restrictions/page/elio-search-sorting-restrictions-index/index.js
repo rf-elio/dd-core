@@ -32,7 +32,7 @@ Shopware.Component.register('elio-search-sorting-restrictions-index', {
     methods: {
         checkLeaving(to, from, next) {
             var willLeave = true;
-            if (this.$refs.routerView.$refs.ruler) {
+            if (this.$refs.routerView !== null && this.$refs.routerView !== undefined && this.$refs.routerView.$refs.ruler) {
                 willLeave = this.$refs.routerView.$refs.ruler.onLeaving(to);
             }
             if (willLeave) {

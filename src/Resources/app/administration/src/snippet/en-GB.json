@@ -66,7 +66,7 @@
           "global": "Global",
           "search": "Search",
           "navigation": "Navigation",
-          "customfilters": "Custom Filters",
+          "customfilters": "Sort options",
           "category": "Sorting Configuration"
         },
         "filters": {
@@ -78,6 +78,7 @@
             "labelName": "Property Name",
             "labelTechnicalName": "Technical Name",
             "displayByDefault": "Display by default",
+            "sortDirection": "Ascending sorting",
             "textHeadline": "New Property"
           },
           "placeholderPropertyName": "Property Name",

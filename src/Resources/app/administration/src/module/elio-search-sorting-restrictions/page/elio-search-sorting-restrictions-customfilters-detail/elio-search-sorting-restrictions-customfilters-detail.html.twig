@@ -68,12 +68,19 @@
                                 :label="$tc('elio-search.restrictions.sorting.filters.detail.labelName')"
                                 :placeholder="placeholder(filter, 'propertyName', $tc('elio-search.restrictions.sorting.filters.placeholderPropertyName'))"/>
                     {% endblock %}
+                    {% block elio_search_sorting_restrictions_customfilters_detail_sort_direction %}
+                        <sw-field
+                                v-model="isAscSortDirection"
+                                type="switch"
+                                :label="$tc('elio-search.restrictions.sorting.filters.detail.sortDirection')">
+                        </sw-field>
+                    {% endblock %}
                     {% block elio_search_sorting_restrictions_customfilters_detail_display_by_default %}
-                    <sw-field
-                            v-model="filter.displayedByDefault"
-                            type="switch"
-                            :label="$tc('elio-search.restrictions.sorting.filters.detail.displayByDefault')">
-                    </sw-field>
+                        <sw-field
+                                v-model="filter.displayedByDefault"
+                                type="switch"
+                                :label="$tc('elio-search.restrictions.sorting.filters.detail.displayByDefault')">
+                        </sw-field>
                     {% endblock %}
                 </sw-card>
             </sw-card-view>

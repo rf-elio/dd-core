@@ -43,7 +43,8 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters-deta
         return {
             filter: null,
             isLoading: false,
-            isSaveSuccessful: false
+            isSaveSuccessful: false,
+            isAscSortDirection: false
         };
     },
 
@@ -82,6 +83,12 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters-deta
 
             this.filterRepository.get(this.customFilterId, Shopware.Context.api, this.defaultCriteria)
                 .then((currentFilter) => {
+                    const technicalNameParts = currentFilter.technicalName.split(':')
+                    currentFilter.technicalName = technicalNameParts[0];
+                    if (technicalNameParts[1] === 'asc') {
+                        this.isAscSortDirection = true;
+                    }
+
                     this.filter = currentFilter;
                     this.isLoading = false;
                 }).catch(() => {
@@ -110,7 +117,13 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters-deta
             this.isLoading = true;
 
             if (this.filter.displayedByDefault) {
-                this.removeDefaultForFilters()
+                this.removeDefaultForFilters();
+            }
+
+            if (this.isAscSortDirection === true) {
+                this.filter.technicalName += ':asc';
+            } else {
+                this.filter.technicalName += ':desc';
             }
 
             return this.filterRepository.save(this.filter).then(() => {
