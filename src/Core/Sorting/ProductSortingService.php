@@ -38,6 +38,7 @@ use Doctrine\DBAL\Exception;
 use DomainException;
 use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Elio\ElioSearch\Core\Sorting\Util\CategorySortingUtil;
+use Elio\ElioSearch\Core\Sorting\Util\CategoryTreeUtil;
 use Elio\ElioSearch\Core\Util\Tree\Node;
 use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Framework\Context;
@@ -72,6 +73,16 @@ class ProductSortingService
     public function sort(Context $context): void
     {
         $data = $this->prepareSortingData();
+        $this->updateProductSortingTree($data, $context);
+    }
+
+    /**
+     * @param array $data
+     * @param Context $context
+     * @return void
+     */
+    private function updateProductSortingTree(array $data, Context $context): void
+    {
         $productSortingIds = $this->productSortingTreeRepository->searchIds(new Criteria(), $context)->getIds();
         foreach (array_chunk($productSortingIds, 500) as $chunk) {
             $this->productSortingTreeRepository->delete(array_map(static function ($productSortingId) {
@@ -102,6 +113,34 @@ class ProductSortingService
      */
     protected function prepareSortingData(): array
     {
+        $tree = $this->createCategoryTree();
+
+        $sql = 'SELECT LOWER(HEX(IFNULL(ps.category_id, psParent2.category_id))) as categoryId,
+                       LOWER(HEX(p.id)) as productId,
+                       COALESCE(ps.position, psParent1.position, psParent2.position) AS position
+                FROM product p
+                LEFT JOIN product_category pc ON pc.product_id = p.id AND pc.product_version_id = p.version_id
+                LEFT JOIN elio_search_product_sorting ps ON ps.product_id = pc.product_id AND ps.product_version_id = pc.product_version_id AND ps.category_id = pc.category_id AND ps.category_version_id = pc.category_version_id
+                LEFT JOIN product pParent ON pParent.id = p.parent_id AND pParent.version_id = p.parent_version_id
+                LEFT JOIN product_category pcParent ON pcParent.product_id = pParent.id AND pcParent.product_version_id = pParent.version_id
+                LEFT JOIN elio_search_product_sorting psParent1 ON psParent1.product_id = p.id AND psParent1.product_version_id = p.version_id AND psParent1.category_id = pcParent.category_id AND psParent1.category_version_id = pcParent.category_version_id
+                LEFT JOIN elio_search_product_sorting psParent2 ON psParent2.product_id = pcParent.product_id AND psParent2.product_version_id = pcParent.product_version_id AND psParent2.category_id = pcParent.category_id AND psParent2.category_version_id = pcParent.category_version_id
+                ORDER BY position ASC';
+        $productCategoryPositions = $this->connection->fetchAllAssociative($sql);
+        CategorySortingUtil::addProductSortingToTree($tree, $productCategoryPositions);
+
+        // calculate sorting for parent categories
+        $productPositions = new ArrayObject();
+        CategorySortingUtil::calculateTreeProductPositions($tree, $productPositions);
+        return $productPositions->getArrayCopy();
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    private function createCategoryTree(): array
+    {
         // create category tree and sort the nodes
         $categories = $this->connection->createQueryBuilder()
             ->select(
@@ -113,46 +152,11 @@ class ProductSortingService
             ->executeQuery()
             ->fetchAllAssociative();
 
-        $tree = $this->createCategoryTree($categories);
-        $tree = CategorySortingUtil::sortCategoryTree($tree);
-
-        // add product positions to tree
-        $productCategoryPositions = $this->connection->createQueryBuilder()
-            ->select(
-                'LOWER(HEX(c.category_id)) as categoryId',
-                'LOWER(HEX(c.product_id)) as productId',
-                's.position'
-            )
-            ->from('product_category', 'c')
-            ->leftJoin('c', 'elio_search_product_sorting', 's', 's.category_id = c.category_id AND s.product_id = c.product_id')
-            ->orderBy('s.position', 'ASC')
-            ->executeQuery()
-            ->fetchAllAssociative();
-        CategorySortingUtil::addProductSortingToTree($tree, $productCategoryPositions);
-
-        // calculate sorting for parent categories
-        $productPositions = new ArrayObject();
-        CategorySortingUtil::calculateTreeProductPositions($tree, $productPositions);
-        return $productPositions->getArrayCopy();
-    }
-
-    /**
-     * Creates a category tree based on the given categories.
-     *
-     * @param array $categories The array of categories.
-     *                          Each category should have keys:
-     *                          - 'categoryId' (string): The ID of the category.
-     *                          - 'parentId' (string): The ID of the parent category.
-     *                          - Other attributes specific to the category.
-     * @return array The created category tree.
-     * @throws Exception If there is an error creating the tree.
-     */
-    private function createCategoryTree(array $categories): array
-    {
         $tree = new RandomAddTree();
         foreach ($categories as $category) {
             $tree->add($category['categoryId'], $category['parentId'], $category);
         }
-        return $tree->create();
+        $nodes = $tree->create();
+        return CategoryTreeUtil::sortCategoryTree($nodes);
     }
 }
