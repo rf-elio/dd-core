@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Tracking;
+namespace Elio\ElioSearch\Swagger;
 
-
-use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
-use Psr\Log\LoggerInterface;
-use Elio\ElioSearch\Swagger\ClientApiException;
-
-/**
- * Class TrackingApi
- * @package Elio\ElioSearch\Api\Tracking
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
- */
-class TrackingApi
+interface ModelInterface
 {
-    use ElioSearchLogTrait;
+    /**
+     * The original name of the model.
+     *
+     * @return string
+     */
+    public function getModelName();
 
     /**
-     * SearchApi constructor.
-     * @param LoggerInterface $logger
+     * Array of property to type mappings. Used for (de)serialization
+     *
+     * @return array
      */
-    public function __construct(
-        LoggerInterface $logger
-    )
-    {
-        $this->logger = $logger;
-    }
+    public static function swaggerTypes();
 
     /**
-     * Handles the tracking requests
-     * @throws ClientApiException
+     * Array of property to format mappings. Used for (de)serialization
+     *
+     * @return array
      */
-    public function track(TrackingRequest $request, string $salesChannelId) : void
-    {
+    public static function swaggerFormats();
 
-    }
+    /**
+     * Array of attributes where the key is the local name, and the value is the original name
+     *
+     * @return array
+     */
+    public static function attributeMap();
+
+    /**
+     * Array of attributes to setter functions (for deserialization of responses)
+     *
+     * @return array
+     */
+    public static function setters();
+
+    /**
+     * Array of attributes to getter functions (for serialization of requests)
+     *
+     * @return array
+     */
+    public static function getters();
+
+    /**
+     * Show all the invalid properties with reasons.
+     *
+     * @return array
+     */
+    public function listInvalidProperties();
+
+    /**
+     * Validate all the properties in the model
+     * return true if all passed
+     *
+     * @return bool
+     */
+    public function valid();
 }

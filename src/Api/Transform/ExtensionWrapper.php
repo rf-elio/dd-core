@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Api\Transform;
 
 
 use Shopware\Core\Framework\Struct\Struct;
-use Swagger\Client\Model\ModelInterface;
+use Elio\ElioSearch\Swagger\ModelInterface;
 
 /**
  * Class ExtensionWrapper

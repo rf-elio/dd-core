@@ -40,7 +40,7 @@ use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swagger\Client\Model\ModelInterface;
+use Elio\ElioSearch\Swagger\ModelInterface;
 use Throwable;
 
 /**

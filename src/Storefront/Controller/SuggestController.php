@@ -41,7 +41,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;
 use Shopware\Storefront\Page\Search\SearchPageLoader;
 use Shopware\Storefront\Page\Suggest\SuggestPageLoader;
-use Swagger\Client\ApiException;
+use Elio\ElioSearch\Swagger\ClientApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -90,7 +90,7 @@ class SuggestController extends SearchController
      * @param SalesChannelContext $context
      * @param Request $request
      * @return Response
-     * @throws ApiException
+     * @throws ClientApiException
      * @throws Throwable
      */
     public function suggest(SalesChannelContext $context, Request $request): Response

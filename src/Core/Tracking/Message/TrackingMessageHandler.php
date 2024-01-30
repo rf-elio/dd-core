@@ -35,7 +35,7 @@ namespace Elio\ElioSearch\Core\Tracking\Message;
 
 use Elio\ElioSearch\Api\Tracking\TrackingApi;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Swagger\Client\ApiException;
+use Elio\ElioSearch\Swagger\ClientApiException;
 
 /**
  * Class TrackingMessageHandler
@@ -61,7 +61,7 @@ class TrackingMessageHandler
 
     /**
      * @param TrackingMessage $message
-     * @throws ApiException
+     * @throws ClientApiException
      */
     public function __invoke(TrackingMessage $message): void
     {

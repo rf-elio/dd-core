@@ -34,7 +34,7 @@ namespace Elio\ElioSearch\Api\Transform\Event;
 
 
 use Elio\ElioSearch\Api\Response\ResponseCollection;
-use Swagger\Client\Model\ModelInterface;
+use Elio\ElioSearch\Swagger\ModelInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
