@@ -33,9 +33,7 @@
 namespace Elio\ElioSearch;
 
 use Elio\ElioSearch\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
-use Elio\Foundation\Installer\CustomField\CustomFieldInstaller;
-use Elio\Foundation\Installer\CustomField\Struct\CustomFieldSetStruct;
-use Elio\Foundation\Installer\CustomField\Struct\CustomFieldStruct;
+use Elio\ElioSearch\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
@@ -90,20 +88,19 @@ class ElioSearch extends Plugin
 
     /**
      * @param ActivateContext $activateContext
-     * @throws ElioFoundationInstallerException
      */
     public function activate(ActivateContext $activateContext): void
     {
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
 
-        $installer = new CustomFieldInstaller($this->container, $activateContext->getContext());
-        $installer->install(...$this->getCustomFieldSets());
+
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install($this->getCustomFieldSets());
     }
 
     /**
      * @param UpdateContext $updateContext
-     * @throws ElioFoundationInstallerException
      */
     public function postUpdate(UpdateContext $updateContext): void
     {
@@ -114,8 +111,8 @@ class ElioSearch extends Plugin
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS);
 
-        $installer = new CustomFieldInstaller($this->container, $updateContext->getContext());
-        $installer->install(...$this->getCustomFieldSets());
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->install($this->getCustomFieldSets());
     }
 
     /**
@@ -130,119 +127,119 @@ class ElioSearch extends Plugin
         }
 
         (new FilterRestrictionsSetup($this->container))->removeTables();
-        $installer = new CustomFieldInstaller($this->container, $uninstallContext->getContext());
-        $installer->install(...$this->getCustomFieldSets());
     }
 
     private function getCustomFieldSets(): array
     {
-        return [(new CustomFieldSetStruct(
-            self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE,
-            [CategoryDefinition::ENTITY_NAME, LandingPageDefinition::ENTITY_NAME],
-            [
-                'en-GB' => 'ElioSearch content export',
-                'de-DE' => 'ElioSearch Content Export',
-            ]
-        ))->addCustomFields(
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE,
-                'text',
-                [
-                    'en-GB' => 'Type',
-                    'de-DE' => 'Typ',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED,
-                'text',
-                [
-                    'en-GB' => 'Type for sub categories',
-                    'de-DE' => 'Typ für Unterkategorien',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE,
-                'bool',
-                [
-                    'en-GB' => 'Exclude in content export',
-                    'de-DE' => 'Aus dem Content Export ausschließen',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED,
-                'bool',
-                [
-                    'en-GB' => 'Exclude sub categories in content export',
-                    'de-DE' => 'Unterkategorien vom Content Export ausschließen',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS,
-                'bool',
-                [
-                    'en-GB' => 'Exclude product info in keywords',
-                    'de-DE' => 'Produktinformationen in den Keywords ausschließen',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY,
-                'text',
-                [
-                    'en-GB' => 'Priority',
-                    'de-DE' => 'Priorität',
+        return [
+            self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE => [
+                'label' => [
+                    'en-GB' => 'ElioSearch content export',
+                    'de-DE' => 'ElioSearch Content Export'
                 ],
-                null,
-                [
-                    'en-GB' => '50',
-                    'de-DE' => '50',
-                ]
-            ),
-            new CustomFieldStruct(
-                self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY,
-                'text',
-                [
-                    'en-GB' => 'Custom search query',
-                    'de-DE' => 'Individuelle Suchanfrage',
+                'fields' => [
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Type',
+                            'de-DE' => 'Typ'
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Type for sub categories',
+                            'de-DE' => 'Typ für Unterkategorien',
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude in content export',
+                            'de-DE' => 'Aus dem Content Export ausschließen',
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude sub categories in content export',
+                            'de-DE' => 'Unterkategorien vom Content Export ausschließen',
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude product info in keywords',
+                            'de-DE' => 'Produktinformationen in den Keywords ausschließen',
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude product info in keywords',
+                            'de-DE' => 'Produktinformationen in den Keywords ausschließen',
+                        ]
+                    ],
+                    self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => '50',
+                        'label' => [
+                            'en-GB' => 'Priority',
+                            'de-DE' => 'Priorität',
+                        ],
+                    ],
+                    self::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'placeholder' => 'brandline={category.name}&Manufacturer={parent.name}',
+                        'label' => [
+                            'en-GB' => 'Custom search query',
+                            'de-DE' => 'Individuelle Suchanfrage'
+                        ]
+                    ]
                 ],
-                null,
-                [
-                    'en-GB' => 'brandline={category.name}&Manufacturer={parent.name}',
-                    'de-DE' => 'brandline={category.name}&Manufacturer={parent.name}',
+                'relations' => [CategoryDefinition::ENTITY_NAME, LandingPageDefinition::ENTITY_NAME],
+                self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT => [
+                    'label' => [
+                        'en-GB' => 'ElioSearch product',
+                        'de-DE' => 'ElioSearch product',
+                    ],
+                    'fields' => [
+                        self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [
+                            'type' => 'int',
+                            'componentName' => 'sw-field',
+                            'label' => [
+                                'en-GB' => 'Order count',
+                                'de-DE' => 'Anzahl Bestellungen'
+                            ]
+                        ],//{"type": "number", "label": {"en-GB": "xcvxcv"}, "helpText": {"en-GB": null}, "numberType": "float", "placeholder": {"en-GB": null}, "componentName": "sw-field", "customFieldType": "number", "customFieldPosition": 1}
+                        self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT => [
+                            'type' => 'float',
+                            'componentName' => 'sw-field',
+                            'label' => [
+                                'en-GB' => 'Order amount',
+                                'de-DE' => 'Bestellwert'
+                            ]
+                        ],
+                        self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT => [
+                            'type' => 'bool',
+                            'componentName' => 'sw-field',
+                            'label' => [
+                                'en-GB' => 'Displayed product/variant in search result / navigation',
+                                'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
+                            ]
+                        ]
+                    ],
+                    'relations' => [ProductDefinition::ENTITY_NAME]
                 ]
-            ),
-        ),
-            (new CustomFieldSetStruct(
-                self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT,
-                [ProductDefinition::ENTITY_NAME],
-                [
-                    'en-GB' => 'ElioSearch product',
-                    'de-DE' => 'ElioSearch product',
-                ]
-            ))->addCustomFields(
-                new CustomFieldStruct(
-                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
-                    'int',
-                    [
-                        'en-GB' => 'Order count',
-                        'de-DE' => 'Anzahl Bestellungen',
-                    ]
-                ),
-                new CustomFieldStruct(
-                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
-                    'float',
-                    [
-                        'en-GB' => 'Order amount',
-                        'de-DE' => 'Bestellwert',
-                    ]
-                ),
-                new CustomFieldStruct(
-                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT,
-                    'bool',
-                    [
-                        'en-GB' => 'Displayed product/variant in search result / navigation',
-                        'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
-                    ]
-                )
-            )];
+            ],
+        ];
     }
 }

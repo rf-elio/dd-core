@@ -18,15 +18,15 @@ export default class ElioSearchFilterTreeSelectPlugin extends FilterPropertySele
     }
 
     _onChangeFilter(checkbox) {
-        if (checkbox.checked === false) {
-            const checkboxes = DomAccess.querySelectorAll(checkbox.closest('.category-navigation'), this.options.checkboxSelector);
-            Iterator.iterate(checkboxes, (checkbox) => {
-                if (checkbox.checked === false) {
-                    return;
-                }
-                checkbox.checked = false;
-            });
-        }
+        // if (checkbox.checked === false) {
+        //     const checkboxes = DomAccess.querySelectorAll(checkbox.closest('.category-navigation'), this.options.checkboxSelector);
+            // Iterator.iterate(checkboxes, (checkbox) => {
+            //     if (checkbox.checked === false) {
+            //         return;
+            //     }
+            //     checkbox.checked = false;
+            // });
+        // }
         // const checkboxes = DomAccess.querySelectorAll(checkbox.children(), this.options.checkboxSelector);
         // reset page to 1 when updating the filter
         this.listing.changeListing(true, { p: 1 });
