@@ -1,7 +1,7 @@
 {
     "name": "elio/search",
     "description": "Extendable Search Integration for Shopware",
-    "version": "1.0.27",
+    "version": "2.0.27",
     "type": "shopware-platform-plugin",
     "authors": [
         {

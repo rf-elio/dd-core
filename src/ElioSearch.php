@@ -94,7 +94,6 @@ class ElioSearch extends Plugin
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
 
-
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install($this->getCustomFieldSets());
     }
