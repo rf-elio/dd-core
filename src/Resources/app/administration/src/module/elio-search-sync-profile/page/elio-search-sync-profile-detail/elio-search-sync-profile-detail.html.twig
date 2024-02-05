@@ -116,14 +116,14 @@
                                             :options="salesChannelIdsList"
                                             :label="$tc('elio-search-sync-profile.detail.labelSalesChannel')">
                                     </sw-field>
-                                    <sw-entity-multi-select
+                                    <sw-multi-select
                                             v-model="elio_search_sync_profile.languages"
                                             required
-                                            entity-name="language"
+                                            :options="languageIdsList"
                                             :label="$tc('elio-search-sync-profile.detail.labelLanguages')"
-                                            :entity-collection="elio_search_sync_profile.languages"
+                                            @change="onChangeLanguages"
                                     >
-                                    </sw-entity-multi-select>
+                                    </sw-multi-select>
                                     <sw-entity-multi-select
                                             v-if="baseCategories"
                                             v-model="baseCategories"

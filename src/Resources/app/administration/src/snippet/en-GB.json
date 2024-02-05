@@ -33,24 +33,25 @@
           "contextMenuDelete": "Delete",
           "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
           "buttonCancel": "Cancel",
-          "buttonDelete": "Delete"
+          "buttonDelete": "Delete",
+          "buttonAdd": "Add"
         },
         "ruler": {
           "inheritance": "Inherited from all-saleschannel settings",
           "tabs": {
             "permissions": "Permissions",
             "available": {
-              "header": "Available filters"
+              "header": "Available"
             },
             "allowed": {
-              "header": "Allowed filters",
+              "header": "Allowed",
               "permissions": {
                 "allowAll": "Allow all",
                 "allowOnlySelected": "Allow only selected"
               }
             },
             "blocked": {
-              "header": "Blocked filters",
+              "header": "Blocked",
               "permissions": {
                 "blockAll": "Exclude all",
                 "blockOnlySelected": "Exclude only selected"
@@ -89,24 +90,25 @@
           "contextMenuDelete": "Delete",
           "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
           "buttonCancel": "Cancel",
-          "buttonDelete": "Delete"
+          "buttonDelete": "Delete",
+          "buttonAdd": "Add"
         },
         "ruler": {
           "inheritance": "Inherited from all-saleschannel settings",
           "tabs": {
             "permissions": "Permissions",
             "available": {
-              "header": "Available filters"
+              "header": "Available"
             },
             "allowed": {
-              "header": "Allowed filters",
+              "header": "Allowed",
               "permissions": {
                 "allowAll": "Allow all",
                 "allowOnlySelected": "Allow only selected"
               }
             },
             "blocked": {
-              "header": "Blocked filters",
+              "header": "Blocked",
               "permissions": {
                 "blockAll": "Exclude all",
                 "blockOnlySelected": "Exclude only selected"

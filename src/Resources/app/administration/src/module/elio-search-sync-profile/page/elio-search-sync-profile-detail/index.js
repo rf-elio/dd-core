@@ -137,8 +137,8 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             this.languageRepository.search(new Criteria, Shopware.Context.api).then((languages) => {
                 languages.forEach((language) => {
                     that.languageIdsList.push({
-                        id: language.id,
-                        name: language.name
+                        value: language.id,
+                        label: language.name
                     });
                 });
             });
@@ -210,9 +210,9 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 Object.entries(response.profiles).forEach(([key, data]) => {
                     this.profiles.push({
                         id: key,
-                        type: data['type'],
                         name: data['name'],
-                        dataTypes: data['dataTypes']
+                        dataTypes: data['dataTypes'],
+                        features: data['features']
                     })
                 });
 
@@ -229,9 +229,18 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 dataTypes.push({id: dataType, name: dataType});
             });
 
+            console.log(profile)
             this.type = profile.type;
             this.dataTypes = dataTypes;
             this.features = profile.features;
+            console.log(this.features)
+        },
+
+        onChangeLanguages(languages) {
+            console.log(this.features);
+            if (!this.features.multiLanguageSupport && languages.length > 1) {
+                throw new Error('Multiple languages are not supported for this prodile');
+            }
         },
 
         /**

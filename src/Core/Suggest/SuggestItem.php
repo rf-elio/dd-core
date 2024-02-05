@@ -49,14 +49,14 @@ class SuggestItem
      */
     private string $id;
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $name;
+    protected ?string $name = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $type;
+    protected ?string $type = null;
 
     /**
      * @var array
@@ -66,12 +66,12 @@ class SuggestItem
     /**
      * @var string
      */
-    protected string $imgUrl;
+    protected ?string $imgUrl = null;
 
     /**
      * @var float
      */
-    protected float $score;
+    protected float $score = 0;
 
     /**
      * @var bool
@@ -92,9 +92,9 @@ class SuggestItem
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -108,9 +108,9 @@ class SuggestItem
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -175,9 +175,9 @@ class SuggestItem
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getImgUrl(): string
+    public function getImgUrl(): ?string
     {
         return $this->imgUrl;
     }

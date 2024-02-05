@@ -100,24 +100,28 @@ class SuggestController extends SearchController
             return parent::suggest($context, $request);
         }
 
-        $suggestRequest = new SuggestRequest('');
-        $searchTerm = $request->get('search') ?? '*';
-        $suggestRequest->setQuery($searchTerm);
-        $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
+        try {
+            $suggestRequest = new SuggestRequest('');
+            $searchTerm = $request->get('search') ?? '*';
+            $suggestRequest->setQuery($searchTerm);
+            $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
 
-        /** @var SuggestionResponse|null $suggestionResponse */
-        $suggestionResponse = $resultCollection->get(SuggestionResponse::class);
+            /** @var SuggestionResponse|null $suggestionResponse */
+            $suggestionResponse = $resultCollection->get(SuggestionResponse::class);
 
-        if (!$suggestionResponse) {
+            if (!$suggestionResponse) {
+                return parent::suggest($context, $request);
+            }
+
+            return $this->renderStorefront(
+                '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
+                [
+                    'response' => $suggestionResponse,
+                    'searchTerm' => $searchTerm
+                ]
+            );
+        } catch (Throwable $e) {
             return parent::suggest($context, $request);
         }
-
-        return $this->renderStorefront(
-            '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
-            [
-                'response' => $suggestionResponse,
-                'searchTerm' => $searchTerm
-            ]
-        );
     }
 }
