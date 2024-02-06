@@ -1,0 +1,17 @@
+{% sw_extends '@Storefront/storefront/element/cms-element-sidebar-filter.html.twig' %}
+
+{% block element_sidebar_filter %}
+    {# Use values from cms data if context is a cmsPage, otherwise `listing` and `sidebar` must be set manually #}
+    {% if cmsPage is defined %}
+        {% set config = element.fieldConfig.elements %}
+        {% set slot = cmsPage.getFirstElementOfType('product-listing') %}
+        {% set listing = slot.data.listing %}
+        {% set sidebar = block.sectionPosition == 'sidebar' %}
+    {% endif %}
+
+    {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
+        label: 'above product listing', container: listing
+    } %}
+
+    {{ parent() }}
+{% endblock %}

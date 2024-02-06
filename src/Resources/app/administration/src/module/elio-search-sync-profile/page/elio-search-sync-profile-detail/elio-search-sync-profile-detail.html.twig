@@ -114,16 +114,28 @@
                                             type="select"
                                             required
                                             :options="salesChannelIdsList"
-                                            :label="$tc('elio-search-sync-profile.detail.labelSalesChannel')">
+                                            :label="$tc('elio-search-sync-profile.detail.labelSalesChannel')"
+                                            @change="onSalesChannelChange">
                                     </sw-field>
-                                    <sw-multi-select
+                                    <sw-entity-multi-select
+                                            v-if="features.multiLanguageSupport"
                                             v-model="elio_search_sync_profile.languages"
                                             required
-                                            :options="languageIdsList"
+                                            :criteria="languageCriteria"
+                                            entity-name="language"
                                             :label="$tc('elio-search-sync-profile.detail.labelLanguages')"
-                                            @change="onChangeLanguages"
                                     >
-                                    </sw-multi-select>
+                                    </sw-entity-multi-select>
+                                    <sw-entity-single-select
+                                            v-else
+                                            v-model="languageId"
+                                            required
+                                            :criteria="languageCriteria"
+                                            entity="language"
+                                            :label="$tc('elio-search-sync-profile.detail.labelLanguage')"
+                                            @change="onChangeLanguage"
+                                    >
+                                    </sw-entity-single-select>
                                     <sw-entity-multi-select
                                             v-if="baseCategories"
                                             v-model="baseCategories"

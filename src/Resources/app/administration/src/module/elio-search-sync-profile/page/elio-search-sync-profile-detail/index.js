@@ -2,7 +2,7 @@ import template from './elio-search-sync-profile-detail.html.twig';
 import './elio-search-sync-profile-detail.scss';
 
 const {Mixin} = Shopware;
-const {Criteria} = Shopware.Data;
+const {Criteria, EntityCollection} = Shopware.Data;
 
 Shopware.Component.register('elio-search-sync-profile-detail', {
     template: template,
@@ -70,7 +70,9 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             updateInterval: 3000,
             baseCategories: null,
             newLanguageId: null,
-            currentLanguageId: null
+            currentLanguageId: null,
+            languageId: null,
+            languageCriteria: new Criteria
         };
     },
 
@@ -134,14 +136,6 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                     });
                 });
             });
-            this.languageRepository.search(new Criteria, Shopware.Context.api).then((languages) => {
-                languages.forEach((language) => {
-                    that.languageIdsList.push({
-                        value: language.id,
-                        label: language.name
-                    });
-                });
-            });
 
             this.baseCategories = new Shopware.Data.EntityCollection('collection', 'collection', {}, null, []);
         },
@@ -169,6 +163,11 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
 
                 const criteria = new Criteria();
                 criteria.setIds(currenExport.baseCategoryIds);
+                that.prepareLanguageCriteria(currenExport.salesChannelId);
+
+                if (that.elio_search_sync_profile.languages.first()) {
+                    that.languageId = that.elio_search_sync_profile.languages.first().id
+                }
 
                 if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
                     const criteria = new Criteria();
@@ -229,18 +228,22 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
                 dataTypes.push({id: dataType, name: dataType});
             });
 
-            console.log(profile)
             this.type = profile.type;
             this.dataTypes = dataTypes;
             this.features = profile.features;
-            console.log(this.features)
         },
 
-        onChangeLanguages(languages) {
-            console.log(this.features);
-            if (!this.features.multiLanguageSupport && languages.length > 1) {
-                throw new Error('Multiple languages are not supported for this prodile');
-            }
+        async onChangeLanguage(languageId) {
+            const language = await this.languageRepository.get(languageId, Shopware.Context.api);
+            const languageCollectionn = new EntityCollection(this.elio_search_sync_profile.languages.source, 'language', Shopware.Context.api);
+            languageCollectionn.add(language);
+            this.elio_search_sync_profile.languages = languageCollectionn;
+        },
+
+        onSalesChannelChange(salesChannelId) {
+            this.elio_search_sync_profile.languages = new EntityCollection(this.elio_search_sync_profile.languages.source, 'language', Shopware.Context.api);
+            this.languageId = null;
+            this.prepareLanguageCriteria(salesChannelId);
         },
 
         /**
@@ -272,6 +275,16 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             this.isLoading = true;
             const that = this;
             this._prepareMappingForSaving();
+
+            if (this.elio_search_sync_profile.languages.length === 0) {
+                this.createNotificationError({
+                    message: this.$tc('elio-search-sync-profile.detail.messageSaveError', 0, {
+                        error: 'Please select at least one language'
+                    })
+                });
+                this.isLoading = false;
+                return;
+            }
 
             return this.syncProfileRepository.save(this.elio_search_sync_profile).then(() => {
                 that._loadEntityData();
@@ -408,7 +421,6 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
 
             this.isGenerating = true;
             this.elioSearchSyncProfile.generate(this.exportId).then((responce) => {
-                console.log(responce);
                 that.elio_search_sync_profile.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
                 that.createNotificationError({
@@ -425,6 +437,16 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
          */
         formatDate(dateToFormat) {
             return dateToFormat;
+        },
+
+        prepareLanguageCriteria(salesChannelId = null) {
+            const criteria = new Criteria(1, 25);
+
+            if (salesChannelId) {
+                criteria.addFilter(Criteria.equals('salesChannels.id', salesChannelId));
+            }
+
+            this.languageCriteria = criteria;
         }
     }
 });
