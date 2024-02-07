@@ -197,6 +197,42 @@ class FilterSyncService
     }
 
     /**
+     * Create filters with provided filterNames if they are not existed
+     *
+     * @param array $filterNames
+     * @param Context $context
+     * @return void
+     */
+    public function createNotExistedFilters(array $filterNames, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('technicalName', $filterNames));
+
+        /** @var FilterCollection $existedFilters */
+        $existedFilters = $this->filterRepository->search($criteria, $context)->getEntities();
+        foreach ($existedFilters as $existedFilter) {
+            unset($filterNames[array_search($existedFilter->getTechnicalName(), $filterNames)]);
+        }
+
+        $createdFilters = [];
+        foreach ($filterNames as $filterName) {
+            $filterNameParts = explode('.', $filterName);
+
+            $createdFilters[] = [
+                'id' => Uuid::randomHex(),
+                'propertyName' => ucfirst(end($filterNameParts)),
+                'technicalName' => $filterName,
+                'type' => FilterEntity::FILTER_TYPE_FILTER,
+                'isCustom' => true
+            ];
+        }
+
+        foreach (array_chunk($createdFilters, 100) as $chunk) {
+            $this->filterRepository->create($chunk, $context);
+        }
+    }
+
+    /**
      * Update filter info in database with provided propertyName and propertyTranslations
      * @param FilterEntity $filterEntity
      * @param string $propertyName
