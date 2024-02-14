@@ -8,6 +8,9 @@
                             <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
                         </ul>
                     {% else %}
+                        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
+                            label: 'above product listing', container: resultCollection
+                        } %}
                         {% for group in response.visibleGroups %}
                             <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
                                 <div class="elio-suggest-block-header">

@@ -33,6 +33,7 @@
 namespace Elio\ElioSearch\Storefront\Controller;
 
 use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
+use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
 use Elio\ElioSearch\Api\Search\SuggestApi;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
@@ -113,14 +114,22 @@ class SuggestController extends SearchController
                 return parent::suggest($context, $request);
             }
 
+            // feedback text campaigns
+            /** @var CampaignFeedbackResponseCollection|null $campaignFeedbackResponseCollection */
+            $campaignFeedbackResponseCollection = $resultCollection->get(CampaignFeedbackResponseCollection::KEY);
+            if ($campaignFeedbackResponseCollection) {
+                $resultCollection->addExtension(CampaignFeedbackResponseCollection::KEY, $campaignFeedbackResponseCollection);
+            }
+
             return $this->renderStorefront(
                 '@Storefront/storefront/page/elio-suggest/search-suggest.html.twig',
                 [
                     'response' => $suggestionResponse,
+                    'resultCollection' => $resultCollection,
                     'searchTerm' => $searchTerm
                 ]
             );
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return parent::suggest($context, $request);
         }
     }

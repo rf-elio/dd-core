@@ -36,6 +36,7 @@ use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Framework\Context;
@@ -205,14 +206,18 @@ class FilterSyncService
      */
     public function createNotExistedFilters(array $filterNames, Context $context): void
     {
+        $filterNames = array_unique($filterNames);
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('technicalName', $filterNames));
 
         /** @var FilterCollection $existedFilters */
         $existedFilters = $this->filterRepository->search($criteria, $context)->getEntities();
+
+        $filterNames = array_flip($filterNames);
         foreach ($existedFilters as $existedFilter) {
-            unset($filterNames[array_search($existedFilter->getTechnicalName(), $filterNames)]);
+            unset($filterNames[$existedFilter->getTechnicalName()]);
         }
+        $filterNames = array_flip($filterNames);
 
         $createdFilters = [];
         foreach ($filterNames as $filterName) {
@@ -223,7 +228,12 @@ class FilterSyncService
                 'propertyName' => ucfirst(end($filterNameParts)),
                 'technicalName' => $filterName,
                 'type' => FilterEntity::FILTER_TYPE_FILTER,
-                'isCustom' => true
+                'isCustom' => true,
+                'translations' => [
+                    Defaults::LANGUAGE_SYSTEM => [
+                        'propertyName' => ucfirst(end($filterNameParts))
+                    ]
+                ]
             ];
         }
 
