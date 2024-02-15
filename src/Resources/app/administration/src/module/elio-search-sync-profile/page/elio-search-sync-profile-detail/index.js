@@ -225,7 +225,7 @@ Shopware.Component.register('elio-search-sync-profile-detail', {
             const profile = this.profiles.find((profile) => profile.id = key);
 
             profile.dataTypes.forEach((dataType) => {
-                dataTypes.push({id: dataType, name: dataType});
+                dataTypes.push({id: dataType, name: dataType.split('\\').pop()});
             });
 
             this.type = profile.type;
