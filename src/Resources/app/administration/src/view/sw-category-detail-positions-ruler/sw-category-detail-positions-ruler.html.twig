@@ -1,0 +1,17 @@
+{% block elio_search_sort_positions_category_page %}
+    <div class="sw-category-detail-base">
+        <div class="elio-search-sort-positions-sales-channel-picker elio-search-sort-positions-sales-channel-picker--category">
+            <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                     @change-sales-channel-id="onSalesChannelChanged">
+            </sw-sales-channel-switch>
+        </div>
+
+        <sw-card :title="$tc('elio-search.sort-positions.tabs.global')"
+                 :isLoading="isLoading">
+            <elio-search-sort-positions-ruler :isCategory="true"
+                                                   :categoryId="category.id"
+                                                   :layer="type"
+                                                   ref="ruler"></elio-search-sort-positions-ruler>
+        </sw-card>
+    </div>
+{% endblock %}

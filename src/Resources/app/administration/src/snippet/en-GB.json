@@ -117,6 +117,26 @@
           }
         }
       }
+    },
+    "sort-positions": {
+      "title": "Sorting Positions",
+      "description": "",
+      "base": {
+        "addProducts": "Add products",
+        "position": "Position",
+        "refreshIndex": "Refresh Index"
+      },
+      "info": {
+        "help": {
+          "add-products": "The \"Add products\" button adds products of this category into the sorting table below.",
+          "refresh-index": "The \"Refresh Index\" button recalculates the sorting positions for the parent category. Changes to sorting positions have to be saved first."
+        },
+        "tree": "This table can not be edited. It displays computed sorting positions of all products in its child categories."
+      },
+      "tabs": {
+        "category": "Position Sorting",
+        "global": "Products"
+      }
     }
   }
 }

@@ -38,6 +38,6 @@ class ProductSortingCollection extends EntityCollection
 {
     protected function getExpectedClass(): string
     {
-        return ProductSortingTreeEntity::class;
+        return ProductSortingEntity::class;
     }
 }

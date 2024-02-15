@@ -117,6 +117,26 @@
           }
         }
       }
+    },
+    "sort-positions": {
+      "title": "Sortierpositionen",
+      "description": "",
+      "base": {
+        "addProducts": "Produkte hinzufügen",
+        "position": "Position",
+        "refreshIndex": "Refresh Index"
+      },
+      "info": {
+        "help": {
+          "add-products": "Der \"Produkte hinzufügen\" Button erlaubt das Hinzufügen von Produkten der Kategorie in die Sortiertabelle.",
+          "refresh-index": "Der \"Refresh Index\" Button berechnet die Sortierpositionen der Produkte für die Eltern-Kategorie neu. Änderungen an den Sortier-Positionen müssen jedoch erst gespeichert werden."
+        },
+        "tree": "Diese Tabelle kann nicht editiert werden. Hier werden die berechneten Sortierpositionen aller Produkte in den Unterkategorien ausgegeben."
+      },
+      "tabs": {
+        "category": "Position-Sortierung",
+        "global": "Produkte"
+      }
     }
   }
 }
