@@ -42,6 +42,9 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
     },
 
     computed: {
+        categoryRepository() {
+            return this.repositoryFactory.create('category');
+        },
         productSortingRepository() {
             return this.repositoryFactory.create('elio_search_product_sorting');
         },
@@ -71,12 +74,14 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
         return {
             isLoading: false,
             isModified: false,
+            category: null,
             products: null,
             productsTree: null,
         }
     },
 
     created() {
+        this.loadCategory();
         this.loadProducts();
         this.loadProductsTree();
     },
@@ -101,6 +106,13 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
             initContainer.httpClient.get(endpoint, { headers });
 
             location.reload();
+        },
+        loadCategory() {
+            this.categoryRepository
+                .get(this.categoryId, Shopware.Context.api)
+                .then(result => {
+                    this.category = result;
+                })
         },
         loadProducts() {
             const criteria = this.productSortingCriteria();
