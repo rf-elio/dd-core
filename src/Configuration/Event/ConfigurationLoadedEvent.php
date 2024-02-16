@@ -48,19 +48,23 @@ class ConfigurationLoadedEvent extends Event
 {
     private Configuration $configuration;
     private string $salesChannelId;
+    private ?string $languageId;
 
     /**
      * ConfigurationLoadedEvent constructor.
      * @param Configuration $configuration
      * @param string $salesChannelId
+     * @param string|null $languageId
      */
     public function __construct(
         Configuration $configuration,
-        string $salesChannelId
+        string $salesChannelId,
+        ?string $languageId = null
     )
     {
         $this->configuration = $configuration;
         $this->salesChannelId = $salesChannelId;
+        $this->languageId = $languageId;
     }
 
     /**
@@ -85,5 +89,13 @@ class ConfigurationLoadedEvent extends Event
     public function setConfiguration(Configuration $configuration): void
     {
         $this->configuration = $configuration;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public function getLanguageId(): ?string
+    {
+        return $this->languageId;
     }
 }
