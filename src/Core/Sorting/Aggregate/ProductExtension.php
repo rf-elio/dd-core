@@ -32,6 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Sorting\Aggregate;
 
+use Elio\ElioSearch\Core\Sorting\ProductSortingDefinition;
 use Elio\ElioSearch\Core\Sorting\ProductSortingTreeDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
@@ -44,6 +45,11 @@ class ProductExtension extends EntityExtension
     {
         $collection->add(new OneToManyAssociationField(
             'elioSearchProductSorting',
+            ProductSortingDefinition::class,
+            'product_id'
+        ));
+        $collection->add(new OneToManyAssociationField(
+            'elioSearchProductSortingTree',
             ProductSortingTreeDefinition::class,
             'product_id'
         ));

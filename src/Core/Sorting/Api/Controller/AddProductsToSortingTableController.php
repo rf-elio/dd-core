@@ -22,7 +22,7 @@ class AddProductsToSortingTableController extends AbstractController
         $maxPosition = $this->connection->fetchOne($sql, [Uuid::fromHexToBytes($categoryId)]) ?? 0;
 
         $sql = 'INSERT INTO elio_search_product_sorting (id, product_id, product_version_id, category_id, category_version_id, position, created_at )
-                SELECT UNHEX(md5(concat(pc.product_id, pc.category_id))) AS id, pc.product_id, pc.product_version_id, pc.category_id, pc.category_version_id, ? + ROW_NUMBER() over () AS position, NOW()
+                SELECT UNHEX(MD5(CONCAT(pc.product_id, pc.category_id))) AS id, pc.product_id, pc.product_version_id, pc.category_id, pc.category_version_id, ? + ROW_NUMBER() over () AS position, NOW()
                 FROM (SELECT @row_number:=0) AS t, product_category AS pc
                 LEFT JOIN elio_search_product_sorting esps ON esps.product_id = pc.product_id AND esps.category_id = pc.category_id
                 WHERE pc.category_id = ? AND esps.id IS NULL';
