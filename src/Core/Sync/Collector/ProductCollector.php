@@ -109,8 +109,8 @@ class ProductCollector implements DataCollectorInterface
     {
         $categories = $this->loadCategories($contexts);
         $criteria = $criteria ? clone $criteria : new Criteria();
-        $this->prepareCriteria($criteria);
         $context = $contexts->getFirst();
+        $this->prepareCriteria($criteria, $context->getId());
         $config = $this->configService->getByContext($context);
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
@@ -127,7 +127,7 @@ class ProductCollector implements DataCollectorInterface
      * @param Criteria $criteria
      * @return Criteria
      */
-    protected function prepareCriteria(Criteria $criteria): Criteria
+    protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
     {
         $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
@@ -139,6 +139,9 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
         $criteria->addAssociation('elioSearchProductSorting');
+
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);

@@ -37,6 +37,7 @@ use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioSearch\ElioSearch;
 use Generator;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -114,7 +115,16 @@ class CategoryCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addAssociation('productStream');
         $criteria->addAssociation('cmsPage');
+        $criteria->addAssociation('seoUrls');
+        $criteria->addAssociation('translations');
+        $criteria->addAssociation('products');
         $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new EqualsFilter('visible', true));
+
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+        ]));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
