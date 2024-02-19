@@ -147,7 +147,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14
         );
 
-        $event = new ConfigurationLoadedEvent($configuration, $salesChannelId);
+        $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);
         $this->eventDispatcher->dispatch($event);
         $this->loadedConfigurations[$salesChannelId][$languagePrefix] = $event->getConfiguration();
         return $event->getConfiguration();
