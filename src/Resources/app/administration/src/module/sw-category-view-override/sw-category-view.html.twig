@@ -12,6 +12,12 @@
             :title="$tc('elio-search.restrictions.sorting.tabs.category')">
         {{ $tc('elio-search.restrictions.sorting.tabs.category') }}
     </sw-tabs-item>
+    <sw-tabs-item
+            v-show="isPage"
+            :route="{ name: 'sw.category.detail.positions.ruler', params: { id: $route.params.id } }"
+            :title="$tc('elio-search.sort-positions.tabs.category')">
+        {{ $tc('elio-search.sort-positions.tabs.category') }}
+    </sw-tabs-item>
 {% endblock %}
 
 {% block sw_category_view_content %}

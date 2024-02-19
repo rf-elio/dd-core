@@ -28,5 +28,19 @@
             <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
             <tag name="console.command"/>
         </service>
+
+        <service id="Elio\ElioSearch\Core\Sorting\Api\Controller\ProductSortingAdminController" public="true">
+            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sorting\Api\Controller\AddProductsToSortingTableController" public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>

@@ -92,6 +92,7 @@ class ProductIndexer extends BaseIndexer
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
+        $criteria->addAssociation('elioSearchProductSortingTree');
 
         $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);

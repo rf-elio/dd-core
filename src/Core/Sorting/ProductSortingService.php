@@ -83,21 +83,40 @@ class ProductSortingService
      */
     private function updateProductSortingTree(array $data, Context $context): void
     {
-        $productSortingIds = $this->productSortingTreeRepository->searchIds(new Criteria(), $context)->getIds();
-        foreach (array_chunk($productSortingIds, 500) as $chunk) {
-            $this->productSortingTreeRepository->delete(array_map(static function ($productSortingId) {
-                return ['id' => $productSortingId];
-            }, $chunk), $context);
+        $sql = 'SELECT LOWER(HEX(id)) AS id, MD5(LOWER(CONCAT(HEX(product_id), HEX(category_id), position))) AS checksum
+                FROM elio_search_product_sorting_tree';
+        $rows = $this->connection->executeQuery($sql)->fetchAllAssociative();
+
+        $existingItems = [];
+        foreach ($rows as $row) {
+            $existingItems[$row['checksum']] = $row['id'];
         }
 
         $createdData = [];
+        $requiredChecksums = [];
         foreach ($data as $item) {
-            $createdData[] = [
+            $checksum = md5($item['productId'].$item['categoryId'].$item['position']);
+            $requiredChecksums[] = $checksum;
+            if (isset($existingItems[$checksum])) {
+                continue;
+            }
+            $createdData[$checksum] = [
                 'id' => Uuid::randomHex(),
                 'productId' => $item['productId'],
                 'categoryId' => $item['categoryId'],
                 'position' => $item['position']
             ];
+        }
+
+        $notRequiredChecksums = array_diff(array_keys($existingItems), $requiredChecksums);
+        $deleteData = [];
+        foreach ($notRequiredChecksums as $notRequiredChecksum) {
+            $id = $existingItems[$notRequiredChecksum];
+            $deleteData[] = ['id' => $id];
+        }
+
+        foreach (array_chunk($deleteData, 500) as $chunk) {
+            $this->productSortingTreeRepository->delete($chunk, $context);
         }
 
         foreach (array_chunk($createdData, 500) as $chunk) {
