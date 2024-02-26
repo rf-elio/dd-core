@@ -1,7 +1,7 @@
 {
   "elio-search": {
     "global": {
-      "title": "ElioSearch",
+      "title": "Data Discovery Core",
       "description": ""
     },
     "restrictions": {
@@ -10,25 +10,25 @@
         "description": "",
         "tabs": {
           "global": "Global",
-          "search": "Search",
+          "search": "Suche",
           "navigation": "Navigation",
           "customfilters": "Optionen sortieren",
           "category": "Filter Konfiguration"
         },
         "filters": {
-          "messageSaveError": "Error while saving",
-          "buttonSave": "Save",
-          "buttonCancel": "Cancel",
+          "messageSaveError": "Speichern ist fehlgeschlagen",
+          "buttonSave": "Speichern",
+          "buttonCancel": "Abbrechen",
           "detail": {
-            "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Property Name",
-            "labelTechnicalName": "Technical Name",
+            "cardTitleGroupInfo" : "Grundlegende Informationen",
+            "labelName": "Eigenschaft",
+            "labelTechnicalName": "Technischername",
             "displayByDefault": "Display by default",
             "sortDirection": "Aufsteigende Sortierung",
-            "textHeadline": "New Property"
+            "textHeadline": "Neue Eigenschaft"
           },
-          "placeholderPropertyName": "Property Name",
-          "placeholderTechnicalName": "Technical Name"
+          "placeholderPropertyName": "Eigenschaftsname",
+          "placeholderTechnicalName": "Technischername"
         },
         "customFilters": {
           "contextMenuView": "Bearbeiten",
@@ -43,20 +43,20 @@
           "tabs": {
             "permissions": "permissions",
             "available": {
-              "header": "Available"
+              "header": "Verfügbar"
             },
             "allowed": {
-              "header": "Allowed",
+              "header": "Erlaubt",
               "permissions": {
-                "allowAll": "Allow all",
+                "allowAll": "Alle erlauben",
                 "allowOnlySelected": "Allow only selected"
               }
             },
             "blocked": {
-              "header": "Blocked",
+              "header": "Ausgeschlossen",
               "permissions": {
-                "blockAll": "Exclude all",
-                "blockOnlySelected": "Exclude only selected"
+                "blockAll": "Alle ausschließen",
+                "blockOnlySelected": "Nur Auswahl ausschließen"
               }
             }
           }
@@ -67,23 +67,23 @@
         "description": "",
         "tabs": {
           "global": "Global",
-          "search": "Search",
+          "search": "Suche",
           "navigation": "Navigation",
-          "customfilters": "Custom Filters",
-          "category": "Sorting Konfiguration"
+          "customfilters": "Eigene Filter",
+          "category": "Sortier Konfiguration"
         },
         "filters": {
-          "messageSaveError": "Error while saving",
-          "buttonSave": "Save",
-          "buttonCancel": "Cancel",
+          "messageSaveError": "Speichern fehlgeschlagen",
+          "buttonSave": "Speichern",
+          "buttonCancel": "Abbrechen",
           "detail": {
-            "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Property Name",
-            "labelTechnicalName": "Technical Name",
-            "textHeadline": "New Property"
+            "cardTitleGroupInfo" : "Grundlegende Informationen",
+            "labelName": "Eigenschaftsname",
+            "labelTechnicalName": "Technischername",
+            "textHeadline": "Neue Eigenschaft"
           },
-          "placeholderPropertyName": "Property Name",
-          "placeholderTechnicalName": "Technical Name"
+          "placeholderPropertyName": "Eigenschaftsname",
+          "placeholderTechnicalName": "Technischername"
         },
         "customFilters": {
           "contextMenuView": "Bearbeiten",
@@ -98,20 +98,20 @@
           "tabs": {
             "permissions": "permissions",
             "available": {
-              "header": "Available"
+              "header": "Verfügbar"
             },
             "allowed": {
-              "header": "Allowed",
+              "header": "Erlaubt",
               "permissions": {
-                "allowAll": "Allow all",
-                "allowOnlySelected": "Allow only selected"
+                "allowAll": "Alle erlauben",
+                "allowOnlySelected": "Nur Auswahl erlauben"
               }
             },
             "blocked": {
-              "header": "Blocked",
+              "header": "Ausgeschlossen",
               "permissions": {
-                "blockAll": "Exclude all",
-                "blockOnlySelected": "Exclude only selected"
+                "blockAll": "Alle ausschließen",
+                "blockOnlySelected": "Nur Auswahl ausschließen"
               }
             }
           }
@@ -124,7 +124,7 @@
       "base": {
         "addProducts": "Produkte hinzufügen",
         "position": "Position",
-        "refreshIndex": "Refresh Index"
+        "refreshIndex": "Index aktualisieren"
       },
       "info": {
         "help": {

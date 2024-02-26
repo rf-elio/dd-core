@@ -1,7 +1,7 @@
 {
-    "name": "elio/search",
-    "description": "Extendable Search Integration for Shopware",
-    "version": "2.0.31",
+    "name": "elio/data-discovery-core",
+    "description": "Data Discovery Core",
+    "version": "2.1.0",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -44,12 +44,12 @@
     "extra": {
         "shopware-plugin-class": "Elio\\ElioSearch\\ElioSearch",
         "label": {
-            "de-DE": "ElioSearch",
-            "en-GB": "ElioSearch"
+            "de-DE": "Data Discovery Core",
+            "en-GB": "Data Discovery Core"
         },
         "description": {
-            "de-DE": "Shopware Search Integrations-Plugin",
-            "en-GB": "Shopware Search integration plugin"
+            "de-DE": "Shopware such integrations plugin",
+            "en-GB": "Shopware search integration plugin"
         }
     },
     "autoload": {
