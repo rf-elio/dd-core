@@ -1,7 +1,7 @@
 {
     "name": "elio/data-discovery-core",
     "description": "Data Discovery Core",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "type": "shopware-platform-plugin",
     "authors": [
         {
@@ -48,7 +48,7 @@
             "en-GB": "Data Discovery Core"
         },
         "description": {
-            "de-DE": "Shopware such integrations plugin",
+            "de-DE": "Shopware such integrations Plugin",
             "en-GB": "Shopware search integration plugin"
         }
     },
@@ -60,15 +60,6 @@
     "autoload-dev": {
         "psr-4": {
             "Elio\\ElioSearch\\Tests\\": "tests/"
-        }
-    },
-    "config": {
-        "gitlab-domains": ["git.elio-systems.io"]
-    },
-    "repositories": {
-        "git.elio-systems.io/201": {
-            "type": "composer",
-            "url": "https://git.elio-systems.io/api/v4/group/201/-/packages/composer/packages.json"
         }
     }
 }
