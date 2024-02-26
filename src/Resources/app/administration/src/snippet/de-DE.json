@@ -12,7 +12,7 @@
           "global": "Global",
           "search": "Suche",
           "navigation": "Navigation",
-          "customfilters": "Optionen sortieren",
+          "customfilters": "Eigene Filter",
           "category": "Filter Konfiguration"
         },
         "filters": {
@@ -41,7 +41,7 @@
         "ruler": {
           "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
           "tabs": {
-            "permissions": "permissions",
+            "permissions": "Berechtigungen",
             "available": {
               "header": "Verfügbar"
             },
@@ -69,7 +69,7 @@
           "global": "Global",
           "search": "Suche",
           "navigation": "Navigation",
-          "customfilters": "Eigene Filter",
+          "customfilters": "Optionen sortieren",
           "category": "Sortier Konfiguration"
         },
         "filters": {

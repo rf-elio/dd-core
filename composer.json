@@ -1,7 +1,7 @@
 {
     "name": "elio/data-discovery-core",
     "description": "Data Discovery Core",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "type": "shopware-platform-plugin",
     "authors": [
         {

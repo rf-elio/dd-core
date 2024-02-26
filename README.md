@@ -1,4 +1,4 @@
-# sw6-ElioSearch
+# Data Discovery Core
 # Installation
 ## Commands
 The following commands must be configured to execute required background tasks
