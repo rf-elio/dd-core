@@ -34,15 +34,8 @@ namespace Elio\ElioSearch\Core\Sync\Input;
 
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Elio\ElioSearch\Core\Sync\FullDataCollection;
-use Elio\ElioSearch\ElioSearch;
 use Generator;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
-use Elio\ElioSearch\Core\Sync\DataTypes\Exception\UnknownContentTypeException;
 
 /**
  * Class FullInput

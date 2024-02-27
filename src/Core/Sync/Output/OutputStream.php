@@ -34,7 +34,9 @@ namespace Elio\ElioSearch\Core\Sync\Output;
 
 
 use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
+use Elio\ElioSearch\Core\Sync\FullDataCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class OutputStream
@@ -73,7 +75,7 @@ class OutputStream
         }
     }
 
-    public function write(DeltaDataCollection $dataCollection): void
+    public function write(Collection $dataCollection): void
     {
         foreach ($this->outputs as $output) {
             if ($output instanceof DeltaAwareInterface) {
@@ -86,6 +88,8 @@ class OutputStream
                 }
             } elseif ($output instanceof WriteAwareInterface) {
                 $output->write($dataCollection, $this->syncContext);
+            } else {
+                throw new \RuntimeException('Output does not support writing');
             }
         }
     }
