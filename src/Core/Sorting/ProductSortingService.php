@@ -59,6 +59,7 @@ class ProductSortingService
 {
     public function __construct(
         private readonly Connection $connection,
+        private readonly SystemConfigService $systemConfigService,
         private readonly EntityRepository $productSortingTreeRepository
     )
     {}
@@ -177,5 +178,65 @@ class ProductSortingService
         }
         $nodes = $tree->create();
         return CategoryTreeUtil::sortCategoryTree($nodes);
+    }
+
+    /**
+     * @param string $categoryId
+     * @return void
+     * @throws Exception
+     */
+    public function addProducts(string $categoryId): void
+    {
+        $sortingConfig = $this->systemConfigService->get('ElioSearch.config.sortingLocation');
+
+        if ($sortingConfig !== 'sortDisabled') {
+            $maxPosition = 0;
+
+            if ($sortingConfig === 'sortEnd') {
+                $sql = 'SELECT MAX(position) FROM elio_search_product_sorting WHERE category_id = ?';
+                $maxPosition = $this->connection->fetchOne($sql, [Uuid::fromHexToBytes($categoryId)]) ?? 0;
+            }
+
+            $sql = 'INSERT INTO elio_search_product_sorting (id, product_id, product_version_id, category_id, category_version_id, position, created_at )
+                    SELECT UNHEX(MD5(CONCAT(pc.product_id, pc.category_id))) AS id, pc.product_id, pc.product_version_id, pc.category_id, pc.category_version_id, ? + ROW_NUMBER() OVER () AS position, NOW()
+                    FROM (SELECT @row_number:=0) AS t, product_category AS pc
+                    LEFT JOIN elio_search_product_sorting esps ON esps.product_id = pc.product_id AND esps.category_id = pc.category_id
+                    WHERE pc.category_id = ? AND esps.id IS NULL';
+
+            $this->connection->executeStatement($sql, [$maxPosition, Uuid::fromHexToBytes($categoryId)]);
+
+            if ($sortingConfig === 'sortBeginning') {
+                $sql = 'CREATE TEMPORARY TABLE temp_existing_entries AS
+                        SELECT id,
+                               position,
+                               (SELECT COUNT(*) FROM elio_search_product_sorting WHERE category_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 5 SECOND)) AS new_entries_count
+                        FROM elio_search_product_sorting
+                        WHERE category_id = ?
+                        AND created_at < DATE_SUB(NOW(), INTERVAL 5 SECOND);
+                        
+                        UPDATE elio_search_product_sorting AS esps
+                        JOIN temp_existing_entries AS existing_entries ON esps.id = existing_entries.id
+                        SET esps.position = existing_entries.position + existing_entries.new_entries_count
+                        WHERE esps.category_id = ?;
+                        
+                        DROP TEMPORARY TABLE IF EXISTS temp_existing_entries';
+
+                $this->connection->executeStatement($sql, [
+                    Uuid::fromHexToBytes($categoryId),
+                    Uuid::fromHexToBytes($categoryId),
+                    Uuid::fromHexToBytes($categoryId)
+                ]);
+            }
+        }
+    }
+
+
+    public function removeProducts(): void
+    {
+        $sql = 'DELETE esps FROM elio_search_product_sorting esps
+                LEFT JOIN product_category pc ON pc.product_id = esps.product_id AND esps.category_id = pc.category_id
+                WHERE pc.product_id IS NULL';
+
+        $this->connection->executeStatement($sql);
     }
 }

@@ -142,6 +142,36 @@
         </input-field>
     </card>
     <card>
+        <title>Sorting Positions</title>
+        <title lang="de-DE">Sorting Positions</title>
+
+        <input-field type="single-select">
+            <name>sortingLocation</name>
+            <options>
+                <option>
+                    <id>sortDisabled</id>
+                    <name>Disabled</name>
+                    <name lang="de-DE">Deaktiviert</name>
+                </option>
+                <option>
+                    <id>sortBeginning</id>
+                    <name>Beginning</name>
+                    <name lang="de-DE">Beginn</name>
+                </option>
+                <option>
+                    <id>sortEnd</id>
+                    <name>End</name>
+                    <name lang="de-DE">Ende</name>
+                </option>
+            </options>
+            <defaultValue>sortDisabled</defaultValue>
+            <label>Sorting location of new products</label>
+            <label lang="de-DE">Einsortier-Position neuer Produkte</label>
+            <helpText>New products will be sorted at the beginning or the end of the table.</helpText>
+            <helpText lang="de-DE">Neue Produkte werden an den Anfang oder das Ende der Tabelle einsortiert.</helpText>
+        </input-field>
+    </card>
+    <card>
         <title>Tracking</title>
         <title lang="de-DE">Tracking</title>
 
