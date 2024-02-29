@@ -36,6 +36,12 @@
                             </template>
                         {% endblock %}
 
+                        {% block elio_search_sync_profile_list_grid_columns_dataType %}
+                            <template #column-dataType="{ item }">
+                                {{ extractDataType(item.dataType) }}
+                            </template>
+                        {% endblock %}
+
 {#                        {% block elio_search_sync_profile_list_grid_columns_language %}#}
 {#                            <template #column-languageId="{ item }">#}
 {#                                {{ item.language ? item.language.name : '-' }}#}

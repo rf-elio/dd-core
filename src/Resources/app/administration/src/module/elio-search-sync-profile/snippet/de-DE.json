@@ -70,8 +70,8 @@
         "id": "Sync ID",
         "name": "Name",
         "active": "Aktiv",
-        "type": "Typ",
-        "format": "Format",
+        "profile": "Profil",
+        "dataType": "Datentyp",
         "lastGenerationFinishedAt": "Zuletzt ausgeführt",
         "salesChannel": "Sales Channel",
         "language": "Sprache"

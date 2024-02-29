@@ -107,6 +107,10 @@ Shopware.Component.register('elio-search-sync-profile-list', {
             return dateToFormat;
         },
 
+        extractDataType(dataType) {
+            return dataType.split('\\').pop();
+        },
+
         getExportColumns() {
             return [
                 {
@@ -132,12 +136,14 @@ Shopware.Component.register('elio-search-sync-profile-list', {
                 {
                     property: 'type',
                     label: this.$tc('elio-search-sync-profile.list.columns.type'),
+                    property: 'profile',
+                    label: this.$tc('elio-search-sync-profile.list.columns.profile'),
                     allowResize: false,
                     visible: true
                 },
                 {
-                    property: 'format',
-                    label: this.$tc('elio-search-sync-profile.list.columns.format'),
+                    property: 'dataType',
+                    label: this.$tc('elio-search-sync-profile.list.columns.dataType'),
                     allowResize: false,
                     visible: true
                 },
