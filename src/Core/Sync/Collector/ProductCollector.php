@@ -109,7 +109,7 @@ class ProductCollector implements DataCollectorInterface
         $categories = $this->loadCategories($contexts);
         $criteria = $criteria ? clone $criteria : new Criteria();
         $context = $contexts->getFirst();
-        $this->prepareCriteria($criteria, $context->getId());
+        $this->prepareCriteria($criteria, $context->getSalesChannelId());
         $config = $this->configService->getByContext($context);
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {

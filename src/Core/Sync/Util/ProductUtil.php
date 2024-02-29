@@ -35,7 +35,6 @@ namespace Elio\ElioSearch\Core\Sync\Util;
 use Elio\ElioSearch\Core\Defaults;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
@@ -315,42 +314,6 @@ class ProductUtil
         return $product->getProperties()->filter(
             static fn (PropertyGroupOptionEntity $option) => $option->getGroup() !== null && !$option->getGroup()->getFilterable()
         )->getElements();
-    }
-
-    /**
-     * Adds the fields that are defined in the dynamic mapping
-     *
-     * - supports different levels and Collection::first()
-     * - examples: manufacturer.name, price.first.gross
-     * - can be extended to provide more options for mapping language
-     * @param ProductEntity $product
-     * @param array $mappings
-     * @param PropertyAccessorInterface $propertyAccessor
-     * @return array
-     */
-    public static function addMappedPropertiesToExportItem(
-        ProductEntity $product, array $mappings, PropertyAccessorInterface $propertyAccessor
-    ): array
-    {
-        $mappedData = [];
-        foreach ($mappings as $mapping) {
-            if (str_contains($mapping['source'], '.')) {
-                $parts = explode('.', $mapping['source']);
-                $previousObj = $product;
-                foreach ($parts as $part) {
-                    if ($part === 'first') {
-                        $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
-                    } elseif (is_object($previousObj) || is_array($previousObj)) {
-                        $previousObj = $propertyAccessor->getValue($previousObj, $part);
-                    }
-                }
-                $mappedData[$mapping['target']] = $previousObj;
-            } else {
-                $mappedData[$mapping['target']] = $propertyAccessor->getValue($product, $mapping['source']);
-            }
-        }
-
-        return $mappedData;
     }
 
     /**

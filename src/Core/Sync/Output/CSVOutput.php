@@ -35,6 +35,7 @@ namespace Elio\ElioSearch\Core\Sync\Output;
 use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\Collection;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
@@ -63,7 +64,8 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     private ?SyncProfileEntity $syncProfile;
 
     public function __construct(
-        private readonly FilesystemOperator $fileSystem
+        private readonly FilesystemOperator $fileSystem,
+        private readonly LoggerInterface    $logger
     )
     {
     }

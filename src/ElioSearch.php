@@ -63,6 +63,7 @@ class ElioSearch extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_parental_exclude';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_export_priority';
@@ -160,6 +161,15 @@ class ElioSearch extends Plugin
                             'en-GB' => 'Exclude in content export',
                             'de-DE' => 'Aus dem Content Export ausschließen',
                         ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Exclude in content export (from parent) automatically set',
+                            'de-DE' => 'Aus dem Content Export ausschließen (aus Eltern) automatisch festgelegt',
+                        ],
+                        'disabled' => true
                     ],
                     self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED => [
                         'type' => 'bool',

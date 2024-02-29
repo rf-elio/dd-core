@@ -227,6 +227,10 @@ class CustomFieldSetup
                 $customField['id'] = $customFieldId;
             }
 
+            if (isset($customFieldProperties['disabled'])) {
+                $customField['config']['disabled'] = $customFieldProperties['disabled'];
+            }
+
             $customFields[] = $customField;
         }
 
