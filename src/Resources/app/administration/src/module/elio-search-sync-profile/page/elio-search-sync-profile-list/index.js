@@ -134,8 +134,6 @@ Shopware.Component.register('elio-search-sync-profile-list', {
                     visible: true
                 },
                 {
-                    property: 'type',
-                    label: this.$tc('elio-search-sync-profile.list.columns.type'),
                     property: 'profile',
                     label: this.$tc('elio-search-sync-profile.list.columns.profile'),
                     allowResize: false,
