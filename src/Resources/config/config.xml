@@ -7,8 +7,8 @@
 
         <input-field type="bool">
             <name>active</name>
-            <label>ElioSearch active</label>
-            <label lang="de-DE">ElioSearch aktiv</label>
+            <label>Data Discovery active</label>
+            <label lang="de-DE">Data Discovery aktiv</label>
             <defaultValue>false</defaultValue>
         </input-field>
     </card>
@@ -18,8 +18,8 @@
 
         <input-field type="bool">
             <name>searchUseElioSearch</name>
-            <label>Replace shopware search by ElioSearch search</label>
-            <label lang="de-DE">Shopware Suche durch die ElioSearch-Suche ersetzten</label>
+            <label>Replace shopware search by Data Discovery search</label>
+            <label lang="de-DE">Shopware Suche durch die Data Discovery-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
@@ -35,8 +35,8 @@
 
         <input-field type="bool">
             <name>suggestUseElioSearch</name>
-            <label>Replace shopware suggest by ElioSearch suggest</label>
-            <label lang="de-DE">Shopware Suggest durch den ElioSearch-Suggest ersetzten</label>
+            <label>Replace shopware suggest by Data Discovery suggest</label>
+            <label lang="de-DE">Shopware Suggest durch den Data Discovery-Suggest ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -91,8 +91,8 @@
 
         <input-field type="bool">
             <name>listingUseElioSearch</name>
-            <label>Replace shopware listing by ElioSearch listing</label>
-            <label lang="de-DE">Shopware Listing durch das ElioSearch-Listing ersetzten</label>
+            <label>Replace shopware listing by Data Discovery listing</label>
+            <label lang="de-DE">Shopware Listing durch das Data Discovery-Listing ersetzten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -282,8 +282,8 @@
 
         <component name="sw-textarea-field">
             <name>additionalRequestParameters</name>
-            <label>Additional parameters for request to ElioSearch</label>
-            <label lang="de-DE">Zusatzparameter für Requests nach ElioSearch</label>
+            <label>Additional parameters for request to Data Discovery</label>
+            <label lang="de-DE">Zusatzparameter für Requests nach Data Discovery</label>
             <placeholder>name=value&amp;otherName=otherValue</placeholder>
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>

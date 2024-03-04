@@ -86,7 +86,7 @@ Shopware.Component.register('elio-search-filter-restrictions-customfilters', {
         getFiltersColumns() {
             return [{
                 property: 'technicalName',
-                label: 'Technical Name',
+                label: 'elio-search.restrictions.filter.customFilters.list.columnTechnicalName',
                 routerLink: 'elio.search.filter.restrictions.customFiltersDetail',
                 inlineEdit: 'string',
                 allowResize: false,

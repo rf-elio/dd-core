@@ -36,7 +36,10 @@
           "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{propertyName}\" wirklich löschen?",
           "buttonCancel": "Abbrechen",
           "buttonDelete": "Löschen",
-          "buttonAdd": "Hinzufügen"
+          "buttonAdd": "Hinzufügen",
+          "list": {
+            "columnTechnicalName": "Technischername"
+          }
         },
         "ruler": {
           "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
@@ -91,7 +94,10 @@
           "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{propertyName}\" wirklich löschen?",
           "buttonCancel": "Abbrechen",
           "buttonDelete": "Löschen",
-          "buttonAdd": "Hinzufügen"
+          "buttonAdd": "Hinzufügen",
+          "list": {
+            "columnTechnicalName": "Technischername"
+          }
         },
         "ruler": {
           "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",

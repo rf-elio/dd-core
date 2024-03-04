@@ -34,7 +34,10 @@
           "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
           "buttonCancel": "Cancel",
           "buttonDelete": "Delete",
-          "buttonAdd": "Add"
+          "buttonAdd": "Add",
+          "list": {
+            "columnTechnicalName": "Technical Name"
+          }
         },
         "ruler": {
           "inheritance": "Inherited from all-saleschannel settings",
@@ -91,7 +94,10 @@
           "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
           "buttonCancel": "Cancel",
           "buttonDelete": "Delete",
-          "buttonAdd": "Add"
+          "buttonAdd": "Add",
+          "list": {
+            "columnTechnicalName": "Technical Name"
+          }
         },
         "ruler": {
           "inheritance": "Inherited from all-saleschannel settings",
