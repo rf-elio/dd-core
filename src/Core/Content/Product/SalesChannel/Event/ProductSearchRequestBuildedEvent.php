@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Request;
+namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Event;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class ApiRequest
- * @package Elio\ElioSearch\Api\Request
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class ProductSearchRequestBuildedEvent
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest extends Struct
+class ProductSearchRequestBuildedEvent extends Event
 {
-    /**
-     * @return array
-     */
-    public function toArray() : array
+    public function __construct(
+        private ProductSearchRequest $productSearchRequest,
+        private readonly array $payload
+    )
     {
-        return get_object_vars($this);
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize(): array
+    public function getSearchRequest(): ProductSearchRequest
     {
-        return $this->toArray();
+        return $this->productSearchRequest;
+    }
+
+    public function getPayload(): array
+    {
+        return $this->payload;
     }
 }
