@@ -90,6 +90,7 @@ class Configuration extends Struct
     private array $productRankingOrderDeliveryStates;
     private bool $searchUseContentChannel;
     private int $entityStatusMaxCleanupAgeInDays;
+    private bool $allowStreamIdSearch;
 
     /**
      * Configuration constructor.
@@ -123,6 +124,7 @@ class Configuration extends Struct
      * @param array $productRankingOrderStates
      * @param array $productRankingOrderDeliveryStates
      * @param int $entityStatusMaxCleanupAgeInDays
+     * @param bool $allowStreamIdSearch
      */
     public function __construct(
         bool $active,
@@ -154,7 +156,8 @@ class Configuration extends Struct
         int $productRankingMaxOrderAge,
         array $productRankingOrderStates,
         array $productRankingOrderDeliveryStates,
-        int $entityStatusMaxCleanupAgeInDays
+        int $entityStatusMaxCleanupAgeInDays,
+        bool $allowStreamIdSearch
     )
     {
         $this->loggingDebugActive = $loggingDebugActive;
@@ -187,6 +190,7 @@ class Configuration extends Struct
         $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
         $this->searchUseContentChannel = $searchUseContentChannel;
         $this->entityStatusMaxCleanupAgeInDays = $entityStatusMaxCleanupAgeInDays;
+        $this->allowStreamIdSearch = $allowStreamIdSearch;
     }
 
     /**
@@ -421,5 +425,13 @@ class Configuration extends Struct
     public function getEntityStatusMaxCleanupAgeInDays(): int
     {
         return $this->entityStatusMaxCleanupAgeInDays;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllowStreamIdSearch(): bool
+    {
+        return $this->allowStreamIdSearch;
     }
 }
