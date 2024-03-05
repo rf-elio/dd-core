@@ -117,7 +117,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
                 const responseData = response.data;
                 if (responseData && responseData.message) {
                     this.createNotificationInfo({
-                        message: this.$tc('elio-search.sort-positions.info.sorting-disabled'),
+                        message: this.$tc(responseData.message),
                     });
                 }
                 this.loadProducts();
@@ -158,7 +158,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
                 });
         },
         sortDuplicatePositions(event, item) {
-            let operator = this;
+            var operator = this;
             const productIndexOld = this.products.findIndex(product => product.productId === item.productId);
 
             this.products.sort((a, b) => {
@@ -189,7 +189,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
                 }
             }
 
-            let ind = [];
+            var ind = [];
             this.products.forEach((product) => {
                 let currentPositionNumber = product.position;
                 while (ind[currentPositionNumber] === 1) {
@@ -210,11 +210,11 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
         async saveAll() {
             this.isModified = false;
             this.isLoading = true;
-            let operator = this;
-            let entities = [];
+            var operator = this;
+            var entities = [];
 
             await this.products.forEach(function (product) {
-                let entity = operator.productSortingRepository.create(Shopware.Context.api);
+                var entity = operator.productSortingRepository.create(Shopware.Context.api);
                 entity.id = product.id;
                 entity.productId = product.productId;
                 entity.categoryId = product.categoryId;

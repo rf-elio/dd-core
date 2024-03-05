@@ -2,6 +2,7 @@
 
 namespace Elio\ElioSearch\Core\Sorting\Api\Controller;
 
+use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Elio\ElioSearch\Core\Sorting\ProductSortingService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,8 +25,8 @@ class SyncProductsToSortingTableController extends AbstractController
     )]
     public function syncProducts(string $categoryId): Response
     {
-        if ($this->systemConfigService->get('ElioSearch.config.sortingLocation') === 'sortDisabled') {
-            return new JsonResponse(['message' => 'elio-search.sort-positions.base.refreshIndex'], Response::HTTP_OK);
+        if ($this->systemConfigService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX.'.sortingLocation') === 'sortDisabled') {
+            return new JsonResponse(['message' => 'elio-search.sort-positions.info.sorting-disabled'], Response::HTTP_OK);
         }
         $this->productSortingService->removeProducts();
         $this->productSortingService->addProducts($categoryId);

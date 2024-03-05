@@ -31,7 +31,7 @@ Shopware.Component.register('elio-search-sort-positions-index', {
 
     methods: {
         checkLeaving(to, from, next) {
-            let willLeave = true;
+            var willLeave = true;
             if (this.$refs.routerView !== null && this.$refs.routerView !== undefined && this.$refs.routerView.$refs.ruler) {
                 willLeave = this.$refs.routerView.$refs.ruler.onLeaving(to);
             }
