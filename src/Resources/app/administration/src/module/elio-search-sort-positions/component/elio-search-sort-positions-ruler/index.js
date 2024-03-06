@@ -2,6 +2,7 @@ import template from './elio-search-sort-positions-ruler.html.twig';
 import './elio-search-sort-positions-ruler.scss';
 
 const {Criteria} = Shopware.Data;
+const {Mixin} = Shopware;
 
 Shopware.Component.register('elio-search-sort-positions-ruler', {
     template: template,
@@ -41,6 +42,10 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
         },
     },
 
+    mixins: [
+        Mixin.getByName('notification')
+    ],
+
     computed: {
         categoryRepository() {
             return this.repositoryFactory.create('category');
@@ -57,7 +62,12 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
                     property: 'product.name',
                     label: this.$tc('sw-category.base.products.columnNameLabel'),
                     dataIndex: 'name',
-                    routerLink: 'sw.product.detail',
+                    sortable: false,
+                },
+                {
+                    property: 'product.productNumber',
+                    label: this.$tc('sw-product.list.columnProductNumber'),
+                    dataIndex: 'productNumber',
                     sortable: false,
                 },
                 {
@@ -97,15 +107,21 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
 
             return criteria;
         },
-        addProducts() {
+        syncProducts() {
             const initContainer = Shopware.Application.getContainer('init');
             const headers = {
                 Authorization: `Bearer ${Shopware.Service('loginService').getToken()}`,
             };
-            const endpoint = `add-products/${this.categoryId}`;
-            initContainer.httpClient.get(endpoint, { headers });
-
-            location.reload();
+            const endpoint = `_action/elio-search-product-sorting/${this.categoryId}/sync-products`;
+            initContainer.httpClient.get(endpoint, { headers }).then((response) => {
+                const responseData = response.data;
+                if (responseData && responseData.message) {
+                    this.createNotificationInfo({
+                        message: this.$tc(responseData.message),
+                    });
+                }
+                this.loadProducts();
+            });
         },
         loadCategory() {
             this.categoryRepository
@@ -123,6 +139,9 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
             this.productSortingRepository
                 .search(criteria, Shopware.Context.api)
                 .then(result => {
+                    result.forEach((product, index) => {
+                        product.position = index + 1;
+                    })
                     this.products = result;
                 });
         },
