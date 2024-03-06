@@ -32,7 +32,9 @@
 
 namespace Elio\ElioSearch\Core\Sync\Util;
 
+use Elio\ElioSearch\Core\Defaults;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
@@ -43,6 +45,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
+ * @author Andrei Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
 class ProductUtil
@@ -176,5 +179,161 @@ class ProductUtil
         $groupingKey = rtrim(implode('@', [$groupingKey, implode(';', $optionPairs)]), '@');
 
         return $groupingKey;
+    }
+
+    /**
+     * Fetches the main product price
+     *
+     * @param ProductEntity $product
+     * @return array|null
+     */
+    public static function getProductPrice(ProductEntity $product) : ?array
+    {
+        if ($product->getPrice() === null || !$price = $product->getPrice()->first()) {
+            return null;
+        }
+
+        $redPrice = null;
+        if (
+            $price->getListPrice() &&
+            $price->getListPrice()->getGross() &&
+            $price->getListPrice()->getGross() > $price->getGross()
+        ) {
+            $redPrice = $price->getListPrice()->getGross();
+        }
+
+        return [$price->getGross(), $redPrice];
+    }
+
+    /**
+     * Fetches the product price string with all currencies
+     *
+     * @param ProductEntity $product
+     * @param SalesChannelContext $context
+     *
+     * @return string
+     */
+    public static function getProductPrices(ProductEntity $product, SalesChannelContext $context) : string
+    {
+        [$price] = self::getProductPrice($product) ?? [null];
+        if (!$price) {
+            return '';
+        }
+
+        $prices = [];
+        foreach ($context->getSalesChannel()->getCurrencies() as $currency) {
+            $currencyPrice = $price;
+            if ($currency->getId() !== $context->getCurrency()->getId()) {
+                $currencyPrice *= $currency->getFactor();
+            }
+
+            $prices[] = sprintf(
+                '%s~~%s=%s',
+                $currency->getIsoCode(),
+                $currency->getSymbol(),
+                ValueUtil::formatPrice($currencyPrice)
+            );
+        }
+
+        return !empty($prices) ? sprintf(
+            '%s%s%s',
+            Defaults::VALUE_SEPARATOR,
+            implode(Defaults::VALUE_SEPARATOR, $prices),
+            Defaults::VALUE_SEPARATOR
+        ) : '';
+    }
+
+    /**
+     * Builds the category path for a product
+     *
+     * @param ProductEntity $product
+     * @return string
+     */
+    public static function getCategoryIds(ProductEntity $product): string
+    {
+        if(!$product->getCategories()) {
+            return '';
+        }
+
+        $productCategoryIds = [];
+        $categories = $product->getCategories()->getElements();
+
+        foreach ($categories as $category) {
+            $path = $category->getPath();
+            $ids = explode('|', $path);
+            $ids = array_filter($ids);
+            $productCategoryIds[] = implode('/', $ids);
+        }
+
+        return implode(Defaults::VALUE_SEPARATOR, $productCategoryIds);
+    }
+
+    /**
+     * Creates the product tags string
+     *
+     * @param ProductEntity $product
+     * @return array
+     */
+    public static function getProductTags(ProductEntity $product): array
+    {
+        if (!$product->getTags()) {
+            return [];
+        }
+
+        $tags = [];
+        foreach ($product->getTags() as $tag) {
+            $tags[] = $tag->getTranslation('name') ?? $tag->getName();
+        }
+
+        return $tags;
+    }
+
+    /**
+     * @param ProductEntity $product
+     * @return array<PropertyGroupOptionEntity>
+     */
+    public static function getFilterableProductProperties(ProductEntity $product): array
+    {
+        if ($product->getProperties() === null) {
+            return [];
+        }
+        return $product->getProperties()->filter(
+            static fn (PropertyGroupOptionEntity $option) => $option->getGroup() !== null && $option->getGroup()->getFilterable()
+        )->getElements();
+    }
+
+    /**
+     * @param ProductEntity $product
+     * @return array<PropertyGroupOptionEntity>
+     */
+    public static function getNonFilterableProductProperties(ProductEntity $product): array
+    {
+        if ($product->getProperties() === null) {
+            return [];
+        }
+        return $product->getProperties()->filter(
+            static fn (PropertyGroupOptionEntity $option) => $option->getGroup() !== null && !$option->getGroup()->getFilterable()
+        )->getElements();
+    }
+
+    /**
+     * Appends the product attributes
+     *
+     * @param array<PropertyGroupOptionEntity> $properties
+     * @return array
+     */
+    public static function getProductAttribute(array $properties): array
+    {
+        $attributes = [];
+        foreach ($properties as $property) {
+            $group = $property->getGroup();
+            if ($group !== null) {
+                $name = $group->getTranslation('name') ?? $group->getName();
+                $value = $property->getTranslation('name') ?? $property->getName();
+                $attributes[$name] = ValueUtil::cleanValue($value);
+            }
+        }
+
+        return $attributes;
     }
 }

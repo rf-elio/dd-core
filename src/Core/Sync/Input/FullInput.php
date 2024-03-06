@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Request;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioSearch\Core\Sync\FullDataCollection;
+use Generator;
+use Psr\Log\LoggerInterface;
 
 /**
- * Class ApiRequest
- * @package Elio\ElioSearch\Api\Request
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class FullInput
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest extends Struct
+class FullInput extends BaseInput
 {
-    /**
-     * @return array
-     */
-    public function toArray() : array
+    public const TYPE = self::class;
+
+    public function __construct(
+        private readonly iterable        $collectors,
+        private readonly LoggerInterface $logger
+    )
     {
-        return get_object_vars($this);
+        parent::__construct($collectors);
     }
 
     /**
-     * @return array
+     * Checks if writer is supported
+     *
+     * @param string $type
+     * @return bool
      */
-    public function jsonSerialize(): array
+    public function supports(string $type): bool
     {
-        return $this->toArray();
+        return self::TYPE === $type;
+    }
+
+    /**
+     * @param SyncContext $syncContext
+     * @return Generator<FullDataCollection>
+     */
+    public function read(SyncContext $syncContext): Generator
+    {
+        $syncProfile = $syncContext->getSyncProfile();
+        $contexts = $syncContext->getSalesChannelContexts();
+
+        $this->logger->info('FullInput: DataType', [
+            'type' => $syncProfile->getDataType()
+        ]);
+
+        foreach ($this->getCollectors($syncProfile->getDataType()) as $collector) {
+            foreach ($collector->collect($contexts) as $collection) {
+                yield new FullDataCollection($syncProfile->getDataType(), $collection);
+            }
+        }
     }
 }

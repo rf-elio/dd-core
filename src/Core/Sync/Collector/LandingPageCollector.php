@@ -37,12 +37,14 @@ use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioSearch\ElioSearch;
 use Generator;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -92,8 +94,8 @@ class LandingPageCollector implements DataCollectorInterface
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         $criteria = $criteria ? clone $criteria : new Criteria();
-        $this->prepareCriteria($criteria);
         $context = $contexts->getFirst();
+        $this->prepareCriteria($criteria, $context->getSalesChannelId());
         $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($landingPageIds, self::CHUNK_SIZE) as $chunk) {
             $criteria->setIds($chunk);
@@ -108,12 +110,23 @@ class LandingPageCollector implements DataCollectorInterface
      * @param Criteria $criteria
      * @return Criteria
      */
-    protected function prepareCriteria(Criteria $criteria): Criteria
+    protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
     {
         $criteria->addAssociation('salesChannels');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('cmsPage');
         $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
+
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+        ]));
+
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
+        ]));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);

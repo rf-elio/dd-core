@@ -32,7 +32,6 @@
 
 namespace Elio\ElioSearch\Api\Transform;
 
-
 use Elio\ElioSearch\Api\Request\ApiRequest;
 use Elio\ElioSearch\Api\Response\ResponseCollection;
 use Elio\ElioSearch\Api\Transform\Event\TransformResponseEvent;

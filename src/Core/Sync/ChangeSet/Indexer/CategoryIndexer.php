@@ -35,6 +35,7 @@ namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioSearch\ElioSearch;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -42,6 +43,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
@@ -78,6 +80,11 @@ class CategoryIndexer extends BaseIndexer
         $criteria->addAssociation('productStream');
         $criteria->addAssociation('cmsPage');
         $criteria->addFilter(new EqualsFilter('active', true));
+
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
+        ]));
 
         $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);

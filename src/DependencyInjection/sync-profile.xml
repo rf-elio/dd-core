@@ -72,12 +72,19 @@
         <service id="Elio\ElioSearch\Core\Sync\Output\OutputService">
             <argument type="tagged" tag="elio-search.sync.api.output" />
         </service>
+
         <service id="Elio\ElioSearch\Core\Sync\Output\SeoRouteOutput">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="router"/>
             <argument type="service" id="elio.search.core.logging.default"/>
             <tag name="elio-search.sync.api.output"/>
         </service>
+
+<!--        <service id="Elio\ElioSearch\Core\Sync\Output\CSVOutput">-->
+<!--            <argument type="service" id="shopware.filesystem.private" />-->
+<!--            <argument type="service" id="elio.search.core.logging.default"/>-->
+<!--            <tag name="elio-search.sync.api.output"/>-->
+<!--        </service>-->
 
         <!-- inputs -->
         <service id="Elio\ElioSearch\Core\Sync\Input\InputService">
@@ -86,6 +93,12 @@
 
         <service id="Elio\ElioSearch\Core\Sync\Input\DeltaInput">
             <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
+            <argument type="tagged" tag="elio-search.sync.collector" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <tag name="elio-search.sync.api.input" />
+        </service>
+
+        <service id="Elio\ElioSearch\Core\Sync\Input\FullInput">
             <argument type="tagged" tag="elio-search.sync.collector" />
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="elio-search.sync.api.input" />
@@ -123,6 +136,12 @@
             <argument type="service" id="Elio\ElioSearch\Core\Sync\SyncService" />
             <argument type="service" id="Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="elio.search.core.logging.default" />
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Elio\ElioSearch\Command\ExcludingCategoryInheritanceCommand">
+            <argument type="service" id="category.repository" />
             <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>

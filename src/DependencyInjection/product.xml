@@ -10,6 +10,7 @@
 
         <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder">
             <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
+            <argument type="service" id="event_dispatcher"/>
         </service>
         <service id="Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder">
             <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
