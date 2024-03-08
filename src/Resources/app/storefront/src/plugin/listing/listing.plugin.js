@@ -50,10 +50,12 @@ export default class ListingPluginExtension extends Plugin {
         }
 
         for (const attributeName in listingProperties.dataset) {
-            const attributeValue = listingProperties.dataset[attributeName];
-            const dataAttributeSelector = this.options.listingPropertiesSelector + '-' + attributeName;
-            for (const element of document.querySelectorAll(dataAttributeSelector)) {
-                element.innerHTML = attributeValue;
+            if (listingProperties.dataset.hasOwnProperty(attributeName)) {
+                const attributeValue = listingProperties.dataset[attributeName];
+                const dataAttributeSelector = this.options.listingPropertiesSelector + '-' + attributeName;
+                for (const element of document.querySelectorAll(dataAttributeSelector)) {
+                    element.innerHTML = attributeValue;
+                }
             }
         }
     }
