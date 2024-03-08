@@ -93,7 +93,7 @@ class ExcludingCategoryInheritanceCommand extends Command
     {
         $criteria = new Criteria();
         $categories = $this->categoryRepository->search($criteria, $context);
-        $result = CategoryUtil::buildCustomFieldInheritanceForCategories($categories, $context);
+        $result = CategoryUtil::buildCustomFieldInheritanceForCategories($categories);
 
         if (array_key_exists('customFields', $result) && !empty($result['customFields'])) {
             $dataToUpdate = [];
@@ -101,8 +101,17 @@ class ExcludingCategoryInheritanceCommand extends Command
                 /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
                 $actualCustomFields = $category->getCustomFields();
+                // If they already have the same value, we don't need to update to avoid indexer message creation
+                if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
+                    && array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)
+                    && $actualCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] === $customFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
+                ) {
+                    continue;
+                }
                 // Inherit only this field. For safety reasons, we don't inherit the whole custom fields
-                $actualCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = $customFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE];
+                if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)) {
+                    $actualCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = $customFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE];
+                }
                 $dataToUpdate[] = [
                     'id' => $categoryId,
                     'customFields' => $actualCustomFields

@@ -62,6 +62,8 @@ class CategoryUtil
      *                    not an own type configured.
      *
      * @param Node[] $nodes
+     * @param ArrayObject<mixed> $customFields
+     * @param array $inheritedCustomFields
      */
     public static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
     {
