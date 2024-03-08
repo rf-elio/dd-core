@@ -122,9 +122,7 @@ class SuggestionResponse extends Response
      */
     public function count() : int
     {
-        return array_sum(array_map(static function (SuggestGroup $group) {
-            return $group->count();
-        }, $this->getGroups()));
+        return array_sum(array_map(static fn(SuggestGroup $group) => $group->count(), $this->getGroups()));
     }
 
     /**
@@ -132,8 +130,6 @@ class SuggestionResponse extends Response
      */
     public function countVisible() : int
     {
-        return array_sum(array_map(static function (SuggestGroup $group) {
-            return $group->count();
-        }, $this->getVisibleGroups()));
+        return array_sum(array_map(static fn(SuggestGroup $group) => $group->count(), $this->getVisibleGroups()));
     }
 }

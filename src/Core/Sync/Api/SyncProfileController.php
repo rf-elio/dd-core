@@ -67,8 +67,7 @@ class SyncProfileController extends AbstractController
         private readonly iterable $profiles,
         private readonly SyncService $syncService,
         private readonly MessageBusInterface $messageBus
-    ){
-    }
+    ) {}
 
     /**
      * @Route("/api/_action/elio-search/sync-profile/profiles", name="api.action.elio-search.sync-profile.profiles", methods={"GET"})
@@ -111,7 +110,7 @@ class SyncProfileController extends AbstractController
                 'exists' => $this->exportStorageService->exists($syncProfile),
                 'path' => $this->exportStorageService->createFileName($syncProfile)
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return new JsonResponse([
                 'exists' => false,
                 'location' => ''

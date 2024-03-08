@@ -46,7 +46,4 @@ use Elio\ElioSearch\Core\Exception\ElioSearchException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchTimeoutException extends ElioSearchException
-{
-
-}
+class ElioSearchTimeoutException extends ElioSearchException {}

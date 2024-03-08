@@ -13,8 +13,6 @@ namespace Elio\ElioSearch\Core\Content\Content\SalesChannel;
  */
 class ContentGroup
 {
-    private string $type;
-    private string $label;
     /**
      * @var ContentItem[]
      */
@@ -25,13 +23,9 @@ class ContentGroup
      * @param string $label
      */
     public function __construct(
-        string $type,
-        string $label
-    )
-    {
-        $this->type = $type;
-        $this->label = $label;
-    }
+        private readonly string $type,
+        private readonly string $label
+    ) {}
 
     /**
      * @param ContentItem $contentItem

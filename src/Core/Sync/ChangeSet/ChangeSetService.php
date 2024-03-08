@@ -61,8 +61,7 @@ class ChangeSetService
         private readonly EntityRepository $entityStatusRepository,
         private readonly iterable $indexers,
         private readonly LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * Prepares change set array
@@ -131,7 +130,7 @@ class ChangeSetService
             $entityStatuses = $indexer->index($currentEntityStatusCollection, $context);
             $this->persistEntityStatusCollection($entityStatuses, $context);
             $this->logger->info('Changeset: Indexing', [
-                'indexer' => get_class($indexer),
+                'indexer' => $indexer::class,
                 'changes' => $entityStatuses->count()
             ]);
         }

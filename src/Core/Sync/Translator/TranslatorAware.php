@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync\Translator;
 
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

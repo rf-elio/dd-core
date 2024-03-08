@@ -34,7 +34,6 @@ namespace Elio\ElioSearch\Core\Sync;
 
 
 use ArrayIterator;
-use Iterator;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

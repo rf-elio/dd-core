@@ -65,8 +65,7 @@ class SyncService
         private readonly OutputService $outputService,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * Syncs data for profile
@@ -125,7 +124,7 @@ class SyncService
                 'dataTypes' => $profileDefinition->getDataTypes(),
             ],
             'currentProfile' => [
-                'input' => get_class($input),
+                'input' => $input::class,
                 'dataType' => $syncProfile->getDataType(),
             ]
         ]);

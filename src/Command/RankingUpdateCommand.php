@@ -50,16 +50,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RankingUpdateCommand extends Command
 {
-    private ProductRankingUpdateService $productRankingUpdateService;
-
     /**
      * RankingUpdateCommand constructor.
      * @param ProductRankingUpdateService $productRankingUpdateService
      */
-    public function __construct(ProductRankingUpdateService $productRankingUpdateService)
+    public function __construct(
+        private readonly ProductRankingUpdateService $productRankingUpdateService
+    )
     {
         parent::__construct();
-        $this->productRankingUpdateService = $productRankingUpdateService;
     }
 
     protected function configure(): void

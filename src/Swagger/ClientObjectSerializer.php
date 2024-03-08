@@ -208,21 +208,12 @@ class ClientObjectSerializer
             // need to fix the result of multidimensional arrays.
             return preg_replace('/%5B[0-9]+%5D=/', '=', http_build_query($collection, '', '&'));
         }
-        switch ($collectionFormat) {
-            case 'pipes':
-                return implode('|', $collection);
-
-            case 'tsv':
-                return implode("\t", $collection);
-
-            case 'ssv':
-                return implode(' ', $collection);
-
-            case 'csv':
-                // Deliberate fall through. CSV is default format.
-            default:
-                return implode(',', $collection);
-        }
+        return match ($collectionFormat) {
+            'pipes' => implode('|', $collection),
+            'tsv' => implode("\t", $collection),
+            'ssv' => implode(' ', $collection),
+            default => implode(',', $collection),
+        };
     }
 
     /**
@@ -239,7 +230,7 @@ class ClientObjectSerializer
     {
         if (null === $data) {
             return null;
-        } elseif (substr($class, 0, 4) === 'map[') { // for associative array e.g. map[string,int]
+        } elseif (str_starts_with($class, 'map[')) { // for associative array e.g. map[string,int]
             $inner = substr($class, 4, -1);
             $deserialized = [];
             if (strrpos($inner, ",") !== false) {
@@ -281,7 +272,7 @@ class ClientObjectSerializer
             // determine file name
             if (array_key_exists('Content-Disposition', $httpHeaders) &&
                 preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = ClientObjectSerializer . phpConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
+                $filename = \CLIENTOBJECTSERIALIZER . phpConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
             } else {
                 $filename = tempnam(Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
             }

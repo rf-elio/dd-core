@@ -55,25 +55,16 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class ProductRankingUpdateService
 {
-    private ElioSearchConfigServiceInterface $elioSearchConfigService;
-    private EntityRepository $salesChannelRepository;
-    private Connection $connection;
-
     /**
      * @param ElioSearchConfigServiceInterface $elioSearchConfigService
      * @param EntityRepository $salesChannelRepository
      * @param Connection $connection
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $elioSearchConfigService,
-        EntityRepository $salesChannelRepository,
-        Connection $connection
-    )
-    {
-        $this->elioSearchConfigService = $elioSearchConfigService;
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->connection = $connection;
-    }
+        private readonly ElioSearchConfigServiceInterface $elioSearchConfigService,
+        private readonly EntityRepository $salesChannelRepository,
+        private readonly Connection $connection
+    ) {}
 
     /**
      * Updates the product ranking values
@@ -140,7 +131,7 @@ class ProductRankingUpdateService
 
         // order states
         $allowedOrderStates = $config->getProductRankingOrderStates();
-        $allowedOrderStates = array_map([Uuid::class, 'fromHexToBytes'], $allowedOrderStates);
+        $allowedOrderStates = array_map(Uuid::fromHexToBytes(...), $allowedOrderStates);
         if (!empty($allowedOrderStates)) {
             $additionalConditions[] = 'o.state_id IN (:orderStates)';
             $parameters['orderStates'] = $allowedOrderStates;
@@ -149,7 +140,7 @@ class ProductRankingUpdateService
 
         // delivery states
         $allowedOrderDeliveryStates = $config->getProductRankingOrderDeliveryStates();
-        $allowedOrderDeliveryStates = array_map([Uuid::class, 'fromHexToBytes'], $allowedOrderDeliveryStates);
+        $allowedOrderDeliveryStates = array_map(Uuid::fromHexToBytes(...), $allowedOrderDeliveryStates);
 
         if (!empty($allowedOrderDeliveryStates)) {
             $additionalConditions[] = '(SELECT od.state_id FROM order_delivery od WHERE od.order_id = o.id AND od.order_version_id = o.version_id ORDER BY od.created_at LIMIT 1) IN (:allowedOrderDeliveryState)';

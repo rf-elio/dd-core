@@ -47,8 +47,7 @@ abstract class BaseInput implements InputInterface
 {
     public function __construct(
         private readonly iterable $collectors
-    ) {
-    }
+    ) {}
 
     /**
      * Gets profile collectors

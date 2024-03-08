@@ -154,8 +154,8 @@ class ValueUtil
     {
         $mappedData = [];
         foreach ($mappings as $mapping) {
-            if (str_contains($mapping['source'], '.')) {
-                $parts = explode('.', $mapping['source']);
+            if (str_contains((string) $mapping['source'], '.')) {
+                $parts = explode('.', (string) $mapping['source']);
                 $previousObj = $entity;
                 foreach ($parts as $part) {
                     if ($part === 'first') {

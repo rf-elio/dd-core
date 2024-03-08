@@ -36,7 +36,6 @@ namespace Elio\ElioSearch\Core\Consent;
 use Elio\ElioSearch\Configuration\Configuration;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -49,16 +48,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ConsentService implements TrackingAllowedCheckerInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-
     /**
      * ConsentService constructor.
      * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(ElioSearchConfigServiceInterface $configService)
-    {
-        $this->configService = $configService;
-    }
+    public function __construct(
+        private readonly ElioSearchConfigServiceInterface $configService
+    ) {}
 
     /**
      * Checks if the tracking is allowed

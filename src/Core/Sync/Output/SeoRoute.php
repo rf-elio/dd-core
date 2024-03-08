@@ -13,11 +13,8 @@ use Shopware\Core\Framework\Struct\Struct;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SeoRoute extends Struct
+class SeoRoute extends Struct implements \Stringable
 {
-    private string $routeName;
-    private string $id;
-    private array $parameters;
     private ?string $url = null;
 
     /**
@@ -26,15 +23,10 @@ class SeoRoute extends Struct
      * @param array $parameters
      */
     public function __construct(
-        string $routeName,
-        string $id,
-        array $parameters
-    )
-    {
-        $this->id = $id;
-        $this->routeName = $routeName;
-        $this->parameters = $parameters;
-    }
+        private readonly string $routeName,
+        private readonly string $id,
+        private readonly array $parameters
+    ) {}
 
     /**
      * @return string
@@ -86,7 +78,7 @@ class SeoRoute extends Struct
         $this->url = $url;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->url ?? '';
     }

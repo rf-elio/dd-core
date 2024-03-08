@@ -45,15 +45,12 @@ class Consent extends Struct
 {
     public const EXTENSION_KEY = 'elio_search_consent';
 
-    private bool $trackingAllowed;
-
     /**
      * @param bool $trackingAllowed
      */
-    public function __construct(bool $trackingAllowed)
-    {
-        $this->trackingAllowed = $trackingAllowed;
-    }
+    public function __construct(
+        private bool $trackingAllowed
+    ) {}
 
     /**
      * @return bool

@@ -44,7 +44,6 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,9 +60,9 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
 {
     public const ELIO_SEARCH_LISTING_MODE_PARAMETER = 'elio_search_listing_mode';
 
-    public function __construct(private readonly EventDispatcherInterface $eventDispatcher)
-    {
-    }
+    public function __construct(
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {}
 
     /**
      * Transforms the ProductListingResponse to an shopware ProductListingResult

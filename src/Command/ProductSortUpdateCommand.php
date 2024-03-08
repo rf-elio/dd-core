@@ -41,7 +41,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ProductSortUpdateCommand extends Command
 {
-    public function __construct(private readonly ProductSortingService $productSortingService)
+    public function __construct(
+        private readonly ProductSortingService $productSortingService
+    )
     {
         parent::__construct();
     }

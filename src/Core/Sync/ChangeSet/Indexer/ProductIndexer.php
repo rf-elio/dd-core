@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 
-use Doctrine\DBAL\Connection;
 use Elio\ElioSearch\Core\Exception\InvalidTypeException;
 use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
@@ -47,7 +46,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Struct;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class ProductIndexer

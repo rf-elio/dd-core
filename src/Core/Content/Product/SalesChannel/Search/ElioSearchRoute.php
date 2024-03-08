@@ -59,12 +59,6 @@ use Throwable;
 class ElioSearchRoute extends AbstractProductSearchRoute
 {
     use ElioSearchLogTrait;
-    private AbstractProductSearchRoute $decorated;
-    private ProductSearchRequestBuilder $productSearchRequestBuilder;
-    private ContentSearchRequestBuilder $contentSearchRequestBuilder;
-    private ElioSearchConfigServiceInterface $configService;
-    private SearchApi $searchApi;
-    private ProductListingResultTransformerInterface $productListingResultTransformer;
 
     /**
      * ElioSearchRoute constructor.
@@ -77,21 +71,15 @@ class ElioSearchRoute extends AbstractProductSearchRoute
      * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractProductSearchRoute       $decorated,
-        ProductSearchRequestBuilder      $productSearchRequestBuilder,
-        ContentSearchRequestBuilder      $contentSearchRequestBuilder,
-        ElioSearchConfigServiceInterface $configService,
-        SearchApi                        $searchApi,
-        ProductListingResultTransformerInterface  $productListingResultTransformer,
+        private AbstractProductSearchRoute       $decorated,
+        private ProductSearchRequestBuilder      $productSearchRequestBuilder,
+        private ContentSearchRequestBuilder      $contentSearchRequestBuilder,
+        private ElioSearchConfigServiceInterface $configService,
+        private SearchApi                        $searchApi,
+        private ProductListingResultTransformerInterface  $productListingResultTransformer,
         LoggerInterface                  $logger
     )
     {
-        $this->decorated = $decorated;
-        $this->productSearchRequestBuilder = $productSearchRequestBuilder;
-        $this->contentSearchRequestBuilder = $contentSearchRequestBuilder;
-        $this->configService = $configService;
-        $this->searchApi = $searchApi;
-        $this->productListingResultTransformer = $productListingResultTransformer;
         $this->logger = $logger;
     }
 

@@ -51,22 +51,15 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class BotDetectionService implements BotDetectionServiceInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private EventDispatcherInterface $eventDispatcher;
-
     /**
      * BotProtectionService constructor.
      * @param ElioSearchConfigServiceInterface $configService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        EventDispatcherInterface $eventDispatcher
-    )
-    {
-        $this->configService = $configService;
-        $this->eventDispatcher = $eventDispatcher;
-    }
+        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {}
 
     /**
      * Checks the given request for a possible blocked bot
@@ -151,7 +144,7 @@ class BotDetectionService implements BotDetectionServiceInterface
         $haystack = strtolower($haystack);
         foreach ($blockList as $value) {
             $value = strtolower($value);
-            if(strpos($haystack, $value) !== false) {
+            if(str_contains($haystack, $value)) {
                 return true;
             }
         }

@@ -45,19 +45,15 @@ use Monolog\LogRecord;
  */
 class ElioSearchFilterHandler implements HandlerInterface
 {
-    private HandlerInterface $handler;
-    private LogFilterContext $logFilterContext;
-
     /**
      * ElioSearchFilterHandler constructor.
      * @param HandlerInterface $handler
      * @param LogFilterContext $logFilterContext
      */
-    public function __construct(HandlerInterface $handler, LogFilterContext $logFilterContext)
-    {
-        $this->handler = $handler;
-        $this->logFilterContext = $logFilterContext;
-    }
+    public function __construct(
+        private readonly HandlerInterface $handler,
+        private readonly LogFilterContext $logFilterContext
+    ) {}
 
     public function isHandling(LogRecord $record): bool
     {

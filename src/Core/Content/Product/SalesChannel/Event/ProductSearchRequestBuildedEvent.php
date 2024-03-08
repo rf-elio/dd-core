@@ -46,11 +46,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ProductSearchRequestBuildedEvent extends Event
 {
     public function __construct(
-        private ProductSearchRequest $productSearchRequest,
+        private readonly ProductSearchRequest $productSearchRequest,
         private readonly array $payload
-    )
-    {
-    }
+    ) {}
 
     public function getSearchRequest(): ProductSearchRequest
     {

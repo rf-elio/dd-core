@@ -88,8 +88,6 @@ class EntityStatusCollection extends EntityCollection
 
     public function getEntityIds()
     {
-        return array_map(static function (EntityStatusEntity $entity) {
-            return $entity->getEntityId();
-        }, $this->elements);
+        return array_map(static fn(EntityStatusEntity $entity) => $entity->getEntityId(), $this->elements);
     }
 }

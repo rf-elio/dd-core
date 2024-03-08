@@ -19,15 +19,15 @@ class Node implements \JsonSerializable
     /**
      * @var string[]
      */
-    protected array $parentIDs = array();
+    protected array $parentIDs = [];
     /**
      * @var Node[]
      */
-    protected array $parentNodes = array();
+    protected array $parentNodes = [];
     /**
      * @var Node[]
      */
-    protected array $childNodes = array();
+    protected array $childNodes = [];
     /**
      * @var mixed
      */
@@ -39,7 +39,11 @@ class Node implements \JsonSerializable
      * @param mixed|null $parentID
      * @param mixed|null $value
      */
-    public function __construct(mixed $id, mixed $parentID = null, mixed $value = null)
+    public function __construct(
+        mixed $id,
+        mixed $parentID = null,
+        mixed $value = null
+    )
     {
         $this->id = $id;
         $this->value = $value;

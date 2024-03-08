@@ -11,14 +11,6 @@ namespace Elio\ElioSearch\Core\Suggest;
 class SuggestGroup
 {
     /**
-     * @var string
-     */
-    private string $type;
-    /**
-     * @var string
-     */
-    private string $label;
-    /**
      * @var SuggestItem[]
      */
     private array $items = [];
@@ -35,11 +27,10 @@ class SuggestGroup
      * @param string $type
      * @param string $label
      */
-    public function __construct(string $type, string $label)
-    {
-        $this->type = $type;
-        $this->label = $label;
-    }
+    public function __construct(
+        private readonly string $type,
+        private string $label
+    ) {}
 
     /**
      * @return bool

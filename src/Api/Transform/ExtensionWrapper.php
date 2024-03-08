@@ -47,16 +47,14 @@ use Elio\ElioSearch\Swagger\ModelInterface;
 class ExtensionWrapper extends Struct
 {
     public const KEY = 'elio-search-api';
-    private ModelInterface $model;
 
     /**
      * ExtensionWrapper constructor.
      * @param ModelInterface $model
      */
-    public function __construct(ModelInterface $model)
-    {
-        $this->model = $model;
-    }
+    public function __construct(
+        private readonly ModelInterface $model
+    ) {}
 
     /**
      * @return ModelInterface

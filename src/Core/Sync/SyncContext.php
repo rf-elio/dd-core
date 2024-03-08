@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync;
 
 
-use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**

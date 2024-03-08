@@ -33,12 +33,10 @@
 namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Elio\ElioSearch\Api\Request\ApiRequest;
-use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -55,24 +53,16 @@ use Throwable;
 class CachedFilterService implements FilterInterface
 {
 
-    private FilterInterface $decorated;
-    private TagAwareAdapterInterface $cache;
-    private ElioSearchConfigService $configService;
-
     /**
      * @param FilterInterface $decorated
      * @param TagAwareAdapterInterface $cache
      * @param ElioSearchConfigService $configService
      */
     public function __construct(
-        FilterInterface $decorated,
-        TagAwareAdapterInterface $cache,
-        ElioSearchConfigService $configService
-    ) {
-        $this->decorated = $decorated;
-        $this->cache = $cache;
-        $this->configService = $configService;
-    }
+        private readonly FilterInterface $decorated,
+        private readonly TagAwareAdapterInterface $cache,
+        private readonly ElioSearchConfigService $configService
+    ) {}
 
     /**
      * Returns a list with allowed filter names
@@ -107,7 +97,7 @@ class CachedFilterService implements FilterInterface
             if ($item->isHit() && $item->get()) {
                 return CacheCompressor::uncompress($item);
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
 
         $item->set(

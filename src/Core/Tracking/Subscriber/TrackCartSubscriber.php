@@ -62,12 +62,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class TrackCartSubscriber implements EventSubscriberInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
-    private RequestStack $requestStack;
-    private EntityRepository $productRepository;
     private array $changedQuantities = [];
     use TrackingSessionTrait;
 
@@ -81,21 +75,13 @@ class TrackCartSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher,
-        RequestStack $requestStack,
-        EntityRepository $productRepository
-    )
-    {
-        $this->configService = $configService;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->trackingAllowedChecker = $trackingAllowedChecker;
-        $this->requestStack = $requestStack;
-        $this->productRepository = $productRepository;
-    }
+        private ElioSearchConfigServiceInterface $configService,
+        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher,
+        private RequestStack $requestStack,
+        private EntityRepository $productRepository
+    ) {}
 
     /**
      * @return string[]

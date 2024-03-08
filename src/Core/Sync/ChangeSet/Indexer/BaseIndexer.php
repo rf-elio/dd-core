@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
 
 use DateTimeImmutable;
-use Doctrine\DBAL\Connection;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
 use JsonException;
@@ -58,8 +57,7 @@ abstract class BaseIndexer implements IndexerInterface
         private readonly string $dataType,
         private readonly string $entityType,
         private readonly EntityRepository $repository
-    ) {
-    }
+    ) {}
 
     /**
      * Gets criteria

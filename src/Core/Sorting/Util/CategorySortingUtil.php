@@ -35,7 +35,6 @@ namespace Elio\ElioSearch\Core\Sorting\Util;
 
 use ArrayObject;
 use Elio\ElioSearch\Core\Util\Tree\Node;
-use RuntimeException;
 
 /**
  * Class CategorySortingUtil

@@ -56,17 +56,19 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 class FilterRestrictionsSetup
 {
-    private ?EntityRepository $filterRepository;
-    private ?Connection $connection;
+    private ?EntityRepository $filterRepository = null;
+    private readonly ?Connection $connection;
 
     /**
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(
+        ContainerInterface $container
+    )
     {
         try {
             $this->filterRepository = $container->get('elio_search_filter.repository');
-        } catch (ServiceNotFoundException $e) {
+        } catch (ServiceNotFoundException) {
         }
 
         $this->connection = $container->get(Connection::class);

@@ -93,7 +93,7 @@ class ExcludingCategoryInheritanceCommand extends Command
     {
         $criteria = new Criteria();
         $categories = $this->categoryRepository->search($criteria, $context);
-        $result = CategoryUtil::buildCustomFieldInheritanceForCategories($categories, $context);
+        $result = CategoryUtil::buildCustomFieldInheritanceForCategories($categories);
 
         if (array_key_exists('customFields', $result) && !empty($result['customFields'])) {
             $dataToUpdate = [];

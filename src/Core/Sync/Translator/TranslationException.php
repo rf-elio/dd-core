@@ -34,6 +34,4 @@ namespace Elio\ElioSearch\Core\Sync\Translator;
 
 use Exception;
 
-class TranslationException extends Exception
-{
-}
+class TranslationException extends Exception {}

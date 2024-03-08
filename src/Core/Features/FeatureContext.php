@@ -43,16 +43,13 @@ namespace Elio\ElioSearch\Core\Features;
  */
 class FeatureContext
 {
-    private array $features;
-
     /**
      * FeatureContext constructor.
      * @param array $features
      */
-    public function __construct(array $features)
-    {
-        $this->features = $features;
-    }
+    public function __construct(
+        private array $features
+    ) {}
 
     /**
      * @param string $featureName

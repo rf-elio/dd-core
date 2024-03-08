@@ -48,13 +48,9 @@ class UserAgent extends Struct
 {
     public const EXTENSION_KEY = 'elioSearchTrackingAllowedCheckerUserAgent';
 
-    private string $userAgent;
-
     public function __construct(
-        string $userAgent
-    ) {
-        $this->userAgent = $userAgent;
-    }
+        private readonly string $userAgent
+    ) {}
 
     /**
      * @return string

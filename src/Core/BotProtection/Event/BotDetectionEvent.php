@@ -46,8 +46,6 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class BotDetectionEvent extends Event
 {
-    private string $salesChannelId;
-    private Request $request;
     protected bool $detected = false;
 
     /**
@@ -55,11 +53,10 @@ class BotDetectionEvent extends Event
      * @param string $salesChannelId
      * @param Request $request
      */
-    public function __construct(string $salesChannelId, Request $request)
-    {
-        $this->salesChannelId = $salesChannelId;
-        $this->request = $request;
-    }
+    public function __construct(
+        private readonly string $salesChannelId,
+        private readonly Request $request
+    ) {}
 
     /**
      * @return string

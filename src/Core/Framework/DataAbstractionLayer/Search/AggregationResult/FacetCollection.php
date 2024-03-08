@@ -50,7 +50,9 @@ class FacetCollection extends EntityResult
 {
     protected AggregationResultCollection $aggregations;
 
-    public function __construct(string $name)
+    public function __construct(
+        string $name
+    )
     {
         parent::__construct($name, new EntityCollection());
         $this->aggregations = new AggregationResultCollection();

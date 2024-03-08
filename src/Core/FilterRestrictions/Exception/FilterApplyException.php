@@ -42,7 +42,4 @@ namespace Core\FilterRestrictions\Exception;
  * @copyright Copyright (c) 2024, elio GmbH (
  * https://www.elio-systems.com)
  */
-class FilterApplyException extends \Exception
-{
-
-}
+class FilterApplyException extends \Exception {}

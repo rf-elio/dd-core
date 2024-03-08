@@ -43,11 +43,14 @@ namespace Elio\ElioSearch\Core\Exception;
  */
 class InvalidTypeException extends ElioSearchException
 {
-    public function __construct(object $is, string $should)
+    public function __construct(
+        object $is,
+        string $should
+    )
     {
         parent::__construct(
             'Invalid type given, excepted {{ should }} got {{ is }} instead.',
-            ['should' => $should, 'is' => get_class($is)]
+            ['should' => $should, 'is' => $is::class]
         );
     }
 }

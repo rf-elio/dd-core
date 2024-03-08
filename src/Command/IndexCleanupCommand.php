@@ -115,9 +115,7 @@ class IndexCleanupCommand extends Command
      */
     private function hasNotExecutedSyncProfiles(SyncProfileCollection $syncProfiles): bool
     {
-        return $syncProfiles->filter(function (SyncProfileEntity $syncProfile) {
-            return $syncProfile->getLastGenerationFinishedAt() === null;
-        })->count() > 0;
+        return $syncProfiles->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
     }
 
     /**
@@ -128,9 +126,7 @@ class IndexCleanupCommand extends Command
      */
     private function getLeastRecentlyFinishedSyncProfile(SyncProfileCollection $syncProfiles): SyncProfileEntity
     {
-        $syncProfiles->sort(function (SyncProfileEntity $syncProfile) {
-            return $syncProfile->getLastGenerationFinishedAt()?->getTimestamp();
-        });
+        $syncProfiles->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
         return $syncProfiles->first();
     }
 }

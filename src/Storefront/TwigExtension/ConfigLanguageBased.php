@@ -53,16 +53,10 @@ use Twig\TwigFunction;
 class ConfigLanguageBased extends AbstractExtension
 {
 
-    private TemplateConfigAccessor $config;
-    private EntityRepository $languageRepository;
-
     public function __construct(
-        TemplateConfigAccessor $config,
-        EntityRepository $languageRepository
-    ) {
-        $this->config = $config;
-        $this->languageRepository = $languageRepository;
-    }
+        private readonly TemplateConfigAccessor $config,
+        private readonly EntityRepository $languageRepository
+    ) {}
 
     public function getName(): string
     {
@@ -72,7 +66,7 @@ class ConfigLanguageBased extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('config_by_lang', [$this, 'configByLanguage'], ['needs_context' => true]),
+            new TwigFunction('config_by_lang', $this->configByLanguage(...), ['needs_context' => true]),
         ];
     }
 

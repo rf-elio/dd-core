@@ -15,18 +15,14 @@ use Elio\ElioSearch\Api\Response\Response;
  */
 class CampaignRedirectionResponse extends Response
 {
-    private string $name;
-    private string $targetUrl;
-
     /**
      * @param string $name
      * @param string $targetUrl
      */
-    public function __construct(string $name, string $targetUrl)
-    {
-        $this->name = $name;
-        $this->targetUrl = $targetUrl;
-    }
+    public function __construct(
+        private readonly string $name,
+        private readonly string $targetUrl
+    ) {}
 
     /**
      * @return string

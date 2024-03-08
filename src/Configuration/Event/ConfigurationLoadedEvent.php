@@ -46,10 +46,6 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class ConfigurationLoadedEvent extends Event
 {
-    private Configuration $configuration;
-    private string $salesChannelId;
-    private ?string $languageId;
-
     /**
      * ConfigurationLoadedEvent constructor.
      * @param Configuration $configuration
@@ -57,15 +53,10 @@ class ConfigurationLoadedEvent extends Event
      * @param string|null $languageId
      */
     public function __construct(
-        Configuration $configuration,
-        string $salesChannelId,
-        ?string $languageId = null
-    )
-    {
-        $this->configuration = $configuration;
-        $this->salesChannelId = $salesChannelId;
-        $this->languageId = $languageId;
-    }
+        private Configuration $configuration,
+        private readonly string $salesChannelId,
+        private readonly ?string $languageId = null
+    ) {}
 
     /**
      * @return Configuration
@@ -90,7 +81,7 @@ class ConfigurationLoadedEvent extends Event
     {
         $this->configuration = $configuration;
     }
-    
+
     /**
      * @return string|null
      */

@@ -54,7 +54,12 @@ class ElioSearchException extends RuntimeException
      * @param int $code
      * @param Throwable|null $e
      */
-    public function __construct(string $message, array $parameters = [], $code = 0, ?Throwable $e = null)
+    public function __construct(
+        string $message,
+        array $parameters = [],
+        $code = 0,
+        ?Throwable $e = null
+    )
     {
         $message = $this->parse($message, $parameters);
         parent::__construct($message, $code, $e);

@@ -100,7 +100,7 @@ class ArrayUtil
      */
     public static function arrayGroup(array $rows, string $groupColumn) : array
     {
-        $groupedArray = array();
+        $groupedArray = [];
 
         foreach ($rows as $row)
         {
@@ -108,7 +108,7 @@ class ArrayUtil
 
             if(!isset($groupedArray[$groupValue]))
             {
-                $groupedArray[$groupValue] = array();
+                $groupedArray[$groupValue] = [];
             }
 
             $groupedArray[$groupValue][] = $row;
@@ -125,7 +125,7 @@ class ArrayUtil
      */
     public static function convertToString($values) : string
     {
-        $string = array();
+        $string = [];
 
         if(is_array($values))
         {
@@ -146,7 +146,7 @@ class ArrayUtil
      */
     public static function convertStringToArray(string $string) : array
     {
-        $values = array();
+        $values = [];
 
         foreach(explode(';', $string) as $value)
         {
@@ -173,9 +173,7 @@ class ArrayUtil
      */
     public static function getArrayKeysAsString(array $array): array
     {
-        return array_map(static function ($key) {
-            return (string)$key;
-        }, array_keys($array));
+        return array_map(static fn($key) => (string)$key, array_keys($array));
     }
 
     /**

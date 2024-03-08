@@ -15,21 +15,16 @@ use Elio\ElioSearch\Api\Response\Response;
  */
 class CampaignFeedbackResponse extends Response
 {
-    private string $label;
-    private string $text;
-    private bool $html;
-
     /**
      * @param string $label
      * @param string $text
      * @param bool $html
      */
-    public function __construct(string $label, string $text, bool $html)
-    {
-        $this->label = $label;
-        $this->text = $text;
-        $this->html = $html;
-    }
+    public function __construct(
+        private readonly string $label,
+        private readonly string $text,
+        private readonly bool $html
+    ) {}
 
     /**
      * @return string

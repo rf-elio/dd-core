@@ -47,9 +47,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class SyncProfileHandler
 {
-    public function __construct(private readonly SyncService $syncService)
-    {
-    }
+    public function __construct(
+        private readonly SyncService $syncService
+    ) {}
 
     /**
      * Starts the sync

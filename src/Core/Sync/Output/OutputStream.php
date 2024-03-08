@@ -34,7 +34,6 @@ namespace Elio\ElioSearch\Core\Sync\Output;
 
 
 use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
-use Elio\ElioSearch\Core\Sync\FullDataCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 
@@ -54,8 +53,7 @@ class OutputStream
     public function __construct(
         private readonly iterable $outputs,
         private readonly SyncContext $syncContext
-    ) {
-    }
+    ) {}
 
     public function open(): void
     {

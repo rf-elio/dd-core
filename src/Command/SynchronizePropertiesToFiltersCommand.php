@@ -52,16 +52,15 @@ use Throwable;
  */
 class SynchronizePropertiesToFiltersCommand extends Command
 {
-    private FilterSyncService $filterService;
-
     /**
      * SynchronizePropertiesToFiltersCommand constructor.
-     * @param FilterSyncService $filterSyncService
+     * @param FilterSyncService $filterService
      */
-    public function __construct(FilterSyncService $filterSyncService)
+    public function __construct(
+        private readonly FilterSyncService $filterService
+    )
     {
         parent::__construct();
-        $this->filterService = $filterSyncService;
     }
 
     protected function configure(): void
@@ -105,7 +104,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
             } else {
                 $this->syncAll($context, $output, $type);
             }
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return Command::FAILURE;
         }
         $output->writeln('<info>Success</info>');

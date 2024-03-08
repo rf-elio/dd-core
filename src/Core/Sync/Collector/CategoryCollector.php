@@ -67,8 +67,7 @@ class CategoryCollector implements DataCollectorInterface
     public function __construct(
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher
-    ) {
-    }
+    ) {}
 
     /**
      * Checks if collector is supported

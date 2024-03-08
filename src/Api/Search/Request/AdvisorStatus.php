@@ -11,18 +11,14 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class AdvisorStatus extends Struct
 {
-    private string $answerPath;
-    private string $campaignId;
-
     /**
      * @param string $answerPath
      * @param string $campaignId
      */
-    public function __construct(string $answerPath, string $campaignId)
-    {
-        $this->answerPath = $answerPath;
-        $this->campaignId = $campaignId;
-    }
+    public function __construct(
+        private readonly string $answerPath,
+        private readonly string $campaignId
+    ) {}
 
     /**
      * @return string

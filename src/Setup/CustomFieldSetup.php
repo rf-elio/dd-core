@@ -56,19 +56,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CustomFieldSetup
 {
     /**
-     * @var ContainerInterface
-     */
-    private ContainerInterface $container;
-
-    /**
      * CustomFieldSetup constructor.
      *
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
+    public function __construct(
+        private readonly ContainerInterface $container
+    ) {}
 
     /**
      * Creates all required custom fields

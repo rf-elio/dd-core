@@ -48,8 +48,7 @@ class CriteriaPreparedEvent extends Event
     public function __construct(
         private readonly string $type,
         private Criteria $criteria
-    ) {
-    }
+    ) {}
 
     /**
      * @return string

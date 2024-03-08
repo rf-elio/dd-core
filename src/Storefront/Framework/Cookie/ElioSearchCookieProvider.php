@@ -47,8 +47,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class ElioSearchCookieProvider implements CookieProviderInterface
 {
-    private CookieProviderInterface $cookieProvider;
-
     private const TRACKING_COOKIE = [
         'snippet_name' => 'elioSearch.cookies.tracking.name',
         'snippet_description' => 'elioSearch.cookies.tracking.description',
@@ -56,8 +54,6 @@ class ElioSearchCookieProvider implements CookieProviderInterface
         'value'=> '1',
         'expiration' => '30'
     ];
-    private ElioSearchConfigServiceInterface $configService;
-    private RequestStack $requestStack;
 
     /**
      * ElioSearchCookieProvider constructor.
@@ -66,15 +62,10 @@ class ElioSearchCookieProvider implements CookieProviderInterface
      * @param RequestStack $requestStack
      */
     public function __construct(
-        CookieProviderInterface $cookieProvider,
-        ElioSearchConfigServiceInterface $configService,
-        RequestStack $requestStack
-    )
-    {
-        $this->cookieProvider = $cookieProvider;
-        $this->configService = $configService;
-        $this->requestStack = $requestStack;
-    }
+        private readonly CookieProviderInterface $cookieProvider,
+        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly RequestStack $requestStack
+    ) {}
 
     /**
      * @return array<array>

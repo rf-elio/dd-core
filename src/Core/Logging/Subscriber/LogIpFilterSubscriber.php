@@ -52,19 +52,15 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class LogIpFilterSubscriber implements EventSubscriberInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private LogFilterContext $logFilterContext;
-
     /**
      * LogIpFilterSubscriber constructor.
      * @param ElioSearchConfigServiceInterface $configService
      * @param LogFilterContext $logFilterContext
      */
-    public function __construct(ElioSearchConfigServiceInterface $configService, LogFilterContext $logFilterContext)
-    {
-        $this->configService = $configService;
-        $this->logFilterContext = $logFilterContext;
-    }
+    public function __construct(
+        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly LogFilterContext $logFilterContext
+    ) {}
 
     public static function getSubscribedEvents() : array
     {
@@ -97,7 +93,7 @@ class LogIpFilterSubscriber implements EventSubscriberInterface
         $allowedClientIps = implode(Defaults::VALUE_SEPARATOR, $config->getLoggingDebugIpFilter());
         $clientIp = $request->getClientIp();
 
-        $isApiLoggingActive = empty($allowedClientIps) || strpos($allowedClientIps, $clientIp) !== false;
+        $isApiLoggingActive = empty($allowedClientIps) || str_contains($allowedClientIps, (string) $clientIp);
         $this->logFilterContext->setIsDebugLoggingActive($isApiLoggingActive);
     }
 }

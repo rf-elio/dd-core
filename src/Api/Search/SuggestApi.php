@@ -34,7 +34,6 @@ namespace Elio\ElioSearch\Api\Search;
 
 use Elio\ElioSearch\Api\Response\ResponseCollection;
 use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
-use Elio\ElioSearch\Api\Transform\Transformer;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 

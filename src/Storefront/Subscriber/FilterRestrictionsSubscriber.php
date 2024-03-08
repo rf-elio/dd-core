@@ -47,11 +47,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class FilterRestrictionsSubscriber implements EventSubscriberInterface
 {
-    private CachedFilterService $cachedFilterService;
-
-    public function __construct(CachedFilterService $cachedFilterService) {
-        $this->cachedFilterService = $cachedFilterService;
-    }
+    public function __construct(
+        private readonly CachedFilterService $cachedFilterService
+    ) {}
 
     /**
      * @return string[]

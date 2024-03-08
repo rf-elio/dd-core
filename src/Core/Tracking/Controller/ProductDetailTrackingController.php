@@ -62,12 +62,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class ProductDetailTrackingController extends StorefrontController
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
-    private EntityRepository $productRepository;
-    private RequestStack $requestStack;
     use TrackingSessionTrait;
 
     /**
@@ -79,21 +73,13 @@ class ProductDetailTrackingController extends StorefrontController
      * @param RequestStack $requestStack
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher,
-        EntityRepository $productRepository,
-        RequestStack $requestStack
-    )
-    {
-        $this->configService = $configService;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->trackingAllowedChecker = $trackingAllowedChecker;
-        $this->productRepository = $productRepository;
-        $this->requestStack = $requestStack;
-    }
+        private ElioSearchConfigServiceInterface $configService,
+        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher,
+        private EntityRepository $productRepository,
+        private RequestStack $requestStack
+    ) {}
 
     /**
      * @Route("/widgets/elio-search/productDetailTrack", name="widgets.elio-search.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})

@@ -45,17 +45,12 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class ProductDetailTrackingRequestCreatedEvent extends Event
 {
-    private ProductDetailTrackingRequest $request;
-
     /**
      * @param ProductDetailTrackingRequest $request
      */
     public function __construct(
-        ProductDetailTrackingRequest $request
-    )
-    {
-        $this->request = $request;
-    }
+        private ProductDetailTrackingRequest $request
+    ) {}
 
     /**
      * @return ProductDetailTrackingRequest

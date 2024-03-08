@@ -47,19 +47,16 @@ class AggregationExtension extends Struct
 {
     public const KEY = 'elioSearch';
     public const PARAMETER_NAME_PREFIX = 'elio-search-';
-    private string $style;
-    private string $parameterName;
 
     /**
      * AggregationTypeExtension constructor.
      * @param string $style
      * @param string $parameterName
      */
-    public function __construct(string $style, string $parameterName)
-    {
-        $this->style = $style;
-        $this->parameterName = $parameterName;
-    }
+    public function __construct(
+        private readonly string $style,
+        private readonly string $parameterName
+    ) {}
 
     /**
      * @return string

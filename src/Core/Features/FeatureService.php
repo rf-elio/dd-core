@@ -46,7 +46,7 @@ class FeatureService implements FeatureServiceInterface
     /**
      * @var array
      */
-    private array $features;
+    private readonly array $features;
 
     /**
      * FeatureService constructor.

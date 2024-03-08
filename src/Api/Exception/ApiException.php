@@ -39,7 +39,4 @@ namespace Elio\ElioSearch\Api\Exception;
  * Interface ApiException
  * @package Elio\ElioSearch\Api\Exception
  */
-interface ApiException
-{
-
-}
+interface ApiException {}

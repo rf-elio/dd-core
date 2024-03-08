@@ -52,8 +52,7 @@ class DataCollectedEvent extends Event
     public function __construct(
         private readonly string $type,
         private Collection $data
-    ) {
-    }
+    ) {}
 
     public function getType(): string
     {

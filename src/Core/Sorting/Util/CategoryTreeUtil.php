@@ -81,11 +81,7 @@ class CategoryTreeUtil
         usort($nodes, static function (Node $nodeA, Node $nodeB) {
             $positionA = $nodeA->getValue()['position'];
             $positionB = $nodeB->getValue()['position'];
-
-            if ($positionA === $positionB) {
-                return 0;
-            }
-            return ($positionA < $positionB) ? -1 : 1;
+            return $positionA <=> $positionB;
         });
 
         return $nodes;

@@ -49,8 +49,7 @@ class ProductListingResultTransformerEvent extends Event
     public function __construct(
         private ProductListingResult $productListingResult,
         private SalesChannelContext $salesChannelContext
-    ) {
-    }
+    ) {}
 
     public function getProductListingResult(): ProductListingResult
     {

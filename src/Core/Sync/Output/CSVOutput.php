@@ -61,14 +61,12 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     /**
      * @var SyncProfileEntity|null
      */
-    private ?SyncProfileEntity $syncProfile;
+    private ?SyncProfileEntity $syncProfile = null;
 
     public function __construct(
         private readonly FilesystemOperator $fileSystem,
         private readonly LoggerInterface    $logger
-    )
-    {
-    }
+    ) {}
 
     abstract protected function getType(): string;
 

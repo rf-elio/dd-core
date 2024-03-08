@@ -62,13 +62,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class TrackCheckoutSubscriber implements EventSubscriberInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
-    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
-    private RequestStack $requestStack;
-    private EntityRepository $productRepository;
     use TrackingSessionTrait;
 
     /**
@@ -82,23 +75,14 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher,
-        AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        RequestStack $requestStack,
-        EntityRepository $productRepository
-    )
-    {
-        $this->configService = $configService;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->trackingAllowedChecker = $trackingAllowedChecker;
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->requestStack = $requestStack;
-        $this->productRepository = $productRepository;
-    }
+        private ElioSearchConfigServiceInterface $configService,
+        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher,
+        private AbstractSalesChannelContextFactory $salesChannelContextFactory,
+        private RequestStack $requestStack,
+        private EntityRepository $productRepository
+    ) {}
 
     /**
      * @return string[]

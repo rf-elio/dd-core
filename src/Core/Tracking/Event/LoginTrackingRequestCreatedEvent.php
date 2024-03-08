@@ -44,17 +44,12 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class LoginTrackingRequestCreatedEvent extends Event
 {
-    private LoginTrackingRequest $request;
-
     /**
      * @param LoginTrackingRequest $request
      */
     public function __construct(
-        LoginTrackingRequest $request
-    )
-    {
-        $this->request = $request;
-    }
+        private LoginTrackingRequest $request
+    ) {}
 
     /**
      * @return LoginTrackingRequest
