@@ -136,40 +136,4 @@ class ValueUtil
 
         return number_format($price, 2, '.', '');
     }
-
-    /**
-     * Adds the fields that are defined in the dynamic mapping
-     *
-     * - supports different levels and Collection::first()
-     * - examples: manufacturer.name, price.first.gross
-     * - can be extended to provide more options for mapping language
-     * @param Entity $entity
-     * @param array $mappings
-     * @param PropertyAccessorInterface $propertyAccessor
-     * @return array
-     */
-    public static function addMappedPropertiesToExportItem(
-        Entity $entity, array $mappings, PropertyAccessorInterface $propertyAccessor
-    ): array
-    {
-        $mappedData = [];
-        foreach ($mappings as $mapping) {
-            if (str_contains((string) $mapping['source'], '.')) {
-                $parts = explode('.', (string) $mapping['source']);
-                $previousObj = $entity;
-                foreach ($parts as $part) {
-                    if ($part === 'first') {
-                        $previousObj = array_values($propertyAccessor->getValue($previousObj, 'elements'))[0];
-                    } elseif (is_object($previousObj) || is_array($previousObj)) {
-                        $previousObj = $propertyAccessor->getValue($previousObj, $part);
-                    }
-                }
-                $mappedData[$mapping['target']] = $previousObj;
-            } else {
-                $mappedData[$mapping['target']] = $propertyAccessor->getValue($entity, $mapping['source']);
-            }
-        }
-
-        return $mappedData;
-    }
 }
