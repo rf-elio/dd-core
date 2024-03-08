@@ -33,6 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync;
 
 use DateTimeImmutable;
+use Elio\ElioSearch\Core\Sync\Event\SyncGeneratedEvent;
 use Elio\ElioSearch\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
 use Elio\ElioSearch\Core\Sync\Input\InputService;
 use Elio\ElioSearch\Core\Sync\Output\OutputService;
@@ -47,6 +48,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class SyncService
@@ -59,13 +61,16 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 class SyncService
 {
     public function __construct(
-        private readonly EntityRepository $syncProfileRepository,
-        private readonly iterable $profileDefinitions,
-        private readonly InputService $inputService,
-        private readonly OutputService $outputService,
+        private readonly EntityRepository                   $syncProfileRepository,
+        private readonly iterable                           $profileDefinitions,
+        private readonly InputService                       $inputService,
+        private readonly OutputService                      $outputService,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        private readonly LoggerInterface $logger
-    ) {}
+        private readonly LoggerInterface                    $logger,
+        private readonly EventDispatcherInterface           $eventDispatcher,
+    )
+    {
+    }
 
     /**
      * Syncs data for profile
@@ -137,6 +142,7 @@ class SyncService
         }
 
         $outputStream->close();
+        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()->getFirst()));
         $this->setFinishDate($syncProfile, $context);
     }
 

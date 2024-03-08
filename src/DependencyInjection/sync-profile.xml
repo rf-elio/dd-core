@@ -111,6 +111,7 @@
             <argument type="service" id="Elio\ElioSearch\Core\Sync\Output\OutputService" />
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
             <argument type="service" id="elio.search.core.logging.default" />
+            <argument type="service" id="event_dispatcher" />
         </service>
 
         <service id="Elio\ElioSearch\Core\Sync\Api\SyncProfileController" public="true">

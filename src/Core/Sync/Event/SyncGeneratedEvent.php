@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,49 +30,57 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\ElioSearch\Core\Sync\Event;
 
-
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class FacetCollection
- * @package Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class ExportGeneratedEvent
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FacetCollection extends EntityResult
+class SyncGeneratedEvent extends Event
 {
-    protected AggregationResultCollection $aggregations;
-
-    public function __construct(string $name = 'elio-search-default')
-    {
-        parent::__construct($name, new EntityCollection());
-        $this->aggregations = new AggregationResultCollection();
+    /**
+     * SyncGeneratedEvent constructor.
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param SalesChannelContext $context
+     */
+    public function __construct(
+        private SyncProfileEntity $syncProfile,
+        private SalesChannelContext $context
+    ) {
     }
 
     /**
-     * @param AggregationResult $aggregation
-     * @param string $type
+     * @return SalesChannelContext
      */
-    public function addAggregation(AggregationResult $aggregation, string $type): void
+    public function getContext(): SalesChannelContext
     {
-        $aggregation->addExtension(AggregationExtension::KEY, new AggregationExtension(
-            $type, $aggregation->getName()
-        ));
-        $this->aggregations->add($aggregation);
+        return $this->context;
     }
 
     /**
-     * @return AggregationResultCollection
+     * @param SalesChannelContext $context
      */
-    public function getAggregations(): AggregationResultCollection
+    public function setContext(SalesChannelContext $context): void
     {
-        return $this->aggregations;
+        $this->context = $context;
+    }
+
+    public function getSyncProfile(): SyncProfileEntity
+    {
+        return $this->syncProfile;
+    }
+
+    public function setSyncProfile(SyncProfileEntity $syncProfile): void
+    {
+        $this->syncProfile = $syncProfile;
     }
 }
