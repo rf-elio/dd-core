@@ -46,6 +46,7 @@ class NavigationRequestProduct extends ProductSearchRequest
     protected array $categoryPath = [];
     protected string $categoryId = '';
     protected array $customFilters = [];
+    protected string $streamId = '';
 
     /**
      * @return array
@@ -93,5 +94,22 @@ class NavigationRequestProduct extends ProductSearchRequest
     public function getCustomFilters(): array
     {
         return $this->customFilters;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreamId(): string
+    {
+        return $this->streamId;
+    }
+
+    /**
+     * @param string $streamId
+     * @return void
+     */
+    public function setStreamId(string $streamId): void
+    {
+        $this->streamId = $streamId;
     }
 }

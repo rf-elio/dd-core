@@ -111,6 +111,13 @@
             <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
+        <input-field type="bool">
+            <name>allowStreamIdSearch</name>
+            <label>Allow the use of product stream IDs in the API search</label>
+            <label lang="de-DE">Nutzung vom Stream IDs in der API-Suche erlauben</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Filter Restrictions</title>

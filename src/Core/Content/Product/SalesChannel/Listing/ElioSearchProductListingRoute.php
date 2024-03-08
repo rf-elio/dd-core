@@ -37,6 +37,7 @@ use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\SearchApi;
+use Elio\ElioSearch\Configuration\Configuration;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
@@ -133,7 +134,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         }
 
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isListingUseElioSearch() || !$this->canLoadCategoryByElioSearch($category)) {
+        if(!$config->isActive() || !$config->isListingUseElioSearch() || !$this->canLoadCategoryByElioSearch($category, $config)) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
@@ -182,9 +183,9 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param CategoryEntity $category
      * @return bool
      */
-    protected function canLoadCategoryByElioSearch(CategoryEntity $category) : bool
+    protected function canLoadCategoryByElioSearch(CategoryEntity $category, Configuration $config) : bool
     {
-        if (!empty($category->getProductStreamId())) {
+        if (!$config->isAllowStreamIdSearch() && !empty($category->getProductStreamId())) {
             return false;
         }
 
@@ -200,9 +201,13 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      */
     protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, SalesChannelContext $context): void
     {
-        $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
-        $navigationRequest->setCategoryPath($path);
-        $navigationRequest->setCategoryId($category->getId());
+        if ($category->getProductStreamId()) {
+            $navigationRequest->setStreamId($category->getProductStreamId());
+        } else {
+            $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
+            $navigationRequest->setCategoryPath($path);
+            $navigationRequest->setCategoryId($category->getId());
+        }
     }
 
     /**
