@@ -129,7 +129,7 @@ class SyncService
                 'dataTypes' => $profileDefinition->getDataTypes(),
             ],
             'currentProfile' => [
-                'input' => get_class($input),
+                'input' => $input::class,
                 'dataType' => $syncProfile->getDataType(),
             ]
         ]);

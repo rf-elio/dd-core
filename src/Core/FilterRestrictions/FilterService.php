@@ -83,9 +83,7 @@ class FilterService implements FilterInterface
         private readonly EntityRepository $categoryRepository,
         private readonly ElioSearchConfigService $configService,
         private readonly LoggerInterface $logger
-    )
-    {
-    }
+    ) {}
 
     /**
      * Gets filters by provided type
@@ -264,14 +262,10 @@ class FilterService implements FilterInterface
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) {
                 $allowAll = $restriction->isAllChecked();
-                $allowList = $restriction->getFilters()->map(function (FilterEntity $filter) {
-                    return $filter->getTechnicalName();
-                });
+                $allowList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());
             } else {
                 $blockAll = $restriction->isAllChecked();
-                $blockList = $restriction->getFilters()->map(function (FilterEntity $filter) {
-                    return $filter->getTechnicalName();
-                });;
+                $blockList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());;
             }
         }
 

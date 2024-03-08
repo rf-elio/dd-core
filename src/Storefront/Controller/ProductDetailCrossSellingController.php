@@ -25,7 +25,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductDetailCrossSellingController extends StorefrontController
 {
     use ElioSearchLogTrait;
-    private AbstractProductCrossSellingRoute $productCrossSellingRoute;
 
     /**
      * ProductBundleController constructor.
@@ -34,11 +33,10 @@ class ProductDetailCrossSellingController extends StorefrontController
      * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractProductCrossSellingRoute $productCrossSellingRoute,
+        private AbstractProductCrossSellingRoute $productCrossSellingRoute,
         LoggerInterface $logger
     )
     {
-        $this->productCrossSellingRoute = $productCrossSellingRoute;
         $this->logger = $logger;
     }
 

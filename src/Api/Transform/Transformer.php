@@ -55,23 +55,15 @@ class Transformer
     use ElioSearchLogTrait;
 
     /**
-     * @var iterable|ResponseTransformerInterface[]
-     */
-    private iterable $responseTransformer;
-    private EventDispatcherInterface $eventDispatcher;
-
-    /**
      * Transformer constructor.
      * @param iterable|ResponseTransformerInterface[] $responseTransformer
      */
     public function __construct(
-        iterable $responseTransformer,
-        EventDispatcherInterface $eventDispatcher,
+        private iterable $responseTransformer,
+        private EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     )
     {
-        $this->responseTransformer = $responseTransformer;
-        $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
 

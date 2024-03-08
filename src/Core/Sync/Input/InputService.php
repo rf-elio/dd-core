@@ -51,8 +51,7 @@ class InputService
      */
     public function __construct(
         private readonly iterable $inputs
-    ) {
-    }
+    ) {}
 
     public function getInput(SyncContext $syncContext): InputInterface
     {

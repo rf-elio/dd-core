@@ -20,16 +20,13 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ContentSearchRequestBuilder
 {
-    private ElioSearchConfigServiceInterface $configService;
-
     /**
      * SearchRequestBuilder constructor.
      * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(ElioSearchConfigServiceInterface $configService)
-    {
-        $this->configService = $configService;
-    }
+    public function __construct(
+        private readonly ElioSearchConfigServiceInterface $configService
+    ) {}
 
     /**
      * Builds the elio search request
@@ -45,7 +42,7 @@ class ContentSearchRequestBuilder
     ) : ContentSearchRequest
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        $searchRequest = $searchRequest ?? new ContentSearchRequest('');
+        $searchRequest ??= new ContentSearchRequest('');
         if(!empty($request->get('search'))) {
             $searchRequest->setQuery($request->get('search'));
         }

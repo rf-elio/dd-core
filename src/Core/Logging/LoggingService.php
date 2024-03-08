@@ -24,9 +24,7 @@ class LoggingService implements LoggingServiceInterface
         res_body: {res_body}
     }
 EOT;
-
-    private string $logDir;
-    private Finder $finder;
+    private readonly Finder $finder;
     private array $logs = [];
 
     /**
@@ -34,9 +32,10 @@ EOT;
      *
      * @param string $logDir
      */
-    public function __construct(string $logDir)
+    public function __construct(
+        private readonly string $logDir
+    )
     {
-        $this->logDir = $logDir;
         $this->finder = new Finder();
         $this->fillLogs();
     }
@@ -92,7 +91,7 @@ EOT;
     private function contentToArray(string $content): array
     {
         $content = preg_replace('/<br>\}<br>\{<br>/', '<br>}###{<br>', $content);
-        return array_reverse(explode('###', $content));
+        return array_reverse(explode('###', (string) $content));
     }
 
     /**

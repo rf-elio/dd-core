@@ -47,11 +47,7 @@ class DefaultFacetExtension extends Struct
 {
     public const KEY = 'elio_search_facet_extension';
     protected const COMBINATION_CHAR = '~';
-    protected string $name;
-    protected string $value;
     protected string $key;
-    protected int $totalHits;
-    protected bool $selected;
 
     /**
      * @param int $totalHits
@@ -68,17 +64,13 @@ class DefaultFacetExtension extends Struct
      * @param int $totalHits
      */
     public function __construct(
-        string $name,
-        string $value,
-        int $totalHits,
-        bool $selected = false
+        protected string $name,
+        protected string $value,
+        protected int $totalHits,
+        protected bool $selected = false
     )
     {
-        $this->name = $name;
-        $this->value = $value;
         $this->key = $this->name . self::COMBINATION_CHAR . $this->value;
-        $this->totalHits = $totalHits;
-        $this->selected = $selected;
     }
 
     /**

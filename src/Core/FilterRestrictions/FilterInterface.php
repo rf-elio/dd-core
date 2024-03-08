@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\FilterRestrictions;
 
 use Elio\ElioSearch\Api\Request\ApiRequest;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

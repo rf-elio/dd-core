@@ -16,12 +16,11 @@ use RuntimeException;
  */
 class CampaignRedirectionException extends RuntimeException
 {
-    private CampaignRedirectionResponse $campaignRedirectionResponse;
-
-    public function __construct(CampaignRedirectionResponse $campaignRedirectionResponse)
+    public function __construct(
+        private readonly CampaignRedirectionResponse $campaignRedirectionResponse
+    )
     {
         parent::__construct('Campaign redirection');
-        $this->campaignRedirectionResponse = $campaignRedirectionResponse;
     }
 
     /**

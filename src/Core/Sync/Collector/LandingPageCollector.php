@@ -65,8 +65,7 @@ class LandingPageCollector implements DataCollectorInterface
     public function __construct(
         private readonly SalesChannelRepository $landingPageRepository,
         private readonly EventDispatcherInterface $dispatcher
-    ) {
-    }
+    ) {}
 
     /**
      * Checks if collector is supported

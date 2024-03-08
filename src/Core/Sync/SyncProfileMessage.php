@@ -32,7 +32,6 @@
 
 namespace Elio\ElioSearch\Core\Sync;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Context;
 
 /**
@@ -52,8 +51,7 @@ class SyncProfileMessage
     public function __construct(
         private SyncProfileEntity $syncProfile,
         private Context $context
-    ) {
-    }
+    ) {}
 
     /**
      * @return Context

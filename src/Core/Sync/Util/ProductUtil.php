@@ -158,9 +158,7 @@ class ProductUtil
         /** @var array<string,object{name:string,value:string}> */
         $options = $product
             ->getOptions()
-            ->filter(function (PropertyGroupOptionEntity $propertyGroupOption) use ($ids) {
-                return in_array($propertyGroupOption->getGroupId(), $ids);
-            })
+            ->filter(fn(PropertyGroupOptionEntity $propertyGroupOption) => in_array($propertyGroupOption->getGroupId(), $ids))
             ->map(function (PropertyGroupOptionEntity $propertyGroupOption) {
                 $propertyGroup = $propertyGroupOption->getGroup();
 
@@ -260,7 +258,7 @@ class ProductUtil
 
         foreach ($categories as $category) {
             $path = $category->getPath();
-            $ids = explode('|', $path);
+            $ids = explode('|', (string) $path);
             $ids = array_filter($ids);
             $productCategoryIds[] = implode('/', $ids);
         }

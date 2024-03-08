@@ -53,11 +53,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 class TrackLoginSubscriber implements EventSubscriberInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-    private TrackingAllowedCheckerInterface $trackingAllowedChecker;
-    private RequestStack $requestStack;
     use TrackingSessionTrait;
 
     /**
@@ -69,19 +64,12 @@ class TrackLoginSubscriber implements EventSubscriberInterface
      * @param RequestStack $requestStack
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher,
-        RequestStack $requestStack
-    )
-    {
-        $this->configService = $configService;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->trackingAllowedChecker = $trackingAllowedChecker;
-        $this->requestStack = $requestStack;
-    }
+        private ElioSearchConfigServiceInterface $configService,
+        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher,
+        private RequestStack $requestStack
+    ) {}
 
     public static function getSubscribedEvents() : array
     {

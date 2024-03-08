@@ -32,7 +32,6 @@
 
 namespace Elio\ElioSearch\Core\Sync\ChangeSet;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class ChangeSetCollection
@@ -106,22 +105,16 @@ final class ChangeSet
 
     public function countCreated(): int
     {
-        return array_sum(array_map(static function ($entities) {
-            return count($entities);
-        }, $this->created));
+        return array_sum(array_map(static fn($entities) => count($entities), $this->created));
     }
 
     public function countUpdated(): int
     {
-        return array_sum(array_map(static function ($entities) {
-            return count($entities);
-        }, $this->updated));
+        return array_sum(array_map(static fn($entities) => count($entities), $this->updated));
     }
 
     public function countDeleted(): int
     {
-        return array_sum(array_map(static function ($entities) {
-            return count($entities);
-        }, $this->deleted));
+        return array_sum(array_map(static fn($entities) => count($entities), $this->deleted));
     }
 }

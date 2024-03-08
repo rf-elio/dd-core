@@ -44,17 +44,12 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class CartTrackingRequestCreatedEvent extends Event
 {
-    private CartTrackingRequest $request;
-
     /**
      * @param CartTrackingRequest $request
      */
     public function __construct(
-        CartTrackingRequest $request
-    )
-    {
-        $this->request = $request;
-    }
+        private CartTrackingRequest $request
+    ) {}
 
     /**
      * @return CartTrackingRequest

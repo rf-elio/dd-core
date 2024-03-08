@@ -51,16 +51,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class BotProtectionRequestSubscriber implements EventSubscriberInterface
 {
-    private BotDetectionService $botDetectionService;
-
     /**
      * BotProtectionRequestSubscriber constructor.
      * @param BotDetectionService $botDetectionService
      */
-    public function __construct(BotDetectionService $botDetectionService)
-    {
-        $this->botDetectionService = $botDetectionService;
-    }
+    public function __construct(
+        private readonly BotDetectionService $botDetectionService
+    ) {}
 
     /**
      * @return array[]

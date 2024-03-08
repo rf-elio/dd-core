@@ -46,22 +46,17 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class BotDetectedEvent extends Event
 {
-    private string $salesChannelId;
-    private Request $request;
-    protected bool $detected;
-
     /**
      * BotDetectedEvent constructor.
      * @param string $salesChannelId
      * @param Request $request
      * @param bool $detected
      */
-    public function __construct(string $salesChannelId, Request $request, bool $detected)
-    {
-        $this->salesChannelId = $salesChannelId;
-        $this->request = $request;
-        $this->detected = $detected;
-    }
+    public function __construct(
+        private readonly string $salesChannelId,
+        private readonly Request $request,
+        protected bool $detected
+    ) {}
 
     /**
      * @return string

@@ -32,8 +32,6 @@
 
 namespace Elio\ElioSearch\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\SyncContext;
-use Shopware\Core\Framework\Struct\Collection;
 
 interface OutputInterface
 {

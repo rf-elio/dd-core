@@ -52,16 +52,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ConsentSubscriber implements EventSubscriberInterface
 {
-    private ConsentService $consentService;
-
     /**
      * ConsentSubscriber constructor.
      * @param ConsentService $consentService
      */
-    public function __construct(ConsentService $consentService)
-    {
-        $this->consentService = $consentService;
-    }
+    public function __construct(
+        private readonly ConsentService $consentService
+    ) {}
 
     /**
      * @return array

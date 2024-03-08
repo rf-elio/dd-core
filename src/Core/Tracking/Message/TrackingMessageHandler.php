@@ -48,16 +48,13 @@ use Elio\ElioSearch\Swagger\ClientApiException;
 #[AsMessageHandler]
 class TrackingMessageHandler
 {
-    private TrackingApi $trackingApi;
-
     /**
      * TrackingMessageHandler constructor.
      * @param TrackingApi $trackingApi
      */
-    public function __construct(TrackingApi $trackingApi)
-    {
-        $this->trackingApi = $trackingApi;
-    }
+    public function __construct(
+        private readonly TrackingApi $trackingApi
+    ) {}
 
     /**
      * @param TrackingMessage $message

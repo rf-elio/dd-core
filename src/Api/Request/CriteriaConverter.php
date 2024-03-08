@@ -41,7 +41,4 @@ namespace Elio\ElioSearch\Api\Request;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class CriteriaConverter
-{
-
-}
+class CriteriaConverter {}

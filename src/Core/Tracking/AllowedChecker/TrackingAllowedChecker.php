@@ -46,16 +46,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class TrackingAllowedChecker implements TrackingAllowedCheckerInterface
 {
-    private iterable $checkers;
-
     /**
      * @param TrackingAllowedCheckerInterface[] $checkers
      */
     public function __construct(
-        iterable $checkers
-    ) {
-        $this->checkers = $checkers;
-    }
+        private readonly iterable $checkers
+    ) {}
 
     public function isTrackingAllowed(SalesChannelContext $salesChannelContext): bool
     {

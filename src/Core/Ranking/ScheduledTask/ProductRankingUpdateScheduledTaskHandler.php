@@ -49,15 +49,12 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
  */
 class ProductRankingUpdateScheduledTaskHandler extends ScheduledTaskHandler
 {
-    private ProductRankingUpdateService $productRankingUpdateService;
-
     public function __construct(
         EntityRepository $scheduledTaskRepository,
-        ProductRankingUpdateService $productRankingUpdateService
+        private readonly ProductRankingUpdateService $productRankingUpdateService
     )
     {
         parent::__construct($scheduledTaskRepository);
-        $this->productRankingUpdateService = $productRankingUpdateService;
     }
 
     public static function getHandledMessages(): iterable

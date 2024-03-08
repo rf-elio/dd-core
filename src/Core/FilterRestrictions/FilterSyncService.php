@@ -58,11 +58,6 @@ use Throwable;
  */
 class FilterSyncService
 {
-    private EntityRepository $propertyRepository;
-    private EntityRepository $filterRepository;
-    private EntityRepository $filterTranslationRepository;
-    private LoggerInterface $logger;
-
     /**
      * FilterService constructor.
      * @param EntityRepository $propertyRepository
@@ -71,16 +66,11 @@ class FilterSyncService
      * @param LoggerInterface $logger
      */
     public function __construct(
-        EntityRepository $propertyRepository,
-        EntityRepository $filterRepository,
-        EntityRepository $filterTranslationRepository,
-        LoggerInterface $logger
-    ) {
-        $this->propertyRepository = $propertyRepository;
-        $this->filterRepository = $filterRepository;
-        $this->filterTranslationRepository = $filterTranslationRepository;
-        $this->logger = $logger;
-    }
+        private readonly EntityRepository $propertyRepository,
+        private readonly EntityRepository $filterRepository,
+        private readonly EntityRepository $filterTranslationRepository,
+        private readonly LoggerInterface $logger
+    ) {}
 
     /**
      * Sync filter from property for propertyId

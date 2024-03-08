@@ -43,18 +43,13 @@ namespace Elio\ElioSearch\Api\Request;
  */
 class ChannelRequest extends ApiRequest
 {
-    protected string $channel = '';
-
     /**
      * ChannelRequest constructor.
      * @param string $channel
      */
     public function __construct(
-        string $channel
-    )
-    {
-        $this->channel = $channel;
-    }
+        protected string $channel
+    ) {}
 
     /**
      * @return string

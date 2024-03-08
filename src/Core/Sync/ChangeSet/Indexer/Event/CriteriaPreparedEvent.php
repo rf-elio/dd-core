@@ -40,12 +40,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 class CriteriaPreparedEvent extends Event
 {
     public function __construct(
-        private IndexerInterface $indexer,
+        private readonly IndexerInterface $indexer,
         private Criteria $criteria,
         private readonly Context $context
-    )
-    {
-    }
+    ) {}
 
     /**
      * @return Criteria

@@ -16,62 +16,61 @@ class GuzzleLogWrapper implements LoggerInterface
 {
     use ElioSearchLogTrait;
 
-    private object $sender;
-    private array $context;
-
     /**
      * @param LoggerInterface $logger
      * @param object $sender
      * @param array $context
      */
-    public function __construct(LoggerInterface $logger, object $sender, array $context)
+    public function __construct(
+        LoggerInterface $logger,
+        private object $sender,
+        private array $context
+    )
     {
         $this->logger = $logger;
-        $this->sender = $sender;
-        $this->context = $context;
     }
 
-    public function emergency($message, array $context = array()) : void
+    public function emergency($message, array $context = []) : void
     {
         $this->searchEmergency($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function alert($message, array $context = array()) : void
+    public function alert($message, array $context = []) : void
     {
         $this->searchAlert($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function critical($message, array $context = array()) : void
+    public function critical($message, array $context = []) : void
     {
         $this->searchCritical($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function error($message, array $context = array()) : void
+    public function error($message, array $context = []) : void
     {
         $this->searchError($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function warning($message, array $context = array()) : void
+    public function warning($message, array $context = []) : void
     {
         $this->searchWarning($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function notice($message, array $context = array()) : void
+    public function notice($message, array $context = []) : void
     {
         $this->searchNotice($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function info($message, array $context = array()) : void
+    public function info($message, array $context = []) : void
     {
         $this->searchInfo($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function debug($message, array $context = array()) : void
+    public function debug($message, array $context = []) : void
     {
         $this->searchDebug($message, $this->sender, array_merge($context, $this->context));
     }
 
-    public function log($level, $message, array $context = array()) : void
+    public function log($level, $message, array $context = []) : void
     {
         $this->searchLog($level, $message, $this->sender, array_merge($context, $this->context));
     }

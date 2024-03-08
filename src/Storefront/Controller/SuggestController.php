@@ -59,9 +59,6 @@ use Throwable;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class SuggestController extends SearchController
 {
-    private ElioSearchConfigServiceInterface $configService;
-    private SuggestApi $suggestApi;
-
     /**
      * @param ElioSearchConfigServiceInterface $configService
      * @param SuggestApi $suggestApi
@@ -70,8 +67,8 @@ class SuggestController extends SearchController
      * @param AbstractProductSearchRoute $productSearchRoute
      */
     public function __construct(
-        ElioSearchConfigServiceInterface $configService,
-        SuggestApi $suggestApi,
+        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly SuggestApi $suggestApi,
         SearchPageLoader $searchPageLoader,
         SuggestPageLoader $suggestPageLoader,
         AbstractProductSearchRoute $productSearchRoute
@@ -81,8 +78,6 @@ class SuggestController extends SearchController
             $suggestPageLoader,
             $productSearchRoute
         );
-        $this->configService = $configService;
-        $this->suggestApi = $suggestApi;
     }
 
     /**

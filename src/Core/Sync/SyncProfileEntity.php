@@ -34,11 +34,9 @@ namespace Elio\ElioSearch\Core\Sync;
 
 
 use DateTimeInterface;
-use Elio\ElioSearch\Core\Sync\Api\EntityStatusCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\Language\LanguageCollection;
-use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
@@ -60,11 +58,11 @@ class SyncProfileEntity extends Entity
     protected string $interval;
     protected array $mapping = [];
     protected array $config = [];
-    protected ?DateTimeInterface $lastGenerationStartedAt;
-    protected ?DateTimeInterface $lastGenerationFinishedAt;
-    protected ?DateTimeInterface $nextGenerationDueAt;
+    protected ?DateTimeInterface $lastGenerationStartedAt = null;
+    protected ?DateTimeInterface $lastGenerationFinishedAt = null;
+    protected ?DateTimeInterface $nextGenerationDueAt = null;
     protected string $salesChannelId;
-    protected ?SalesChannelEntity $salesChannel;
+    protected ?SalesChannelEntity $salesChannel = null;
     protected ?LanguageCollection $languages = null;
     protected $baseCategoryIds;
     protected $downloadUsername;

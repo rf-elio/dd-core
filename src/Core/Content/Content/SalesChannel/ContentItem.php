@@ -15,17 +15,6 @@ use DateTimeInterface;
  */
 class ContentItem
 {
-    private string $id;
-    private string $type;
-    private string $contentStructure;
-    private string $title;
-    private string $description;
-    private string $url;
-    private string $imageUrl;
-    private ?DateTimeInterface $publicationDate;
-    private int $priority;
-    private int $position;
-
     /**
      * @param string $id
      * @param string $type
@@ -39,29 +28,17 @@ class ContentItem
      * @param int $position
      */
     public function __construct(
-        string             $id,
-        string             $type,
-        string             $contentStructure,
-        string             $title,
-        string             $description,
-        string             $url,
-        string             $imageUrl,
-        ?DateTimeInterface $publicationDate,
-        int                $priority,
-        int                $position
-    )
-    {
-        $this->id = $id;
-        $this->type = $type;
-        $this->contentStructure = $contentStructure;
-        $this->title = $title;
-        $this->description = $description;
-        $this->url = $url;
-        $this->imageUrl = $imageUrl;
-        $this->publicationDate = $publicationDate;
-        $this->priority = $priority;
-        $this->position = $position;
-    }
+        private readonly string             $id,
+        private readonly string             $type,
+        private readonly string             $contentStructure,
+        private readonly string             $title,
+        private readonly string             $description,
+        private readonly string             $url,
+        private readonly string             $imageUrl,
+        private readonly ?DateTimeInterface $publicationDate,
+        private readonly int                $priority,
+        private readonly int                $position
+    ) {}
 
     /**
      * @return string

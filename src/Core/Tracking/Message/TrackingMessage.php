@@ -45,19 +45,15 @@ use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
  */
 class TrackingMessage
 {
-    private TrackingRequest $request;
-    private string $salesChannelId;
-
     /**
      * TrackingMessage constructor.
      * @param TrackingRequest $request
      * @param string $salesChannelId
      */
-    public function __construct(TrackingRequest $request, string $salesChannelId)
-    {
-        $this->request = $request;
-        $this->salesChannelId = $salesChannelId;
-    }
+    public function __construct(
+        private readonly TrackingRequest $request,
+        private readonly string $salesChannelId
+    ) {}
 
     /**
      * @return TrackingRequest

@@ -47,19 +47,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class TransformResponseEvent extends Event
 {
-    private ModelInterface $model;
-    private ResponseCollection $responseCollection;
-
     /**
      * TransformResponseEvent constructor.
      * @param ModelInterface $model
      * @param ResponseCollection $responseCollection
      */
-    public function __construct(ModelInterface $model, ResponseCollection $responseCollection)
-    {
-        $this->model = $model;
-        $this->responseCollection = $responseCollection;
-    }
+    public function __construct(
+        private readonly ModelInterface $model,
+        private readonly ResponseCollection $responseCollection
+    ) {}
 
     /**
      * @return ModelInterface

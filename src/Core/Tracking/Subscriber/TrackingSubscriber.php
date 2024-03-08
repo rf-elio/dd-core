@@ -53,13 +53,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class TrackingSubscriber implements EventSubscriberInterface
 {
-    private UserAgentAllowedChecker $userAgentAllowedChecker;
-
     public function __construct(
-        UserAgentAllowedChecker $userAgentAllowedChecker
-    ) {
-        $this->userAgentAllowedChecker = $userAgentAllowedChecker;
-    }
+        private readonly UserAgentAllowedChecker $userAgentAllowedChecker
+    ) {}
 
     public static function getSubscribedEvents()
     {

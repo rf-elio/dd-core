@@ -45,53 +45,6 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class Configuration extends Struct
 {
-    protected bool $loggingDebugActive;
-    /**
-     * @var array<string>
-     */
-    private array $loggingDebugIpFilter;
-    private bool $searchUseElioSearch;
-    private bool $trackCheckout;
-    private bool $trackRequireConsent;
-    private bool $active;
-    private bool $listingUseElioSearch;
-    /**
-     * @var array<string>
-     */
-    private array $additionalRequestParameters;
-    private int $suggestThumbnailSize;
-    private bool $trackCart;
-    private bool $trackLogin;
-    private bool $trackProductView;
-    private array $disallowTrackingForUserAgents;
-    private bool $botProtectionActive;
-    private bool $botProtectionUseBadBotList;
-    /**
-     * @var array<string>
-     */
-    private array $botProtectionSearchTermFilter;
-    /**
-     * @var array<string>
-     */
-    private array $botProtectionUserAgentFilter;
-    /**
-     * @var array<string>
-     */
-    private array $botProtectionIpFilter;
-    private bool $suggestUseElioSearch;
-    private bool $restrictionsParentCategories;
-    private bool $restrictionsOverridingTopToDown;
-    private array $suggestTypeLabels;
-    private int $restrictionsCacheTime;
-    private array $suggestAcceptedTypes;
-    private bool $productRankingActive;
-    private int $productRankingMaxOrderAge;
-    private array $productRankingOrderStates;
-    private array $productRankingOrderDeliveryStates;
-    private bool $searchUseContentChannel;
-    private int $entityStatusMaxCleanupAgeInDays;
-    private bool $allowStreamIdSearch;
-
     /**
      * Configuration constructor.
      * @param bool $active
@@ -127,71 +80,38 @@ class Configuration extends Struct
      * @param bool $allowStreamIdSearch
      */
     public function __construct(
-        bool $active,
-        bool $loggingDebugActive,
-        array $loggingDebugIpFilter,
-        bool $searchUseElioSearch,
-        bool $trackRequireConsent,
-        bool $trackCart,
-        bool $trackCheckout,
-        bool $trackLogin,
-        bool $trackProductView,
-        array $disallowTrackingForUserAgents,
-        bool $listingUseElioSearch,
-        array $additionalRequestParameters,
-        int $suggestThumbnailSize,
-        bool $botProtectionActive,
-        bool $botProtectionUseBadBotList,
-        array $botProtectionSearchTermFilter,
-        array $botProtectionUserAgentFilter,
-        array $botProtectionIpFilter,
-        bool $searchUseContentChannel,
-        bool $suggestUseElioSearch,
-        bool $restrictionsParentCategories,
-        bool $restrictionsOverridingTopToDown,
-        int $restrictionsCacheTime,
-        array $suggestTypeLabels,
-        array $suggestAcceptedTypes,
-        bool $productRankingActive,
-        int $productRankingMaxOrderAge,
-        array $productRankingOrderStates,
-        array $productRankingOrderDeliveryStates,
-        int $entityStatusMaxCleanupAgeInDays,
-        bool $allowStreamIdSearch
-    )
-    {
-        $this->loggingDebugActive = $loggingDebugActive;
-        $this->loggingDebugIpFilter = $loggingDebugIpFilter;
-        $this->searchUseElioSearch = $searchUseElioSearch;
-        $this->trackCheckout = $trackCheckout;
-        $this->trackRequireConsent = $trackRequireConsent;
-        $this->active = $active;
-        $this->listingUseElioSearch = $listingUseElioSearch;
-        $this->additionalRequestParameters = $additionalRequestParameters;
-        $this->suggestThumbnailSize = $suggestThumbnailSize;
-        $this->trackCart = $trackCart;
-        $this->trackLogin = $trackLogin;
-        $this->trackProductView = $trackProductView;
-        $this->disallowTrackingForUserAgents = $disallowTrackingForUserAgents;
-        $this->botProtectionActive = $botProtectionActive;
-        $this->botProtectionUseBadBotList = $botProtectionUseBadBotList;
-        $this->botProtectionSearchTermFilter = $botProtectionSearchTermFilter;
-        $this->botProtectionUserAgentFilter = $botProtectionUserAgentFilter;
-        $this->botProtectionIpFilter = $botProtectionIpFilter;
-        $this->suggestUseElioSearch = $suggestUseElioSearch;
-        $this->restrictionsParentCategories = $restrictionsParentCategories;
-        $this->restrictionsOverridingTopToDown = $restrictionsOverridingTopToDown;
-        $this->suggestTypeLabels = $suggestTypeLabels;
-        $this->restrictionsCacheTime = $restrictionsCacheTime;
-        $this->suggestAcceptedTypes = $suggestAcceptedTypes;
-        $this->productRankingActive = $productRankingActive;
-        $this->productRankingMaxOrderAge = $productRankingMaxOrderAge;
-        $this->productRankingOrderStates = $productRankingOrderStates;
-        $this->productRankingOrderDeliveryStates = $productRankingOrderDeliveryStates;
-        $this->searchUseContentChannel = $searchUseContentChannel;
-        $this->entityStatusMaxCleanupAgeInDays = $entityStatusMaxCleanupAgeInDays;
-        $this->allowStreamIdSearch = $allowStreamIdSearch;
-    }
+        private readonly bool $active,
+        protected bool $loggingDebugActive,
+        private readonly array $loggingDebugIpFilter,
+        private readonly bool $searchUseElioSearch,
+        private readonly bool $trackRequireConsent,
+        private readonly bool $trackCart,
+        private readonly bool $trackCheckout,
+        private readonly bool $trackLogin,
+        private readonly bool $trackProductView,
+        private readonly array $disallowTrackingForUserAgents,
+        private readonly bool $listingUseElioSearch,
+        private readonly array $additionalRequestParameters,
+        private readonly int $suggestThumbnailSize,
+        private readonly bool $botProtectionActive,
+        private readonly bool $botProtectionUseBadBotList,
+        private readonly array $botProtectionSearchTermFilter,
+        private readonly array $botProtectionUserAgentFilter,
+        private readonly array $botProtectionIpFilter,
+        private readonly bool $searchUseContentChannel,
+        private readonly bool $suggestUseElioSearch,
+        private readonly bool $restrictionsParentCategories,
+        private readonly bool $restrictionsOverridingTopToDown,
+        private readonly int $restrictionsCacheTime,
+        private readonly array $suggestTypeLabels,
+        private readonly array $suggestAcceptedTypes,
+        private readonly bool $productRankingActive,
+        private readonly int $productRankingMaxOrderAge,
+        private readonly array $productRankingOrderStates,
+        private readonly array $productRankingOrderDeliveryStates,
+        private readonly int $entityStatusMaxCleanupAgeInDays,
+        private readonly bool $allowStreamIdSearch
+    ) {}
 
     /**
      * @return bool

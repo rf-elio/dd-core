@@ -35,15 +35,12 @@ namespace Elio\ElioSearch\Core\Sorting;
 use ArrayObject;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use DomainException;
 use Elio\ElioSearch\Configuration\ElioSearchConfigService;
 use Elio\ElioSearch\Core\Sorting\Util\CategorySortingUtil;
 use Elio\ElioSearch\Core\Sorting\Util\CategoryTreeUtil;
-use Elio\ElioSearch\Core\Util\Tree\Node;
 use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -61,8 +58,7 @@ class ProductSortingService
         private readonly Connection $connection,
         private readonly SystemConfigService $systemConfigService,
         private readonly EntityRepository $productSortingTreeRepository
-    )
-    {}
+    ) {}
 
     /**
      * Creates product positions for category

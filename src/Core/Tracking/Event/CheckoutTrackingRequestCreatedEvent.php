@@ -46,22 +46,15 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class CheckoutTrackingRequestCreatedEvent extends Event
 {
-    private CheckoutOrderPlacedEvent $event;
-    private CheckoutTrackingRequest $request;
-
     /**
      * CheckoutTrackingRequestCreatedEvent constructor.
      * @param CheckoutOrderPlacedEvent $event
      * @param CheckoutTrackingRequest $request
      */
     public function __construct(
-        CheckoutOrderPlacedEvent $event,
-        CheckoutTrackingRequest $request
-    )
-    {
-        $this->event = $event;
-        $this->request = $request;
-    }
+        private readonly CheckoutOrderPlacedEvent $event,
+        private CheckoutTrackingRequest $request
+    ) {}
 
     /**
      * @return CheckoutOrderPlacedEvent

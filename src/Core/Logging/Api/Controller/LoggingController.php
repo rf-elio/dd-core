@@ -19,17 +19,14 @@ use Throwable;
 #[Route(defaults: ['_routeScope' => ['api']])]
 class LoggingController extends AbstractController
 {
-    private LoggingService $loggingService;
-
     /**
      * LoggingController constructor.
      *
      * @param LoggingService $loggingService
      */
-    public function __construct(LoggingService $loggingService)
-    {
-        $this->loggingService = $loggingService;
-    }
+    public function __construct(
+        private readonly LoggingService $loggingService
+    ) {}
 
     /**
      * @Route("/api/_action/elio-search/logging/{index}", name="api.action.elio-search.logging.index", methods={"GET"})

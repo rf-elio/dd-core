@@ -13,41 +13,19 @@ use Elio\ElioSearch\Core\AdvisorCampaign\AdvisorQuestion;
 class AdvisorCampaignResponse extends Response
 {
     /**
-     * @var string
-     */
-    protected string $id;
-    /**
-     * @var string
-     */
-    protected string $name;
-    /**
-     * @var AdvisorQuestion[]
-     */
-    private array $activeQuestions;
-    /**
-     * @var AdvisorQuestion[]
-     */
-    private iterable $questionPath;
-    /**
-     * @var string
-     */
-    private string $answerPath;
-
-    /**
      * @param string $id
      * @param string $name
      * @param AdvisorQuestion[] $activeQuestions
      * @param iterable|AdvisorQuestion[] $questionPath
      * @param string $answerPath
      */
-    public function __construct(string $id, string $name, array $activeQuestions, iterable $questionPath, string $answerPath)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->activeQuestions = $activeQuestions;
-        $this->questionPath = $questionPath;
-        $this->answerPath = $answerPath;
-    }
+    public function __construct(
+        protected string $id,
+        protected string $name,
+        private readonly array $activeQuestions,
+        private readonly iterable $questionPath,
+        private readonly string $answerPath
+    ) {}
 
     /**
      * @return string

@@ -48,12 +48,9 @@ class MainVariantMappingExtension extends Struct
 {
     public const KEY = 'elio-search-main-variant-mapping';
 
-    private array $mapping;
-
-    public function __construct(array $mapping)
-    {
-        $this->mapping = $mapping;
-    }
+    public function __construct(
+        private readonly array $mapping
+    ) {}
 
     /**
      * @return array

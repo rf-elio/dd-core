@@ -33,7 +33,6 @@
 namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
 
 
-use Elio\ElioSearch\Api\Search\Request\AdvisorStatus;
 use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioSearch\Api\Search\Request\SearchRequest;
 use Elio\ElioSearch\Configuration\Configuration;
@@ -69,9 +68,7 @@ class ProductSearchRequestBuilder
     public function __construct(
         private readonly ElioSearchConfigServiceInterface $configService,
         private readonly EventDispatcherInterface $eventDispatcher,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Builds the elio search search request
@@ -89,7 +86,7 @@ class ProductSearchRequestBuilder
     ) : ProductSearchRequest
     {
         $config = $this->configService->getByContext($salesChannelContext);
-        $searchRequest = $searchRequest ?? new ProductSearchRequest('');
+        $searchRequest ??= new ProductSearchRequest('');
 
         $payload = $request->query->all();
         if(!empty($request->get('search'))) {
@@ -133,12 +130,12 @@ class ProductSearchRequestBuilder
         if(
             !isset($payload[self::PARAM_SORT]) ||
             empty($payload[self::PARAM_SORT]) ||
-            strpos($payload[self::PARAM_SORT], '.') === false
+            !str_contains((string) $payload[self::PARAM_SORT], '.')
         ) {
             return;
         }
 
-        $parts = explode('.', $payload[self::PARAM_SORT]);
+        $parts = explode('.', (string) $payload[self::PARAM_SORT]);
         $order = array_pop($parts);
         $field = implode('.', $parts);
         $searchRequest->setSort($field, $order);
@@ -153,24 +150,24 @@ class ProductSearchRequestBuilder
     protected function addFilters(array $payload, ProductSearchRequest $searchRequest) : void
     {
          foreach ($payload as $key => $filterValues) {
-             if(strpos($key, AggregationExtension::PARAMETER_NAME_PREFIX) !== 0) {
+             if(!str_starts_with($key, AggregationExtension::PARAMETER_NAME_PREFIX)) {
                  continue;
              }
 
-             if (strpos($key, 'default') !== false) {
-                 $filterValues = explode('|', $filterValues);
+             if (str_contains($key, 'default')) {
+                 $filterValues = explode('|', (string) $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, $value);
                  }
-             } elseif (strpos($key, 'slider') !== false) {
-                 $filterValues = explode('|', $filterValues);
+             } elseif (str_contains($key, 'slider')) {
+                 $filterValues = explode('|', (string) $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, json_encode([(float)$min, (float)$max]));
                  }
-             }elseif (strpos($key, 'tree') !== false){
-                 $filterValues = explode('|', $filterValues);
+             }elseif (str_contains($key, 'tree')){
+                 $filterValues = explode('|', (string) $filterValues);
                  $filters = [];
                  foreach ($filterValues as $filterValue) {
                      [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
@@ -208,7 +205,7 @@ class ProductSearchRequestBuilder
     {
         $additionalParameters = $searchRequest->getAdditionalRequestParameters();
         foreach ($payload as $key => $value) {
-            if (strpos($key, self::ADDITIONAL_REQUEST_PARAM_PREFIX) === 0) {
+            if (str_starts_with($key, self::ADDITIONAL_REQUEST_PARAM_PREFIX)) {
                 $parameterName = str_replace(self::ADDITIONAL_REQUEST_PARAM_PREFIX, '', $key);
                 $additionalParameters[$parameterName] = $value;
             }

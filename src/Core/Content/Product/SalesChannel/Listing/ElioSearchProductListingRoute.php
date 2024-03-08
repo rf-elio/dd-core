@@ -67,13 +67,6 @@ use Throwable;
 class ElioSearchProductListingRoute extends AbstractProductListingRoute
 {
     use ElioSearchLogTrait;
-    private AbstractProductListingRoute $decorated;
-    private ElioSearchConfigServiceInterface $configService;
-    private SearchApi $searchApi;
-    private ProductSearchRequestBuilder $searchRequestBuilder;
-    private ProductListingResultTransformerInterface $productListingResultTransformer;
-    private EntityRepository $categoryRepository;
-    private CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder;
 
     /**
      * ElioSearchProductListingRoute constructor.
@@ -87,23 +80,16 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param LoggerInterface $logger
      */
     public function __construct(
-        AbstractProductListingRoute      $decorated,
-        ProductSearchRequestBuilder      $searchRequestBuilder,
-        ElioSearchConfigServiceInterface $configService,
-        SearchApi                        $searchApi,
-        ProductListingResultTransformerInterface  $productListingResultTransformer,
-        EntityRepository        $categoryRepository,
-        CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
+        private AbstractProductListingRoute      $decorated,
+        private ProductSearchRequestBuilder      $searchRequestBuilder,
+        private ElioSearchConfigServiceInterface $configService,
+        private SearchApi                        $searchApi,
+        private ProductListingResultTransformerInterface  $productListingResultTransformer,
+        private EntityRepository        $categoryRepository,
+        private CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
         LoggerInterface                  $logger
     )
     {
-        $this->decorated = $decorated;
-        $this->configService = $configService;
-        $this->searchApi = $searchApi;
-        $this->searchRequestBuilder = $searchRequestBuilder;
-        $this->productListingResultTransformer = $productListingResultTransformer;
-        $this->categoryRepository = $categoryRepository;
-        $this->categoryBreadcrumbBuilder = $categoryBreadcrumbBuilder;
         $this->logger = $logger;
     }
 
@@ -227,7 +213,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         }
 
         $customFilters = $customFields[ElioSearch::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY];
-        parse_str($customFilters, $parsedCustomFilters);
+        parse_str((string) $customFilters, $parsedCustomFilters);
 
         // get parent category name by category path
         $path = $navigationRequest->getCategoryPath();
@@ -253,9 +239,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
                 $pa = new PropertyAccessor();
 
                 // prepare access string for property accessor (category.name -> [category][name])
-                $capture = implode('', array_map(static function ($a) {
-                    return '[' . $a . ']';
-                }, explode('.', $capture)));
+                $capture = implode('', array_map(static fn($a) => '[' . $a . ']', explode('.', $capture)));
 
                 if ($pa->isReadable($dataSet, $capture)) {
                     $parsedCustomFilterValue = $pa->getValue($dataSet, $capture);

@@ -30,7 +30,7 @@ trait ElioSearchLogTrait
      */
     protected function searchEmergency(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->emergency($message, $context);
     }
 
@@ -43,7 +43,7 @@ trait ElioSearchLogTrait
      */
     protected function searchAlert(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->alert($message, $context);
     }
 
@@ -56,7 +56,7 @@ trait ElioSearchLogTrait
      */
     protected function searchCritical(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->critical($message, $context);
     }
 
@@ -70,7 +70,7 @@ trait ElioSearchLogTrait
      */
     protected function searchError(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->error($message, $context);
     }
 
@@ -83,7 +83,7 @@ trait ElioSearchLogTrait
      */
     protected function searchWarning(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->warning($message, $context);
     }
 
@@ -96,7 +96,7 @@ trait ElioSearchLogTrait
      */
     protected function searchNotice(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->notice($message, $context);
     }
 
@@ -109,7 +109,7 @@ trait ElioSearchLogTrait
      */
     protected function searchInfo(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->info($message, $context);
     }
 
@@ -122,7 +122,7 @@ trait ElioSearchLogTrait
      */
     protected function searchDebug(string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->debug($message, $context);
     }
 
@@ -136,7 +136,7 @@ trait ElioSearchLogTrait
      */
     protected function searchLog(mixed $level, string $message, object $sender, array $context) : void {
         $context = $this->prepareContext($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
+        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = $sender::class;
         $this->logger->log($level, $message, $context);
     }
 
@@ -161,7 +161,7 @@ trait ElioSearchLogTrait
                 unset($context[$key]);
             } elseif ($item instanceof Throwable) {
                 $context[$key] = [
-                    'type' => get_class($item),
+                    'type' => $item::class,
                     'message' => $item->getMessage(),
                     'file' => $item->getFile(),
                     'line' => $item->getLine(),
@@ -170,7 +170,7 @@ trait ElioSearchLogTrait
             }
             elseif (is_object($item)) {
                 $context[$key] = [
-                    'type' => get_class($item),
+                    'type' => $item::class,
                     'values' => $item
                 ];
             }

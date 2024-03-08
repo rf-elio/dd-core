@@ -55,7 +55,7 @@ class FilterEntity extends Entity
     /**
      * @var string|null
      */
-    protected ?string $propertyName;
+    protected ?string $propertyName = null;
 
     /**
      * @var string

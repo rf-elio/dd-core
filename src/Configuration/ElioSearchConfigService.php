@@ -55,14 +55,11 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
 {
     public const PLUGIN_CONFIG_PREFIX = 'ElioSearch.config';
     public const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
-    private SystemConfigService $systemConfigService;
-    private EventDispatcherInterface $eventDispatcher;
     private array $loadedConfigurations = [];
     /**
      * @var array<string>
      */
     private array $languagePrefixCache = [];
-    private EntityRepository $languageRepository;
 
     /**
      * @param SystemConfigService $systemConfigService
@@ -70,14 +67,10 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
      * @param EntityRepository $languageRepository
      */
     public function __construct(
-        SystemConfigService $systemConfigService,
-        EventDispatcherInterface $eventDispatcher,
-        EntityRepository $languageRepository
-    ) {
-        $this->systemConfigService = $systemConfigService;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->languageRepository = $languageRepository;
-    }
+        private readonly SystemConfigService $systemConfigService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EntityRepository $languageRepository
+    ) {}
 
     /**
      * Fetches the elio search plugin configuration for the given SalesChannelContext

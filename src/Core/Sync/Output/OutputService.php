@@ -34,7 +34,6 @@ namespace Elio\ElioSearch\Core\Sync\Output;
 
 
 use Elio\ElioSearch\Core\Sync\Exception\OutputNotFoundException;
-use Elio\ElioSearch\Core\Sync\Output\Api\Exception\ApiSyncException;
 use Elio\ElioSearch\Core\Sync\ProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 
@@ -50,9 +49,7 @@ class OutputService
 {
     public function __construct(
         private readonly iterable $outputs
-    )
-    {
-    }
+    ) {}
 
     public function createOutputStream(SyncContext $syncContext): OutputStream
     {

@@ -43,8 +43,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
  */
 class SliderResult extends StatsResult
 {
-    private ?string $unit;
-
     /**
      * @param string $name
      * @param float|null $min
@@ -53,10 +51,16 @@ class SliderResult extends StatsResult
      * @param float|null $sum
      * @param string|null $unit
      */
-    public function __construct(string $name, ?float $min, ?float $max, ?float $avg, ?float $sum, ?string $unit = null)
+    public function __construct(
+        string $name,
+        ?float $min,
+        ?float $max,
+        ?float $avg,
+        ?float $sum,
+        private ?string $unit = null
+    )
     {
         parent::__construct($name, $min, $max, $avg, $sum);
-        $this->unit = $unit;
     }
 
     /**

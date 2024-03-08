@@ -43,15 +43,12 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class AggregationCollectionExtension extends Struct
 {
-    private array $campaigns;
-
     /**
      * @param array $campaigns
      */
-    public function __construct(array $campaigns = [])
-    {
-        $this->campaigns = $campaigns;
-    }
+    public function __construct(
+        private array $campaigns = []
+    ) {}
 
     /**
      * @return array

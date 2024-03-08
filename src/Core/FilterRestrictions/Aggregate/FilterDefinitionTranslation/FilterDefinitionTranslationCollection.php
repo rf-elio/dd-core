@@ -53,23 +53,17 @@ class FilterDefinitionTranslationCollection extends EntityCollection
 {
     public function getPropertyGroupIds(): array
     {
-        return $this->fmap(function (FilterDefinitionTranslationEntity $filterDefinitionTranslation) {
-            return $filterDefinitionTranslation->getFilterId();
-        });
+        return $this->fmap(fn(FilterDefinitionTranslationEntity $filterDefinitionTranslation) => $filterDefinitionTranslation->getFilterId());
     }
 
     public function getLanguageIds(): array
     {
-        return $this->fmap(function (FilterDefinitionTranslationEntity $filterDefinitionTranslation) {
-            return $filterDefinitionTranslation->getLanguageId();
-        });
+        return $this->fmap(fn(FilterDefinitionTranslationEntity $filterDefinitionTranslation) => $filterDefinitionTranslation->getLanguageId());
     }
 
     public function filterByLanguageId(string $id): self
     {
-        return $this->filter(function (FilterDefinitionTranslationEntity $filterDefinitionTranslation) use ($id) {
-            return $filterDefinitionTranslation->getLanguageId() === $id;
-        });
+        return $this->filter(fn(FilterDefinitionTranslationEntity $filterDefinitionTranslation) => $filterDefinitionTranslation->getLanguageId() === $id);
     }
 
     public function getApiAlias(): string

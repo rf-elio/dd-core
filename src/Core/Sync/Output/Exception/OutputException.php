@@ -43,7 +43,4 @@ use Elio\ElioSearch\Core\Exception\ElioSearchException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class OutputException extends ElioSearchException
-{
-
-}
+class OutputException extends ElioSearchException {}

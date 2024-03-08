@@ -36,7 +36,6 @@ namespace Elio\ElioSearch\Core\Tracking\AllowedChecker;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
 use Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct\UserAgent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * Class UserAgentAllowedChecker
@@ -49,13 +48,9 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class UserAgentAllowedChecker implements TrackingAllowedCheckerInterface
 {
-    private ElioSearchConfigServiceInterface $configService;
-
     public function __construct(
-        ElioSearchConfigServiceInterface $configService
-    ) {
-        $this->configService = $configService;
-    }
+        private readonly ElioSearchConfigServiceInterface $configService
+    ) {}
 
     public function isTrackingAllowed(SalesChannelContext $salesChannelContext): bool
     {
@@ -68,7 +63,7 @@ class UserAgentAllowedChecker implements TrackingAllowedCheckerInterface
         $config = $this->configService->getByContext($salesChannelContext);
 
         foreach ($config->getDisallowTrackingForUserAgents() as $disallowUserAgent) {
-            if (mb_stripos($userAgent->getUserAgent(), $disallowUserAgent) !== false) {
+            if (mb_stripos($userAgent->getUserAgent(), (string) $disallowUserAgent) !== false) {
                 return false;
             }
         }

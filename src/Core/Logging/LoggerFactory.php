@@ -41,7 +41,6 @@ use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 
 /**
  * Class LoggerFactory
@@ -53,11 +52,6 @@ use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
  */
 class LoggerFactory
 {
-    private string $rotatingFilePathPattern;
-    private int $defaultFileRotationCount;
-    private LogFilterContext $logFilterContext;
-    private AbstractProcessingHandler $consoleHandler;
-
     /**
      * LoggerFactory constructor.
      * @param string $rotatingFilePathPattern
@@ -65,17 +59,11 @@ class LoggerFactory
      * @param LogFilterContext $logFilterContext
      */
     public function __construct(
-        string $rotatingFilePathPattern,
-        int $defaultFileRotationCount,
-        LogFilterContext $logFilterContext,
-        AbstractProcessingHandler $consoleHandler
-    )
-    {
-        $this->rotatingFilePathPattern = $rotatingFilePathPattern;
-        $this->defaultFileRotationCount = $defaultFileRotationCount;
-        $this->logFilterContext = $logFilterContext;
-        $this->consoleHandler = $consoleHandler;
-    }
+        private readonly string $rotatingFilePathPattern,
+        private readonly int $defaultFileRotationCount,
+        private readonly LogFilterContext $logFilterContext,
+        private readonly AbstractProcessingHandler $consoleHandler
+    ) {}
 
     /**
      * Creates the logger with additional filtering
