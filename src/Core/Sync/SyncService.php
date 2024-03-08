@@ -142,7 +142,7 @@ class SyncService
         }
 
         $outputStream->close();
-        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()->getFirst()));
+        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()));
         $this->setFinishDate($syncProfile, $context);
     }
 

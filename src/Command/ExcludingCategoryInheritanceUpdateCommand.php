@@ -45,14 +45,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CategoryExcludingInheritanceCommand
+ * Class ExcludingCategoryInheritanceUpdateCommand
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceCommand extends Command
+class ExcludingCategoryInheritanceUpdateCommand extends Command
 {
     public function __construct(
         private readonly EntityRepository $categoryRepository,
@@ -64,7 +64,7 @@ class ExcludingCategoryInheritanceCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:exclusion:category-inheritance:update');
+        $this->setName('exclusion:category-inheritance:update');
     }
 
     /**
