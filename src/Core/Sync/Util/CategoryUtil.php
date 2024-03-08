@@ -37,9 +37,7 @@ use Elio\ElioSearch\Core\Util\Tree\Node;
 use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
 use Elio\ElioSearch\ElioSearch;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -64,6 +62,8 @@ class CategoryUtil
      *                    not an own type configured.
      *
      * @param Node[] $nodes
+     * @param ArrayObject<mixed> $customFields
+     * @param array $inheritedCustomFields
      */
     public static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
     {
@@ -124,8 +124,8 @@ class CategoryUtil
     /**
      * Creates a tree by all categories. The tree will be looped over to generate the custom field inheritance
      *
-     * @param EntityRepository $categoryRepository
-     * @param Context $context
+     * @param SalesChannelRepository $categoryRepository
+     * @param SalesChannelContext $context
      * @return array
      */
     public static function buildCustomFieldInheritance(SalesChannelRepository $categoryRepository, SalesChannelContext $context): array
@@ -149,7 +149,7 @@ class CategoryUtil
     }
 
     /**
-     * @param EntityRepository $categoryRepository
+     * @param SalesChannelRepository $categoryRepository
      * @param array $categoryIds
      * @param Criteria $baseCriteria
      * @param SalesChannelContext $context
@@ -164,7 +164,7 @@ class CategoryUtil
         $criteria = $baseCriteria;
         self::extendCriteriaForChildCategories($criteria, $categoryIds);
         /* @phpstan-ignore-next-line */
-        return $categoryRepository->search($criteria, $context->getContext())->getEntities();
+        return $categoryRepository->search($criteria, $context)->getEntities();
     }
 
     public static function extendCriteriaForChildCategories(Criteria $criteria, array $categoryIds): void
