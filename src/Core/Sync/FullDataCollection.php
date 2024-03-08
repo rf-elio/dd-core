@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Request;
+namespace Elio\ElioSearch\Core\Sync;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
- * Class ApiRequest
- * @package Elio\ElioSearch\Api\Request
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class FullDataCollection
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest extends Struct
+class FullDataCollection extends Collection
 {
-    /**
-     * @return array
-     */
-    public function toArray() : array
+    public const TYPE_PRODUCT = 'product';
+    public const TYPE_CONTENT = 'content';
+
+    public function __construct(
+        private readonly string $type,
+        iterable $elements = [],
+    )
     {
-        return get_object_vars($this);
+        parent::__construct($elements);
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize(): array
+    public function getType(): string
     {
-        return $this->toArray();
+        return $this->type;
     }
 }

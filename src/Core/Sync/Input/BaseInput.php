@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Request;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
+use Elio\ElioSearch\Core\Sync\Input\Exception\NoSupportedCollectorFoundException;
 
 /**
- * Class ApiRequest
- * @package Elio\ElioSearch\Api\Request
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class BaseInput
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest extends Struct
+abstract class BaseInput implements InputInterface
 {
-    /**
-     * @return array
-     */
-    public function toArray() : array
-    {
-        return get_object_vars($this);
+    public function __construct(
+        private readonly iterable $collectors
+    ) {
     }
 
     /**
-     * @return array
+     * Gets profile collectors
+     *
+     * @param string $dataType
+     * @param string $entityType
+     * @return DataCollectorInterface[]
      */
-    public function jsonSerialize(): array
+    protected function getCollectors(string $dataType, ?string $entityType = null): array
     {
-        return $this->toArray();
+        $collectors = [];
+        /** @var DataCollectorInterface $collector */
+        foreach ($this->collectors as $collector) {
+            if ($collector->supports($dataType, $entityType)) {
+                $collectors[] = $collector;
+            }
+        }
+
+        if (empty($collectors)) {
+            throw new NoSupportedCollectorFoundException('Collectors are not found');
+        }
+
+        return $collectors;
     }
 }

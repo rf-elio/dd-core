@@ -32,17 +32,14 @@
 
 namespace Elio\ElioSearch\Core\Sync\Input;
 
-
 use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
 use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
-use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\DataTypes\Exception\UnknownContentTypeException;
 use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
-use Elio\ElioSearch\Core\Sync\Input\Exception\NoSupportedCollectorFoundException;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Generator;
 use Psr\Log\LoggerInterface;
@@ -57,7 +54,7 @@ use Shopware\Core\Framework\Struct\Collection;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class DeltaInput implements InputInterface
+class DeltaInput extends BaseInput
 {
     public const TYPE = self::class;
 
@@ -66,6 +63,7 @@ class DeltaInput implements InputInterface
         private readonly iterable $collectors,
         private readonly LoggerInterface $logger
     ) {
+        parent::__construct($collectors);
     }
 
     public function supports(string $type): bool
@@ -142,30 +140,6 @@ class DeltaInput implements InputInterface
                 }
             }
         }
-    }
-
-    /**
-     * Gets profile collectors
-     *
-     * @param string $dataType
-     * @param string $entityType
-     * @return DataCollectorInterface[]
-     */
-    protected function getCollectors(string $dataType, string $entityType): array
-    {
-        $collectors = [];
-        /** @var DataCollectorInterface $collector */
-        foreach ($this->collectors as $collector) {
-            if ($collector->supports($dataType, $entityType)) {
-                $collectors[] = $collector;
-            }
-        }
-
-        if (empty($collectors)) {
-            throw new NoSupportedCollectorFoundException('Collectors are not found');
-        }
-
-        return $collectors;
     }
 
     protected function mapEntityStatusBaseFields(

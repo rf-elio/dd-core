@@ -136,8 +136,8 @@ class ProductDetailTrackingController extends StorefrontController
             $trackingData->get('label'),
             $trackingData->get('query'),
             $trackingData->get('pos'),
-            $trackingData->get('page'),
-            $trackingData->get('pageSize'),
+            intval($trackingData->get('page')),
+            intval($trackingData->get('pageSize')),
             $trackingData->get('campaign'),
             $customerId
         );

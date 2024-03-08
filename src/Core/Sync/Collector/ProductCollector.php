@@ -50,10 +50,9 @@ use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductCo
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
@@ -109,8 +108,8 @@ class ProductCollector implements DataCollectorInterface
     {
         $categories = $this->loadCategories($contexts);
         $criteria = $criteria ? clone $criteria : new Criteria();
-        $this->prepareCriteria($criteria);
         $context = $contexts->getFirst();
+        $this->prepareCriteria($criteria, $context->getSalesChannelId());
         $config = $this->configService->getByContext($context);
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
@@ -127,7 +126,7 @@ class ProductCollector implements DataCollectorInterface
      * @param Criteria $criteria
      * @return Criteria
      */
-    protected function prepareCriteria(Criteria $criteria): Criteria
+    protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
     {
         $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
@@ -139,6 +138,9 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
         $criteria->addAssociation('elioSearchProductSorting');
+
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);

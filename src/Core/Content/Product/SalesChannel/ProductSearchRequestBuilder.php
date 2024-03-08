@@ -38,11 +38,13 @@ use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioSearch\Api\Search\Request\SearchRequest;
 use Elio\ElioSearch\Configuration\Configuration;
 use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioSearch\Core\Content\Product\SalesChannel\Event\ProductSearchRequestBuildedEvent;
 use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
 use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class ProductSearchRequestBuilder
@@ -59,15 +61,16 @@ class ProductSearchRequestBuilder
     protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-search-answer-path-';
     public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'elio_search_additional_request_parameter_';
 
-    private ElioSearchConfigServiceInterface $configService;
-
     /**
      * SearchRequestBuilder constructor.
      * @param ElioSearchConfigServiceInterface $configService
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ElioSearchConfigServiceInterface $configService)
+    public function __construct(
+        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    )
     {
-        $this->configService = $configService;
     }
 
     /**
@@ -95,11 +98,12 @@ class ProductSearchRequestBuilder
         $this->addPage($payload, $searchRequest);
         $this->addSorting($payload, $searchRequest);
         $this->addFilters($payload, $searchRequest);
-        $this->addAdvisorCampaignFilter($payload, $searchRequest);
         $this->addCustomParameters($searchRequest, $config);
         $this->addAdditionalRequestParameters($payload, $searchRequest);
 
-        return $searchRequest;
+        $event = new ProductSearchRequestBuildedEvent($searchRequest, $payload);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getSearchRequest();
     }
 
     /**
@@ -180,28 +184,6 @@ class ProductSearchRequestBuilder
                  }
              }
          }
-    }
-
-    /**
-     * Adds the advisor campaign filters to the elio search request
-     *
-     * @param array $payload
-     * @param ProductSearchRequest $searchRequest
-     */
-    protected function addAdvisorCampaignFilter(array $payload, ProductSearchRequest $searchRequest): void
-    {
-        $campaignId = null;
-        $answerPath = null;
-
-        foreach ($payload as $key => $value) {
-            if (strpos($key, self::ANSWER_PATH_REQUEST_PARAM_PREFIX) === 0) {
-                $campaignId = str_replace(self::ANSWER_PATH_REQUEST_PARAM_PREFIX, '', $key);
-                $answerPath = $value;
-            }
-        }
-        if (!empty($campaignId) && !empty($answerPath)) {
-            $searchRequest->setAdvisorStatus(new AdvisorStatus($answerPath, $campaignId));
-        }
     }
 
     /**

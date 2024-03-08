@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,49 +30,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\ElioSearch\Core\Sync\Input;
 
-
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioSearch\Core\Sync\FullDataCollection;
+use Generator;
+use Psr\Log\LoggerInterface;
 
 /**
- * Class FacetCollection
- * @package Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class FullInput
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FacetCollection extends EntityResult
+class FullInput extends BaseInput
 {
-    protected AggregationResultCollection $aggregations;
+    public const TYPE = self::class;
 
-    public function __construct(string $name = 'elio-search-default')
+    public function __construct(
+        private readonly iterable        $collectors,
+        private readonly LoggerInterface $logger
+    )
     {
-        parent::__construct($name, new EntityCollection());
-        $this->aggregations = new AggregationResultCollection();
+        parent::__construct($collectors);
     }
 
     /**
-     * @param AggregationResult $aggregation
+     * Checks if writer is supported
+     *
      * @param string $type
+     * @return bool
      */
-    public function addAggregation(AggregationResult $aggregation, string $type): void
+    public function supports(string $type): bool
     {
-        $aggregation->addExtension(AggregationExtension::KEY, new AggregationExtension(
-            $type, $aggregation->getName()
-        ));
-        $this->aggregations->add($aggregation);
+        return self::TYPE === $type;
     }
 
     /**
-     * @return AggregationResultCollection
+     * @param SyncContext $syncContext
+     * @return Generator<FullDataCollection>
      */
-    public function getAggregations(): AggregationResultCollection
+    public function read(SyncContext $syncContext): Generator
     {
-        return $this->aggregations;
+        $syncProfile = $syncContext->getSyncProfile();
+        $contexts = $syncContext->getSalesChannelContexts();
+
+        $this->logger->info('FullInput: DataType', [
+            'type' => $syncProfile->getDataType()
+        ]);
+
+        foreach ($this->getCollectors($syncProfile->getDataType()) as $collector) {
+            foreach ($collector->collect($contexts) as $collection) {
+                yield new FullDataCollection($syncProfile->getDataType(), $collection);
+            }
+        }
     }
 }
