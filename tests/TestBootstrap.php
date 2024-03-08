@@ -26,7 +26,7 @@ function getProjectDir(): string
 
 $testProjectDir = getProjectDir();
 
-$loader = require $testProjectDir . '/vendor/autoload.php';
+$loader = require_once $testProjectDir . '/vendor/autoload.php';
 KernelLifecycleManager::prepare($loader);
 $pluginVendorDir = __DIR__ . '/../vendor';
 if (is_dir($pluginVendorDir)) {

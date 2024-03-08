@@ -21,7 +21,7 @@ export default class ElioSearchHistoryPlugin extends Plugin {
         } catch (e) {
             if (localStorage) {
                 let eDebugOutput = localStorage.getItem("eDebug");
-                if (eDebugOutput && parseInt(eDebugOutput) === 1) {
+                if (eDebugOutput && parseInt(eDebugOutput, 10) === 1) {
                     console.log('SearchHistoryPlugin', e)
                 }
             }
