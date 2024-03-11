@@ -43,8 +43,8 @@ class Variant
     private ?ProductDataType $parentProduct = null;
     private string $groupingKey;
     private bool $displayByDefault;
-    private readonly bool $displayByDefaultInListing;
-    private readonly bool $displayByDefaultInSearch;
+    private bool $displayByDefaultInListing = false;
+    private bool $displayByDefaultInSearch = false;
     private int $position = 0;
 
 

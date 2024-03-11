@@ -47,13 +47,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Class FactFinder
+ * Class ElioSearch
  *
  * @category  Bootstrap
  * @package   Shopware\Plugins\ElioSearch
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
+ * @author    Andrei Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
 class ElioSearch extends Plugin
@@ -177,14 +178,6 @@ class ElioSearch extends Plugin
                         'label' => [
                             'en-GB' => 'Exclude sub categories in content export',
                             'de-DE' => 'Unterkategorien vom Content Export ausschließen',
-                        ]
-                    ],
-                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
-                        'type' => 'bool',
-                        'componentName' => 'sw-field',
-                        'label' => [
-                            'en-GB' => 'Exclude product info in keywords',
-                            'de-DE' => 'Produktinformationen in den Keywords ausschließen',
                         ]
                     ],
                     self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [

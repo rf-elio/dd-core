@@ -32,17 +32,21 @@
 
 namespace Elio\ElioSearch\Core\Sync\Api;
 
+use Elio\ElioSearch\Core\Sync\Output\CSVOutput;
 use Elio\ElioSearch\Core\Sync\ProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncProfileMessage;
 use Elio\ElioSearch\Core\Sync\SyncService;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
@@ -58,6 +62,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['administration']])]
 class SyncProfileController extends AbstractController
 {
+    private const BASE_DIR = 'elio-search-export';
+
     /**
      * @param ProfileInterface[] $profiles
      * @param SyncService $syncService
@@ -66,7 +72,8 @@ class SyncProfileController extends AbstractController
     public function __construct(
         private readonly iterable $profiles,
         private readonly SyncService $syncService,
-        private readonly MessageBusInterface $messageBus
+        private readonly MessageBusInterface $messageBus,
+        private readonly FilesystemOperator $fileSystem
     ) {}
 
     /**
@@ -107,8 +114,8 @@ class SyncProfileController extends AbstractController
         try {
             $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);
             return new JsonResponse([
-                'exists' => $this->exportStorageService->exists($syncProfile),
-                'path' => $this->exportStorageService->createFileName($syncProfile)
+                'exists' => $this->exists($syncProfile),
+                'path' => CSVOutput::createFileName(self::BASE_DIR, $syncProfile)
             ]);
         } catch (\Exception) {
             return new JsonResponse([
@@ -133,7 +140,7 @@ class SyncProfileController extends AbstractController
             return $response;
         }
 
-        return $this->exportStorageService->createFileResponse($syncProfile);
+        return $this->createFileResponse($syncProfile);
     }
 
     /**
@@ -177,5 +184,53 @@ class SyncProfileController extends AbstractController
         $startedDate = new \DateTime();
         $this->messageBus->dispatch((new Envelope(new SyncProfileMessage($syncProfile, $context)))->with(new DelayStamp(1000)));
         return new JsonResponse(['id' => $id, 'status' => 'starting', 'started' => $startedDate]);
+    }
+
+    /**
+     * Creates a file response for the given export
+     *
+     * @param SyncProfileEntity $syncProfileEntity
+     * @return Response
+     * @throws FilesystemException
+     */
+    public function createFileResponse(SyncProfileEntity $syncProfileEntity): Response
+    {
+        if (!$this->exists($syncProfileEntity)) {
+            throw new FileNotFoundException($syncProfileEntity->getId());
+        }
+
+        $fileName = CSVOutput::createFileName(self::BASE_DIR, $syncProfileEntity);
+        $headers = [
+            'Content-Disposition' => HeaderUtils::makeDisposition(
+                'attachment',
+                $syncProfileEntity->getName().'.csv',
+                // only printable ascii
+                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $syncProfileEntity->getName().'.csv')
+            ),
+            'Content-Length' => $this->fileSystem->fileSize($fileName),
+            'Content-Type' => 'application/octet-stream',
+        ];
+
+        $stream = $this->fileSystem->readStream($fileName);
+        if (!is_resource($stream)) {
+            throw new FileNotFoundException($syncProfileEntity->getId());
+        }
+
+        return new StreamedResponse(function () use ($stream): void {
+            fpassthru($stream);
+        }, Response::HTTP_OK, $headers);
+    }
+
+    /**
+     * Checks if the export exists
+     *
+     * @param SyncProfileEntity $syncProfileEntity
+     * @return bool
+     * @throws FilesystemException
+     */
+    public function exists(SyncProfileEntity $syncProfileEntity): bool
+    {
+        $fileName = CSVOutput::createFileName(self::BASE_DIR, $syncProfileEntity);
+        return $this->fileSystem->has($fileName);
     }
 }

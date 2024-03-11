@@ -82,7 +82,6 @@
 
 <!--        <service id="Elio\ElioSearch\Core\Sync\Output\CSVOutput">-->
 <!--            <argument type="service" id="shopware.filesystem.private" />-->
-<!--            <argument type="service" id="elio.search.core.logging.default"/>-->
 <!--            <tag name="elio-search.sync.api.output"/>-->
 <!--        </service>-->
 

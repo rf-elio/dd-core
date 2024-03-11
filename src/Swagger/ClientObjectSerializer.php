@@ -272,9 +272,9 @@ class ClientObjectSerializer
             // determine file name
             if (array_key_exists('Content-Disposition', $httpHeaders) &&
                 preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = \CLIENTOBJECTSERIALIZER . phpConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
+                $filename = ClientConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
             } else {
-                $filename = tempnam(Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
+                $filename = tempnam(ClientConfiguration::getDefaultConfiguration()->getTempFolderPath(), '');
             }
 
             $file = fopen($filename, 'w');

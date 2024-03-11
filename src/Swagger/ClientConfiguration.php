@@ -384,12 +384,12 @@ class ClientConfiguration
     /**
      * Gets the default configuration instance
      *
-     * @return Configuration
+     * @return ClientConfiguration
      */
     public static function getDefaultConfiguration()
     {
         if (self::$defaultConfiguration === null) {
-            self::$defaultConfiguration = new Configuration();
+            self::$defaultConfiguration = new ClientConfiguration();
         }
 
         return self::$defaultConfiguration;
@@ -398,11 +398,11 @@ class ClientConfiguration
     /**
      * Sets the detault configuration instance
      *
-     * @param Configuration $config An instance of the Configuration Object
+     * @param ClientConfiguration $config An instance of the Configuration Object
      *
      * @return void
      */
-    public static function setDefaultConfiguration(Configuration $config): void
+    public static function setDefaultConfiguration(ClientConfiguration $config): void
     {
         self::$defaultConfiguration = $config;
     }

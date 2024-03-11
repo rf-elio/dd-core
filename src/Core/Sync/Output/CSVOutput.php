@@ -64,8 +64,7 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     private ?SyncProfileEntity $syncProfile = null;
 
     public function __construct(
-        private readonly FilesystemOperator $fileSystem,
-        private readonly LoggerInterface    $logger
+        private readonly FilesystemOperator $fileSystem
     ) {}
 
     abstract protected function getType(): string;
@@ -77,7 +76,7 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     /**
      * Must be implemented in extension plugin
      *
-     * @param DataTypeInterface $dataType
+     * @param DataTypeInterface $exportItem
      * @param SyncContext $syncContext
      * @return array
      */
@@ -133,7 +132,7 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
         $this->fileSystem->createDirectory($this->getBaseDir());
 
         if ($this->syncProfile) {
-            $fileName = $this->createFileName($this->syncProfile);
+            $fileName = self::createFileName($this->getBaseDir(), $this->syncProfile);
 
             if ($this->fileSystem->has($fileName)) {
                 $this->fileSystem->delete($fileName);
@@ -148,16 +147,17 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     }
 
     /**
-     * Creates the file name based on the export and sales channel
+     * Creates the file name based on SyncProfileEntity
      *
+     * @param string $baseDir
      * @param SyncProfileEntity $export
      * @return string
      */
-    public function createFileName(SyncProfileEntity $export): string
+    public static function createFileName(string $baseDir, SyncProfileEntity $export): string
     {
         return sprintf(
             '%s/%s-%s.csv',
-            $this->getBaseDir(),
+            $baseDir,
             $export->getId(),
             $export->getName()
         );
@@ -172,7 +172,7 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
      */
     public function exists(SyncProfileEntity $export): bool
     {
-        $fileName = $this->createFileName($export);
+        $fileName = self::createFileName($this->getBaseDir(), $export);
         return $this->fileSystem->has($fileName);
     }
 }

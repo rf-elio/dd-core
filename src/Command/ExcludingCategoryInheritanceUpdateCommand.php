@@ -89,6 +89,11 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @param Context $context
+     * @return void
+     * @throws Exception
+     */
     private function updateExcludeInheritance(Context $context): void
     {
         $criteria = new Criteria();
