@@ -11,15 +11,11 @@ class LanguageHelper
      * Extracts the first language id from the language chain in the given context
      *
      * @param Context $context
-     * @return string|null
+     * @return string
      */
-    public static function getLanguageIdByContext(Context $context): ?string
+    public static function getLanguageIdByContext(Context $context): string
     {
-        if(count($context->getLanguageIdChain()) > 0) {
-            return $context->getLanguageIdChain()[0];
-        }
-
-        return null;
+        return $context->getLanguageIdChain()[0];
     }
 
     /**

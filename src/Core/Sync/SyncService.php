@@ -46,6 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -103,7 +104,7 @@ class SyncService
         }
 
         $salesChannelContexts = new SalesChannelContextCollection();
-        foreach ($syncProfile->getLanguages() as $language) {
+        foreach ($syncProfile->getLanguages() ?? new LanguageCollection() as $language) {
             $salesChannelContexts->add($this->salesChannelContextFactory->create(
                 '',
                 $salesChannel->getId(),
@@ -244,7 +245,7 @@ class SyncService
      */
     protected function getProfileDefinition(SyncProfileEntity $syncProfile): ProfileInterface
     {
-        /** @var ProfileInterface $profileConfiguration */
+        /** @var ProfileInterface $profileDefinition */
         foreach ($this->profileDefinitions as $profileDefinition) {
             if ($profileDefinition->getName() === $syncProfile->getProfile()) {
                 return $profileDefinition;

@@ -107,6 +107,7 @@ class LandingPageCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
+     * @param string $salesChannelId
      * @return Criteria
      */
     protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
@@ -146,6 +147,7 @@ class LandingPageCollector implements DataCollectorInterface
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
                 $dataType = $this->mapLandingPageToDataType($entity);
+                /** @phpstan-ignore-next-line */
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);
                 $mappedEntities->set($dataType->getId(), $mappedEntity);

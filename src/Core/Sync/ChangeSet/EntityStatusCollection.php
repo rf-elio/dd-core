@@ -66,6 +66,7 @@ class EntityStatusCollection extends EntityCollection
             return null;
         }
 
+        /** @var EntityStatusEntity|null return */
         return $this->get($id);
     }
 
@@ -77,7 +78,7 @@ class EntityStatusCollection extends EntityCollection
 
         /** @var EntityStatusEntity $element */
         foreach ($this->elements as $element) {
-            $this->map[$this->getMapIdentifier($element->getEntityType(), $element->getIdentifier())] = $element->getId();
+            $this->map[$this->getMapIdentifier($element->getEntityType() ?? '', $element->getIdentifier() ?? '')] = $element->getId();
         }
     }
 
@@ -86,7 +87,7 @@ class EntityStatusCollection extends EntityCollection
         return $type.'-'.$identifier;
     }
 
-    public function getEntityIds()
+    public function getEntityIds(): array
     {
         return array_map(static fn(EntityStatusEntity $entity) => $entity->getEntityId(), $this->elements);
     }

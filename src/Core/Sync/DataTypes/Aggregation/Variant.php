@@ -87,4 +87,14 @@ class Variant
     {
         $this->position = $position;
     }
+
+    public function isDisplayByDefaultInListing(): bool
+    {
+        return $this->displayByDefaultInListing;
+    }
+
+    public function isDisplayByDefaultInSearch(): bool
+    {
+        return $this->displayByDefaultInSearch;
+    }
 }

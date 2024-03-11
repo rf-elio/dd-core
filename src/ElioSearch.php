@@ -47,14 +47,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Class ElioSearch
+ * Class FactFinder
  *
  * @category  Bootstrap
  * @package   Shopware\Plugins\ElioSearch
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
- * @author    Andrei Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
 class ElioSearch extends Plugin
@@ -93,6 +92,10 @@ class ElioSearch extends Plugin
      */
     public function activate(ActivateContext $activateContext): void
     {
+        if (!$this->container) {
+            return;
+        }
+
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
 
@@ -106,6 +109,10 @@ class ElioSearch extends Plugin
     public function postUpdate(UpdateContext $updateContext): void
     {
         if (!$this->isActive()) {
+            return;
+        }
+
+        if (!$this->container) {
             return;
         }
 
@@ -124,6 +131,10 @@ class ElioSearch extends Plugin
     public function uninstall(UninstallContext $uninstallContext): void
     {
         if ($uninstallContext->keepUserData()) {
+            return;
+        }
+
+        if (!$this->container) {
             return;
         }
 

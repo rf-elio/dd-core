@@ -71,6 +71,9 @@ EOT;
     public function getLogContent(int $index): string
     {
         $content = file_get_contents($this->getFilepath($index));
+        if (!$content) {
+            return '';
+        }
         return $this->prepareContent($content);
     }
 
@@ -103,7 +106,7 @@ EOT;
     {
         $prepared = htmlspecialchars($content);
         $prepared = str_replace(["\n", '\n'], '<br>', $prepared);
-        return preg_replace('/\s/', '&nbsp;', $prepared);
+        return preg_replace('/\s/', '&nbsp;', $prepared) ?? '';
     }
 
     /**

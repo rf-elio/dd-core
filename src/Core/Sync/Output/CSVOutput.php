@@ -119,7 +119,10 @@ abstract class CSVOutput implements OutputInterface, WriteAwareInterface, Handle
     {
         $this->syncProfile = $syncContext->getSyncProfile();
         $this->headerWritten = false;
-        $this->fileHandle = tmpfile();
+        $tmpfile = tmpfile();
+        if ($tmpfile !== false) {
+            $this->fileHandle = $tmpfile;
+        }
     }
 
     /**

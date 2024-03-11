@@ -151,20 +151,23 @@ class ProductUtil
             }
 
             return $groupConfig['id'] ?: null;
-        }, $configuratorGroupConfig ?: []);
+        }, $configuratorGroupConfig);
 
         $ids = array_filter($ids, fn ($id) => $id !== null);
 
         /** @var array<string,object{name:string,value:string}> */
         $options = $product
             ->getOptions()
-            ->filter(fn(PropertyGroupOptionEntity $propertyGroupOption) => in_array($propertyGroupOption->getGroupId(), $ids))
+            ?->filter(fn(PropertyGroupOptionEntity $propertyGroupOption) => in_array($propertyGroupOption->getGroupId(), $ids))
             ->map(function (PropertyGroupOptionEntity $propertyGroupOption) {
                 $propertyGroup = $propertyGroupOption->getGroup();
-
-                $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
-                $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
-
+                if ($propertyGroup) {
+                    $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
+                    $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
+                } else {
+                    $name  = '';
+                    $value = '';
+                }
                 return (object)compact('name', 'value');
             });
 

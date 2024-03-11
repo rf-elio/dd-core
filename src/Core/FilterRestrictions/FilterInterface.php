@@ -62,7 +62,7 @@ interface FilterInterface
      * @param string $restrictionType
      * @param ApiRequest $request
      * @param SalesChannelContext $context
-     * @return mixed
+     * @return array
      */
     public function filter(array $items, string $restrictionType, ApiRequest $request, SalesChannelContext $context): array;
 }

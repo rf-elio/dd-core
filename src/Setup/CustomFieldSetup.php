@@ -120,6 +120,7 @@ class CustomFieldSetup
             $upsets[] = $upsert;
         }
 
+        /** @var EntityRepository|null $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         if (!$customFieldSetRepository) {
@@ -241,6 +242,7 @@ class CustomFieldSetup
      */
     private function getFieldSetId(string $customFieldName): ?string
     {
+        /** @var EntityRepository|null $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         if (!$customFieldSetRepository) {
@@ -269,6 +271,7 @@ class CustomFieldSetup
             return null;
         }
 
+        /** @var EntityRepository|null $customFieldSetRelationRepository */
         $customFieldSetRelationRepository = $this->container->get('custom_field_set_relation.repository');
 
         if (!$customFieldSetRelationRepository) {
@@ -298,6 +301,7 @@ class CustomFieldSetup
             return null;
         }
 
+        /** @var EntityRepository|null $customFieldRepository */
         $customFieldRepository = $this->container->get('custom_field.repository');
 
         if (!$customFieldRepository) {

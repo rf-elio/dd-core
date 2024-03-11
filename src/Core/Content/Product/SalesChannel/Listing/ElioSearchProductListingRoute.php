@@ -190,7 +190,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         if ($category->getProductStreamId()) {
             $navigationRequest->setStreamId($category->getProductStreamId());
         } else {
-            $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel());
+            $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel()) ?? [];
             $navigationRequest->setCategoryPath($path);
             $navigationRequest->setCategoryId($category->getId());
         }
@@ -232,6 +232,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
             ]
         ];
 
+        /** @var string $parsedCustomFilterValue */
         foreach ($parsedCustomFilters as &$parsedCustomFilterValue) {
             $re = '/{([a-zA-Z\d_\-"\."]+)}/m';
             preg_match_all($re, $parsedCustomFilterValue, $matches, PREG_SET_ORDER, 0);

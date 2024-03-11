@@ -37,6 +37,7 @@ use Elio\ElioSearch\Core\Sync\ProfileInterface;
 use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncProfileMessage;
 use Elio\ElioSearch\Core\Sync\SyncService;
+use Elio\FactFinder\Core\Export\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
@@ -205,7 +206,7 @@ class SyncProfileController extends AbstractController
                 'attachment',
                 $syncProfileEntity->getName().'.csv',
                 // only printable ascii
-                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $syncProfileEntity->getName().'.csv')
+                preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $syncProfileEntity->getName().'.csv') ?? ''
             ),
             'Content-Length' => $this->fileSystem->fileSize($fileName),
             'Content-Type' => 'application/octet-stream',

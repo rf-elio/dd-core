@@ -87,7 +87,7 @@ class IndexCleanupCommand extends Command
             return Command::FAILURE;
         }
 
-        $daysBeforeCleanup = $this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14;
+        $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
         $sortedProfile = $this->getLeastRecentlyFinishedSyncProfile($syncProfiles);
         $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
             ?->format(Defaults::STORAGE_DATE_TIME_FORMAT)))

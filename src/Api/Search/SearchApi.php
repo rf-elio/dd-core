@@ -54,7 +54,6 @@ use Throwable;
 class SearchApi
 {
     use ElioSearchLogTrait;
-    private Transformer $transformer;
 
     /**
      * SearchApi constructor.

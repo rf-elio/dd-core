@@ -45,6 +45,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -148,9 +149,9 @@ class CategoryCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return StructCollection
+     * @return Collection
      */
-    protected function mapCollectedData(array $data): StructCollection
+    protected function mapCollectedData(array $data): Collection
     {
         $mappedEntities = new StructCollection();
         foreach ($data as $languageId => $entities) {

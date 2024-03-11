@@ -47,7 +47,7 @@ class DataCollectedEvent extends Event
 {
     /**
      * @param string $type
-     * @param EntityCollection $data
+     * @param Collection $data
      */
     public function __construct(
         private readonly string $type,

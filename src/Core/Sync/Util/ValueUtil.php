@@ -90,7 +90,7 @@ class ValueUtil
     {
         $pattern = '/&[a-z]+;|&|_{2, }/';
         $replacement = '';
-        return preg_replace($pattern, $replacement, $subject, -1 );
+        return preg_replace($pattern, $replacement, $subject, -1 ) ?? '';
     }
 
     /**

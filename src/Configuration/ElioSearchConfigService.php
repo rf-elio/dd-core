@@ -101,6 +101,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             return $this->loadedConfigurations[$salesChannelId][$languagePrefix];
         }
 
+        /** @var array $config */
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId) ?? [];
         parse_str(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',

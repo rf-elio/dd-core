@@ -105,7 +105,7 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
             foreach ($result['customFields'] as $categoryId => $customFields) {
                 /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
-                $actualCustomFields = $category->getCustomFields();
+                $actualCustomFields = $category->getCustomFields() ?? [];
                 // If they already have the same value, we don't need to update to avoid indexer message creation
                 if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
                     && array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)

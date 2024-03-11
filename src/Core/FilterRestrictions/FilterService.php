@@ -262,10 +262,10 @@ class FilterService implements FilterInterface
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) {
                 $allowAll = $restriction->isAllChecked();
-                $allowList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());
+                $allowList = $restriction->getFilters()?->map(fn(FilterEntity $filter) => $filter->getTechnicalName()) ?? [];
             } else {
                 $blockAll = $restriction->isAllChecked();
-                $blockList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());;
+                $blockList = $restriction->getFilters()?->map(fn(FilterEntity $filter) => $filter->getTechnicalName()) ?? [];
             }
         }
 
@@ -315,7 +315,6 @@ class FilterService implements FilterInterface
      * @param string|null $salesChannelId
      * @param string|null $languageId
      * @param string $layer
-     * @param string $type
      * @param string|null $categoryId
      * @return Criteria
      */

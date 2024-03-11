@@ -84,6 +84,6 @@ class ElioSearchException extends RuntimeException
             $regex[sprintf('/\{\{(\s+)?(%s)(\s+)?\}\}/', $key)] = $value;
         }
 
-        return preg_replace(array_keys($regex), array_values($regex), $message);
+        return preg_replace(array_keys($regex), array_values($regex), $message) ?? '';
     }
 }

@@ -47,7 +47,10 @@ class FullDataCollection extends AbstractDataCollection
         iterable $elements = [],
     )
     {
-        parent::__construct($elements);
+        parent::__construct(
+            $this->type,
+            $elements
+        );
     }
 
     public function getType(): string

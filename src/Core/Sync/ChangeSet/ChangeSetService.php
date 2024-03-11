@@ -180,7 +180,7 @@ class ChangeSetService
             $upsertData[] = [
                 'id' => $entityStatus->getId(),
                 'entityType' => $entityStatus->getEntityType(),
-                'entityId' => Uuid::fromHexToBytes($entityStatus->getEntityId()),
+                'entityId' => Uuid::fromHexToBytes($entityStatus->getEntityId() ?? ''),
                 'identifier' => $entityStatus->getIdentifier(),
                 'dataType' => $entityStatus->getDataType(),
                 'state' => $entityStatus->getState(),

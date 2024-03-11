@@ -54,7 +54,7 @@ class FullInput extends BaseInput
         private readonly LoggerInterface $logger
     )
     {
-        parent::__construct($collectors);
+        parent::__construct($this->collectors);
     }
 
     /**

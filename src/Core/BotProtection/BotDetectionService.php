@@ -105,7 +105,7 @@ class BotDetectionService implements BotDetectionServiceInterface
 
         // check ip addresses
         $serverVariables = json_encode($request->server->all());
-        if($this->checkList($config->getBotProtectionIpFilter(), $serverVariables)) {
+        if($serverVariables && $this->checkList($config->getBotProtectionIpFilter(), $serverVariables)) {
             return true;
         }
 
@@ -167,6 +167,9 @@ class BotDetectionService implements BotDetectionServiceInterface
 
         $botListPath = __DIR__.'/../../Resources/files/bot-list.txt';
         $botList = file_get_contents($botListPath);
+        if (!$botList) {
+            return false;
+        }
         $botList = explode(PHP_EOL, $botList);
         return $this->checkList($botList, $userAgent);
     }
