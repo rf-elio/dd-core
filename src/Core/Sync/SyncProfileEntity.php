@@ -101,16 +101,6 @@ class SyncProfileEntity extends Entity
     }
 
     /**
-     * Returns an identifier that is unique for every channel and language
-     *
-     * @return string
-     */
-    public function getIdentifier(): string
-    {
-        return $this->salesChannelId . '-' . $this->languageId;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string

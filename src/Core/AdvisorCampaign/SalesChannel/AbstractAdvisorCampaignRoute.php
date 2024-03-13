@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,48 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class ProductType
- * @package Elio\ElioSearch\Core\Sync\DataTypes
+ * Class AbstractAdvisorCampaignRoute
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ProductDataType extends ProductEntity implements DataTypeInterface
+abstract class AbstractAdvisorCampaignRoute
 {
-    use IdentifierAware;
-    use TranslationAware;
-    use DeletedAware;
+    abstract public function getDecorated(): AbstractAdvisorCampaignRoute;
 
-    private ?Variant $variant = null;
-    private ?string $thumbnailUrl = null;
-
-    public function setVariant(Variant $variant): void
-    {
-        $this->variant = $variant;
-    }
-
-    public function getVariant(): Variant
-    {
-        if ($this->variant === null) {
-            throw new \RuntimeException('Variant is not set');
-        }
-        return $this->variant;
-    }
-
-    public function getThumbnailUrl(): ?string
-    {
-        return $this->thumbnailUrl;
-    }
-
-    public function setThumbnailUrl(?string $thumbnailUrl): void
-    {
-        $this->thumbnailUrl = $thumbnailUrl;
-    }
+    abstract public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse;
 }

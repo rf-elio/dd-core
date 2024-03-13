@@ -58,7 +58,7 @@ class Configuration extends Struct
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
      * @param bool $listingUseElioSearch
-     * @param array<string> $additionalRequestParameters
+     * @param string[] $additionalRequestParameters
      * @param int $suggestThumbnailSize
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
@@ -170,7 +170,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getAdditionalRequestParameters(): array
     {

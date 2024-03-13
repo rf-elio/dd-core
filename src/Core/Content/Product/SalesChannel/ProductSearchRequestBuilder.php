@@ -164,7 +164,8 @@ class ProductSearchRequestBuilder
                  $filterValues = explode('|', (string) $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
-                     $searchRequest->addFilter($name, json_encode([(float)$min, (float)$max]));
+                     $value = json_encode([(float)$min, (float)$max]) ?: '';
+                     $searchRequest->addFilter($name, $value);
                  }
              }elseif (str_contains($key, 'tree')){
                  $filterValues = explode('|', (string) $filterValues);

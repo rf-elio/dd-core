@@ -108,6 +108,13 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             $additionalRequestParameters
         );
 
+        $correctedAdditionalRequestParameters = [];
+        foreach ($additionalRequestParameters as $additionalRequestParameter) {
+            if (is_string($additionalRequestParameter)) {
+                $correctedAdditionalRequestParameters[] = $additionalRequestParameter;
+            }
+        }
+
         $configuration = new Configuration(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
@@ -120,7 +127,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
-            $additionalRequestParameters,
+            $correctedAdditionalRequestParameters,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,

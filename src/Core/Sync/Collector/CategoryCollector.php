@@ -91,7 +91,7 @@ class CategoryCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<StructCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -158,6 +158,7 @@ class CategoryCollector implements DataCollectorInterface
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
                 $dataType = $this->mapCategoryToDataType($entity);
+                /** @var ContentDataType $mappedEntity */
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);
                 $mappedEntities->set($dataType->getId(), $mappedEntity);

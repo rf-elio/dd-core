@@ -41,6 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @extends EntityCollection<EntityStatusEntity>
  */
 class EntityStatusCollection extends EntityCollection
 {
