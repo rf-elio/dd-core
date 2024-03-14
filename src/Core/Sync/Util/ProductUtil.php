@@ -144,8 +144,8 @@ class ProductUtil
             return $groupingKey;
         }
 
-        /** @var array{id:string,representation:string,expressionForListings:bool} $configuratorGroupConfig */
-        $ids = array_map(function ($groupConfig) {
+        /** @var array{id:string,representation:string,expressionForListings:bool|null}[] $configuratorGroupConfig */
+        $ids = array_map(static function ($groupConfig) {
             if (!($groupConfig['expressionForListings'] ?? false)) {
                 return null;
             }
@@ -153,7 +153,7 @@ class ProductUtil
             return $groupConfig['id'] ?: null;
         }, $configuratorGroupConfig);
 
-        $ids = array_filter($ids, fn ($id) => $id !== null);
+        $ids = array_filter($ids, static fn ($id) => $id !== null);
 
         /** @var array<string,object{name:string,value:string}> */
         $options = $product
