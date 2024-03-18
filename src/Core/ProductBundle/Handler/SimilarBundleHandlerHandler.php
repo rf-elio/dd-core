@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle\Handler;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle\Handler;
 
-use Elio\ElioSearch\Api\Recommendations\RecommendationApi;
-use Elio\ElioSearch\Api\Recommendations\Request\SimilarRequest;
-use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
-use Elio\ElioSearch\Core\ProductBundle\Excluder;
+use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\SimilarRequest;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
+use Elio\ElioDataDiscovery\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -18,22 +18,22 @@ use Throwable;
 /**
  * Class SimilarBundleHandler
  *
- * @package Elio\ElioSearch\Core\ProductBundle
+ * @package Elio\ElioDataDiscovery\Core\ProductBundle
  */
 class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'similar';
 
     private RecommendationApi $RecommendationApi;
-    private ElioSearchConfigServiceInterface $configService;
+    private ElioDataDiscoveryConfigServiceInterface $configService;
 
     /**
      * SimilarBundle constructor.
      *
      * @param RecommendationApi $RecommendationApi
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
-    public function __construct(RecommendationApi $RecommendationApi, ElioSearchConfigServiceInterface $configService)
+    public function __construct(RecommendationApi $RecommendationApi, ElioDataDiscoveryConfigServiceInterface $configService)
     {
         $this->RecommendationApi = $RecommendationApi;
         $this->configService = $configService;

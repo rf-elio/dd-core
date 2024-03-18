@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Recommendations;
+namespace Elio\ElioDataDiscovery\Api\Recommendations;
 
-use Elio\ElioSearch\Api\Recommendations\Request\DetailPageRequest;
-use Elio\ElioSearch\Api\Recommendations\Request\RecommendationRequest;
-use Elio\ElioSearch\Api\Recommendations\Request\SimilarRequest;
-use Elio\ElioSearch\Api\Response\ResponseCollection;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\DetailPageRequest;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\RecommendationRequest;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\SimilarRequest;
+use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -44,7 +44,7 @@ use Throwable;
 /**
  * Class RecordsApi
  *
- * @package Elio\ElioSearch\Api\Recommendations
+ * @package Elio\ElioDataDiscovery\Api\Recommendations
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -52,7 +52,7 @@ use Throwable;
  */
 class RecommendationApi
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
      * RecommendationApi constructor.

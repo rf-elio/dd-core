@@ -1,14 +1,14 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle\Exception;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle\Exception;
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class NoProductBundleHandlerFoundException
  * @package Elio\FactFinder\Core\ProductBundle\Exception
  * @author Ralf Frommherz
  */
-class NoProductBundleHandlerFoundException extends ElioSearchException
+class NoProductBundleHandlerFoundException extends ElioDataDiscoveryException
 {
 }

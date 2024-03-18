@@ -1,8 +1,8 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Recommendations\Request;
+namespace Elio\ElioDataDiscovery\Api\Recommendations\Request;
 
-use Elio\ElioSearch\Api\Request\ChannelRequest;
+use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 
 class SimilarRequest extends ChannelRequest
 {

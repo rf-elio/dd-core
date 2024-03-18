@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Detail;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail;
 
-use Elio\ElioSearch\Api\Recommendations\RecommendationApi;
-use Elio\ElioSearch\Api\Recommendations\Request\DetailPageRequest;
-use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\DetailPageRequest;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRouteResponse;
@@ -52,21 +52,21 @@ use Throwable;
  * @author elio GmbH <support@elio-systems.com>
  * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Detail
  */
-class ElioSearchProductDetailRoute extends AbstractProductDetailRoute
+class ElioDataDiscoveryProductDetailRoute extends AbstractProductDetailRoute
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
-     * ElioSearchProductDetailRoute constructor.
+     * ElioDataDiscoveryProductDetailRoute constructor.
      *
      * @param AbstractProductDetailRoute $decorated
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param RecommendationApi $recordsApi
      * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly AbstractProductDetailRoute       $decorated,
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly RecommendationApi                $recordsApi,
         LoggerInterface                                   $logger
     )

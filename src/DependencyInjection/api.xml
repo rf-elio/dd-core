@@ -13,7 +13,7 @@
             <argument type="service" id="elio.search.core.logging.debug" />
         </service>
 
-        <service id="Elio\ElioSearch\Api\Recommendations\RecommendationApi">
+        <service id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi">
             <argument type="service" id="elio.search.core.logging.debug" />
         </service>
 

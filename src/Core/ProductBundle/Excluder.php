@@ -1,8 +1,8 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle;
 
-use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 

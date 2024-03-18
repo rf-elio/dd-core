@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Recommendations\Request;
+namespace Elio\ElioDataDiscovery\Api\Recommendations\Request;
 
-use Elio\ElioSearch\Api\Request\ChannelRequest;
+use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 
 /**
  * Class DetailPageRequest
  *
- * @package Elio\ElioSearch\Api\Recommendations\Request
+ * @package Elio\ElioDataDiscovery\Api\Recommendations\Request
  */
 class DetailPageRequest extends ChannelRequest
 {

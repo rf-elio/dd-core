@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle\Handler;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle\Handler;
 
 class PredictiveBasketBundleHandler
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
-use Elio\ElioSearch\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\ProductBundle\Exception\NoProductBundleHandlerFoundException;
+use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\ProductBundleHandlerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductBundleService
- * @package Elio\ElioSearch\Core\ProductBundle
+ * @package Elio\ElioDataDiscovery\Core\ProductBundle
  * @author Ralf Frommherz
  */
 class ProductBundleService implements ProductBundleServiceInterface
@@ -21,12 +21,12 @@ class ProductBundleService implements ProductBundleServiceInterface
      * @var iterable|ProductBundleHandlerInterface[]
      */
     private iterable $productBundles;
-    private ElioSearchConfigServiceInterface $configService;
+    private ElioDataDiscoveryConfigServiceInterface $configService;
 
     /**
      * @param iterable|ProductBundleHandlerInterface[] $productBundles
      */
-    public function __construct(iterable $productBundles, ElioSearchConfigServiceInterface $configService)
+    public function __construct(iterable $productBundles, ElioDataDiscoveryConfigServiceInterface $configService)
     {
         $this->productBundles = $productBundles;
         $this->configService = $configService;

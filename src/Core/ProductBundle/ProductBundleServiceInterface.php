@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\ElioSearch\Core\ProductBundle;
+namespace Elio\ElioDataDiscovery\Core\ProductBundle;
 
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductBundleService
- * @package Elio\ElioSearch\Core\ProductBundle
+ * @package Elio\ElioDataDiscovery\Core\ProductBundle
  * @author Ralf Frommherz
  */
 interface ProductBundleServiceInterface
