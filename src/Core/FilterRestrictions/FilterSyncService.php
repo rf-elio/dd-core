@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncCreateException;
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncCreateException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -50,7 +50,7 @@ use Throwable;
 
 /**
  * Class FilterSyncService
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -258,7 +258,7 @@ class FilterSyncService
         $dataToUpdate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToUpdate[] = [
-                'elioSearchFilterId' => $filterEntity->getId(),
+                'elioDataDiscoveryFilterId' => $filterEntity->getId(),
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];
@@ -300,7 +300,7 @@ class FilterSyncService
         $dataToCreate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToCreate[] = [
-                'elioSearchFilterId' => $newFilterId,
+                'elioDataDiscoveryFilterId' => $newFilterId,
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];

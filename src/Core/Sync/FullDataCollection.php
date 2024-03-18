@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 /**
  * Class FullDataCollection

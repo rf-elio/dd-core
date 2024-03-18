@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
 
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService;
+use Elio\ElioDataDiscovery\Core\Ranking\ProductRankingUpdateService;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,7 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class RankingUpdateCommand
- * @package Elio\ElioSearch\Command
+ * @package Elio\ElioDataDiscovery\Command
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -63,7 +63,7 @@ class RankingUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:ranking:update');
+        $this->setName('elio-data-discovery:ranking:update');
     }
 
     /**

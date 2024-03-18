@@ -31,7 +31,7 @@ declare(strict_types=1);
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -39,7 +39,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
  * Class Migration1637571600FilterRestrictions
- * @package Elio\ElioSearch\Migration
+ * @package Elio\ElioDataDiscovery\Migration
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -58,18 +58,18 @@ class Migration1637571600FilterRestrictions extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-ALTER TABLE `elio_search_filter_restrictions` ADD 
-    KEY `fk.elio_search_filter_restrictions.sales_channel_id` (`sales_channel_id`);
-ALTER TABLE `elio_search_filter_restrictions` ADD 
-    KEY `fk.elio_search_filter_restrictions.category_id` (`category_id`);
-ALTER TABLE `elio_search_filter_restrictions` ADD 
-    CONSTRAINT `fk.elio_search_filter_restrictions.sales_channel_id`
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
+    KEY `fk.elio_data_discovery_filter_restrictions.sales_channel_id` (`sales_channel_id`);
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
+    KEY `fk.elio_data_discovery_filter_restrictions.category_id` (`category_id`);
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
+    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.sales_channel_id`
         FOREIGN KEY (`sales_channel_id`)
             REFERENCES `sales_channel` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE;
-ALTER TABLE `elio_search_filter_restrictions` ADD
-    CONSTRAINT `fk.elio_search_filter_restrictions.category_id`
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
+    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.category_id`
         FOREIGN KEY (`category_id`)
             REFERENCES `category` (`id`)
             ON DELETE CASCADE
@@ -79,10 +79,10 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-ALTER TABLE `elio_search_filter` ADD
-    KEY `fk.elio_search_filter.property_id` (`property_id`);
-ALTER TABLE `elio_search_filter` ADD
-    CONSTRAINT `fk.elio_search_filter.property_id`
+ALTER TABLE `elio_data_discovery_filter` ADD
+    KEY `fk.elio_data_discovery_filter.property_id` (`property_id`);
+ALTER TABLE `elio_data_discovery_filter` ADD
+    CONSTRAINT `fk.elio_data_discovery_filter.property_id`
         FOREIGN KEY (`property_id`)
             REFERENCES `property_group` (`id`)
             ON DELETE CASCADE

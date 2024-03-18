@@ -1,6 +1,6 @@
-import template from './elio-search-sorting-restrictions-customfilters-create.html.twig';
+import template from './elio-data-discovery-sorting-restrictions-customfilters-create.html.twig';
 
-Shopware.Component.extend('elio-search-sorting-restrictions-customfilters-create', 'elio-search-sorting-restrictions-customfilters-detail', {
+Shopware.Component.extend('elio-data-discovery-sorting-restrictions-customfilters-create', 'elio-data-discovery-sorting-restrictions-customfilters-detail', {
     template: template,
 
     data() {

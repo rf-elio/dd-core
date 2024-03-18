@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel;
 
 
 use Shopware\Core\Framework\Struct\Struct;
@@ -38,7 +38,7 @@ use Shopware\Core\Framework\Struct\Struct;
 /**
  * Class MainVariantMappingExtension
  *
- * @package Elio\ElioSearch\Core\Content\Product\SalesChannel
+ * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>
@@ -46,7 +46,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class MainVariantMappingExtension extends Struct
 {
-    public const KEY = 'elio-search-main-variant-mapping';
+    public const KEY = 'elio-data-discovery-main-variant-mapping';
 
     public function __construct(
         private readonly array $mapping

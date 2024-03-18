@@ -1,9 +1,9 @@
-import template from './elio-search-sync-profile-list.html.twig';
+import template from './elio-data-discovery-sync-profile-list.html.twig';
 
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-search-sync-profile-list', {
+Shopware.Component.register('elio-data-discovery-sync-profile-list', {
     template: template,
 
     inject: [
@@ -36,7 +36,7 @@ Shopware.Component.register('elio-search-sync-profile-list', {
 
     computed: {
         syncProfileRepository() {
-            return this.repositoryFactory.create('elio_search_sync_profile');
+            return this.repositoryFactory.create('elio_data_discovery_sync_profile');
         },
         exportColumns() {
             return this.getExportColumns();
@@ -49,7 +49,7 @@ Shopware.Component.register('elio-search-sync-profile-list', {
             criteria.setLimit(this.limit);
             criteria.setTotalCountMode(2);
             criteria.addSorting(
-                Criteria.sort('elio_search_sync_profile.'+this.sortBy, this.sortDirection)
+                Criteria.sort('elio_data_discovery_sync_profile.'+this.sortBy, this.sortDirection)
             );
             return criteria;
         }
@@ -117,37 +117,37 @@ Shopware.Component.register('elio-search-sync-profile-list', {
                     property: 'name',
                     routerLink: 'elio.search.sync.profile.detail',
                     primary: true,
-                    label: this.$tc('elio-search-sync-profile.list.columns.name'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.name'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'salesChannelId',
-                    label: this.$tc('elio-search-sync-profile.list.columns.salesChannel'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.salesChannel'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'active',
-                    label: this.$tc('elio-search-sync-profile.list.columns.active'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.active'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'profile',
-                    label: this.$tc('elio-search-sync-profile.list.columns.profile'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.profile'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'dataType',
-                    label: this.$tc('elio-search-sync-profile.list.columns.dataType'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.dataType'),
                     allowResize: false,
                     visible: true
                 },
                 {
                     property: 'lastGenerationFinishedAt',
-                    label: this.$tc('elio-search-sync-profile.list.columns.lastGenerationFinishedAt'),
+                    label: this.$tc('elio-data-discovery-sync-profile.list.columns.lastGenerationFinishedAt'),
                     allowResize: false,
                     visible: true
                 }

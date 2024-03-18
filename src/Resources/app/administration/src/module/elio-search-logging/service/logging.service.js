@@ -1,7 +1,7 @@
 const ApiService = Shopware.Classes.ApiService;
 
 export default class LoggingService extends ApiService {
-    constructor (httpClient, loginService, apiEndpoint = 'elio-search/logging') {
+    constructor (httpClient, loginService, apiEndpoint = 'elio-data-discovery/logging') {
         super(httpClient, loginService, apiEndpoint);
     }
 

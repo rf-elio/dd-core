@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search;
+namespace Elio\ElioDataDiscovery\Api\Search;
 
-use Elio\ElioSearch\Api\Response\ResponseCollection;
-use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
+use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Request\SuggestRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
 /**
  * Class SuggestApi
- * @package Elio\ElioSearch\Api\Search
+ * @package Elio\ElioDataDiscovery\Api\Search
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

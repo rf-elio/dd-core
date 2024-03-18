@@ -1,6 +1,6 @@
-import template from './elio-search-sort-positions-index.html.twig';
+import template from './elio-data-discovery-sort-positions-index.html.twig';
 
-Shopware.Component.register('elio-search-sort-positions-index', {
+Shopware.Component.register('elio-data-discovery-sort-positions-index', {
     template: template,
 
     data() {

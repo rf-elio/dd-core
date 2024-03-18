@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector\Event;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector\Event;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class CriteriaPreparedEvent
- * @package Elio\ElioSearch\Core\Sync\Collectors\Event
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collectors\Event
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class SyncProfileCollection
- * @package Elio\ElioSearch\Core\Sync
+ * @package Elio\ElioDataDiscovery\Core\Sync
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

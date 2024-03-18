@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Tests\Api\Transform;
+namespace Elio\ElioDataDiscovery\Tests\Api\Transform;
 
-use Elio\ElioSearch\Api\Transform\ExtensionWrapper;
+use Elio\ElioDataDiscovery\Api\Transform\ExtensionWrapper;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Struct\Struct;
 use Swagger\Client\Model\ModelInterface;

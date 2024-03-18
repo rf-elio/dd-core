@@ -1,8 +1,8 @@
-import template from './elio-search-modal-delete-log.html.twig';
+import template from './elio-data-discovery-modal-delete-log.html.twig';
 
-Shopware.Component.register('elio-search-modal-delete-log', {
+Shopware.Component.register('elio-data-discovery-modal-delete-log', {
     template,
-    inject: ['elioSearchLogging'],
+    inject: ['elioDataDiscoveryLogging'],
     data () {
         return {
             isLoading: false
@@ -22,13 +22,13 @@ Shopware.Component.register('elio-search-modal-delete-log', {
 
     methods: {
         closeDeleteModal (event) {
-            this.$emit('elio-search-close-delete-modal', event);
+            this.$emit('elio-data-discovery-close-delete-modal', event);
         },
 
         deleteLog (event) {
             this.isLoading = true;
-            this.elioSearchLogging.deleteLog(this.logIndex).then(() => {
-                this.$emit('elio-search-log-deleted', event);
+            this.elioDataDiscoveryLogging.deleteLog(this.logIndex).then(() => {
+                this.$emit('elio-data-discovery-log-deleted', event);
                 this.isLoading = false;
             });
         }

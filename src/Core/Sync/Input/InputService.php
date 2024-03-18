@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
 
-use Elio\ElioSearch\Core\Sync\Exception\InputNotFoundException;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\InputNotFoundException;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 
 /**
  * Class InputService
- * @package Elio\ElioSearch\Core\Sync\Input
+ * @package Elio\ElioDataDiscovery\Core\Sync\Input
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

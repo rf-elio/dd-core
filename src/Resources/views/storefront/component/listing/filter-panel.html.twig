@@ -3,48 +3,48 @@
 {% block component_filter_panel_item_manufacturer %}
     {{ parent() }}
 
-    {% set elioSearchAggregations = listing.aggregations.get('elio-search-default') %}
-    {% for elioSearchAggregation in elioSearchAggregations.aggregations %}
-        {% if elioSearchAggregation.extensions.elioSearch is defined %}
-            {% set parameterName = elioSearchAggregation.extensions.elioSearch.parameterName %}
-            {% set style = elioSearchAggregation.extensions.elioSearch.style %}
+    {% set elioDataDiscoveryAggregations = listing.aggregations.get('elio-data-discovery-default') %}
+    {% for elioDataDiscoveryAggregation in elioDataDiscoveryAggregations.aggregations %}
+        {% if elioDataDiscoveryAggregation.extensions.elioDataDiscovery is defined %}
+            {% set parameterName = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.parameterName %}
+            {% set style = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.style %}
             {% if style == 'DEFAULT' %}
-                {% if not elioSearchAggregation.entities is empty %}
-                    {% for property in elioSearchAggregation.entities %}
-                        {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-default-select.html.twig' with {
+                {% if not elioDataDiscoveryAggregation.entities is empty %}
+                    {% for property in elioDataDiscoveryAggregation.entities %}
+                        {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-default-select.html.twig' with {
                             elements: property.options,
                             sidebar: sidebar,
                             name: parameterName,
                             displayName: property.translated.name,
                             displayType: property.displayType,
-                            pluginSelector: 'elio-search-filter-property-select',
+                            pluginSelector: 'elio-data-discovery-filter-property-select',
                             propertyName: property.translated.name,
-                            count: property.extensions.elio_search_facet_extension.selectedCount
+                            count: property.extensions.elio_data_discovery_facet_extension.selectedCount
                         } %}
                     {% endfor %}
                 {% endif %}
             {% elseif style == 'SLIDER' %}
-                {% if elioSearchAggregation.min > 0 and elioSearchAggregation.max > 0 %}
-                    {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-range.html.twig' with {
-                        price: elioSearchAggregation,
+                {% if elioDataDiscoveryAggregation.min > 0 and elioDataDiscoveryAggregation.max > 0 %}
+                    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-range.html.twig' with {
+                        price: elioDataDiscoveryAggregation,
                         sidebar: sidebar,
-                        name: elioSearchAggregation.name,
-                        minKey: 'min-' ~ elioSearchAggregation.name,
-                        maxKey: 'max-' ~ elioSearchAggregation.name,
-                        displayName: elioSearchAggregation.name,
-                        rangeUnit: elioSearchAggregation.unit
+                        name: elioDataDiscoveryAggregation.name,
+                        minKey: 'min-' ~ elioDataDiscoveryAggregation.name,
+                        maxKey: 'max-' ~ elioDataDiscoveryAggregation.name,
+                        displayName: elioDataDiscoveryAggregation.name,
+                        rangeUnit: elioDataDiscoveryAggregation.unit
                     } %}
                 {% endif %}
             {% elseif style == 'TREE' %}
-                {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-select.html.twig' with {
-                    elements: elioSearchAggregation.entities.extensions.elioSearchTree.tree,
+                {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select.html.twig' with {
+                    elements: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree.tree,
                     sidebar: sidebar,
                     name: parameterName,
                     displayName: parameterName,
                     displayType: 'text',
-                    pluginSelector: 'elio-search-filter-tree-select',
+                    pluginSelector: 'elio-data-discovery-filter-tree-select',
                     propertyName: parameterName,
-                    elioSearchTree: elioSearchAggregation.entities.extensions.elioSearchTree
+                    elioDataDiscoveryTree: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree
                 } %}
             {% endif %}
         {% endif %}

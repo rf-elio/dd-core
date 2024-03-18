@@ -1,15 +1,15 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Search\Response;
+namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
 
-use Elio\ElioSearch\Api\Response\Response;
-use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentGroup;
-use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentItem;
+use Elio\ElioDataDiscovery\Api\Response\Response;
+use Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentGroup;
+use Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentItem;
 
 /**
  * Class ContentListingResponse
- * @package Elio\ElioSearch\Api\Search\Response
+ * @package Elio\ElioDataDiscovery\Api\Search\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

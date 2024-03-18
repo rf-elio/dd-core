@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\AbstractDataCollection;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\AbstractDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Generator;
 
 interface InputInterface

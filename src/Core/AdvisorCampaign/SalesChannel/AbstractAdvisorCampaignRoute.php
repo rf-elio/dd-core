@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\AdvisorCampaign\SalesChannel;
 
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

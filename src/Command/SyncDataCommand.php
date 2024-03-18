@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Elio\ElioSearch\Core\Sync\SyncService;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -45,7 +45,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class SyncDataCommand
- * @package Elio\ElioSearch\Command
+ * @package Elio\ElioDataDiscovery\Command
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -62,7 +62,7 @@ class SyncDataCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:profiles:sync')
+        $this->setName('elio-data-discovery:profiles:sync')
             ->addArgument('syncProfileId', InputArgument::OPTIONAL, 'Id of the sync profile that should be generated')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
     }

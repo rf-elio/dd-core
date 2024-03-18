@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Core\Logging;
+namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
 use Psr\Log\LoggerInterface;
@@ -9,12 +9,12 @@ use Psr\Log\LoggerInterface;
  * Wrapper for logger to inject additional log handling
  *
  * Class GuzzleLogWrapper
- * @package Elio\ElioSearch\Core\Logging
+ * @package Elio\ElioDataDiscovery\Core\Logging
  * @author Ralf Frommherz
  */
 class GuzzleLogWrapper implements LoggerInterface
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
      * @param LoggerInterface $logger

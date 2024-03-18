@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sorting\Util;
+namespace Elio\ElioDataDiscovery\Core\Sorting\Util;
 
 
-use Elio\ElioSearch\Core\Util\Tree\Node;
+use Elio\ElioDataDiscovery\Core\Util\Tree\Node;
 use RuntimeException;
 
 /**
  * Class CategoryTreeUtil
- * @package Elio\ElioSearch\Core\Sorting\Util
+ * @package Elio\ElioDataDiscovery\Core\Sorting\Util
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

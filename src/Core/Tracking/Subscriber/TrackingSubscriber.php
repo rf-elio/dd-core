@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Subscriber;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Subscriber;
 
 
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\UserAgentAllowedChecker;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\UserAgentAllowedChecker;
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Event\SalesChannelContextRestoredEvent;
@@ -45,7 +45,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Class TrackingSubscriber
  *
- * @package Elio\ElioSearch\Core\Tracking\Subscriber
+ * @package Elio\ElioDataDiscovery\Core\Tracking\Subscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>

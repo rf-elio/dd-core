@@ -1,6 +1,6 @@
-import template from './elio-search-filter-restrictions-index.html.twig';
+import template from './elio-data-discovery-filter-restrictions-index.html.twig';
 
-Shopware.Component.register('elio-search-filter-restrictions-index', {
+Shopware.Component.register('elio-data-discovery-filter-restrictions-index', {
     template: template,
 
     data() {

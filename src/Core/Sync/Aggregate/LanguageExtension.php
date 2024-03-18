@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Aggregate;
+namespace Elio\ElioDataDiscovery\Core\Sync\Aggregate;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileDefinition;
-use Elio\ElioSearch\Core\Sync\SyncProfileLanguageMapping;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;

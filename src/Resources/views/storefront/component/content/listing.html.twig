@@ -1,7 +1,7 @@
 {% block element_content_listing_wrapper %}
     {% for item in listing.contentItems %}
         {% block element_content_listing_box %}
-            {% sw_include '@ElioSearch/storefront/component/content/content-item.html.twig' with {
+            {% sw_include '@ElioDataDiscovery/storefront/component/content/content-item.html.twig' with {
                 item: item
             } %}
         {% endblock %}

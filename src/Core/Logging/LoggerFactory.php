@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Logging;
+namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
-use Elio\ElioSearch\Core\Logging\Handler\ElioSearchFilterHandler;
+use Elio\ElioDataDiscovery\Core\Logging\Handler\ElioDataDiscoveryFilterHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Handler\RotatingFileHandler;
@@ -44,7 +44,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class LoggerFactory
- * @package Elio\ElioSearch\Core\Logging
+ * @package Elio\ElioDataDiscovery\Core\Logging
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -87,7 +87,7 @@ class LoggerFactory
         $result->pushHandler($this->consoleHandler);
 
         if ($useLogFilter) {
-            $result->pushHandler(new ElioSearchFilterHandler($handler, $this->logFilterContext));
+            $result->pushHandler(new ElioDataDiscoveryFilterHandler($handler, $this->logFilterContext));
         } else {
             $result->pushHandler($handler);
         }

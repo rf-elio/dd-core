@@ -1,8 +1,8 @@
-Shopware.Module.register('elio-search', {
+Shopware.Module.register('elio-data-discovery', {
     type: 'core',
-    name: 'ElioSearch',
-    title: 'elio-search.global.title',
-    description: 'elio-search.global.description',
+    name: 'ElioDataDiscovery',
+    title: 'elio-data-discovery.global.title',
+    description: 'elio-data-discovery.global.description',
     color: '#014587',
     icon: 'default-action-tags',
 
@@ -33,8 +33,8 @@ Shopware.Module.register('elio-search', {
     },
 
     navigation: [{
-        id: 'elio-search',
-        label: 'elio-search.global.title',
+        id: 'elio-data-discovery',
+        label: 'elio-data-discovery.global.title',
         color: '#014587',
         icon: 'regular-products',
         position: 100

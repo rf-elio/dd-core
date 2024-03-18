@@ -30,19 +30,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing;
 
 
-use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Api\Search\SearchApi;
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\SearchApi;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
@@ -57,22 +57,22 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Throwable;
 
 /**
- * Class ElioSearchProductListingRoute
- * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing
+ * Class ElioDataDiscoveryProductListingRoute
+ * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchProductListingRoute extends AbstractProductListingRoute
+class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
-     * ElioSearchProductListingRoute constructor.
+     * ElioDataDiscoveryProductListingRoute constructor.
      * @param AbstractProductListingRoute $decorated
      * @param ProductSearchRequestBuilder $searchRequestBuilder
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param EntityRepository $categoryRepository
@@ -82,7 +82,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
     public function __construct(
         private AbstractProductListingRoute      $decorated,
         private ProductSearchRequestBuilder      $searchRequestBuilder,
-        private ElioSearchConfigServiceInterface $configService,
+        private ElioDataDiscoveryConfigServiceInterface $configService,
         private SearchApi                        $searchApi,
         private ProductListingResultTransformerInterface  $productListingResultTransformer,
         private EntityRepository        $categoryRepository,
@@ -120,7 +120,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         }
 
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isListingUseElioSearch() || !$this->canLoadCategoryByElioSearch($category, $config)) {
+        if(!$config->isActive() || !$config->isListingUseElioDataDiscovery() || !$this->canLoadCategoryByElioDataDiscovery($category, $config)) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
@@ -169,7 +169,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param CategoryEntity $category
      * @return bool
      */
-    protected function canLoadCategoryByElioSearch(CategoryEntity $category, Configuration $config) : bool
+    protected function canLoadCategoryByElioDataDiscovery(CategoryEntity $category, Configuration $config) : bool
     {
         if (!$config->isAllowStreamIdSearch() && !empty($category->getProductStreamId())) {
             return false;
@@ -208,11 +208,11 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
     protected function addCustomFiltersToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category): void
     {
         $customFields = $category->getCustomFields();
-        if (empty($customFields[ElioSearch::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY])) {
+        if (empty($customFields[ElioDataDiscovery::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY])) {
             return;
         }
 
-        $customFilters = $customFields[ElioSearch::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY];
+        $customFilters = $customFields[ElioDataDiscovery::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY];
         parse_str((string) $customFilters, $parsedCustomFilters);
 
         // get parent category name by category path

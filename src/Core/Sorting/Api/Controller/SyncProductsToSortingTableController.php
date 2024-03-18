@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Core\Sorting\Api\Controller;
+namespace Elio\ElioDataDiscovery\Core\Sorting\Api\Controller;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigService;
-use Elio\ElioSearch\Core\Sorting\ProductSortingService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,14 +19,14 @@ class SyncProductsToSortingTableController extends AbstractController
     ) {}
 
     #[Route(
-        path: '/api/_action/elio-search-product-sorting/{categoryId}/sync-products',
-        name: 'api.action.elio_search_product_sorting.sync-products',
+        path: '/api/_action/elio-data-discovery-product-sorting/{categoryId}/sync-products',
+        name: 'api.action.elio_data_discovery_product_sorting.sync-products',
         methods: ['GET']
     )]
     public function syncProducts(string $categoryId): Response
     {
-        if ($this->systemConfigService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX.'.sortingLocation') === 'sortDisabled') {
-            return new JsonResponse(['message' => 'elio-search.sort-positions.info.sorting-disabled'], Response::HTTP_OK);
+        if ($this->systemConfigService->get(ElioDataDiscoveryConfigService::PLUGIN_CONFIG_PREFIX.'.sortingLocation') === 'sortDisabled') {
+            return new JsonResponse(['message' => 'elio-data-discovery.sort-positions.info.sorting-disabled'], Response::HTTP_OK);
         }
         $this->productSortingService->removeProducts();
         $this->productSortingService->addProducts($categoryId);

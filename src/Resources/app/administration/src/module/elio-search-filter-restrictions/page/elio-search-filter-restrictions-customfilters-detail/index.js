@@ -1,9 +1,9 @@
-import template from './elio-search-filter-restrictions-customfilters-detail.html.twig';
+import template from './elio-data-discovery-filter-restrictions-customfilters-detail.html.twig';
 
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-search-filter-restrictions-customfilters-detail', {
+Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilters-detail', {
     template: template,
 
     inject: [
@@ -53,7 +53,7 @@ Shopware.Component.register('elio-search-filter-restrictions-customfilters-detai
         },
 
         filterRepository() {
-            return this.repositoryFactory.create('elio_search_filter');
+            return this.repositoryFactory.create('elio_data_discovery_filter');
         },
 
         defaultCriteria() {
@@ -64,7 +64,7 @@ Shopware.Component.register('elio-search-filter-restrictions-customfilters-detai
         },
 
         useNaturalSorting() {
-            return this.sortBy === 'elio_search_filter.propertyName';
+            return this.sortBy === 'elio_data_discovery_filter.propertyName';
         },
     },
 
@@ -115,7 +115,7 @@ Shopware.Component.register('elio-search-filter-restrictions-customfilters-detai
                 this.isSaveSuccessful = true;
             }).catch((exception) => {
                 this.createNotificationError({
-                    message: this.$tc('elio-search.restrictions.filter.filters.messageSaveError')
+                    message: this.$tc('elio-data-discovery.restrictions.filter.filters.messageSaveError')
                 });
                 this.isLoading = false;
                 throw exception;

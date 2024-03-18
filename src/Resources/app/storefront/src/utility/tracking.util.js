@@ -1,5 +1,5 @@
 export default class TrackingUtil {
-    static storageKey = 'elio-search-tracking';
+    static storageKey = 'elio-data-discovery-tracking';
 
     static add(path, payload) {
         const items = this.getAll();

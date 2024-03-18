@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Storefront\Subscriber;
+namespace Elio\ElioDataDiscovery\Storefront\Subscriber;
 
-use Elio\ElioSearch\Core\FilterRestrictions\CachedFilterService;
-use Elio\ElioSearch\Core\FilterRestrictions\FiltersEvents;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\CachedFilterService;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FiltersEvents;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class FilterRestrictionsSubscriber
- * @package Elio\ElioSearch\Storefront\Subscriber
+ * @package Elio\ElioDataDiscovery\Storefront\Subscriber
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

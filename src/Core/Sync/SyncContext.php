@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class SyncContext
- * @package Elio\ElioSearch\Core\Sync
+ * @package Elio\ElioDataDiscovery\Core\Sync
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

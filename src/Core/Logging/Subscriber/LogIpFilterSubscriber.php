@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Logging\Subscriber;
+namespace Elio\ElioDataDiscovery\Core\Logging\Subscriber;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Defaults;
-use Elio\ElioSearch\Core\Logging\LogFilterContext;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Logging\LogFilterContext;
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -54,11 +54,11 @@ class LogIpFilterSubscriber implements EventSubscriberInterface
 {
     /**
      * LogIpFilterSubscriber constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param LogFilterContext $logFilterContext
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly LogFilterContext $logFilterContext
     ) {}
 

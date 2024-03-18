@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Tracking\Exception;
+namespace Elio\ElioDataDiscovery\Api\Tracking\Exception;
 
 
 use RuntimeException;
 
 /**
  * Class TrackingRequestNotSupportedException
- * @package Elio\ElioSearch\Api\Tracking\Exception
+ * @package Elio\ElioDataDiscovery\Api\Tracking\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

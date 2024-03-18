@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search\Response;
+namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
 
-use Elio\ElioSearch\Api\Response\Response;
+use Elio\ElioDataDiscovery\Api\Response\Response;
 
 /**
  * Class TrackingResponse
- * @package Elio\ElioSearch\Api\Search\Response
+ * @package Elio\ElioDataDiscovery\Api\Search\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

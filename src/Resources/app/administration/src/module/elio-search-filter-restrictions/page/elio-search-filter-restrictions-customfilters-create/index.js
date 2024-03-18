@@ -1,6 +1,6 @@
-import template from './elio-search-filter-restrictions-customfilters-create.html.twig';
+import template from './elio-data-discovery-filter-restrictions-customfilters-create.html.twig';
 
-Shopware.Component.extend('elio-search-filter-restrictions-customfilters-create', 'elio-search-filter-restrictions-customfilters-detail', {
+Shopware.Component.extend('elio-data-discovery-filter-restrictions-customfilters-create', 'elio-data-discovery-filter-restrictions-customfilters-detail', {
     template: template,
 
     data() {

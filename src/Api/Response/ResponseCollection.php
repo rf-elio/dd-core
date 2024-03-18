@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Response;
+namespace Elio\ElioDataDiscovery\Api\Response;
 
 
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class ResponseCollection
- * @package Elio\ElioSearch\Api\Response
+ * @package Elio\ElioDataDiscovery\Api\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

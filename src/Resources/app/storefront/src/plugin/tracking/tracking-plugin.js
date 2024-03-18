@@ -3,17 +3,17 @@ import TrackingUtil from './../../utility/tracking.util'
 
 export default class TrackingPlugin extends Plugin {
     static options = {
-        elioSearchListingBoxSelector: '.elio-search-listing-box',
-        productNumberPathAttribute: 'data-elio-search-product-number',
-        parentProductIdPathAttribute: 'data-elio-search-parent-product-id',
-        labelPathAttribute: 'data-elio-search-label',
-        queryPathAttribute: 'data-elio-search-query',
-        pagePathAttribute: 'data-elio-search-page',
-        pageSizePathAttribute: 'data-elio-search-pageSize',
-        campaignPathAttribute: 'data-elio-search-campaign'
+        elioDataDiscoveryListingBoxSelector: '.elio-data-discovery-listing-box',
+        productNumberPathAttribute: 'data-elio-data-discovery-product-number',
+        parentProductIdPathAttribute: 'data-elio-data-discovery-parent-product-id',
+        labelPathAttribute: 'data-elio-data-discovery-label',
+        queryPathAttribute: 'data-elio-data-discovery-query',
+        pagePathAttribute: 'data-elio-data-discovery-page',
+        pageSizePathAttribute: 'data-elio-data-discovery-pageSize',
+        campaignPathAttribute: 'data-elio-data-discovery-campaign'
     };
     init() {
-        this._path = window.elioSearch.tracking.detailPath;
+        this._path = window.elioDataDiscovery.tracking.detailPath;
         if(this._path.length <= 0) {
             return;
         }
@@ -31,7 +31,7 @@ export default class TrackingPlugin extends Plugin {
     _registerEvents() {
         const me = this;
         const parameters = {
-            elioSearchProductTrackingData: {
+            elioDataDiscoveryProductTrackingData: {
                 productNumber: me._productNumber,
                 parentProductId: me._parentProductId,
                 label: me._trackingLabel,
@@ -45,10 +45,10 @@ export default class TrackingPlugin extends Plugin {
         for (const linkElement of this._linkElements) {
             linkElement.addEventListener('click', function (event) {
                 const listingBoxes = me._getListingBoxes();
-                parameters.elioSearchProductTrackingData.pos = me._getPosition(listingBoxes);
+                parameters.elioDataDiscoveryProductTrackingData.pos = me._getPosition(listingBoxes);
                 const listingSize = listingBoxes.length;
-                if (listingSize > parameters.elioSearchProductTrackingData.pageSize) {
-                    parameters.elioSearchProductTrackingData.pageSize = listingSize;
+                if (listingSize > parameters.elioDataDiscoveryProductTrackingData.pageSize) {
+                    parameters.elioDataDiscoveryProductTrackingData.pageSize = listingSize;
                 }
 
                 event.preventDefault();
@@ -76,7 +76,7 @@ export default class TrackingPlugin extends Plugin {
      */
     _getListingBoxes() {
         const elements = [];
-        const boxes = document.querySelectorAll(this.options.elioSearchListingBoxSelector);
+        const boxes = document.querySelectorAll(this.options.elioDataDiscoveryListingBoxSelector);
 
         for(const box of boxes) {
             if (!this._isHidden(box)) {

@@ -1,5 +1,5 @@
 {
-    "elio-search-logging": {
+    "elio-data-discovery-logging": {
         "title": "Logging",
         "description": "",
         "logIsEmpty": "Log is empty. Enable debug logging in your plugin configuration to get more details.",

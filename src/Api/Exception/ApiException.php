@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Exception;
+namespace Elio\ElioDataDiscovery\Api\Exception;
 
 
 /**
  * Marker interface
  *
  * Interface ApiException
- * @package Elio\ElioSearch\Api\Exception
+ * @package Elio\ElioDataDiscovery\Api\Exception
  */
 interface ApiException {}

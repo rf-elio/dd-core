@@ -11,7 +11,7 @@
 {% endif %}
 
 {% block component_filter_multi_select %}
-    {% set filterItemId = 'filter-' ~ 'elioSearchdefault' ~ '-' ~ name|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':''}) ~ element.id %}
+    {% set filterItemId = 'filter-' ~ 'elioDataDiscoverydefault' ~ '-' ~ name|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':''}) ~ element.id %}
     {{ parent() }}
 {% endblock %}
 
@@ -29,8 +29,8 @@
             {% set color = element.colorHexCode %}
             {% set media = element.media.url %}
             {% set name = element.translated.name %}
-            {% if element.extensions.elio_search_facet_extension is defined %}
-                {% set id = element.extensions.elio_search_facet_extension.key %}
+            {% if element.extensions.elio_data_discovery_facet_extension is defined %}
+                {% set id = element.extensions.elio_data_discovery_facet_extension.key %}
             {% endif %}
 
             {% block component_filter_property_select_preview %}
@@ -78,7 +78,7 @@
             {% endif %}
         {% else %}
             {% block component_filter_property_select_preview_list_item %}
-                {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-multi-select-list-item.html.twig' %}
+                {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-multi-select-list-item.html.twig' %}
             {% endblock %}
         {% endif %}
     </li>

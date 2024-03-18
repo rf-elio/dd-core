@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Exception;
+namespace Elio\ElioDataDiscovery\Core\Exception;
 
 
 use RuntimeException;
@@ -38,17 +38,17 @@ use Throwable;
 use function is_array;
 
 /**
- * Class ElioSearchException
- * @package Elio\ElioSearch\Core\Exception
+ * Class ElioDataDiscoveryException
+ * @package Elio\ElioDataDiscovery\Core\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchException extends RuntimeException
+class ElioDataDiscoveryException extends RuntimeException
 {
     /**
-     * ElioSearchException constructor.
+     * ElioDataDiscoveryException constructor.
      * @param string $message
      * @param array<string> $parameters
      * @param int $code

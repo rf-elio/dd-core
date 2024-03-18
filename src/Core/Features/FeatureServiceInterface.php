@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Features;
+namespace Elio\ElioDataDiscovery\Core\Features;
 
 
 /**
  * Class FeatureService
- * @package Elio\ElioSearch\Core\Features
+ * @package Elio\ElioDataDiscovery\Core\Features
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

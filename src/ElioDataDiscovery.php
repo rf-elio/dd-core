@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch;
+namespace Elio\ElioDataDiscovery;
 
-use Elio\ElioSearch\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
-use Elio\ElioSearch\Setup\CustomFieldSetup;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
+use Elio\ElioDataDiscovery\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
@@ -50,16 +50,16 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  * Class FactFinder
  *
  * @category  Bootstrap
- * @package   Shopware\Plugins\ElioSearch
+ * @package   Shopware\Plugins\ElioDataDiscovery
  * @author    Raoul Yemetio <ry@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
-class ElioSearch extends Plugin
+class ElioDataDiscovery extends Plugin
 {
-    public const CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT = 'ElioSearchProduct';
-    public const CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE = 'ElioSearchContentExportCategory';
+    public const CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT = 'ElioDataDiscoveryProduct';
+    public const CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE = 'ElioDataDiscoveryContentExportCategory';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type_inherited';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude';
@@ -68,10 +68,10 @@ class ElioSearch extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_product_info';
     public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_export_priority';
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_custom_search_query';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_count';
-    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_ranking_product_order_amount';
-    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_search_display_product_by_default';
-    public const DEFAULT_ELIO_SEARCH_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_count';
+    public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_amount';
+    public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_display_product_by_default';
+    public const DEFAULT_ELIO_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     /**
      * Adds the additional service definitions
@@ -146,8 +146,8 @@ class ElioSearch extends Plugin
         return [
             self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE => [
                 'label' => [
-                    'en-GB' => 'ElioSearch content export',
-                    'de-DE' => 'ElioSearch Content Export'
+                    'en-GB' => 'ElioDataDiscovery content export',
+                    'de-DE' => 'ElioDataDiscovery Content Export'
                 ],
                 'fields' => [
                     self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE => [
@@ -221,8 +221,8 @@ class ElioSearch extends Plugin
                 'relations' => [CategoryDefinition::ENTITY_NAME, LandingPageDefinition::ENTITY_NAME],
                 self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT => [
                     'label' => [
-                        'en-GB' => 'ElioSearch product',
-                        'de-DE' => 'ElioSearch product',
+                        'en-GB' => 'ElioDataDiscovery product',
+                        'de-DE' => 'ElioDataDiscovery product',
                     ],
                     'fields' => [
                         self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [

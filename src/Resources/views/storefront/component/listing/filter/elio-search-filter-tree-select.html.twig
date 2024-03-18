@@ -1,18 +1,18 @@
-{% sw_extends '@ElioSearch/storefront/component/listing/filter/elio-search-filter-default-select.html.twig' %}
+{% sw_extends '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-default-select.html.twig' %}
 
 {% block component_filter_property_select_preview_list_item %}
-    {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-select-list-item.html.twig' %}
+    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select-list-item.html.twig' %}
 {% endblock %}
 
 {% block component_filter_multi_select_list %}
-    {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-navigation.html.twig' with {
-        navigationTree: elioSearchTree.tree,
-        activeResult: elioSearchTree.active,
-        activeParent: elioSearchTree.active.path is null
+    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-navigation.html.twig' with {
+        navigationTree: elioDataDiscoveryTree.tree,
+        activeResult: elioDataDiscoveryTree.active,
+        activeParent: elioDataDiscoveryTree.active.path is null
     } only %}
 {% endblock %}
 
 {% block component_filter_multi_select %}
-    {% set filterItemId = 'filter-' ~ 'elioSearchTree' ~ '-' ~ random() %}
+    {% set filterItemId = 'filter-' ~ 'elioDataDiscoveryTree' ~ '-' ~ random() %}
     {{ parent() }}
 {% endblock %}

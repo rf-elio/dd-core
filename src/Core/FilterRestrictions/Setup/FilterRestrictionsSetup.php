@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions\Setup;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Setup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -67,7 +67,7 @@ class FilterRestrictionsSetup
     )
     {
         try {
-            $filterRepository = $container->get('elio_search_filter.repository');
+            $filterRepository = $container->get('elio_data_discovery_filter.repository');
             if ($filterRepository instanceof EntityRepository) {
                 $this->filterRepository = $filterRepository;
             }

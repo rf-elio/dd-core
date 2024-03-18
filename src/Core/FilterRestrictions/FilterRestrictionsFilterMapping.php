@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -41,7 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
 
 /**
  * Class FilterRestrictionsFilterMapping
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
@@ -49,7 +49,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
  */
 class FilterRestrictionsFilterMapping extends MappingEntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_filter_restrictions_filters';
+    public const ENTITY_NAME = 'elio_data_discovery_filter_restrictions_filters';
 
     public function getEntityName(): string
     {

@@ -1,4 +1,4 @@
-{% block elio_search_campaign_feedback %}
+{% block elio_data_discovery_campaign_feedback %}
     {% if container and container.hasExtension('CampaignFeedbackResponseCollection') %}
         {% set campaignFeedbackResponseCollection = container.getExtension('CampaignFeedbackResponseCollection') %}
         {% for feedbackText in campaignFeedbackResponseCollection.getByLabel(label) %}

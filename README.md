@@ -2,7 +2,7 @@
 # Installation
 ## Commands
 The following commands must be configured to execute required background tasks
-*  `bin/console elio-search:export:generate`: Executes the exports. This should be executed every 5 Minutes.
+*  `bin/console elio-data-discovery:export:generate`: Executes the exports. This should be executed every 5 Minutes.
 
 # Components
 ## Bot protection
@@ -38,10 +38,10 @@ New Export profiles can be configured in the shopware administration. To execute
 must be used.
 
 Commands:
-*  `bin/console elio-search:export:generate`: Generates all due exports
-*  `bin/console elio-search:export:generate {id}`: Generates a specific export on due
-*  `bin/console elio-search:export:generate -f`: Refreshes all exports (interval ignored)
-*  `bin/console elio-search:export:generate {id} -f`: Refreshes a specific export (interval ignored)
+*  `bin/console elio-data-discovery:export:generate`: Generates all due exports
+*  `bin/console elio-data-discovery:export:generate {id}`: Generates a specific export on due
+*  `bin/console elio-data-discovery:export:generate -f`: Refreshes all exports (interval ignored)
+*  `bin/console elio-data-discovery:export:generate {id} -f`: Refreshes a specific export (interval ignored)
 
 ### Events
 *  **FilterProductModelEvent**: Can be used to register additional fields that should be added to the product export.
@@ -51,7 +51,7 @@ Commands:
 ### Extensions
 #### Generator
 To add contents for suggest and content search provided by an additional plugin the generator must be registered with
-the tag "elio-search.export.generator" to be executed during the export generation.
+the tag "elio-data-discovery.export.generator" to be executed during the export generation.
 
 The generator must implement the **ExportGeneratorInterface**. The suggested structure can be found below.
 
@@ -90,8 +90,8 @@ $item->set('ProductURL', new SeoRoute(
 
 
 ## Configuration Service
-The elioSearch configuration service **ElioSearchConfigService** should be used to access the elioSearch plugin configuration at all
-places. ElioSearchConfigService enforces to provide a sales channel id to make the plugin able to work with multiple
+The elioDataDiscovery configuration service **ElioDataDiscoveryConfigService** should be used to access the elioDataDiscovery plugin configuration at all
+places. ElioDataDiscoveryConfigService enforces to provide a sales channel id to make the plugin able to work with multiple
 sales channels.
 
 This service provides in addition an object orientated way to access any config field to make it easier to find usages
@@ -102,19 +102,19 @@ configuration service.
 *  **ConfigurationLoadedEvent**: Provides the ability to manipulate or extend the configuration.
 
 ### Service decoration
-*  **ElioSearchConfigService**: ElioSearchConfigService can be decorated to provide support for third party credential
+*  **ElioDataDiscoveryConfigService**: ElioDataDiscoveryConfigService can be decorated to provide support for third party credential
    providers.
 
 ## Exceptions
-### ElioSearchException
-All exceptions should inherit from the ElioSearchException to have a marker that this plugin cause the exception.
-Further more offers our ElioSearchException an easy way to generate exception messages without using sprint all the
+### ElioDataDiscoveryException
+All exceptions should inherit from the ElioDataDiscoveryException to have a marker that this plugin cause the exception.
+Further more offers our ElioDataDiscoveryException an easy way to generate exception messages without using sprint all the
 time.
 
 Usage:
 
 ```php
-class MyException extends ElioSearchException
+class MyException extends ElioDataDiscoveryException
 {
     public function __construct(object $is, string $should)
     {

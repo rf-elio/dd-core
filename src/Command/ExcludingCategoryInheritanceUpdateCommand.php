@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioSearch\Core\Sync\Util\CategoryUtil;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Core\Sync\Util\CategoryUtil;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -107,15 +107,15 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
                 $category = $categories->get($categoryId);
                 $actualCustomFields = $category->getCustomFields() ?? [];
                 // If they already have the same value, we don't need to update to avoid indexer message creation
-                if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
-                    && array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)
-                    && $actualCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] === $customFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
+                if (array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
+                    && array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)
+                    && $actualCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] === $customFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
                 ) {
                     continue;
                 }
                 // Inherit only this field. For safety reasons, we don't inherit the whole custom fields
-                if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)) {
-                    $actualCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = $customFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE];
+                if (array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)) {
+                    $actualCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = $customFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE];
                 }
                 $dataToUpdate[] = [
                     'id' => $categoryId,

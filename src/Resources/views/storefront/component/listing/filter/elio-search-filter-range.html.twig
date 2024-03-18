@@ -16,8 +16,8 @@
         }
     } %}
     <div class="filter-range filter-panel-item{% if not sidebar %} dropdown{% endif %}"
-         data-elio-search-filter-range="true"
-         data-elio-search-filter-range-options='{{ filterRangeOptions|json_encode }}'>
+         data-elio-data-discovery-filter-range="true"
+         data-elio-data-discovery-filter-range-options='{{ filterRangeOptions|json_encode }}'>
 
         {% block component_filter_range_toggle %}
             <button class="filter-panel-item-toggle btn{% if sidebar %} btn-block{% endif %}"

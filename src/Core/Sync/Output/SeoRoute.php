@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class SeoRoute
- * @package Elio\ElioSearch\Core\Sync\Output\File
+ * @package Elio\ElioDataDiscovery\Core\Sync\Output\File
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

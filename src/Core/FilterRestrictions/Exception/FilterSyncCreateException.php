@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions\Exception;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class FilterSyncCreateException
- * @package Elio\ElioSearch\Core\FilterRestrictions\Exception
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class FilterSyncCreateException extends ElioSearchException {}
+class FilterSyncCreateException extends ElioDataDiscoveryException {}

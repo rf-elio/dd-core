@@ -1,14 +1,14 @@
 <?php
 
-namespace Elio\ElioSearch\Storefront\Exception;
+namespace Elio\ElioDataDiscovery\Storefront\Exception;
 
 
-use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use RuntimeException;
 
 /**
  * Class CampaignRedirectionException
- * @package Elio\ElioSearch\Storefront\Exception
+ * @package Elio\ElioDataDiscovery\Storefront\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

@@ -5,9 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- storefront / controller -->
-        <service id="Elio\ElioSearch\Core\Tracking\Controller\ProductDetailTrackingController" public="true" >
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
-            <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Controller\ProductDetailTrackingController" public="true" >
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="product.repository"/>
@@ -18,24 +18,24 @@
         </service>
 
         <!-- core / messenger -->
-        <service id="Elio\ElioSearch\Core\Tracking\Message\TrackingMessageHandler">
-            <argument type="service" id="Elio\ElioSearch\Api\Tracking\TrackingApi" />
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Message\TrackingMessageHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Tracking\TrackingApi" />
             <tag name="messenger.message_handler"/>
         </service>
 
         <!-- subscriber -->
-        <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackCartSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
-            <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Subscriber\TrackCartSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="product.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
-            <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Subscriber\TrackCheckoutSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
@@ -43,27 +43,27 @@
             <argument type="service" id="product.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackLoginSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
-            <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Subscriber\TrackLoginSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Tracking\Subscriber\TrackingSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Core\Tracking\AllowedChecker\UserAgentAllowedChecker"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\Subscriber\TrackingSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\UserAgentAllowedChecker"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Tracking is allowed checker -->
-        <service id="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"
-                class="Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedChecker">
-            <argument type="tagged" tag="elio-search.tracking.allowed-checker"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface"
+                class="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedChecker">
+            <argument type="tagged" tag="elio-data-discovery.tracking.allowed-checker"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Tracking\AllowedChecker\UserAgentAllowedChecker">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
-            <tag name="elio-search.tracking.allowed-checker"/>
+        <service id="Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\UserAgentAllowedChecker">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <tag name="elio-data-discovery.tracking.allowed-checker"/>
         </service>
     </services>
 </container>

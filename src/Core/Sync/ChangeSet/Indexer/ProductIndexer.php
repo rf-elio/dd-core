@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 
-use Elio\ElioSearch\Core\Exception\InvalidTypeException;
-use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
+use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -49,7 +49,7 @@ use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class ProductIndexer
- * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -90,7 +90,7 @@ class ProductIndexer extends BaseIndexer
         $criteria->addAssociation('properties.group');
         $criteria->addAssociation('categories');
         $criteria->addAssociation('tags');
-        $criteria->addAssociation('elioSearchProductSortingTree');
+        $criteria->addAssociation('elioDataDiscoveryProductSortingTree');
 
         $event = new CriteriaPreparedEvent($this, $criteria, $context);
         $this->eventDispatcher->dispatch($event);

@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 
 interface HandleInterface
 {
