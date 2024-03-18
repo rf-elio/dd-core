@@ -47,7 +47,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Class FactFinder
+ * Class ElioDataDiscovery
  *
  * @category  Bootstrap
  * @package   Shopware\Plugins\ElioDataDiscovery
