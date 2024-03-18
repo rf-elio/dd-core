@@ -46,11 +46,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 /**
- * Class ElioDataDiscoveryProductDetailRoute
+ * Class FactFinderProductDetailRoute
  *
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail
+ * @package Elio\FactFinder\Core\Content\Product\SalesChannel\Detail
  */
 class ElioDataDiscoveryProductDetailRoute extends AbstractProductDetailRoute
 {

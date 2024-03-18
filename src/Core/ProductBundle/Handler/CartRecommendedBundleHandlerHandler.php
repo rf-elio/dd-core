@@ -101,9 +101,7 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
         $ids = [];
 
         foreach ($productLineItems as $lineItem) {
-            if ($lineItem->getReferencedId()) {
-                $ids[] = $lineItem->getReferencedId();
-            }
+            $ids[] = $lineItem->getReferencedId();
         }
         if (empty($ids)) {
             return [];

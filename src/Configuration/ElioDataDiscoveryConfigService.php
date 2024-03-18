@@ -148,7 +148,6 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productRankingOrderDeliveryStates', $languagePrefix) ?? [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'allowStreamIdSearch', $languagePrefix) ?? false,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailSimilar', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],

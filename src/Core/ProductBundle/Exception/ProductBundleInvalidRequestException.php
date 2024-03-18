@@ -7,7 +7,7 @@ use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 /**
  * Class ProductBundleException
  *
- * @package Elio\ElioDataDiscovery\Core\ProductBundle\Exception
+ * @package Elio\FactFinder\Core\ProductBundle\Exception
  */
 class ProductBundleInvalidRequestException extends ElioDataDiscoveryException
 {

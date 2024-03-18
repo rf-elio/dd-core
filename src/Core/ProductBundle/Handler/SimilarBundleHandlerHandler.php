@@ -72,7 +72,7 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 
         $similarRequest = new SimilarRequest('');
         $similarRequest->setId($request->get('productId'));
-        $similarRequest->setMaxResults($criteria->getLimit() ?? 0);
+        $similarRequest->setMaxResults($criteria->getLimit());
 
         $resultCollection = $this->RecommendationApi->getSimilar($similarRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);

@@ -9,7 +9,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 /**
  * Class Excluder
  *
- * @package Elio\ElioDataDiscovery\Core\ProductBundle
+ * @package Elio\FactFinder\Core\ProductBundle
  */
 class Excluder
 {
