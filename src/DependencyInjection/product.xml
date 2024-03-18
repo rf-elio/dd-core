@@ -40,6 +40,17 @@
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="translator" />
+        </service>
+
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"
                  decoration-priority="-3000"

@@ -73,7 +73,7 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
         $recommendationRequest = new RecommendationRequest('');
         $recommendationRequest->setIds($request->get('productIds'));
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
-        $recommendationRequest->setMaxResults($criteria->getLimit());
+        $recommendationRequest->setMaxResults($criteria->getLimit() ?? 0);
 
         $resultCollection = $this->RecommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);

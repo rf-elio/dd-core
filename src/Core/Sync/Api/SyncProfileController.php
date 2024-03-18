@@ -37,7 +37,6 @@ use Elio\ElioDataDiscovery\Core\Sync\ProfileInterface;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
-use Elio\FactFinder\Core\Export\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
