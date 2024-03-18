@@ -59,8 +59,8 @@ class Migration1661932856AddCategoryVersionField extends MigrationStep
     public function update(Connection $connection): void
     {
         $queries[] = <<<SQL
-ALTER TABLE `elio_data_discovery_filter_restrictions` DROP FOREIGN KEY `fk.elio_data_discovery_filter_restrictions.category_id`;
-ALTER TABLE `elio_data_discovery_filter_restrictions` DROP INDEX `fk.elio_data_discovery_filter_restrictions.category_id`;
+ALTER TABLE `elio_data_discovery_filter_restrictions` DROP FOREIGN KEY `fk.edd_filter_restrictions.category_id`;
+ALTER TABLE `elio_data_discovery_filter_restrictions` DROP INDEX `fk.edd_filter_restrictions.category_id`;
 SQL;
 
         $queries[] = <<<SQL
@@ -71,9 +71,9 @@ SQL;
 
         $queries[] = <<<SQL
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
-    KEY `fk.elio_data_discovery_filter_restrictions.category_id` (`category_id`,`category_version_id`);
+    KEY `fk.edd_filter_restrictions.category_id` (`category_id`,`category_version_id`);
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
-    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.category_id`
+    CONSTRAINT `fk.edd_filter_restrictions.category_id`
         FOREIGN KEY (`category_id`,`category_version_id`)
             REFERENCES `category` (`id`,`version_id`)
             ON DELETE CASCADE

@@ -59,17 +59,17 @@ class Migration1637571600FilterRestrictions extends MigrationStep
     {
         $query = <<<SQL
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
-    KEY `fk.elio_data_discovery_filter_restrictions.sales_channel_id` (`sales_channel_id`);
+    KEY `fk.edd_filter_restrictions.sales_channel_id` (`sales_channel_id`);
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
-    KEY `fk.elio_data_discovery_filter_restrictions.category_id` (`category_id`);
+    KEY `fk.edd_filter_restrictions.category_id` (`category_id`);
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD 
-    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.sales_channel_id`
+    CONSTRAINT `fk.edd_filter_restrictions.sales_channel_id`
         FOREIGN KEY (`sales_channel_id`)
             REFERENCES `sales_channel` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE;
 ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
-    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.category_id`
+    CONSTRAINT `fk.edd_filter_restrictions.category_id`
         FOREIGN KEY (`category_id`)
             REFERENCES `category` (`id`)
             ON DELETE CASCADE
@@ -80,9 +80,9 @@ SQL;
 
         $query = <<<SQL
 ALTER TABLE `elio_data_discovery_filter` ADD
-    KEY `fk.elio_data_discovery_filter.property_id` (`property_id`);
+    KEY `fk.edd_filter.property_id` (`property_id`);
 ALTER TABLE `elio_data_discovery_filter` ADD
-    CONSTRAINT `fk.elio_data_discovery_filter.property_id`
+    CONSTRAINT `fk.edd_filter.property_id`
         FOREIGN KEY (`property_id`)
             REFERENCES `property_group` (`id`)
             ON DELETE CASCADE

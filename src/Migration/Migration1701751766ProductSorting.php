@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_product_sorting` (
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`),
-    KEY `fk.elio_data_discovery_product_sorting.product_id` (`product_id`,`product_version_id`),
-    KEY `fk.elio_data_discovery_product_sorting.category_id` (`category_id`,`category_version_id`),
-    CONSTRAINT `fk.elio_data_discovery_product_sorting.product_id` FOREIGN KEY (`product_id`,`product_version_id`) REFERENCES `product` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_product_sorting.category_id` FOREIGN KEY (`category_id`,`category_version_id`) REFERENCES `category` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.edd_product_sorting.product_id` (`product_id`,`product_version_id`),
+    KEY `fk.edd_product_sorting.category_id` (`category_id`,`category_version_id`),
+    CONSTRAINT `fk.edd_product_sorting.product_id` FOREIGN KEY (`product_id`,`product_version_id`) REFERENCES `product` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk.edd_product_sorting.category_id` FOREIGN KEY (`category_id`,`category_version_id`) REFERENCES `category` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
         $connection->executeStatement($query);
@@ -44,10 +44,10 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_product_sorting_tree` (
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
     PRIMARY KEY (`id`),
-    KEY `fk.elio_data_discovery_product_sorting_tree.product_id` (`product_id`,`product_version_id`),
-    KEY `fk.elio_data_discovery_product_sorting_tree.category_id` (`category_id`,`category_version_id`),
-    CONSTRAINT `fk.elio_data_discovery_product_sorting_tree.product_id` FOREIGN KEY (`product_id`,`product_version_id`) REFERENCES `product` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_product_sorting_tree.category_id` FOREIGN KEY (`category_id`,`category_version_id`) REFERENCES `category` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.edd_product_sorting_tree.product_id` (`product_id`,`product_version_id`),
+    KEY `fk.edd_product_sorting_tree.category_id` (`category_id`,`category_version_id`),
+    CONSTRAINT `fk.edd_product_sorting_tree.product_id` FOREIGN KEY (`product_id`,`product_version_id`) REFERENCES `product` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk.edd_product_sorting_tree.category_id` FOREIGN KEY (`category_id`,`category_version_id`) REFERENCES `category` (`id`,`version_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
         $connection->executeStatement($query);

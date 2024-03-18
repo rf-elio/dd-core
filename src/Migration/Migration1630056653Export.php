@@ -37,10 +37,10 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_export` (
     `updated_at` DATETIME(3) NULL,
     `base_category_ids` json NULL,
     PRIMARY KEY (`id`),
-    KEY `fk.elio_data_discovery_export.sales_channel_id` (`sales_channel_id`),
-    KEY `fk.elio_data_discovery_export.language_id` (`language_id`),
-    CONSTRAINT `fk.elio_data_discovery_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_export.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.edd_export.sales_channel_id` (`sales_channel_id`),
+    KEY `fk.edd_export.language_id` (`language_id`),
+    CONSTRAINT `fk.edd_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk.edd_export.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 
