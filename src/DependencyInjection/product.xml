@@ -26,7 +26,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SearchApi" />
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute"
@@ -37,7 +37,18 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
-            <argument type="service" id="elio.data-discovery.core.logging.debug" />
+            <argument type="service" id="elio.search.core.logging.default" />
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="translator" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
@@ -52,7 +63,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\Subscriber\ProductSubscriber">

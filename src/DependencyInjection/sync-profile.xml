@@ -59,14 +59,8 @@
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService">
             <argument type="service" id="elio_data_discovery_entity_status.repository" />
             <argument type="tagged" tag="elio-data-discovery.sync.indexer" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
         </service>
-<!--        <service id="Elio\ElioDataDiscovery\Core\Sync\Output\Api\ApiService">-->
-<!--            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />-->
-<!--            <argument type="tagged" tag="elio-data-discovery.sync.collector" />-->
-<!--            <argument type="service" id="event_dispatcher" />-->
-<!--            <argument type="service" id="elio.data-discovery.core.logging.default" />-->
-<!--        </service>-->
 
         <!-- outputs -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService">
@@ -76,14 +70,9 @@
         <service id="Elio\ElioDataDiscovery\Core\Sync\Output\SeoRouteOutput">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="router"/>
-            <argument type="service" id="elio.data-discovery.core.logging.default"/>
+            <argument type="service" id="elio.search.core.logging.default"/>
             <tag name="elio-data-discovery.sync.api.output"/>
         </service>
-
-<!--        <service id="Elio\ElioDataDiscovery\Core\Sync\Output\CSVOutput">-->
-<!--            <argument type="service" id="shopware.filesystem.private" />-->
-<!--            <tag name="elio-data-discovery.sync.api.output"/>-->
-<!--        </service>-->
 
         <!-- inputs -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService">
@@ -93,13 +82,13 @@
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\DeltaInput">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="tagged" tag="elio-data-discovery.sync.collector" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="elio-data-discovery.sync.api.input" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\FullInput">
             <argument type="tagged" tag="elio-data-discovery.sync.collector" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="elio-data-discovery.sync.api.input" />
         </service>
 
@@ -109,7 +98,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService" />
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <argument type="service" id="event_dispatcher" />
         </service>
 
@@ -125,25 +114,25 @@
 
         <service id="Elio\ElioDataDiscovery\Command\SyncDataCommand">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Command\IndexUpdateCommand">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Command\IndexCleanupCommand">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Command\ExcludingCategoryInheritanceUpdateCommand">
             <argument type="service" id="category.repository" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio.search.core.logging.default" />
             <tag name="console.command"/>
         </service>
 

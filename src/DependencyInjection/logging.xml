@@ -30,18 +30,18 @@
             <argument type="string">%kernel.logs_dir%/%%s_%kernel.environment%.log</argument>
             <argument>%shopware.logger.file_rotation_count%</argument>
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Logging\LogFilterContext" />
-            <argument type="service" id="elio.data-discovery.core.logging.console_handler" />
+            <argument type="service" id="elio.search.core.logging.console_handler" />
         </service>
-        <service id="elio.data-discovery.core.logging.console_handler" class="Symfony\Bridge\Monolog\Handler\ConsoleHandler">
+        <service id="elio.search.core.logging.console_handler" class="Symfony\Bridge\Monolog\Handler\ConsoleHandler">
             <tag name="kernel.event_subscriber" />
         </service>
-        <service id="elio.data-discovery.core.logging.default" class="Monolog\Logger">
+        <service id="elio.search.core.logging.default" class="Monolog\Logger">
             <factory service="Elio\ElioDataDiscovery\Core\Logging\LoggerFactory" method="createRotating" />
             <argument type="string">elio_data_discovery_default</argument>
             <argument type="string">10</argument>
             <argument type="string">0</argument>
         </service>
-        <service id="elio.data-discovery.core.logging.debug" class="Monolog\Logger">
+        <service id="elio.search.core.logging.debug" class="Monolog\Logger">
             <factory service="Elio\ElioDataDiscovery\Core\Logging\LoggerFactory" method="createRotating" />
             <argument type="string">elio_data_discovery_debug</argument>
             <argument type="string">10</argument>
