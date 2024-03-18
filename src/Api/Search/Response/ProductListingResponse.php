@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search\Response;
+namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
 
-use Elio\ElioSearch\Api\Response\Response;
+use Elio\ElioDataDiscovery\Api\Response\Response;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingEntity;
@@ -41,7 +41,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 
 /**
  * Class ProductListingResponse
- * @package Elio\ElioSearch\Api\Search\Response
+ * @package Elio\ElioDataDiscovery\Api\Search\Response
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

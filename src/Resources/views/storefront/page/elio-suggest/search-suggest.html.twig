@@ -1,6 +1,6 @@
-{% block elio_search_suggest %}
+{% block elio_data_discovery_suggest %}
     <div class="search-suggest e-search-suggest js-search-result">
-        {% block elio_search_suggest_container %}
+        {% block elio_data_discovery_suggest_container %}
             <div class="search-suggest-container">
                 <div class="d-flex flex-md-row flex-wrap">
                     {% if not response.hasVisibleItems %}
@@ -8,7 +8,7 @@
                             <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
                         </ul>
                     {% else %}
-                        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
+                        {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
                             label: 'above product listing', container: resultCollection
                         } %}
                         {% for group in response.visibleGroups %}

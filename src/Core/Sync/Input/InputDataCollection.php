@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
 
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class InputDataCollection
- * @package Elio\ElioSearch\Core\Sync\Input
+ * @package Elio\ElioDataDiscovery\Core\Sync\Input
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

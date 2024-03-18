@@ -7,7 +7,7 @@
   padding: 0 0 28px 0;
 }
 
-.elio-search-mappings .headline,
+.elio-data-discovery-mappings .headline,
 .sw-description-list .headline {
   margin: 0 0 20px 0;
   color: #52667a;
@@ -15,7 +15,7 @@
   font-size: 18px;
 }
 
-.sw-card.elio-search-mappings--empty .sw-card__content {
+.sw-card.elio-data-discovery-mappings--empty .sw-card__content {
   background-color: #f0f2f5;
 }
 
@@ -23,16 +23,16 @@
   background-color: #f0f2f5;
 }
 
-.elio-search-mappings-column-actions {
+.elio-data-discovery-mappings-column-actions {
   padding-top: 50px;
 }
-.elio-search-mappings-button-add {
+.elio-data-discovery-mappings-button-add {
   margin-bottom: 20px;
 }
-.elio-search-mappings-button-delete {
+.elio-data-discovery-mappings-button-delete {
   width: 100%;
   margin-bottom: 48px;
 }
-.elio-search-sync-profile-button-generate {
+.elio-data-discovery-sync-profile-button-generate {
   margin-left: 10px;
 }

@@ -1,9 +1,9 @@
-import template from './elio-search-sorting-restrictions-customfilters.html.twig';
+import template from './elio-data-discovery-sorting-restrictions-customfilters.html.twig';
 
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-search-sorting-restrictions-customfilters', {
+Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilters', {
     template: template,
 
     inject: [
@@ -32,19 +32,19 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters', {
 
     computed: {
         filtersRepository() {
-            return this.repositoryFactory.create('elio_search_filter');
+            return this.repositoryFactory.create('elio_data_discovery_filter');
         },
 
         defaultCriteria() {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addSorting(Criteria.sort(this.sortBy, this.sortDirection, this.useNaturalSorting));
-            criteria.addFilter(Criteria.equals('elio_search_filter.isCustom', true));
+            criteria.addFilter(Criteria.equals('elio_data_discovery_filter.isCustom', true));
             criteria.addFilter(Criteria.equals('type', 'sorting'))
             return criteria;
         },
 
         useNaturalSorting() {
-            return this.sortBy === 'elio_search_filter.propertyName';
+            return this.sortBy === 'elio_data_discovery_filter.propertyName';
         },
 
         filtersColumns() {
@@ -86,7 +86,7 @@ Shopware.Component.register('elio-search-sorting-restrictions-customfilters', {
         getFiltersColumns() {
             return [{
                 property: 'technicalName',
-                label: 'elio-search.restrictions.sorting.customFilters.list.columnTechnicalName',
+                label: 'elio-data-discovery.restrictions.sorting.customFilters.list.columnTechnicalName',
                 routerLink: 'elio.search.sorting.restrictions.customFiltersDetail',
                 inlineEdit: 'string',
                 allowResize: false,

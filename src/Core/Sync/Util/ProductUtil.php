@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Util;
+namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
-use Elio\ElioSearch\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Defaults;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -42,7 +42,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 
 /**
  * Class ProductUtil
- * @package Elio\ElioSearch\Core\Sync\Util
+ * @package Elio\ElioDataDiscovery\Core\Sync\Util
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

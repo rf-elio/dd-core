@@ -3,7 +3,7 @@ import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading
 import DomAccess from 'src/helper/dom-access.helper';
 import deepmerge from 'deepmerge';
 
-export default class ElioSearchWidgetPlugin extends SearchWidgetPlugin {
+export default class ElioDataDiscoveryWidgetPlugin extends SearchWidgetPlugin {
     static options = deepmerge(SearchWidgetPlugin.options, {
         suggestAutocompleteType: ''
     });

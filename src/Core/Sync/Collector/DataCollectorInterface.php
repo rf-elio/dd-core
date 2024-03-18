@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
 use Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -40,7 +40,7 @@ use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Interface DataCollectorInterface
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collector
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Search;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Search;
 
-use Elio\ElioSearch\Api\Search\Response\ContentListingResponse;
-use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Api\Search\SearchApi;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Elio\ElioDataDiscovery\Api\Search\Response\ContentListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\SearchApi;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
@@ -49,23 +49,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 /**
- * Class ElioSearchRoute
- * @package Elio\ElioSearch\Search
+ * Class ElioDataDiscoveryRoute
+ * @package Elio\ElioDataDiscovery\Search
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchRoute extends AbstractProductSearchRoute
+class ElioDataDiscoveryRoute extends AbstractProductSearchRoute
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
-     * ElioSearchRoute constructor.
+     * ElioDataDiscoveryRoute constructor.
      * @param AbstractProductSearchRoute $decorated
      * @param ProductSearchRequestBuilder $productSearchRequestBuilder
      * @param ContentSearchRequestBuilder $contentSearchRequestBuilder
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param LoggerInterface $logger
@@ -74,7 +74,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
         private AbstractProductSearchRoute       $decorated,
         private ProductSearchRequestBuilder      $productSearchRequestBuilder,
         private ContentSearchRequestBuilder      $contentSearchRequestBuilder,
-        private ElioSearchConfigServiceInterface $configService,
+        private ElioDataDiscoveryConfigServiceInterface $configService,
         private SearchApi                        $searchApi,
         private ProductListingResultTransformerInterface  $productListingResultTransformer,
         LoggerInterface                  $logger
@@ -96,7 +96,7 @@ class ElioSearchRoute extends AbstractProductSearchRoute
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): ProductSearchRouteResponse
     {
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isSearchUseElioSearch()) {
+        if(!$config->isActive() || !$config->isSearchUseElioDataDiscovery()) {
             return $this->getDecorated()->load($request, $context, $criteria);
         }
 

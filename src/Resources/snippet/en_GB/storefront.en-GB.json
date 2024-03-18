@@ -1,8 +1,8 @@
 {
     "search" : {
-        "headline" : "{0} <span class=\"e-elio-search-listing-properties-total\">0</span> products found for \"%searchTerm%\" | {1} One product found for \"%searchTerm%\" | ]1,Inf[ <span class=\"e-elio-search-listing-properties-total\">%count%</span> products found for \"%searchTerm%\""
+        "headline" : "{0} <span class=\"e-elio-data-discovery-listing-properties-total\">0</span> products found for \"%searchTerm%\" | {1} One product found for \"%searchTerm%\" | ]1,Inf[ <span class=\"e-elio-data-discovery-listing-properties-total\">%count%</span> products found for \"%searchTerm%\""
     },
-    "elioSearch": {
+    "elioDataDiscovery": {
         "cookies": {
             "tracking": {
                 "name": "Data Discovery Tracking",

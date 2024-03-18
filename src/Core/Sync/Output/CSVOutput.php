@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
-use Elio\ElioSearch\Core\Sync\SyncContext;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\DataTypeInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Struct\Collection;
 use League\Flysystem\FilesystemException;

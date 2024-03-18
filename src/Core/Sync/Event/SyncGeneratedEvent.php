@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Event;
+namespace Elio\ElioDataDiscovery\Core\Sync\Event;
 
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

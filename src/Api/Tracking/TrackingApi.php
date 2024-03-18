@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Tracking;
+namespace Elio\ElioDataDiscovery\Api\Tracking;
 
 
-use Elio\ElioSearch\Api\Tracking\Request\TrackingRequest;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\TrackingRequest;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
-use Elio\ElioSearch\Swagger\ClientApiException;
+use Elio\ElioDataDiscovery\Swagger\ClientApiException;
 
 /**
  * Class TrackingApi
- * @package Elio\ElioSearch\Api\Tracking
+ * @package Elio\ElioDataDiscovery\Api\Tracking
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -48,7 +48,7 @@ use Elio\ElioSearch\Swagger\ClientApiException;
  */
 class TrackingApi
 {
-    use ElioSearchLogTrait;
+    use ElioDataDiscoveryLogTrait;
 
     /**
      * SearchApi constructor.

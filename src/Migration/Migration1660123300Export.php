@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -19,8 +19,8 @@ class Migration1660123300Export extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-ALTER TABLE elio_search_export ADD download_username varchar(255) NULL;
-ALTER TABLE elio_search_export ADD download_password varchar(255) NULL;
+ALTER TABLE elio_data_discovery_export ADD download_username varchar(255) NULL;
+ALTER TABLE elio_data_discovery_export ADD download_password varchar(255) NULL;
 SQL;
 
         $connection->executeStatement($query);

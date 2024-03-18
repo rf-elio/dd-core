@@ -1,29 +1,29 @@
-{% block elio_search_sort_positions_ruler %}
-    <div class="elio-search-sort-positions-ruler">
+{% block elio_data_discovery_sort_positions_ruler %}
+    <div class="elio-data-discovery-sort-positions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
-        <sw-button-group class="elio-search-sort-positions-buttons">
+        <sw-button-group class="elio-data-discovery-sort-positions-buttons">
             <sw-button size="small"
                        @click="refreshIndex"
-            >{{ $tc('elio-search.sort-positions.base.refreshIndex') }}</sw-button>
-            <sw-help-text class="elio-search-sort-positions-refresh-index-help-text"
-                          :text="$tc('elio-search.sort-positions.info.help.refresh-index')"
+            >{{ $tc('elio-data-discovery.sort-positions.base.refreshIndex') }}</sw-button>
+            <sw-help-text class="elio-data-discovery-sort-positions-refresh-index-help-text"
+                          :text="$tc('elio-data-discovery.sort-positions.info.help.refresh-index')"
             ></sw-help-text>
             <sw-button v-if="category.childCount == 0"
                        size="small"
                        @click="syncProducts"
                        >
-                {{ $tc('elio-search.sort-positions.base.syncProducts') }}
+                {{ $tc('elio-data-discovery.sort-positions.base.syncProducts') }}
             </sw-button>
-            <sw-help-text class="elio-search-sort-positions-sync-products-help-text"
+            <sw-help-text class="elio-data-discovery-sort-positions-sync-products-help-text"
                           v-if="category.childCount == 0"
-                          :text="$tc('elio-search.sort-positions.info.help.sync-products')"
+                          :text="$tc('elio-data-discovery.sort-positions.info.help.sync-products')"
             ></sw-help-text>
         </sw-button-group><br><br>
-        <div class="elio-search-sort-positions-products-tree"
+        <div class="elio-data-discovery-sort-positions-products-tree"
              v-if="category.childCount > 0"
         >
             <sw-card>
-                {{ $tc('elio-search.sort-positions.info.tree') }}
+                {{ $tc('elio-data-discovery.sort-positions.info.tree') }}
             </sw-card>
             <sw-data-grid
                     ref="dataGrid"
@@ -37,7 +37,7 @@
             >
             </sw-data-grid>
         </div>
-        <div class="elio-search-sort-positions-products"
+        <div class="elio-data-discovery-sort-positions-products"
              v-else
         >
             <sw-data-grid

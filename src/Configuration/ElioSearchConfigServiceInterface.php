@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Configuration;
+namespace Elio\ElioDataDiscovery\Configuration;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Interface ElioSearchConfigServiceInterface
- * @package Elio\ElioSearch\Configuration
+ * Interface ElioDataDiscoveryConfigServiceInterface
+ * @package Elio\ElioDataDiscovery\Configuration
  */
-interface ElioSearchConfigServiceInterface
+interface ElioDataDiscoveryConfigServiceInterface
 {
     /**
      * Fetches the elio search plugin configuration for the given sales channel

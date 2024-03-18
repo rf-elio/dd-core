@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Consent;
+namespace Elio\ElioDataDiscovery\Core\Consent;
 
 use Shopware\Core\Framework\Struct\Struct;
 
@@ -43,7 +43,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class Consent extends Struct
 {
-    public const EXTENSION_KEY = 'elio_search_consent';
+    public const EXTENSION_KEY = 'elio_data_discovery_consent';
 
     /**
      * @param bool $trackingAllowed

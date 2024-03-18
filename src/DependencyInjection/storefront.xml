@@ -4,20 +4,20 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\ElioSearch\Storefront\Framework\Cookie\ElioSearchCookieProvider"
+        <service id="Elio\ElioDataDiscovery\Storefront\Framework\Cookie\ElioDataDiscoveryCookieProvider"
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface"
         >
-            <argument type="service" id="Elio\ElioSearch\Storefront\Framework\Cookie\ElioSearchCookieProvider.inner" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Storefront\Framework\Cookie\ElioDataDiscoveryCookieProvider.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument id="request_stack" type="service"/>
         </service>
 
-        <service id="Elio\ElioSearch\Storefront\Controller\SuggestController"
+        <service id="Elio\ElioDataDiscovery\Storefront\Controller\SuggestController"
                  decorates="Shopware\Storefront\Controller\SearchController"
                  public="true"
         >
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Api\Search\SuggestApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SuggestApi" />
             <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"/>
@@ -29,11 +29,11 @@
             </call>
         </service>
 
-        <service id="Elio\ElioSearch\Storefront\Subscriber\CampaignRedirectionSubscriber">
+        <service id="Elio\ElioDataDiscovery\Storefront\Subscriber\CampaignRedirectionSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Elio\ElioSearch\Storefront\Controller\ProductDetailCrossSellingController" public="true">
+        <service id="Elio\ElioDataDiscovery\Storefront\Controller\ProductDetailCrossSellingController" public="true">
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute" />
             <argument type="service" id="elio.search.core.logging.default" />
             <call method="setContainer">

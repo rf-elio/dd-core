@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Exception;
+namespace Elio\ElioDataDiscovery\Api\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * This exception will be thrown if elio search run into an timeout. The timeout is not about the request or shopware, the
  * timeout happened in elio search.
  *
- * Class ElioSearchTimeoutException
- * @package Elio\ElioSearch\Api\Exception
+ * Class ElioDataDiscoveryTimeoutException
+ * @package Elio\ElioDataDiscovery\Api\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchTimeoutException extends ElioSearchException {}
+class ElioDataDiscoveryTimeoutException extends ElioDataDiscoveryException {}

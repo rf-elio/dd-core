@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -42,7 +42,7 @@ use Shopware\Core\System\Language\LanguageDefinition;
 
 class SyncProfileLanguageMapping extends MappingEntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_sync_profile_languages';
+    public const ENTITY_NAME = 'elio_data_discovery_sync_profile_languages';
 
     /**
      * @return string

@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Logging;
+namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
 use Psr\Log\LoggerInterface;
@@ -10,11 +10,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
 /**
- * Trait ElioSearchLogTrait
- * @package Elio\ElioSearch\Core\Logging
+ * Trait ElioDataDiscoveryLogTrait
+ * @package Elio\ElioDataDiscovery\Core\Logging
  * @author Ralf Frommherz
  */
-trait ElioSearchLogTrait
+trait ElioDataDiscoveryLogTrait
 {
     /**
      * @var LoggerInterface

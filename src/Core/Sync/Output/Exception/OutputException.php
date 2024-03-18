@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output\Exception;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class OutputException
- * @package Elio\ElioSearch\Core\Sync\Output\Exception
+ * @package Elio\ElioDataDiscovery\Core\Sync\Output\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class OutputException extends ElioSearchException {}
+class OutputException extends ElioDataDiscoveryException {}

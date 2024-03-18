@@ -1,6 +1,6 @@
-import template from './elio-search-sorting-restrictions-navigation.html.twig';
+import template from './elio-data-discovery-sorting-restrictions-navigation.html.twig';
 
-Shopware.Component.register('elio-search-sorting-restrictions-navigation', {
+Shopware.Component.register('elio-data-discovery-sorting-restrictions-navigation', {
     template: template,
 
     metaInfo() {

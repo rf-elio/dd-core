@@ -1,9 +1,9 @@
-import template from './elio-search-sorting-restriction-ruler.html.twig';
-import './elio-search-sorting-restriction-ruller.scss';
+import template from './elio-data-discovery-sorting-restriction-ruler.html.twig';
+import './elio-data-discovery-sorting-restriction-ruller.scss';
 
 const {Criteria} = Shopware.Data;
 
-Shopware.Component.register('elio-search-sorting-restriction-ruler', {
+Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
     template: template,
 
     inject: [
@@ -43,13 +43,13 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
 
     computed: {
         filterRepository() {
-            return this.repositoryFactory.create('elio_search_filter');
+            return this.repositoryFactory.create('elio_data_discovery_filter');
         },
         filterRestrictionRepository() {
-            return this.repositoryFactory.create('elio_search_filter_restrictions');
+            return this.repositoryFactory.create('elio_data_discovery_filter_restrictions');
         },
         filterRestrictionFilterRepository() {
-            return this.repositoryFactory.create('elio_search_filter_restrictions_filters');
+            return this.repositoryFactory.create('elio_data_discovery_filter_restrictions_filters');
         },
         languageRepository() {
             return this.repositoryFactory.create('language');
@@ -241,11 +241,11 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                         Criteria.multi(
                             'AND',
                             [
-                                Criteria.equals('elio_search_filter_restrictions.isCategory', true),
-                                Criteria.equals('elio_search_filter_restrictions.categoryId', this.categoryId),
-                                Criteria.equals('elio_search_filter_restrictions.salesChannelId', this.salesChannelId),
-                                Criteria.equals('elio_search_filter_restrictions.languageId', this.languageId),
-                                Criteria.equals('elio_search_filter_restrictions.layer', this.layer),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', true),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.categoryId', this.categoryId),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer),
                             ]
                         )
                     );
@@ -254,10 +254,10 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                         Criteria.multi(
                             'AND',
                             [
-                                Criteria.equals('elio_search_filter_restrictions.isCategory', false),
-                                Criteria.equals('elio_search_filter_restrictions.layer', this.layer),
-                                Criteria.equals('elio_search_filter_restrictions.salesChannelId', this.salesChannelId),
-                                Criteria.equals('elio_search_filter_restrictions.languageId', this.languageId)
+                                Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', false),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
+                                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId)
                             ]
                         )
                     );
@@ -292,7 +292,7 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                             });
                         });
 
-                        // Creating filterRestrictionsEntities if there is no-one into elio_search_filter_restrictions
+                        // Creating filterRestrictionsEntities if there is no-one into elio_data_discovery_filter_restrictions
                         if (!isAllowColumnPresent) {
                             var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
 
@@ -361,7 +361,7 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                 criteria.addFilter(Criteria.not(
                     'AND',
                     [
-                        Criteria.equalsAny('elio_search_filter.id', this.movedFiltersIds)
+                        Criteria.equalsAny('elio_data_discovery_filter.id', this.movedFiltersIds)
                     ]
                 ));
             }
@@ -381,15 +381,15 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
             var operator = this;
             var entities = [];
 
-            // Removing old links from elio_search_filter_restrictions_filters table
+            // Removing old links from elio_data_discovery_filter_restrictions_filters table
             var criteria = new Criteria();
             criteria.addAssociation('filters');
             criteria.addFilter(
                 Criteria.multi(
                     'OR',
                     [
-                        Criteria.equals('elio_search_filter_restrictions.id', this.allowListRestrictionId),
-                        Criteria.equals('elio_search_filter_restrictions.id', this.blockListRestrictionId)
+                        Criteria.equals('elio_data_discovery_filter_restrictions.id', this.allowListRestrictionId),
+                        Criteria.equals('elio_data_discovery_filter_restrictions.id', this.blockListRestrictionId)
                     ]
                 )
             );
@@ -434,7 +434,7 @@ Shopware.Component.register('elio-search-sorting-restriction-ruler', {
                 });
             }
 
-            // Saving new links into elio_search_filter_restrictions_filters table
+            // Saving new links into elio_data_discovery_filter_restrictions_filters table
             await this.filterRestrictionFilterRepository.sync(entities, Shopware.Context.api, false)
                 .finally(() => {
                     this.isLoading = false;

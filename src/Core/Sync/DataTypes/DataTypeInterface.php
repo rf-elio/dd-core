@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 
 
 interface DataTypeInterface

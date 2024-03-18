@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class FilterDefinitionTranslationCollection
- * @package Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
@@ -68,7 +68,7 @@ class FilterDefinitionTranslationCollection extends EntityCollection
 
     public function getApiAlias(): string
     {
-        return 'elio_search_filter_translation_collection';
+        return 'elio_data_discovery_filter_translation_collection';
     }
 
     protected function getExpectedClass(): string

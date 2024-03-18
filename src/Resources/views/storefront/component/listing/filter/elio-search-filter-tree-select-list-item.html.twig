@@ -1,4 +1,4 @@
-{% sw_extends '@ElioSearch/storefront/component/listing/filter/elio-search-filter-multi-select-list-item.html.twig' %}
+{% sw_extends '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-multi-select-list-item.html.twig' %}
 
 {% block component_filter_multi_select_list_item_checkbox_input %}
     {# uses the category name as filter value #}
@@ -11,11 +11,11 @@
 {% block component_filter_multi_select_list_item_label_element %}
     {% set name = element.category.translated.name %}
 
-    {% if element.extensions.elio_search_facet_extension is defined %}
-        {% set id = element.extensions.elio_search_facet_extension.key %}
+    {% if element.extensions.elio_data_discovery_facet_extension is defined %}
+        {% set id = element.extensions.elio_data_discovery_facet_extension.key %}
 
-        {% if config('ElioSearch.config.listingShowFacetResultCount') %}
-            {% set name = name ~ ' (' ~ element.extensions.elio_search_facet_extension.totalHits ~ ')' %}
+        {% if config('ElioDataDiscovery.config.listingShowFacetResultCount') %}
+            {% set name = name ~ ' (' ~ element.extensions.elio_data_discovery_facet_extension.totalHits ~ ')' %}
         {% endif %}
     {% endif %}
 

@@ -1,21 +1,21 @@
-{% block elio_search_sync_profile_list_page %}
-    <sw-page class="elio-search-sync-profile-list">
+{% block elio_data_discovery_sync_profile_list_page %}
+    <sw-page class="elio-data-discovery-sync-profile-list">
         <template #smart-bar-actions>
             <sw-button
                     variant="primary"
                     :router-link="{ name: 'elio.search.sync.profile.create' }"
             >
-                {{ $tc('elio-search-sync-profile.list.buttonCreate') }}
+                {{ $tc('elio-data-discovery-sync-profile.list.buttonCreate') }}
             </sw-button>
         </template>
 
         <template slot="content">
             <div>
-                {% block elio_search_sync_profile_list_grid %}
+                {% block elio_data_discovery_sync_profile_list_grid %}
                     <sw-entity-listing
                             v-if="exports"
-                            class="elio-search-sync-profiles-list-grid"
-                            identifier="elio-search-sync-profiles-list"
+                            class="elio-data-discovery-sync-profiles-list-grid"
+                            identifier="elio-data-discovery-sync-profiles-list"
                             :items="exports"
                             :columns="exportColumns"
                             :repository="syncProfileRepository"
@@ -30,63 +30,63 @@
                             :sortDirection="sortDirection"
                             @column-sort="onSortColumn">
 
-                        {% block elio_search_sync_profile_list_grid_columns_salesChannel %}
+                        {% block elio_data_discovery_sync_profile_list_grid_columns_salesChannel %}
                             <template #column-salesChannelId="{ item }">
                                 {{ item.salesChannel ? item.salesChannel.translated.name : '-' }}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_sync_profile_list_grid_columns_dataType %}
+                        {% block elio_data_discovery_sync_profile_list_grid_columns_dataType %}
                             <template #column-dataType="{ item }">
                                 {{ extractDataType(item.dataType) }}
                             </template>
                         {% endblock %}
 
-{#                        {% block elio_search_sync_profile_list_grid_columns_language %}#}
+{#                        {% block elio_data_discovery_sync_profile_list_grid_columns_language %}#}
 {#                            <template #column-languageId="{ item }">#}
 {#                                {{ item.language ? item.language.name : '-' }}#}
 {#                            </template>#}
 {#                        {% endblock %}#}
 
-                        {% block elio_search_sync_profile_list_grid_columns_last_generation_time %}
+                        {% block elio_data_discovery_sync_profile_list_grid_columns_last_generation_time %}
                             <template #column-lastGenerationFinishedAt="{ item }">
                                 {{ item.lastGenerationFinishedAt ? formatDate(item.lastGenerationFinishedAt) : '-' }}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_sync_profile_list_grid_columns_actions %}
+                        {% block elio_data_discovery_sync_profile_list_grid_columns_actions %}
                             <template slot="actions" slot-scope="{ item }">
-                                {% block elio_search_sync_profile_list_grid_columns_actions_detail %}
+                                {% block elio_data_discovery_sync_profile_list_grid_columns_actions_detail %}
                                     <sw-context-menu-item
                                             :routerLink="{ name: 'elio.search.sync.profile.detail', params: { id: item.id } }">
-                                        {{ $tc('elio-search-sync-profile.list.contextMenuView') }}
+                                        {{ $tc('elio-data-discovery-sync-profile.list.contextMenuView') }}
                                     </sw-context-menu-item>
                                 {% endblock %}
 
-                                {% block elio_search_sync_profile_list_grid_columns_actions_delete %}
+                                {% block elio_data_discovery_sync_profile_list_grid_columns_actions_delete %}
                                     <sw-context-menu-item variant="danger"
                                                           @click="onDelete(item.id)">
-                                        {{ $tc('elio-search-sync-profile.list.contextMenuDelete') }}
+                                        {{ $tc('elio-data-discovery-sync-profile.list.contextMenuDelete') }}
                                     </sw-context-menu-item>
                                 {% endblock %}
                             </template>
                         {% endblock %}
 
-                        {% block elio_search_sync_profile_list_grid_action_modals %}
+                        {% block elio_data_discovery_sync_profile_list_grid_action_modals %}
                             <template slot="action-modals" slot-scope="{ item }">
                                 <sw-modal v-if="showDeleteModal === item.id"
                                           variant="small"
                                           :title="$tc('global.default.warning')"
                                           @modal-close="onCloseDeleteModal">
                                     <p>
-                                        {{ $tc('elio-search-sync-profile.list.textDeleteConfirm', 0, { name: item.name }) }}
+                                        {{ $tc('elio-data-discovery-sync-profile.list.textDeleteConfirm', 0, { name: item.name }) }}
                                     </p>
                                     <template slot="modal-footer">
                                         <sw-button @click="onCloseDeleteModal" size="small">
-                                            {{ $tc('elio-search-sync-profile.list.buttonCancel') }}
+                                            {{ $tc('elio-data-discovery-sync-profile.list.buttonCancel') }}
                                         </sw-button>
                                         <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
-                                            {{ $tc('elio-search-sync-profile.list.buttonDelete') }}
+                                            {{ $tc('elio-data-discovery-sync-profile.list.buttonDelete') }}
                                         </sw-button>
                                     </template>
                                 </sw-modal>
@@ -94,7 +94,7 @@
                         {% endblock %}
 
                         <template #pagination>
-                            {% block elio_search_sync_profile_list_grid_pagination %}
+                            {% block elio_data_discovery_sync_profile_list_grid_pagination %}
                                 <sw-pagination :page="page"
                                                :limit="limit"
                                                :total="total"

@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
 
-use Elio\ElioSearch\Core\Sync\Exception\OutputNotFoundException;
-use Elio\ElioSearch\Core\Sync\ProfileInterface;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\OutputNotFoundException;
+use Elio\ElioDataDiscovery\Core\Sync\ProfileInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 
 /**
  * Class OutputService
- * @package Elio\ElioSearch\Core\Sync\Output
+ * @package Elio\ElioDataDiscovery\Core\Sync\Output
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

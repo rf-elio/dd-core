@@ -1,17 +1,17 @@
-{% block elio_search_sort_positions_index_page %}
-    <sw-meteor-page class="elio-search-sort-positions-index" hideIcon>
+{% block elio_data_discovery_sort_positions_index_page %}
+    <sw-meteor-page class="elio-data-discovery-sort-positions-index" hideIcon>
 
-        {% block elio_search_sort_positions_index_page_smart_bar_tabs %}
+        {% block elio_data_discovery_sort_positions_index_page_smart_bar_tabs %}
             <template slot="page-tabs">
-                {% block elio_search_sort_positions_index_page_smart_bar_tabs_global %}
+                {% block elio_data_discovery_sort_positions_index_page_smart_bar_tabs_global %}
                     <sw-tabs-item :route="{ name: 'elio.search.sort.positions.index.global' }">
-                        {{ $tc('elio-search.sort-positions.tabs.global') }}
+                        {{ $tc('elio-data-discovery.sort-positions.tabs.global') }}
                     </sw-tabs-item>
                 {% endblock %}
             </template>
         {% endblock %}
 
-        {% block elio_search_sort_positions_index_page_smart_bar_actions %}
+        {% block elio_data_discovery_sort_positions_index_page_smart_bar_actions %}
             <template slot="smart-bar-actions">
                 <sw-button-process v-if="!isCustomFiltersTab"
                                    class="sw-category-detail__save-action"
@@ -32,7 +32,7 @@
             </template>
         {% endblock %}
 
-        {% block elio_search_sort_positions_index_page_body %}
+        {% block elio_data_discovery_sort_positions_index_page_body %}
             <template slot="default">
                 <router-view ref="routerView"></router-view>
             </template>

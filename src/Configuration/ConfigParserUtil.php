@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Configuration;
+namespace Elio\ElioDataDiscovery\Configuration;
 
 
 /**
  * Class ConfigParserUtil
- * @package Elio\ElioSearch\Configuration
+ * @package Elio\ElioDataDiscovery\Configuration
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -54,9 +54,9 @@ class ConfigParserUtil
     public static function prepareValueList(array $config, string $value, string $languagePrefix = ''): array
     {
         $valueList = array_key_exists($languagePrefix . $value, $config) ? explode(
-            ElioSearchConfigService::CONFIG_VALUE_SEPARATOR,
+            ElioDataDiscoveryConfigService::CONFIG_VALUE_SEPARATOR,
             $config[$languagePrefix . $value] ?? ''
-        ) : explode(ElioSearchConfigService::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
+        ) : explode(ElioDataDiscoveryConfigService::CONFIG_VALUE_SEPARATOR, $config[$value] ?? '');
         return array_filter($valueList);
     }
 

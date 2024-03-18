@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\DataTypeInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 
 interface WriteAwareInterface

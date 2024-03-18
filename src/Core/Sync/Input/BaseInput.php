@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\Collector\DataCollectorInterface;
-use Elio\ElioSearch\Core\Sync\Input\Exception\NoSupportedCollectorFoundException;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\DataCollectorInterface;
+use Elio\ElioDataDiscovery\Core\Sync\Input\Exception\NoSupportedCollectorFoundException;
 
 /**
  * Class BaseInput

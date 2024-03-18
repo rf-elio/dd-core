@@ -1,6 +1,6 @@
 <?php
 
-namespace Elio\ElioSearch\Configuration;
+namespace Elio\ElioDataDiscovery\Configuration;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

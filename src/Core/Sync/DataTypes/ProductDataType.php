@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Shopware\Core\Content\Product\ProductEntity;
 
 /**
  * Class ProductType
- * @package Elio\ElioSearch\Core\Sync\DataTypes
+ * @package Elio\ElioDataDiscovery\Core\Sync\DataTypes
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

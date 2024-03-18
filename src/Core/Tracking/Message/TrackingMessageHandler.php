@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Message;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Message;
 
 
-use Elio\ElioSearch\Api\Tracking\TrackingApi;
+use Elio\ElioDataDiscovery\Api\Tracking\TrackingApi;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Elio\ElioSearch\Swagger\ClientApiException;
+use Elio\ElioDataDiscovery\Swagger\ClientApiException;
 
 /**
  * Class TrackingMessageHandler
- * @package Elio\ElioSearch\Core\Tracking\Message
+ * @package Elio\ElioDataDiscovery\Core\Tracking\Message
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

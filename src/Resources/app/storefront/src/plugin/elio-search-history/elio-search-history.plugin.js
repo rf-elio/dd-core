@@ -3,9 +3,9 @@ import ArrowNavigationHelper from 'src/helper/arrow-navigation.helper';
 import Debouncer from 'src/helper/debouncer.helper';
 import DomAccess from 'src/helper/dom-access.helper';
 
-export default class ElioSearchHistoryPlugin extends Plugin {
+export default class ElioDataDiscoveryHistoryPlugin extends Plugin {
     static options = {
-        localStorageKey: 'elio-search-search-history',
+        localStorageKey: 'elio-data-discovery-search-history',
         searchHistoryResultClassName: 'js-search-history-result',
         searchHistoryResultItemClassName: 'js-result',
         searchHistoryInputFieldSelector: 'input[type=search]',

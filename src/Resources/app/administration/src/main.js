@@ -1,10 +1,10 @@
-import './module/elio-search/index';
+import './module/elio-data-discovery/index';
 import './module/elio-extension-config-detail/index';
-import './module/elio-search-sync-profile/index';
-import './module/elio-search-logging/index';
-import './module/elio-search-filter-restrictions/index';
-import './module/elio-search-sorting-restrictions/index';
-import './module/elio-search-sort-positions/index';
+import './module/elio-data-discovery-sync-profile/index';
+import './module/elio-data-discovery-logging/index';
+import './module/elio-data-discovery-filter-restrictions/index';
+import './module/elio-data-discovery-sorting-restrictions/index';
+import './module/elio-data-discovery-sort-positions/index';
 import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';
 import './view/sw-category-detail-filter-ruler/index';

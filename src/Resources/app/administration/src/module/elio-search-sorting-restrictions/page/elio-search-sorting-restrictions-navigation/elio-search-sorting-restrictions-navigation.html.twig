@@ -1,13 +1,13 @@
-{% block elio_search_sorting_restrictions_navigation_page %}
+{% block elio_data_discovery_sorting_restrictions_navigation_page %}
     <sw-meteor-card>
-        <div class="elio-search-sorting-restrictions-sales-channel-picker">
+        <div class="elio-data-discovery-sorting-restrictions-sales-channel-picker">
             <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
                                      @change-sales-channel-id="onSalesChannelChanged">
             </sw-sales-channel-switch>
         </div>
-        <elio-search-sorting-restriction-ruler :isCategory="false"
+        <elio-data-discovery-sorting-restriction-ruler :isCategory="false"
                               :layer="type"
-                              rulerHeader="elio-search.restrictions.sorting.tabs.navigation"
-                              ref="ruler"></elio-search-sorting-restriction-ruler>
+                              rulerHeader="elio-data-discovery.restrictions.sorting.tabs.navigation"
+                              ref="ruler"></elio-data-discovery-sorting-restriction-ruler>
     </sw-meteor-card>
 {% endblock %}

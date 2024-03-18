@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sorting;
+namespace Elio\ElioDataDiscovery\Core\Sorting;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 

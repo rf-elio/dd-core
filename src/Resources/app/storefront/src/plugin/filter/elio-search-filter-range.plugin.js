@@ -1,13 +1,13 @@
 import FilterRangePlugin from 'src/plugin/listing/filter-range.plugin';
 import deepmerge from 'deepmerge';
 
-export default class ElioSearchFilterRangePlugin extends FilterRangePlugin {
+export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugin {
 
     static options = deepmerge(FilterRangePlugin.options, {
         inputMinValue: '',
         inputMaxValue: '',
         rangeUnit: '',
-        elioSearchFilterName: 'elio-search-slider',
+        elioDataDiscoveryFilterName: 'elio-data-discovery-slider',
     });
 
     /**
@@ -19,7 +19,7 @@ export default class ElioSearchFilterRangePlugin extends FilterRangePlugin {
 
         values[this.options.minKey] = this._inputMin.value;
         values[this.options.maxKey] = this._inputMax.value;
-        values[this.options.elioSearchFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
+        values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
 
         return values;
     }

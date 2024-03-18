@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class AggregationExtension
- * @package Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult
+ * @package Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -45,8 +45,8 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class AggregationExtension extends Struct
 {
-    public const KEY = 'elioSearch';
-    public const PARAMETER_NAME_PREFIX = 'elio-search-';
+    public const KEY = 'elioDataDiscovery';
+    public const PARAMETER_NAME_PREFIX = 'elio-data-discovery-';
 
     /**
      * AggregationTypeExtension constructor.

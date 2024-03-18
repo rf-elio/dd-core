@@ -4,47 +4,47 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer">
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer">
             <argument type="service" id="event_dispatcher"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="event_dispatcher"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder">
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
+        <service id="Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
         </service>
 
-        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Search\ElioSearchRoute"
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Search\ElioDataDiscoveryRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"
                  decoration-priority="-3000"
         >
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Search\ElioSearchRoute.inner" />
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Api\Search\SearchApi" />
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Search\ElioDataDiscoveryRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
-        <service id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing\ElioSearchProductListingRoute"
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"
                  decoration-priority="-3000"
                  public="true"
         >
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\Listing\ElioSearchProductListingRoute.inner" />
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Api\Search\SearchApi" />
-            <argument type="service" id="Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer" />
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
             <argument type="service" id="elio.search.core.logging.default" />
         </service>
 
-        <service id="Elio\ElioSearch\Core\Content\Product\Subscriber\ProductSubscriber">
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\Subscriber\ProductSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

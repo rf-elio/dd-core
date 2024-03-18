@@ -1,15 +1,15 @@
 {% sw_extends '@Storefront/storefront/component/product/card/box-standard.html.twig' %}
 
 {% block component_product_box_content %}
-    {% if config('ElioSearch.config.trackProductView') %}
-        <div class="elio-search-listing-box"
-             data-elio-search-product-number="{{ product.productNumber }}"
-             data-elio-search-parent-product-id="{{ product.parentId }}"
-             data-elio-search-label="{{ name }}"
-             data-elio-search-query="{{ elioSearchQuery }}"
-             data-elio-search-page="{{ elioSearchPage }}"
-             data-elio-search-pageSize="{{ elioSearchPageSize }}"
-             data-elio-search-campaign="{{ elioSearchCampaign }}"
+    {% if config('ElioDataDiscovery.config.trackProductView') %}
+        <div class="elio-data-discovery-listing-box"
+             data-elio-data-discovery-product-number="{{ product.productNumber }}"
+             data-elio-data-discovery-parent-product-id="{{ product.parentId }}"
+             data-elio-data-discovery-label="{{ name }}"
+             data-elio-data-discovery-query="{{ elioDataDiscoveryQuery }}"
+             data-elio-data-discovery-page="{{ elioDataDiscoveryPage }}"
+             data-elio-data-discovery-pageSize="{{ elioDataDiscoveryPageSize }}"
+             data-elio-data-discovery-campaign="{{ elioDataDiscoveryCampaign }}"
         >
             {{ parent() }}
         </div>

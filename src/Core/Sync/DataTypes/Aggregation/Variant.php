@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes\Aggregation;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation;
 
 
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 
 /**
  *

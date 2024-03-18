@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Tracking\Request;
+namespace Elio\ElioDataDiscovery\Api\Tracking\Request;
 
 /**
  * Class CheckoutTrackingRequest
- * @package Elio\ElioSearch\Api\Tracking\Request
+ * @package Elio\ElioDataDiscovery\Api\Tracking\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

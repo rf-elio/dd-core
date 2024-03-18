@@ -1,9 +1,9 @@
-import template from './elio-search-logging-list.html.twig';
-import './elio-search-logging-list.scss';
+import template from './elio-data-discovery-logging-list.html.twig';
+import './elio-data-discovery-logging-list.scss';
 
-Shopware.Component.register('elio-search-logging-list', {
+Shopware.Component.register('elio-data-discovery-logging-list', {
     template,
-    inject: ['elioSearchLogging'],
+    inject: ['elioDataDiscoveryLogging'],
 
     data () {
         return {
@@ -60,7 +60,7 @@ Shopware.Component.register('elio-search-logging-list', {
 
         load () {
             this.isLoading = true;
-            this.elioSearchLogging.getContent(this.selectedLog, {
+            this.elioDataDiscoveryLogging.getContent(this.selectedLog, {
                 offset: this.contentsOffset,
                 limit: this.contentsLimit
             }).then(result => {

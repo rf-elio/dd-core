@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Event;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event;
 
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -38,7 +38,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class ProductListingResultTransformerEvent
- * @package Elio\ElioSearch\Core\Content\Product\SalesChannel\Event
+ * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

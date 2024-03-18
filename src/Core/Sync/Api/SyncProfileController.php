@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Api;
+namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
-use Elio\ElioSearch\Core\Sync\Output\CSVOutput;
-use Elio\ElioSearch\Core\Sync\ProfileInterface;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Elio\ElioSearch\Core\Sync\SyncProfileMessage;
-use Elio\ElioSearch\Core\Sync\SyncService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\CSVOutput;
+use Elio\ElioDataDiscovery\Core\Sync\ProfileInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileMessage;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Elio\FactFinder\Core\Export\ExportEntity;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
@@ -63,7 +63,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(defaults: ['_routeScope' => ['administration']])]
 class SyncProfileController extends AbstractController
 {
-    private const BASE_DIR = 'elio-search-export';
+    private const BASE_DIR = 'elio-data-discovery-export';
 
     /**
      * @param ProfileInterface[] $profiles
@@ -78,7 +78,7 @@ class SyncProfileController extends AbstractController
     ) {}
 
     /**
-     * @Route("/api/_action/elio-search/sync-profile/profiles", name="api.action.elio-search.sync-profile.profiles", methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/sync-profile/profiles", name="api.action.elio-data-discovery.sync-profile.profiles", methods={"GET"})
      *
      * @return JsonResponse
      */
@@ -107,7 +107,7 @@ class SyncProfileController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/elio-search/export/status/{id}", name="api.action.elio-search.export.status", methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/export/status/{id}", name="api.action.elio-data-discovery.export.status", methods={"GET"})
      * @throws FilesystemException
      */
     public function features(string $id, Context $context): JsonResponse
@@ -129,7 +129,7 @@ class SyncProfileController extends AbstractController
     /**
      * Provides the generated file.
      *
-     * @Route("/api/_action/elio-search/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-search.export.download", defaults={"auth_required"=false}, methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-data-discovery.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
      * @throws FilesystemException
      */
@@ -177,7 +177,7 @@ class SyncProfileController extends AbstractController
     /**
      * Generates the export in background
      *
-     * @Route("/api/_action/elio-search/export/generate/{id}", name="api.action.elio-search.export.generate", methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/export/generate/{id}", name="api.action.elio-data-discovery.export.generate", methods={"GET"})
      */
     public function generate(string $id, Context $context): Response
     {

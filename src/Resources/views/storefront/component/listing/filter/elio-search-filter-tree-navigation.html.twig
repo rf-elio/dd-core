@@ -15,7 +15,7 @@
                     {% set hidden = (item.category.id not in activeResult.id) and (item.category.id not in activeResult.path) %}
                     {% block layout_navigation_categories_link_children %}
                         <li class="filter-multi-select-list-item filter-property-select-list-item">
-                            {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-select-list-item.html.twig' with {
+                            {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select-list-item.html.twig' with {
                                 element: item
                             } %}
                         </li>
@@ -23,7 +23,7 @@
 
                     {% block layout_navigation_categories_recoursion %}
                         {% if level < navigationMaxDepth %}
-                            {% sw_include '@ElioSearch/storefront/component/listing/filter/elio-search-filter-tree-navigation.html.twig' with {
+                            {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-navigation.html.twig' with {
                                 navigationTree: item.children,
                                 activeResult: activeResult,
                                 level: level + 1,

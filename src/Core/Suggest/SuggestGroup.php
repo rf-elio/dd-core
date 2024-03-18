@@ -1,11 +1,11 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Suggest;
+namespace Elio\ElioDataDiscovery\Core\Suggest;
 
 
 /**
  * Class SuggestGroup
- * @package Elio\ElioSearch\Core\Suggest
+ * @package Elio\ElioDataDiscovery\Core\Suggest
  * @author Ralf Frommherz <ralf@frommherz.me>
  */
 class SuggestGroup

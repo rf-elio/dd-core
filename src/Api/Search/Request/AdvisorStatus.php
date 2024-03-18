@@ -1,12 +1,12 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Search\Request;
+namespace Elio\ElioDataDiscovery\Api\Search\Request;
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class AdvisorStatus
- * @package Elio\ElioSearch\Api\Search\Request
+ * @package Elio\ElioDataDiscovery\Api\Search\Request
  * @author Ralf Frommherz
  */
 class AdvisorStatus extends Struct

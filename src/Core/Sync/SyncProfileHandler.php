@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 
 use Exception;
@@ -38,7 +38,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Class SyncProfileHandler
- * @package Elio\ElioSearch\Core\Export
+ * @package Elio\ElioDataDiscovery\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

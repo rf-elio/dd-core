@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -42,7 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class IndexUpdateCommand
- * @package Elio\ElioSearch\Command
+ * @package Elio\ElioDataDiscovery\Command
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -59,7 +59,7 @@ class IndexUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:index:update');
+        $this->setName('elio-data-discovery:index:update');
     }
 
     /**

@@ -30,40 +30,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Storefront\Framework\Cookie;
+namespace Elio\ElioDataDiscovery\Storefront\Framework\Cookie;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Shopware\Core\PlatformRequest;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class ElioSearchCookieProvider
- * @package Elio\ElioSearch\Storefront\Framework\Cookie
+ * Class ElioDataDiscoveryCookieProvider
+ * @package Elio\ElioDataDiscovery\Storefront\Framework\Cookie
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchCookieProvider implements CookieProviderInterface
+class ElioDataDiscoveryCookieProvider implements CookieProviderInterface
 {
     private const TRACKING_COOKIE = [
-        'snippet_name' => 'elioSearch.cookies.tracking.name',
-        'snippet_description' => 'elioSearch.cookies.tracking.description',
-        'cookie' => 'elio_search_tracking',
+        'snippet_name' => 'elioDataDiscovery.cookies.tracking.name',
+        'snippet_description' => 'elioDataDiscovery.cookies.tracking.description',
+        'cookie' => 'elio_data_discovery_tracking',
         'value'=> '1',
         'expiration' => '30'
     ];
 
     /**
-     * ElioSearchCookieProvider constructor.
+     * ElioDataDiscoveryCookieProvider constructor.
      * @param CookieProviderInterface $cookieProvider
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param RequestStack $requestStack
      */
     public function __construct(
         private readonly CookieProviderInterface $cookieProvider,
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly RequestStack $requestStack
     ) {}
 

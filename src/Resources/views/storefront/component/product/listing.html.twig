@@ -11,15 +11,15 @@
 {% set disableEmptyFilter = false %}
 
 {% block product_listing %}
-    {% set elioSearchQuery = page.searchTerm %}
-    {% set elioSearchPage = searchResult.page %}
-    {% set elioSearchPageSize = searchResult.limit %}
+    {% set elioDataDiscoveryQuery = page.searchTerm %}
+    {% set elioDataDiscoveryPage = searchResult.page %}
+    {% set elioDataDiscoveryPageSize = searchResult.limit %}
 
     {% if searchResult.extensions.TrackingResponse is defined %}
         {% set trackingResponse = searchResult.extensions.TrackingResponse %}
-        {% set elioSearchQuery = trackingResponse.query %}
-        {% set elioSearchPage = trackingResponse.pageNo %}
-        {% set elioSearchPageSize = trackingResponse.pageSize %}
+        {% set elioDataDiscoveryQuery = trackingResponse.query %}
+        {% set elioDataDiscoveryPage = trackingResponse.pageNo %}
+        {% set elioDataDiscoveryPageSize = trackingResponse.pageSize %}
     {% endif %}
 
     {{ parent() }}
@@ -31,7 +31,7 @@
 
     {% if showListing %}
         {# feedback text #}
-        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
+        {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
             label: 'above search result', container: searchResult
         } %}
 
@@ -41,7 +41,7 @@
         {{ parent() }}
 
         {# feedback text #}
-        {% sw_include '@ElioSearch/storefront/component/elio-search/campaign/elio-search-campaign-feedback.html.twig' with {
+        {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
             label: 'below search result', container: searchResult
         } %}
     {% endif %}

@@ -31,7 +31,7 @@ declare(strict_types=1);
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -40,7 +40,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
  * Class Migration1661932856AddCategoryVersionField
- * @package Elio\ElioSearch\Migration
+ * @package Elio\ElioDataDiscovery\Migration
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -59,21 +59,21 @@ class Migration1661932856AddCategoryVersionField extends MigrationStep
     public function update(Connection $connection): void
     {
         $queries[] = <<<SQL
-ALTER TABLE `elio_search_filter_restrictions` DROP FOREIGN KEY `fk.elio_search_filter_restrictions.category_id`;
-ALTER TABLE `elio_search_filter_restrictions` DROP INDEX `fk.elio_search_filter_restrictions.category_id`;
+ALTER TABLE `elio_data_discovery_filter_restrictions` DROP FOREIGN KEY `fk.elio_data_discovery_filter_restrictions.category_id`;
+ALTER TABLE `elio_data_discovery_filter_restrictions` DROP INDEX `fk.elio_data_discovery_filter_restrictions.category_id`;
 SQL;
 
         $queries[] = <<<SQL
-ALTER TABLE `elio_search_filter_restrictions` ADD COLUMN `category_version_id` BINARY(16) NULL AFTER `category_id`;
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD COLUMN `category_version_id` BINARY(16) NULL AFTER `category_id`;
 SQL;
 
-        $queries[] = 'UPDATE `elio_search_filter_restrictions` SET `category_version_id` = UNHEX(\'' . Defaults::LIVE_VERSION . '\') WHERE `category_id` IS NOT NULL;';
+        $queries[] = 'UPDATE `elio_data_discovery_filter_restrictions` SET `category_version_id` = UNHEX(\'' . Defaults::LIVE_VERSION . '\') WHERE `category_id` IS NOT NULL;';
 
         $queries[] = <<<SQL
-ALTER TABLE `elio_search_filter_restrictions` ADD
-    KEY `fk.elio_search_filter_restrictions.category_id` (`category_id`,`category_version_id`);
-ALTER TABLE `elio_search_filter_restrictions` ADD
-    CONSTRAINT `fk.elio_search_filter_restrictions.category_id`
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
+    KEY `fk.elio_data_discovery_filter_restrictions.category_id` (`category_id`,`category_version_id`);
+ALTER TABLE `elio_data_discovery_filter_restrictions` ADD
+    CONSTRAINT `fk.elio_data_discovery_filter_restrictions.category_id`
         FOREIGN KEY (`category_id`,`category_version_id`)
             REFERENCES `category` (`id`,`version_id`)
             ON DELETE CASCADE

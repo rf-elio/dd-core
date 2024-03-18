@@ -30,23 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Logging\Handler;
+namespace Elio\ElioDataDiscovery\Core\Logging\Handler;
 
-use Elio\ElioSearch\Core\Logging\LogFilterContext;
+use Elio\ElioDataDiscovery\Core\Logging\LogFilterContext;
 use Monolog\Handler\HandlerInterface;
 use Monolog\LogRecord;
 
 /**
- * Class ElioSearchFilterHandler
+ * Class ElioDataDiscoveryFilterHandler
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchFilterHandler implements HandlerInterface
+class ElioDataDiscoveryFilterHandler implements HandlerInterface
 {
     /**
-     * ElioSearchFilterHandler constructor.
+     * ElioDataDiscoveryFilterHandler constructor.
      * @param HandlerInterface $handler
      * @param LogFilterContext $logFilterContext
      */

@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Configuration;
+namespace Elio\ElioDataDiscovery\Configuration;
 
-use Elio\ElioSearch\Configuration\Event\ConfigurationLoadedEvent;
-use Elio\ElioSearch\Core\Defaults;
+use Elio\ElioDataDiscovery\Configuration\Event\ConfigurationLoadedEvent;
+use Elio\ElioDataDiscovery\Core\Defaults;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -45,15 +45,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
- * Class ElioSearchConfigService
+ * Class ElioDataDiscoveryConfigService
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Simon Greiner <sg@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ElioSearchConfigService implements ElioSearchConfigServiceInterface
+class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceInterface
 {
-    public const PLUGIN_CONFIG_PREFIX = 'ElioSearch.config';
+    public const PLUGIN_CONFIG_PREFIX = 'ElioDataDiscovery.config';
     public const CONFIG_VALUE_SEPARATOR = Defaults::VALUE_SEPARATOR;
     private array $loadedConfigurations = [];
     /**
@@ -119,14 +119,14 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
             ConfigParserUtil::prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseElioSearch', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseElioDataDiscovery', $languagePrefix) ?? false,
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
+            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioDataDiscovery', $languagePrefix)),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false,
             $correctedAdditionalRequestParameters,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
@@ -136,7 +136,7 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             ConfigParserUtil::prepareValueList($config, 'botProtectionUserAgentFilter', $languagePrefix),
             ConfigParserUtil::prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestUseElioSearch', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestUseElioDataDiscovery', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,

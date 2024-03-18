@@ -4,49 +4,49 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
 
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterDefinition">
-            <tag name="shopware.entity.definition" entity="elio_search_filter"/>
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterDefinition">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_filter"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsDefinition">
-            <tag name="shopware.entity.definition" entity="elio_search_filter_restrictions"/>
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsDefinition">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_filter_restrictions"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsFilterMapping">
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsFilterMapping">
             <tag name="shopware.entity.definition"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition">
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterService">
-            <argument type="service" id="elio_search_filter_restrictions.repository" />
-            <argument type="service" id="elio_search_filter.repository" />
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterService">
+            <argument type="service" id="elio_data_discovery_filter_restrictions.repository" />
+            <argument type="service" id="elio_data_discovery_filter.repository" />
             <argument type="service" id="category.repository" />
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
             <argument type="service" id="logger"/>
         </service>
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService">
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterSyncService">
             <argument type="service" id="property_group.repository" />
-            <argument type="service" id="elio_search_filter.repository" />
-            <argument type="service" id="elio_search_filter_translation.repository" />
+            <argument type="service" id="elio_data_discovery_filter.repository" />
+            <argument type="service" id="elio_data_discovery_filter_translation.repository" />
             <argument type="service" id="logger" />
         </service>
-        <service id="Elio\ElioSearch\Core\FilterRestrictions\CachedFilterService"
-                 decorates="Elio\ElioSearch\Core\FilterRestrictions\FilterService">
-            <argument type="service" id="Elio\ElioSearch\Core\FilterRestrictions\CachedFilterService.inner" />
+        <service id="Elio\ElioDataDiscovery\Core\FilterRestrictions\CachedFilterService"
+                 decorates="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterService">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\FilterRestrictions\CachedFilterService.inner" />
             <argument type="service" id="cache.object"/>
-            <argument type="service" id="Elio\ElioSearch\Configuration\ElioSearchConfigService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
         </service>
 
-        <service id="Elio\ElioSearch\Storefront\Subscriber\FilterRestrictionsSubscriber">
-            <argument type="service" id="Elio\ElioSearch\Core\FilterRestrictions\CachedFilterService"/>
+        <service id="Elio\ElioDataDiscovery\Storefront\Subscriber\FilterRestrictionsSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\FilterRestrictions\CachedFilterService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Elio\ElioSearch\Command\SynchronizePropertiesToFiltersCommand">
-            <argument type="service" id="Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService" />
+        <service id="Elio\ElioDataDiscovery\Command\SynchronizePropertiesToFiltersCommand">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterSyncService" />
             <tag name="console.command"/>
         </service>
 

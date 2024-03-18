@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Translator;
+namespace Elio\ElioDataDiscovery\Core\Sync\Translator;
 
 use Exception;
 

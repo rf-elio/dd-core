@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Defaults;
+namespace Elio\ElioDataDiscovery\Core\Sync\Defaults;
 
 
 /**
  * Class SyncDefaults
- * @package Elio\ElioSearch\Core\Sync\Defaults
+ * @package Elio\ElioDataDiscovery\Core\Sync\Defaults
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

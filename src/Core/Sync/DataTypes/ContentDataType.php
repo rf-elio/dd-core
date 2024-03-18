@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 
 use DateTimeInterface;
 use Shopware\Core\Content\Media\MediaEntity;
@@ -42,7 +42,7 @@ use Shopware\Core\System\Tag\TagCollection;
 
 /**
  * Class ContentType
- * @package Elio\ElioSearch\Core\Sync\DataTypes
+ * @package Elio\ElioDataDiscovery\Core\Sync\DataTypes
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

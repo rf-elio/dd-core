@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/page/search/search-pagelet.html.twig' %}
 
 {% block element_product_listing_wrapper %}
-    <div class="e-elio-search-listing-properties"
+    <div class="e-elio-data-discovery-listing-properties"
          data-total="{{ page.listing.total }}"
     ></div>
 
@@ -41,7 +41,7 @@
             {% set topProductsGroup = [] %}
             {# topGroupKey can be seted up from plugin config #}
             {% set topGroupKey = "top-product" %}
-            {% set contentListingResponse = page.listing.getExtension('Elio\\ElioSearch\\Api\\Search\\Response\\ContentListingResponse') %}
+            {% set contentListingResponse = page.listing.getExtension('Elio\\ElioDataDiscovery\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if not (contentListingResponse is null and contentListingResponse.topContentGroups is not null) %}
                 {% if topGroupKey in contentListingResponse.topContentGroups|keys %}
                     {% set topProductsGroup = contentListingResponse.topContentGroups[topGroupKey] %}

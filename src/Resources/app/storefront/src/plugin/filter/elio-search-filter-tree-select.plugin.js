@@ -4,16 +4,16 @@ import Iterator from 'src/helper/iterator.helper';
 import deepmerge from 'deepmerge';
 import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
 
-export default class ElioSearchFilterTreeSelectPlugin extends FilterPropertySelectPlugin {
+export default class ElioDataDiscoveryFilterTreeSelectPlugin extends FilterPropertySelectPlugin {
 
     static options = deepmerge(FilterPropertySelectPlugin.options, {
         propertyName: '',
-        elioSearchFilterName: 'elio-search-tree',
+        elioDataDiscoveryFilterName: 'elio-data-discovery-tree',
     });
 
     getValues() {
         const values = super.getValues();
-        values[this.options.elioSearchFilterName] = values[this.options.name].slice();
+        values[this.options.elioDataDiscoveryFilterName] = values[this.options.name].slice();
         return values;
     }
 

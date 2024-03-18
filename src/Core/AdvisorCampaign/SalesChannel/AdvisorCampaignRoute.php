@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\AdvisorCampaign\SalesChannel;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Api\Search\SearchApi;
-use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Api\Search\SearchApi;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -61,13 +61,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 {
     /**
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SearchApi $searchApi
      * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param ProductListingResultTransformer $productListingResultTransformer
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SearchApi $searchApi,
         private readonly ProductSearchRequestBuilder $searchRequestBuilder,
         private readonly ProductListingResultTransformer  $productListingResultTransformer

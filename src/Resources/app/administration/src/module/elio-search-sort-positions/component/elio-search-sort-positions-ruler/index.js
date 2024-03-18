@@ -1,10 +1,10 @@
-import template from './elio-search-sort-positions-ruler.html.twig';
-import './elio-search-sort-positions-ruler.scss';
+import template from './elio-data-discovery-sort-positions-ruler.html.twig';
+import './elio-data-discovery-sort-positions-ruler.scss';
 
 const {Criteria} = Shopware.Data;
 const {Mixin} = Shopware;
 
-Shopware.Component.register('elio-search-sort-positions-ruler', {
+Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
     template: template,
 
     inject: [
@@ -51,10 +51,10 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
             return this.repositoryFactory.create('category');
         },
         productSortingRepository() {
-            return this.repositoryFactory.create('elio_search_product_sorting');
+            return this.repositoryFactory.create('elio_data_discovery_product_sorting');
         },
         productSortingTreeRepository() {
-            return this.repositoryFactory.create('elio_search_product_sorting_tree');
+            return this.repositoryFactory.create('elio_data_discovery_product_sorting_tree');
         },
         productColumns() {
             return [
@@ -72,7 +72,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
                 },
                 {
                     property: 'position',
-                    label: this.$tc('elio-search.sort-positions.base.position'),
+                    label: this.$tc('elio-data-discovery.sort-positions.base.position'),
                     dataIndex: 'position',
                     sortable: false,
                 },
@@ -112,7 +112,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
             const headers = {
                 Authorization: `Bearer ${Shopware.Service('loginService').getToken()}`,
             };
-            const endpoint = `_action/elio-search-product-sorting/${this.categoryId}/sync-products`;
+            const endpoint = `_action/elio-data-discovery-product-sorting/${this.categoryId}/sync-products`;
             initContainer.httpClient.get(endpoint, { headers }).then((response) => {
                 const responseData = response.data;
                 if (responseData && responseData.message) {
@@ -133,7 +133,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
         loadProducts() {
             const criteria = this.productSortingCriteria();
             criteria.addFilter(
-                Criteria.equals('elio_search_product_sorting.categoryId', this.categoryId)
+                Criteria.equals('elio_data_discovery_product_sorting.categoryId', this.categoryId)
             );
 
             this.productSortingRepository
@@ -148,7 +148,7 @@ Shopware.Component.register('elio-search-sort-positions-ruler', {
         loadProductsTree() {
             const criteria = this.productSortingCriteria();
             criteria.addFilter(
-                Criteria.equals('elio_search_product_sorting_tree.categoryId', this.categoryId)
+                Criteria.equals('elio_data_discovery_product_sorting_tree.categoryId', this.categoryId)
             );
 
             this.productSortingTreeRepository

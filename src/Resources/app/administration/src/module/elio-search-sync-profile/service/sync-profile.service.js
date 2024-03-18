@@ -5,7 +5,7 @@ export default class SyncProfileService {
     constructor(httpClient, loginService) {
         this.httpClient = httpClient;
         this.loginService = loginService;
-        this.apiEndpoint = 'elio-search/export';
+        this.apiEndpoint = 'elio-data-discovery/export';
         this.contentType = 'application/vnd.api+json';
         this.name = 'syncProfileService';
     }
@@ -18,13 +18,13 @@ export default class SyncProfileService {
      */
     async getStatus(exportId) {
         return await this.httpClient.get(
-          `/_action/elio-search/export/status/${exportId}`,
+          `/_action/elio-data-discovery/export/status/${exportId}`,
           { headers: this.getBasicHeaders() });
     }
 
     getProfiles() {
         return this.httpClient.get(
-            '/_action/elio-search/sync-profile/profiles',
+            '/_action/elio-data-discovery/sync-profile/profiles',
             {headers: this.getBasicHeaders()}
         ).then((response) => {
             return response.data;
@@ -90,7 +90,7 @@ export default class SyncProfileService {
 
     generate(exportId) {
         return this.httpClient.get(
-            `/_action/elio-search/export/generate/${exportId}`,
+            `/_action/elio-data-discovery/export/generate/${exportId}`,
             {headers: this.getBasicHeaders()}
         ).then((response) => {
             return response.data;

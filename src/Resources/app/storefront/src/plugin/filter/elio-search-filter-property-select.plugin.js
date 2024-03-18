@@ -2,16 +2,16 @@ import FilterPropertySelectPlugin from 'src/plugin/listing/filter-property-selec
 import deepmerge from 'deepmerge';
 import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
 
-export default class ElioSearchFilterPropertySelectPlugin extends FilterPropertySelectPlugin {
+export default class ElioDataDiscoveryFilterPropertySelectPlugin extends FilterPropertySelectPlugin {
 
     static options = deepmerge(FilterPropertySelectPlugin.options, {
         propertyName: '',
-        elioSearchFilterName: 'elio-search-default',
+        elioDataDiscoveryFilterName: 'elio-data-discovery-default',
     });
 
     getValues() {
         const values = super.getValues();
-        values[this.options.elioSearchFilterName] = values[this.options.name].slice();
+        values[this.options.elioDataDiscoveryFilterName] = values[this.options.name].slice();
         return values;
     }
 

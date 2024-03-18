@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Ranking;
+namespace Elio\ElioDataDiscovery\Core\Ranking;
 
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -47,7 +47,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class ProductRankingUpdateService
- * @package Elio\ElioSearch\Core\Ranking
+ * @package Elio\ElioDataDiscovery\Core\Ranking
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -56,12 +56,12 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class ProductRankingUpdateService
 {
     /**
-     * @param ElioSearchConfigServiceInterface $elioSearchConfigService
+     * @param ElioDataDiscoveryConfigServiceInterface $elioDataDiscoveryConfigService
      * @param EntityRepository $salesChannelRepository
      * @param Connection $connection
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $elioSearchConfigService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $elioDataDiscoveryConfigService,
         private readonly EntityRepository $salesChannelRepository,
         private readonly Connection $connection
     ) {}
@@ -76,19 +76,19 @@ class ProductRankingUpdateService
     public function updateProductRanking(Context $context): void
     {
         foreach ($this->getSalesChannelIds($context) as $salesChannelId) {
-            $config = $this->elioSearchConfigService->get($salesChannelId);
+            $config = $this->elioDataDiscoveryConfigService->get($salesChannelId);
             if (!$config->isProductRankingActive()) {
                 continue;
             }
 
             $this->updateProductData(
-                ElioSearch::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
+                ElioDataDiscovery::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT,
                 'oli.total_price',
                 $config
             );
 
             $this->updateProductData(
-                ElioSearch::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
+                ElioDataDiscovery::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT,
                 'oli.quantity',
                 $config
             );
