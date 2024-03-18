@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Contracts\EventDispatcher\Event;

@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\Event\SyncGeneratedEvent;
-use Elio\ElioSearch\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
-use Elio\ElioSearch\Core\Sync\Input\InputService;
-use Elio\ElioSearch\Core\Sync\Output\OutputService;
+use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
+use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -53,7 +53,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class SyncService
- * @package Elio\ElioSearch\Core\Sync
+ * @package Elio\ElioDataDiscovery\Core\Sync
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

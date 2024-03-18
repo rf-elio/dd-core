@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Util;
+namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use DateTimeInterface;
-use Elio\ElioSearch\Core\Sync\Defaults\SyncDefaults;
+use Elio\ElioDataDiscovery\Core\Sync\Defaults\SyncDefaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * Class ValueUtil
- * @package Elio\ElioSearch\Core\Export\Generator\Util
+ * @package Elio\ElioDataDiscovery\Core\Export\Generator\Util
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

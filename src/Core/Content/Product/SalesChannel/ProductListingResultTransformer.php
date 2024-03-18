@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel;
 
-use Elio\ElioSearch\Api\Response\ResponseCollection;
-use Elio\ElioSearch\Api\Search\Request\SearchRequest;
-use Elio\ElioSearch\Api\Search\Response\AdvisorCampaignResponseCollection;
-use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
-use Elio\ElioSearch\Api\Search\Response\TrackingResponse;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
+use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
+use Elio\ElioDataDiscovery\Api\Search\Response\AdvisorCampaignResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\TrackingResponse;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
@@ -52,7 +52,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ProductListingResultTransformer
- * @package Elio\ElioSearch\Core\Content\Product\SalesChannel
+ * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -60,7 +60,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ProductListingResultTransformer implements ProductListingResultTransformerInterface
 {
-    public const ELIO_SEARCH_LISTING_MODE_PARAMETER = 'elio_search_listing_mode';
+    public const LISTING_MODE_PARAMETER = 'elio_data_discovery_listing_mode';
 
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher

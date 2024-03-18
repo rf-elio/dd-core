@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Exception\InvalidTypeException;
-use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -48,7 +48,7 @@ use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class CategoryIndexer
- * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -82,8 +82,8 @@ class CategoryIndexer extends BaseIndexer
         $criteria->addFilter(new EqualsFilter('active', true));
 
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
 
         $event = new CriteriaPreparedEvent($this, $criteria, $context);

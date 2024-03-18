@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Exception;
+namespace Elio\ElioDataDiscovery\Core\Exception;
 
 
 /**
  * Class InvalidTypeException
- * @package Elio\ElioSearch\Core\Exception
+ * @package Elio\ElioDataDiscovery\Core\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class InvalidTypeException extends ElioSearchException
+class InvalidTypeException extends ElioDataDiscoveryException
 {
     public function __construct(
         object $is,

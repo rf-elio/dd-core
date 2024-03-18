@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Core\Sorting\Api\Controller;
+namespace Elio\ElioDataDiscovery\Core\Sorting\Api\Controller;
 
-use Elio\ElioSearch\Core\Sorting\ProductSortingService;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService;
 use Shopware\Core\Framework\Context;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ class ProductSortingAdminController extends AbstractController
         private readonly ProductSortingService $productSortingService
     ) {}
 
-    #[Route(path:'/api/refresh-index', name: 'api.custom.elio_search_product_sorting.refresh-index', methods: ['GET'] )]
+    #[Route(path:'/api/refresh-index', name: 'api.custom.elio_data_discovery_product_sorting.refresh-index', methods: ['GET'] )]
     public function refreshIndex(): Response
     {
         $this->productSortingService->sort(Context::createDefaultContext());

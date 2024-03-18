@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes\Exception;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class UnknownContentTypeException
- * @package Elio\ElioSearch\Core\Sync\DataTypes\Exception
+ * @package Elio\ElioDataDiscovery\Core\Sync\DataTypes\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class UnknownContentTypeException extends ElioSearchException {}
+class UnknownContentTypeException extends ElioDataDiscoveryException {}

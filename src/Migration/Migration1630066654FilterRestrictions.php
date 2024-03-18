@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -20,7 +20,7 @@ class Migration1630066654FilterRestrictions extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_search_filter` (
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter` (
     `id` BINARY(16) NOT NULL,
     `is_custom` TINYINT(1) DEFAULT '0',
     `property_id` BINARY(16) NULL DEFAULT NULL,
@@ -33,7 +33,7 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_search_filter_restrictions` (
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter_restrictions` (
     `id` BINARY(16) NOT NULL,
     `is_category` TINYINT(1) NULL DEFAULT '0',
     `layer` VARCHAR(255) NULL,
@@ -51,20 +51,20 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_search_filter_restrictions_filters` (
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter_restrictions_filters` (
     `filter_restriction_id` BINARY(16) NOT NULL,
     `filter_id` BINARY(16) NOT NULL,
     PRIMARY KEY (`filter_restriction_id`,`filter_id`),
-    KEY `fk.elio_search_filter_restrictions_filters.filter_restriction_id` (`filter_restriction_id`),
-    KEY `fk.elio_search_filter_restrictions_filters.filter_id` (`filter_id`),
-    CONSTRAINT `fk.elio_search_filter_restrictions_filters.filter_restriction_id`
+    KEY `fk.edd_filter_restrictions_filters.filter_restriction_id` (`filter_restriction_id`),
+    KEY `fk.edd_filter_restrictions_filters.filter_id` (`filter_id`),
+    CONSTRAINT `fk.eddscovery_filter_restrictions_filters.filter_restriction_id`
         FOREIGN KEY (`filter_restriction_id`)
-            REFERENCES `elio_search_filter_restrictions` (`id`)
+            REFERENCES `elio_data_discovery_filter_restrictions` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_search_filter_restrictions_filters.filter_id`
+    CONSTRAINT `fk.edd_filter_restrictions_filters.filter_id`
         FOREIGN KEY (`filter_id`)
-            REFERENCES `elio_search_filter` (`id`)
+            REFERENCES `elio_data_discovery_filter` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -73,21 +73,21 @@ SQL;
         $connection->executeStatement($query);
 
         $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_search_filter_translation` (
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter_translation` (
     `property_name` VARCHAR(255) NOT NULL,
     `created_at` DATETIME(3) NOT NULL,
     `updated_at` DATETIME(3) NULL,
-    `elio_search_filter_id` BINARY(16) NOT NULL,
+    `elio_data_discovery_filter_id` BINARY(16) NOT NULL,
     `language_id` BINARY(16) NOT NULL,
-    PRIMARY KEY (`elio_search_filter_id`,`language_id`),
-    KEY `fk.elio_search_filter_translation.elio_search_filter_id` (`elio_search_filter_id`),
-    KEY `fk.elio_search_filter_translation.language_id` (`language_id`),
-    CONSTRAINT `fk.elio_search_filter_translation.elio_search_filter_id` 
-        FOREIGN KEY (`elio_search_filter_id`) 
-            REFERENCES `elio_search_filter` (`id`) 
+    PRIMARY KEY (`elio_data_discovery_filter_id`,`language_id`),
+    KEY `fk.edd_filter_translation.elio_data_discovery_filter_id` (`elio_data_discovery_filter_id`),
+    KEY `fk.edd_filter_translation.language_id` (`language_id`),
+    CONSTRAINT `fk.edd_filter_translation.elio_data_discovery_filter_id` 
+        FOREIGN KEY (`elio_data_discovery_filter_id`) 
+            REFERENCES `elio_data_discovery_filter` (`id`) 
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_search_filter_translation.language_id`
+    CONSTRAINT `fk.edd_filter_translation.language_id`
         FOREIGN KEY (`language_id`) 
             REFERENCES `language` (`id`) 
             ON DELETE CASCADE

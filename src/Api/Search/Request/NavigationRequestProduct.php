@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search\Request;
+namespace Elio\ElioDataDiscovery\Api\Search\Request;
 
 
 /**
  * Class NavigationRequest
- * @package Elio\ElioSearch\Api\Search\Request
+ * @package Elio\ElioDataDiscovery\Api\Search\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

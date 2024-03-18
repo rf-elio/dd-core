@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Swagger;
+namespace Elio\ElioDataDiscovery\Swagger;
 
 interface ModelInterface
 {

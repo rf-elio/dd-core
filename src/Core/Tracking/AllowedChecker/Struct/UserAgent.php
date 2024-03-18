@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct;
+namespace Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\Struct;
 
 
 use Shopware\Core\Framework\Struct\Struct;
@@ -38,7 +38,7 @@ use Shopware\Core\Framework\Struct\Struct;
 /**
  * Class UserAgent
  *
- * @package Elio\ElioSearch\Core\Tracking\AllowedValidator\Struct
+ * @package Elio\ElioDataDiscovery\Core\Tracking\AllowedValidator\Struct
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>
@@ -46,7 +46,7 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class UserAgent extends Struct
 {
-    public const EXTENSION_KEY = 'elioSearchTrackingAllowedCheckerUserAgent';
+    public const EXTENSION_KEY = 'elioDataDiscoveryTrackingAllowedCheckerUserAgent';
 
     public function __construct(
         private readonly string $userAgent

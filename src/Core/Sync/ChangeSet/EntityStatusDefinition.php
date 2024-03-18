@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
@@ -44,7 +44,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
  * Class EntityStatusDefinition
- * @package Elio\ElioSearch\Core\Sync\Api
+ * @package Elio\ElioDataDiscovery\Core\Sync\Api
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -52,7 +52,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
  */
 class EntityStatusDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_entity_status';
+    public const ENTITY_NAME = 'elio_data_discovery_entity_status';
 
     public function getEntityName(): string
     {

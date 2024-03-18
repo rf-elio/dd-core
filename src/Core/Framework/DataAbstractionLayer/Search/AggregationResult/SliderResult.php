@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
+namespace Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 

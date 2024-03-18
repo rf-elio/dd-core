@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Storefront\TwigExtension;
+namespace Elio\ElioDataDiscovery\Storefront\TwigExtension;
 
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -45,7 +45,7 @@ use Twig\TwigFunction;
 
 /**
  * Class ConfigLanguageBased
- * @package Elio\ElioSearch\Storefront\TwigExtension
+ * @package Elio\ElioDataDiscovery\Storefront\TwigExtension
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -19,7 +19,7 @@ class Migration1630056653Export extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_search_export` (
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_export` (
     `id` BINARY(16) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `active` TINYINT(1) NOT NULL DEFAULT '0',
@@ -37,10 +37,10 @@ CREATE TABLE IF NOT EXISTS `elio_search_export` (
     `updated_at` DATETIME(3) NULL,
     `base_category_ids` json NULL,
     PRIMARY KEY (`id`),
-    KEY `fk.elio_search_export.sales_channel_id` (`sales_channel_id`),
-    KEY `fk.elio_search_export.language_id` (`language_id`),
-    CONSTRAINT `fk.elio_search_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_search_export.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.edd_export.sales_channel_id` (`sales_channel_id`),
+    KEY `fk.edd_export.language_id` (`language_id`),
+    CONSTRAINT `fk.edd_export.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk.edd_export.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 

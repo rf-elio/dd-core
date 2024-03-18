@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Tracking\Request;
+namespace Elio\ElioDataDiscovery\Api\Tracking\Request;
 
 /**
  * Class ProductDetailTrackingRequest

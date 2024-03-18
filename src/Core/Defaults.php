@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core;
+namespace Elio\ElioDataDiscovery\Core;
 
 
 /**
  * Class Defaults
- * @package Elio\ElioSearch\Core
+ * @package Elio\ElioDataDiscovery\Core
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -45,5 +45,5 @@ class Defaults
 {
     public const VALUE_SEPARATOR = '|';
     public const API_SCHEMA = 'https://';
-    public const API_URI_POST_FIX = '/elio-search';
+    public const API_URI_POST_FIX = '/elio-data-discovery';
 }

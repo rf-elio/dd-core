@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Elio\ElioSearch\Core\Logging;
+namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
 use RuntimeException;
@@ -11,11 +11,11 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Class LoggingService
  *
- * @package Elio\ElioSearch\Core\Logging
+ * @package Elio\ElioDataDiscovery\Core\Logging
  */
 class LoggingService implements LoggingServiceInterface
 {
-    public const FILE_NAME = 'elio_search_finder';
+    public const FILE_NAME = 'elio_data_discovery_finder';
     public const LOG_FORMAT = <<<EOT
     {
         method: {method}

@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
-use Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
 use Shopware\Core\Content\Property\PropertyGroupDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
@@ -51,7 +51,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
  * Class FilterDefinition
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
@@ -59,7 +59,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
  */
 class FilterDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_filter';
+    public const ENTITY_NAME = 'elio_data_discovery_filter';
 
     public function getEntityName(): string
     {
@@ -107,7 +107,7 @@ class FilterDefinition extends EntityDefinition
             ),
             (new TranslationsAssociationField(
                 FilterDefinitionTranslationDefinition::class,
-                'elio_search_filter_id'
+                'elio_data_discovery_filter_id'
             ))->addFlags(new Required(), new CascadeDelete()),
             new ManyToManyAssociationField(
                 'filterRestrictions',

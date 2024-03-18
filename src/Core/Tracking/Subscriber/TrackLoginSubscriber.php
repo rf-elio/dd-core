@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Subscriber;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Subscriber;
 
-use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\ElioSearch\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
-use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
-use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\Event\LoginTrackingRequestCreatedEvent;
+use Elio\ElioDataDiscovery\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioDataDiscovery\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -57,14 +57,14 @@ class TrackLoginSubscriber implements EventSubscriberInterface
 
     /**
      * TrackLoginSubscriber constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
      * @param RequestStack $requestStack
      */
     public function __construct(
-        private ElioSearchConfigServiceInterface $configService,
+        private ElioDataDiscoveryConfigServiceInterface $configService,
         private TrackingAllowedCheckerInterface $trackingAllowedChecker,
         private MessageBusInterface $bus,
         private EventDispatcherInterface $eventDispatcher,

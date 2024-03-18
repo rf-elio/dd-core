@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioSearch\Core\Sorting\ProductSortingService;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService;
 use Exception;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
@@ -50,7 +50,7 @@ class ProductSortUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:product-sort:update');
+        $this->setName('elio-data-discovery:product-sort:update');
     }
 
     /**

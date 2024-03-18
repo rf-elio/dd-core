@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioSearch\Core\FilterRestrictions\FilterEntity;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterSyncService;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterEntity;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterSyncService;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
@@ -46,7 +46,7 @@ use Throwable;
  * Class SynchronizePropertiesToFiltersCommand
  *
  * @category  Shopware
- * @package   Shopware\Plugins\ElioSearch\Command
+ * @package   Shopware\Plugins\ElioDataDiscovery\Command
  * @author    Andrey Baev <anb@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (http://www.elio-systems.com)
  */
@@ -65,7 +65,7 @@ class SynchronizePropertiesToFiltersCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:filters:sync')
+        $this->setName('elio-data-discovery:filters:sync')
             ->addArgument(
                 'type',
                 InputArgument::REQUIRED,

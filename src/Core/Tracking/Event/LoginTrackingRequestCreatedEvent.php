@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Event;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Event;
 
-use Elio\ElioSearch\Api\Tracking\Request\LoginTrackingRequest;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\LoginTrackingRequest;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

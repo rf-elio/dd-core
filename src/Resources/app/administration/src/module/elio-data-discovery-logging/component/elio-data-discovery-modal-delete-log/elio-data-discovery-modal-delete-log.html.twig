@@ -1,0 +1,29 @@
+{% block elio_data_discovery_modal_delete_log %}
+    <sw-modal
+            class="elio-data-discovery-modal-delete-log"
+            variant="small"
+            :title="$tc('elio-data-discovery-logging.modal.title')"
+            @modal-close="closeDeleteModal($event)"
+    >
+        {{ $tc('elio-data-discovery-logging.modal.body', 1, { name: logName }) }}
+        {% block elio_data_discovery_modal_delete_log_footer %}
+            <template slot="modal-footer">
+                <sw-button
+                        size="small"
+                        @click="closeDeleteModal($event)"
+                >
+                    {{ $tc('elio-data-discovery-logging.modal.cancel') }}
+                </sw-button>
+
+                <sw-button
+                        size="small"
+                        variant="danger"
+                        :is-loading="isLoading"
+                        @click="deleteLog($event)"
+                >
+                    {{ $tc('elio-data-discovery-logging.modal.delete') }}
+                </sw-button>
+            </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}

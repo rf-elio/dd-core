@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Logging;
+namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
 /**
  * Holds the runtime settings for the log filter
  *
  * Class LogFilterContext
- * @package Elio\ElioSearch\Core\Logging
+ * @package Elio\ElioDataDiscovery\Core\Logging
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

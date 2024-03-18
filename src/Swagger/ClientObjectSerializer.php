@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Swagger;
+namespace Elio\ElioDataDiscovery\Swagger;
 
 
 /**
  * Class ClientObjectSerializer
- * @package Elio\ElioSearch\Swagger
+ * @package Elio\ElioDataDiscovery\Swagger
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

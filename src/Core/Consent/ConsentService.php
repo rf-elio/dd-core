@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Consent;
+namespace Elio\ElioDataDiscovery\Core\Consent;
 
 
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class ConsentService
- * @package Elio\ElioSearch\Core\Consent
+ * @package Elio\ElioDataDiscovery\Core\Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -50,10 +50,10 @@ class ConsentService implements TrackingAllowedCheckerInterface
 {
     /**
      * ConsentService constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     /**

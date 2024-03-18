@@ -1,8 +1,8 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Search\Response;
+namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
-use Elio\ElioSearch\Api\Response\Response;
+use Elio\ElioDataDiscovery\Api\Response\Response;
 
 class AdvisorCampaignResponseCollection extends Response
 {

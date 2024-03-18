@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Util;
+namespace Elio\ElioDataDiscovery\Core\Util;
 
 
 /**
  * Class ArrayUtil
- * @package Elio\ElioSearch\Core\Util
+ * @package Elio\ElioDataDiscovery\Core\Util
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

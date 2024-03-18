@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\AllowedChecker;
+namespace Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker;
 
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\Struct\UserAgent;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\Struct\UserAgent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class UserAgentAllowedChecker
  *
- * @package Elio\ElioSearch\Core\Tracking\AllowedValidator
+ * @package Elio\ElioDataDiscovery\Core\Tracking\AllowedValidator
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Alexander Mikheev <ami@elio-systems.com>
@@ -49,7 +49,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 class UserAgentAllowedChecker implements TrackingAllowedCheckerInterface
 {
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     public function isTrackingAllowed(SalesChannelContext $salesChannelContext): bool

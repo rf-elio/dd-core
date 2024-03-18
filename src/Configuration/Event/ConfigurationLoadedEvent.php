@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Configuration\Event;
+namespace Elio\ElioDataDiscovery\Configuration\Event;
 
 
-use Elio\ElioSearch\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class ConfigurationLoadedEvent
- * @package Elio\ElioSearch\Configuration\Event
+ * @package Elio\ElioDataDiscovery\Configuration\Event
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

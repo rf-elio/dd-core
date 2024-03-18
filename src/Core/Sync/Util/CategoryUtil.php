@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Util;
+namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use ArrayObject;
-use Elio\ElioSearch\Core\Util\Tree\Node;
-use Elio\ElioSearch\Core\Util\Tree\RandomAddTree;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Core\Util\Tree\Node;
+use Elio\ElioDataDiscovery\Core\Util\Tree\RandomAddTree;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -68,7 +68,7 @@ class CategoryUtil
     public static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
     {
         // if we exclude product info in main category we don't inherit its exclusion to child categories
-        unset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
+        unset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
 
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
@@ -82,38 +82,38 @@ class CategoryUtil
             // apply the category type for child categories to child categories that don't have an own type
             if(
                 (
-                    !isset($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE]) ||
-                    empty($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE])
+                    !isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE]) ||
+                    empty($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE])
                 ) &&
-                isset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) &&
-                !empty($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
+                isset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) &&
+                !empty($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
             ) {
-                $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
+                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
 
             // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)
             if(
                 !(
-                    isset($categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
-                    $categoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
+                    isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]) &&
+                    $categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]
                 )
             ) {
-                unset($mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]); // not merging the exclude flag
+                unset($mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE]); // not merging the exclude flag
             }
 
             // CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE -> if the parent is excluding children, or excluded itself by parent
             if (
                 (
-                    isset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]) &&
-                    $inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]
+                    isset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]) &&
+                    $inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED]
                 ) || (
-                    isset($inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]) &&
-                    $inheritedCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
+                    isset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]) &&
+                    $inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
                 )
             ) {
-                $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = true;
+                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = true;
             } else {
-                $mergedCategoryCustomFields[ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = false;
+                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = false;
             }
 
             $customFields[$category->getId()] = $mergedCategoryCustomFields;

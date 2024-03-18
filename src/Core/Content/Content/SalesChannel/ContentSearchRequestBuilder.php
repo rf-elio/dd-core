@@ -1,18 +1,18 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Content\Content\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel;
 
 
-use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
-use Elio\ElioSearch\Api\Search\Request\SearchRequest;
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
+use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ContentSearchRequestBuilder
- * @package Elio\ElioSearch\Core\Content\Content\SalesChannel
+ * @package Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -22,10 +22,10 @@ class ContentSearchRequestBuilder
 {
     /**
      * SearchRequestBuilder constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     /**

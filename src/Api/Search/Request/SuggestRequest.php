@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search\Request;
+namespace Elio\ElioDataDiscovery\Api\Search\Request;
 
-use Elio\ElioSearch\Api\Request\ChannelRequest;
+use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 
 /**
  * Class SuggestRequest
- * @package Elio\ElioSearch\Api\Search\Request
+ * @package Elio\ElioDataDiscovery\Api\Search\Request
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>

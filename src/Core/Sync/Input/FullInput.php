@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\SyncContext;
-use Elio\ElioSearch\Core\Sync\FullDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\FullDataCollection;
 use Generator;
 use Psr\Log\LoggerInterface;
 

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search\Components;
+namespace Elio\ElioDataDiscovery\Api\Search\Components;
 
 
 /**

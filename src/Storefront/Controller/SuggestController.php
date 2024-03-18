@@ -30,19 +30,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Storefront\Controller;
+namespace Elio\ElioDataDiscovery\Storefront\Controller;
 
-use Elio\ElioSearch\Api\Search\Request\SuggestRequest;
-use Elio\ElioSearch\Api\Search\Response\CampaignFeedbackResponseCollection;
-use Elio\ElioSearch\Api\Search\Response\SuggestionResponse;
-use Elio\ElioSearch\Api\Search\SuggestApi;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioDataDiscovery\Api\Search\Request\SuggestRequest;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Response\SuggestionResponse;
+use Elio\ElioDataDiscovery\Api\Search\SuggestApi;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;
 use Shopware\Storefront\Page\Search\SearchPageLoader;
 use Shopware\Storefront\Page\Suggest\SuggestPageLoader;
-use Elio\ElioSearch\Swagger\ClientApiException;
+use Elio\ElioDataDiscovery\Swagger\ClientApiException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -60,14 +60,14 @@ use Throwable;
 class SuggestController extends SearchController
 {
     /**
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SuggestApi $suggestApi
      * @param SearchPageLoader $searchPageLoader
      * @param SuggestPageLoader $suggestPageLoader
      * @param AbstractProductSearchRoute $productSearchRoute
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SuggestApi $suggestApi,
         SearchPageLoader $searchPageLoader,
         SuggestPageLoader $suggestPageLoader,
@@ -92,7 +92,7 @@ class SuggestController extends SearchController
     public function suggest(SalesChannelContext $context, Request $request): Response
     {
         $config = $this->configService->getByContext($context);
-        if (!$config->isActive() || !$config->isSuggestUseElioSearch()) {
+        if (!$config->isActive() || !$config->isSuggestUseElioDataDiscovery()) {
             return parent::suggest($context, $request);
         }
 

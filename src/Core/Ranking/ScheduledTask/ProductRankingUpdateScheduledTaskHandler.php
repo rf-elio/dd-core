@@ -30,18 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Ranking\ScheduledTask;
+namespace Elio\ElioDataDiscovery\Core\Ranking\ScheduledTask;
 
 
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\Ranking\ProductRankingUpdateService;
+use Elio\ElioDataDiscovery\Core\Ranking\ProductRankingUpdateService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 /**
  * Class ProductRankingUpdateScheduledTaskHandler
- * @package Elio\ElioSearch\Core\Ranking\ScheduledTask
+ * @package Elio\ElioDataDiscovery\Core\Ranking\ScheduledTask
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

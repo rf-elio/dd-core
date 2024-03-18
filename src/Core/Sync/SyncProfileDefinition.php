@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -51,7 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
  * Class SyncProfileDefinition
- * @package Elio\ElioSearch\Core\Sync
+ * @package Elio\ElioDataDiscovery\Core\Sync
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -59,7 +59,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
  */
 class SyncProfileDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_sync_profile';
+    public const ENTITY_NAME = 'elio_data_discovery_sync_profile';
 
     /**
      * @return string

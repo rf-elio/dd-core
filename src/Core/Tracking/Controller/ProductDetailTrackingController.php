@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Controller;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Controller;
 
-use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\ElioSearch\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
-use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
-use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\ProductDetailTrackingRequest;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\Event\ProductDetailTrackingRequestCreatedEvent;
+use Elio\ElioDataDiscovery\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioDataDiscovery\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -65,7 +65,7 @@ class ProductDetailTrackingController extends StorefrontController
     use TrackingSessionTrait;
 
     /**
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
@@ -73,7 +73,7 @@ class ProductDetailTrackingController extends StorefrontController
      * @param RequestStack $requestStack
      */
     public function __construct(
-        private ElioSearchConfigServiceInterface $configService,
+        private ElioDataDiscoveryConfigServiceInterface $configService,
         private TrackingAllowedCheckerInterface $trackingAllowedChecker,
         private MessageBusInterface $bus,
         private EventDispatcherInterface $eventDispatcher,
@@ -82,7 +82,7 @@ class ProductDetailTrackingController extends StorefrontController
     ) {}
 
     /**
-     * @Route("/widgets/elio-search/productDetailTrack", name="widgets.elio-search.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
+     * @Route("/widgets/elio-data-discovery/productDetailTrack", name="widgets.elio-data-discovery.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
      *
      * @param RequestDataBag $dataBag
      * @param SalesChannelContext $salesChannelContext
@@ -95,15 +95,15 @@ class ProductDetailTrackingController extends StorefrontController
         if(
             !$config->isActive() ||
             !$config->isTrackProductView() ||
-            !$dataBag->has('elioSearchProductTrackingData') ||
-            empty($dataBag->get('elioSearchProductTrackingData')->get('query')) ||
+            !$dataBag->has('elioDataDiscoveryProductTrackingData') ||
+            empty($dataBag->get('elioDataDiscoveryProductTrackingData')->get('query')) ||
             !$this->trackingAllowedChecker->isTrackingAllowed($salesChannelContext)
         ) {
             return new SuccessResponse();
         }
 
         /** @var RequestDataBag $trackingData */
-        $trackingData = $dataBag->get('elioSearchProductTrackingData');
+        $trackingData = $dataBag->get('elioDataDiscoveryProductTrackingData');
         $masterProductNumber = $productNumber = $trackingData->get('productNumber');
         $parentProductId = $trackingData->get('parentProductId');
 

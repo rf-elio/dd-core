@@ -5,11 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- api -->
-        <service id="Elio\ElioSearch\Api\Search\SearchApi">
+        <service id="Elio\ElioDataDiscovery\Api\Search\SearchApi">
             <argument type="service" id="elio.search.core.logging.debug"/>
         </service>
-        <service id="Elio\ElioSearch\Api\Search\SuggestApi"/>
-        <service id="Elio\ElioSearch\Api\Tracking\TrackingApi">
+        <service id="Elio\ElioDataDiscovery\Api\Search\SuggestApi"/>
+        <service id="Elio\ElioDataDiscovery\Api\Tracking\TrackingApi">
             <argument type="service" id="elio.search.core.logging.debug" />
         </service>
 
@@ -18,8 +18,8 @@
         </service>
 
         <!-- transformer -->
-        <service id="Elio\ElioSearch\Api\Transform\Transformer">
-            <argument type="tagged" tag="elio-search.api.transformer.response"/>
+        <service id="Elio\ElioDataDiscovery\Api\Transform\Transformer">
+            <argument type="tagged" tag="elio-data-discovery.api.transformer.response"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="elio.search.core.logging.default"/>
         </service>

@@ -1,0 +1,38 @@
+.sw-description-list dt {
+  border-color: transparent;
+  padding: 0;
+}
+.sw-description-list dd {
+  border-color: transparent;
+  padding: 0 0 28px 0;
+}
+
+.elio-data-discovery-mappings .headline,
+.sw-description-list .headline {
+  margin: 0 0 20px 0;
+  color: #52667a;
+  font-weight: normal;
+  font-size: 18px;
+}
+
+.sw-card.elio-data-discovery-mappings--empty .sw-card__content {
+  background-color: #f0f2f5;
+}
+
+.sw-card-section--secondary .sw-field--switch .sw-field--switch__content {
+  background-color: #f0f2f5;
+}
+
+.elio-data-discovery-mappings-column-actions {
+  padding-top: 50px;
+}
+.elio-data-discovery-mappings-button-add {
+  margin-bottom: 20px;
+}
+.elio-data-discovery-mappings-button-delete {
+  width: 100%;
+  margin-bottom: 48px;
+}
+.elio-data-discovery-sync-profile-button-generate {
+  margin-left: 10px;
+}

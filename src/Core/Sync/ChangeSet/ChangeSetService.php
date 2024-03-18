@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\ChangeSet\Indexer\IndexerInterface;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;

@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel\Event;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event;
 
-use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

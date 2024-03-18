@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 
 /**
  * Class ChangeSetCollection
- * @package Elio\ElioSearch\Core\Sync\ChangeSet
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

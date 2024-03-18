@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Elio\ElioSearch\Tests\Core;
+namespace Elio\ElioDataDiscovery\Tests\Core;
 
 
-use Elio\ElioSearch\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Defaults;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class DefaultsTest
  *
- * @package Elio\ElioSearch\Tests\Core
+ * @package Elio\ElioDataDiscovery\Tests\Core
  */
 class DefaultsTest extends TestCase
 {
