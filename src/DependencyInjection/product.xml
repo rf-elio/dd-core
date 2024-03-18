@@ -37,7 +37,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
-            <argument type="service" id="elio.search.core.logging.default" />
+            <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
