@@ -80,14 +80,14 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param LoggerInterface $logger
      */
     public function __construct(
-        private AbstractProductListingRoute      $decorated,
-        private ProductSearchRequestBuilder      $searchRequestBuilder,
-        private ElioSearchConfigServiceInterface $configService,
-        private SearchApi                        $searchApi,
-        private ProductListingResultTransformerInterface  $productListingResultTransformer,
-        private EntityRepository        $categoryRepository,
-        private CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
-        LoggerInterface                  $logger
+        private readonly AbstractProductListingRoute              $decorated,
+        private readonly ProductSearchRequestBuilder              $searchRequestBuilder,
+        private readonly ElioSearchConfigServiceInterface         $configService,
+        private readonly SearchApi                                $searchApi,
+        private readonly ProductListingResultTransformerInterface $productListingResultTransformer,
+        private readonly EntityRepository                         $categoryRepository,
+        private readonly CategoryBreadcrumbBuilder                $categoryBreadcrumbBuilder,
+        LoggerInterface                                           $logger
     )
     {
         $this->logger = $logger;
@@ -120,7 +120,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         }
 
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isListingUseElioSearch() || !$this->canLoadCategoryByElioSearch($category, $config)) {
+        if (!$config->isActive() || !$config->isListingUseElioSearch() || !$this->canLoadCategoryByElioSearch($category, $config)) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
@@ -133,7 +133,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
             $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
             /** @var ProductListingResponse|null $productListingResponse */
             $productListingResponse = $resultCollection->get(ProductListingResponse::class);
-            if(!$productListingResponse) {
+            if (!$productListingResponse) {
                 return $this->decorated->load($categoryId, $request, $context, $criteria);
             }
 
@@ -169,7 +169,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
      * @param CategoryEntity $category
      * @return bool
      */
-    protected function canLoadCategoryByElioSearch(CategoryEntity $category, Configuration $config) : bool
+    protected function canLoadCategoryByElioSearch(CategoryEntity $category, Configuration $config): bool
     {
         if (!$config->isAllowStreamIdSearch() && !empty($category->getProductStreamId())) {
             return false;
@@ -213,7 +213,7 @@ class ElioSearchProductListingRoute extends AbstractProductListingRoute
         }
 
         $customFilters = $customFields[ElioSearch::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY];
-        parse_str((string) $customFilters, $parsedCustomFilters);
+        parse_str((string)$customFilters, $parsedCustomFilters);
 
         // get parent category name by category path
         $path = $navigationRequest->getCategoryPath();
