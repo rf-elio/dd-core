@@ -349,7 +349,7 @@ Shopware.Component.register('elio-data-discovery-filter-restriction-ruler', {
                 this.isLoading = false;
             } catch {
                 this.isLoading = false;
-                this.$router.push({name: 'elio.search.filter.restrictions.index.global'});
+                this.$router.push({name: 'elio.data.discovery.filter.restrictions.index.global'});
             }
         },
 

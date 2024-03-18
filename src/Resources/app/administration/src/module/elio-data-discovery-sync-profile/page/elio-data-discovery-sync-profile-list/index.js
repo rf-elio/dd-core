@@ -115,7 +115,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-list', {
             return [
                 {
                     property: 'name',
-                    routerLink: 'elio.search.sync.profile.detail',
+                    routerLink: 'elio.data.discovery.sync.profile.detail',
                     primary: true,
                     label: this.$tc('elio-data-discovery-sync-profile.list.columns.name'),
                     allowResize: false,

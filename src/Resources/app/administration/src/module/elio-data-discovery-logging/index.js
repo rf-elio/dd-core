@@ -34,7 +34,7 @@ Shopware.Module.register('elio-data-discovery-logging', {
     navigation: [{
         label: 'elio-data-discovery-logging.title',
         color: '#014587',
-        path: 'elio.search.logging.list',
+        path: 'elio.data.discovery.logging.list',
         icon: 'regular-products',
         parent: 'elio-data-discovery',
         position: 3

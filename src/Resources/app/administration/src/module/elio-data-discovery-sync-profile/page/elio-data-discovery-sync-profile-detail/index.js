@@ -153,7 +153,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             criteria.addAssociation('languages');
             this.syncProfileRepository.get(this.exportId, Shopware.Context.api, criteria).then((currenExport) => {
                 if (currenExport == null) {
-                    that.$router.push({name: 'elio.search.sync.profile.list'});
+                    that.$router.push({name: 'elio.data.discovery.sync.profile.list'});
                 }
 
                 that.elio_data_discovery_sync_profile = currenExport;
@@ -181,7 +181,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             .catch((err) => {
                 console.log(err);
                 that.isLoading = false;
-                that.$router.push({name: 'elio.search.sync.profile.list'});
+                that.$router.push({name: 'elio.data.discovery.sync.profile.list'});
             });
         },
 
@@ -306,7 +306,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
         },
 
         onCancel() {
-            this.$router.push({name: 'elio.search.sync.profile.list'});
+            this.$router.push({name: 'elio.data.discovery.sync.profile.list'});
         },
 
         /**

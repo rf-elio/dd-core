@@ -38,14 +38,14 @@ Shopware.Module.register('elio-data-discovery-sync-profile', {
                 }
             },
             meta: {
-                parentPath: 'elio.search.sync.profile.list'
+                parentPath: 'elio.data.discovery.sync.profile.list'
             }
         },
         create: {
             component: 'elio-data-discovery-sync-profile-create',
             path: 'create',
             meta: {
-                parentPath: 'elio.search.sync.profile.list'
+                parentPath: 'elio.data.discovery.sync.profile.list'
             }
         }
     },
@@ -53,7 +53,7 @@ Shopware.Module.register('elio-data-discovery-sync-profile', {
     navigation: [{
         label: 'elio-data-discovery-sync-profile.title',
         color: '#014587',
-        path: 'elio.search.sync.profile.list',
+        path: 'elio.data.discovery.sync.profile.list',
         icon: 'regular-products',
         parent: 'elio-data-discovery',
         position: 1

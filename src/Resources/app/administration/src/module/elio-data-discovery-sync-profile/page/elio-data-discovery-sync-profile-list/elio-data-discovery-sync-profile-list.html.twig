@@ -3,7 +3,7 @@
         <template #smart-bar-actions>
             <sw-button
                     variant="primary"
-                    :router-link="{ name: 'elio.search.sync.profile.create' }"
+                    :router-link="{ name: 'elio.data.discovery.sync.profile.create' }"
             >
                 {{ $tc('elio-data-discovery-sync-profile.list.buttonCreate') }}
             </sw-button>
@@ -19,7 +19,7 @@
                             :items="exports"
                             :columns="exportColumns"
                             :repository="syncProfileRepository"
-                            detailRoute="elio.search.sync.profile.detail"
+                            detailRoute="elio.data.discovery.sync.profile.detail"
                             :disableDataFetching="true"
                             :isLoading="isLoading"
                             :showSelection="true"
@@ -58,7 +58,7 @@
                             <template slot="actions" slot-scope="{ item }">
                                 {% block elio_data_discovery_sync_profile_list_grid_columns_actions_detail %}
                                     <sw-context-menu-item
-                                            :routerLink="{ name: 'elio.search.sync.profile.detail', params: { id: item.id } }">
+                                            :routerLink="{ name: 'elio.data.discovery.sync.profile.detail', params: { id: item.id } }">
                                         {{ $tc('elio-data-discovery-sync-profile.list.contextMenuView') }}
                                     </sw-context-menu-item>
                                 {% endblock %}

@@ -47,7 +47,7 @@ class ProductRankingUpdateScheduledTask extends ScheduledTask
 {
     public static function getTaskName(): string
     {
-        return 'elio.search.ranking.product.update';
+        return 'elio.data-discovery.ranking.product.update';
     }
 
     public static function getDefaultInterval(): int

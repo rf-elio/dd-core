@@ -4,25 +4,25 @@
         {% block elio_data_discovery_sorting_restrictions_index_page_smart_bar_tabs %}
             <template slot="page-tabs">
                 {% block elio_data_discovery_sorting_restrictions_index_page_smart_bar_tabs_global %}
-                    <sw-tabs-item :route="{ name: 'elio.search.sorting.restrictions.index.global' }">
+                    <sw-tabs-item :route="{ name: 'elio.data.discovery.sorting.restrictions.index.global' }">
                         {{ $tc('elio-data-discovery.restrictions.sorting.tabs.global') }}
                     </sw-tabs-item>
                 {% endblock %}
 
                 {% block elio_data_discovery_sorting_restrictions_index_page_smart_bar_tabs_search %}
-                    <sw-tabs-item :route="{ name: 'elio.search.sorting.restrictions.index.search' }">
+                    <sw-tabs-item :route="{ name: 'elio.data.discovery.sorting.restrictions.index.search' }">
                         {{ $tc('elio-data-discovery.restrictions.sorting.tabs.search') }}
                     </sw-tabs-item>
                 {% endblock %}
 
                 {% block elio_data_discovery_sorting_restrictions_index_page_smart_bar_tabs_navigation %}
-                    <sw-tabs-item :route="{ name: 'elio.search.sorting.restrictions.index.navigation' }">
+                    <sw-tabs-item :route="{ name: 'elio.data.discovery.sorting.restrictions.index.navigation' }">
                         {{ $tc('elio-data-discovery.restrictions.sorting.tabs.navigation') }}
                     </sw-tabs-item>
                 {% endblock %}
 
                 {% block elio_data_discovery_sorting_restrictions_index_page_smart_bar_tabs_customfilters %}
-                    <sw-tabs-item :route="{ name: 'elio.search.sorting.restrictions.index.customfilters' }">
+                    <sw-tabs-item :route="{ name: 'elio.data.discovery.sorting.restrictions.index.customfilters' }">
                         {{ $tc('elio-data-discovery.restrictions.sorting.tabs.customfilters') }}
                     </sw-tabs-item>
                 {% endblock %}
@@ -43,7 +43,7 @@
                 </sw-button-process>
                 <sw-button v-if="isCustomFiltersTab"
                            class="sw-property-list__button-create"
-                           :routerLink="{ name: 'elio.search.sorting.restrictions.customFiltersCreate' }"
+                           :routerLink="{ name: 'elio.data.discovery.sorting.restrictions.customFiltersCreate' }"
                            variant="primary">
                     {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.buttonAdd') }}
                 </sw-button>

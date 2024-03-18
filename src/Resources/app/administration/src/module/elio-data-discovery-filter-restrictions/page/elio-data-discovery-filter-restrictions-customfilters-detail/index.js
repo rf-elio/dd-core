@@ -123,7 +123,7 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
         },
 
         onCancel() {
-            this.$router.push({ name: 'elio.search.filter.restrictions.index.customfilters' });
+            this.$router.push({ name: 'elio.data.discovery.filter.restrictions.index.customfilters' });
         }
     }
 });
