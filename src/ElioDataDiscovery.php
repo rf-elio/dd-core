@@ -47,7 +47,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * Class FactFinder
+ * Class ElioDataDiscovery
  *
  * @category  Bootstrap
  * @package   Shopware\Plugins\ElioDataDiscovery
@@ -71,7 +71,7 @@ class ElioDataDiscovery extends Plugin
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_count';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_amount';
     public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_display_product_by_default';
-    public const DEFAULT_ELIO_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
+    public const DEFAULT_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     public function executeComposerCommands(): bool
     {
@@ -102,7 +102,7 @@ class ElioDataDiscovery extends Plugin
         }
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
+        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FILTERS, true);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install($this->getCustomFieldSets());
@@ -122,7 +122,7 @@ class ElioDataDiscovery extends Plugin
         }
 
         $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS);
+        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install($this->getCustomFieldSets());
