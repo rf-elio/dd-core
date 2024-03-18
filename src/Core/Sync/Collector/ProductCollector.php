@@ -52,6 +52,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
@@ -100,7 +101,7 @@ class ProductCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -171,8 +172,8 @@ class ProductCollector implements DataCollectorInterface
         $criteria = new Criteria($parentProductIds);
         $criteria->addAssociation('children'); // children are required for ProductUtil::isDisplayedByDefault
         $criteria->addAssociation('configuratorSettings');
+        /** @var EntityCollection<SalesChannelProductEntity> return */
         return $this->productRepository->search($criteria, $context);
-
     }
 
     /**
@@ -182,14 +183,14 @@ class ProductCollector implements DataCollectorInterface
      * @param EntityCollection<SalesChannelProductEntity> $parentProducts
      * @param CategoryCollection[] $categories
      * @param Configuration $config
-     * @return EntityCollection
+     * @return Collection
      */
     protected function mapCollectedData(
         array $data,
         EntityCollection $parentProducts,
         array $categories,
         Configuration $config
-    ): EntityCollection {
+    ): Collection {
         /** @var EntityCollection<ProductDataType> $mappedEntities */
         $mappedEntities = new EntityCollection();
 
@@ -216,6 +217,7 @@ class ProductCollector implements DataCollectorInterface
                 ));
                 if (
                     $entity->getParentId()
+                    && $parentProducts->get($entity->getParentId())
                     && $parentProduct = ProductDataType::createFrom($parentProducts->get($entity->getParentId()))
                 ) {
                     $parentProduct->setIdentifier($parentProduct->getProductNumber());
@@ -266,6 +268,7 @@ class ProductCollector implements DataCollectorInterface
         foreach ($contexts as $context) {
             $flatCategoryCollection = new CategoryCollection();
             $criteria = new Criteria([$context->getSalesChannel()->getNavigationCategoryId()]);
+            /** @var CategoryEntity $categoryEntity */
             foreach ($this->categoryRepository->search($criteria, $context) as $categoryEntity) {
                 $flatCategoryCollection->add($categoryEntity);
                 $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);

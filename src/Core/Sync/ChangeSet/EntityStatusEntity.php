@@ -76,12 +76,12 @@ class EntityStatusEntity extends Entity
 
     public function getEntityId(): ?string
     {
-        return Uuid::fromBytesToHex($this->entityId);
+        return Uuid::fromBytesToHex($this->entityId ?? '');
     }
 
     public function setEntityId(?string $entityId): void
     {
-        $this->entityId = Uuid::fromHexToBytes($entityId);
+        $this->entityId = Uuid::fromHexToBytes($entityId ?? '');
     }
 
     public function getState(): ?string

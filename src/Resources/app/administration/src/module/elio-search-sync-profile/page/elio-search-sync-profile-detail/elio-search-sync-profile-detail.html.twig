@@ -158,71 +158,81 @@
                                         </div>
 
                                         {% block elio_search_sync_profile_detail_basic_info_lastgeneration_started %}
-                                            <dt>{{ $tc('elio-search-sync-profile.detail.labelLastGenerationStarted') }}</dt>
-                                            <dd v-if="elio_search_sync_profile.lastGenerationStartedAt">{{ formatDate(elio_search_sync_profile.lastGenerationStartedAt) }}</dd>
-                                            <dd v-else>-</dd>
+                                            <dl>
+                                                <dt>{{ $tc('elio-search-sync-profile.detail.labelLastGenerationStarted') }}</dt>
+                                                <dd v-if="elio_search_sync_profile.lastGenerationStartedAt">{{ formatDate(elio_search_sync_profile.lastGenerationStartedAt) }}</dd>
+                                                <dd v-else>-</dd>
+                                            </dl>
                                         {% endblock %}
 
                                         {% block elio_search_sync_profile_detail_basic_info_lastgeneration_finished %}
-                                            <dt>{{ $tc('elio-search-sync-profile.detail.labelLastGenerationFinished') }}</dt>
-                                            <dd v-if="elio_search_sync_profile.lastGenerationFinishedAt">{{ formatDate(elio_search_sync_profile.lastGenerationFinishedAt) }}</dd>
-                                            <dd v-else>-</dd>
+                                            <dl>
+                                                <dt>{{ $tc('elio-search-sync-profile.detail.labelLastGenerationFinished') }}</dt>
+                                                <dd v-if="elio_search_sync_profile.lastGenerationFinishedAt">{{ formatDate(elio_search_sync_profile.lastGenerationFinishedAt) }}</dd>
+                                                <dd v-else>-</dd>
+                                            </dl>
                                         {% endblock %}
 
                                         {% block elio_search_sync_profile_detail_basic_info_next_generation_due_at %}
-                                            <dt>{{ $tc('elio-search-sync-profile.detail.labelNextGenerationDueAt') }}</dt>
-                                            <dd v-if="elio_search_sync_profile.nextGenerationDueAt">{{ formatDate(elio_search_sync_profile.nextGenerationDueAt) }}</dd>
-                                            <dd v-else>-</dd>
+                                            <dl>
+                                                <dt>{{ $tc('elio-search-sync-profile.detail.labelNextGenerationDueAt') }}</dt>
+                                                <dd v-if="elio_search_sync_profile.nextGenerationDueAt">{{ formatDate(elio_search_sync_profile.nextGenerationDueAt) }}</dd>
+                                                <dd v-else>-</dd>
+                                            </dl>
                                         {% endblock %}
 
                                         {% block elio_search_sync_profile_detail_basic_info_status %}
-                                            <dt>{{ $tc('elio-search-sync-profile.detail.status.title') }}</dt>
-                                            <dd>
-                                                <div v-if="type == 'export'">
-                                                    <sw-field
-                                                            v-model="getDownloadUrl"
-                                                            type="text"
-                                                            readonly>
-                                                    </sw-field>
-                                                    <sw-button variant="primary"
+                                            <dl>
+                                                <dt>{{ $tc('elio-search-sync-profile.detail.status.title') }}</dt>
+                                                <dd>
+                                                    <div v-if="type == 'export'">
+                                                        <sw-field
+                                                                v-model="getDownloadUrl"
+                                                                type="text"
+                                                                readonly>
+                                                        </sw-field>
+                                                        <sw-button variant="primary"
+                                                                   size="small"
+                                                                   v-if="status.exists"
+                                                                   :disabled="!status.exists"
+                                                                   @click="onDownloadExport">
+                                                            {{ $tc('elio-search-sync-profile.detail.download') }}
+                                                        </sw-button>
+                                                        <sw-button variant="danger"
+                                                                   size="small"
+                                                                   v-if="!status.exists"
+                                                                   :disabled="!status.exists"
+                                                                   @click="onDownloadExport">
+                                                            {{ $tc('elio-search-sync-profile.detail.status.notExists') }}
+                                                        </sw-button>
+                                                    </div>
+                                                    <sw-button class="elio-search-sync-profile-button-generate"
+                                                               variant="primary"
                                                                size="small"
-                                                               v-if="status.exists"
-                                                               :disabled="!status.exists"
-                                                               @click="onDownloadExport">
-                                                        {{ $tc('elio-search-sync-profile.detail.download') }}
+                                                               :disabled="isGenerating"
+                                                               @click="onGenerate">
+                                                        {{ isGenerating?$tc('elio-search-sync-profile.detail.buttonGenerateInProgress'):$tc('elio-search-sync-profile.detail.buttonGenerate') }}
                                                     </sw-button>
-                                                    <sw-button variant="danger"
-                                                               size="small"
-                                                               v-if="!status.exists"
-                                                               :disabled="!status.exists"
-                                                               @click="onDownloadExport">
-                                                        {{ $tc('elio-search-sync-profile.detail.status.notExists') }}
-                                                    </sw-button>
-                                                </div>
-                                                <sw-button class="elio-search-sync-profile-button-generate"
-                                                           variant="primary"
-                                                           size="small"
-                                                           :disabled="isGenerating"
-                                                           @click="onGenerate">
-                                                    {{ isGenerating?$tc('elio-search-sync-profile.detail.buttonGenerateInProgress'):$tc('elio-search-sync-profile.detail.buttonGenerate') }}
-                                                </sw-button>
-                                            </dd>
+                                                </dd>
+                                            </dl>
                                         {% endblock %}
 
                                         {% block elio_search_sync_profile_detail_basic_info_export_id %}
-                                            <dt>{{ $tc('elio-search-sync-profile.detail.labelExportCommand') }}</dt>
-                                            <dd>
-                                                <sw-field
-                                                        v-model="command"
-                                                        type="text"
-                                                        readonly>
-                                                </sw-field>
-                                                <sw-field
-                                                        v-model="commandForce"
-                                                        type="switch"
-                                                        :label="$tc('elio-search-sync-profile.detail.labelExportCommandForce')">
-                                                </sw-field>
-                                            </dd>
+                                            <dl>
+                                                <dt>{{ $tc('elio-search-sync-profile.detail.labelExportCommand') }}</dt>
+                                                <dd>
+                                                    <sw-field
+                                                            v-model="command"
+                                                            type="text"
+                                                            readonly>
+                                                    </sw-field>
+                                                    <sw-field
+                                                            v-model="commandForce"
+                                                            type="switch"
+                                                            :label="$tc('elio-search-sync-profile.detail.labelExportCommandForce')">
+                                                    </sw-field>
+                                                </dd>
+                                            </dl>
                                         {% endblock %}
                                     </sw-description-list>
                                 </sw-container>

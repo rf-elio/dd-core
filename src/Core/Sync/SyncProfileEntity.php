@@ -64,9 +64,9 @@ class SyncProfileEntity extends Entity
     protected string $salesChannelId;
     protected ?SalesChannelEntity $salesChannel = null;
     protected ?LanguageCollection $languages = null;
-    protected $baseCategoryIds;
-    protected $downloadUsername;
-    protected $downloadPassword;
+    protected mixed $baseCategoryIds;
+    protected mixed $downloadUsername;
+    protected mixed $downloadPassword;
 
     /**
      * @return mixed
@@ -98,16 +98,6 @@ class SyncProfileEntity extends Entity
     public function setDownloadPassword(mixed $downloadPassword): void
     {
         $this->downloadPassword = $downloadPassword;
-    }
-
-    /**
-     * Returns an identifier that is unique for every channel and language
-     *
-     * @return string
-     */
-    public function getIdentifier() : string
-    {
-        return $this->salesChannelId.'-'.$this->languageId;
     }
 
     /**

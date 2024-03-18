@@ -63,7 +63,7 @@ class DeltaInput extends BaseInput
         private readonly iterable $collectors,
         private readonly LoggerInterface $logger
     ) {
-        parent::__construct($collectors);
+        parent::__construct($this->collectors);
     }
 
     public function supports(string $type): bool
@@ -102,14 +102,14 @@ class DeltaInput extends BaseInput
             foreach ($changeSetEntityCollection as $changeSetEntity) {
                 if ($changeSetEntity->getDataType() === ProductDataType::class) {
                     $entity = new ProductDataType();
-                    $entity->setId($changeSetEntity->getEntityId());
-                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
                     $entity->setDeletedAt($changeSetEntity->getDeletedAt());
                     $deltaDataCollection->add($entity);
                 } elseif ($changeSetEntity->getDataType() === ContentDataType::class) {
                     $entity = new ContentDataType();
-                    $entity->setId($changeSetEntity->getEntityId());
-                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
                     $entity->setDeletedAt($changeSetEntity->getDeletedAt());
                     $deltaDataCollection->add($entity);
                 } else {
@@ -148,8 +148,8 @@ class DeltaInput extends BaseInput
     ): void {
         $entityStatusCollection->fmap(function (EntityStatusEntity $entityStatusEntity) use ($entities) {
             /** @var DataTypeInterface|null $dataTypeEntity */
-            $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId());
-            $dataTypeEntity?->setIdentifier($entityStatusEntity->getIdentifier());
+            $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId() ?? '');
+            $dataTypeEntity?->setIdentifier($entityStatusEntity->getIdentifier() ?? '');
         });
     }
 }

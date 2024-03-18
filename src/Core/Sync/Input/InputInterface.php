@@ -32,7 +32,7 @@
 
 namespace Elio\ElioSearch\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
+use Elio\ElioSearch\Core\Sync\AbstractDataCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Generator;
 
@@ -48,7 +48,7 @@ interface InputInterface
 
     /**
      * @param SyncContext $syncContext
-     * @return Generator<DeltaDataCollection>
+     * @return Generator<AbstractDataCollection>
      */
     public function read(SyncContext $syncContext): Generator;
 }

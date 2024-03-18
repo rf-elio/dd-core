@@ -47,8 +47,8 @@ class ClientObjectSerializer
     /**
      * Serialize data
      *
-     * @param mixed  $data   the data to serialize
-     * @param string $type   the SwaggerType of the data
+     * @param mixed $data the data to serialize
+     * @param string $type the SwaggerType of the data
      * @param string $format the format of the Swagger type of the data
      *
      * @return string|object serialized form of $data
@@ -194,10 +194,10 @@ class ClientObjectSerializer
     /**
      * Serialize an array to a string.
      *
-     * @param array  $collection                 collection to serialize to a string
-     * @param string $collectionFormat           the format use for serialization (csv,
+     * @param array $collection collection to serialize to a string
+     * @param string $collectionFormat the format use for serialization (csv,
      * ssv, tsv, pipes, multi)
-     * @param bool   $allowCollectionFormatMulti allow collection format to be a multidimensional array
+     * @param bool $allowCollectionFormatMulti allow collection format to be a multidimensional array
      *
      * @return string
      */
@@ -219,10 +219,10 @@ class ClientObjectSerializer
     /**
      * Deserialize a JSON string into an object
      *
-     * @param mixed    $data          object or primitive to be deserialized
-     * @param string   $class         class name is passed as a string
-     * @param string[] $httpHeaders   HTTP headers
-     * @param string   $discriminator discriminator if polymorphism is used
+     * @param mixed $data object or primitive to be deserialized
+     * @param string $class class name is passed as a string
+     * @param string[] $httpHeaders HTTP headers
+     * @param string $discriminator discriminator if polymorphism is used
      *
      * @return object|array|null an single or an array of $class instances
      */
@@ -272,9 +272,9 @@ class ClientObjectSerializer
             // determine file name
             if (array_key_exists('Content-Disposition', $httpHeaders) &&
                 preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = \CLIENTOBJECTSERIALIZER . phpConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
+                $filename = ClientConfiguration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
             } else {
-                $filename = tempnam(Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
+                $filename = tempnam(ClientConfiguration::getDefaultConfiguration()->getTempFolderPath(), '');
             }
 
             $file = fopen($filename, 'w');

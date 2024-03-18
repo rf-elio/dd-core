@@ -5,6 +5,9 @@ namespace Elio\ElioSearch\Storefront\Subscriber;
 
 use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioSearch\Storefront\Exception\CampaignRedirectionException;
+use Shopware\Core\Content\Cms\Aggregate\CmsBlock\CmsBlockCollection;
+use Shopware\Core\Content\Cms\Aggregate\CmsSection\CmsSectionCollection;
+use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotCollection;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
@@ -66,9 +69,12 @@ class CampaignRedirectionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        foreach ($page->getCmsPage()->getSections() as $section) {
-            foreach ($section->getBlocks() as $block) {
-                foreach ($block->getSlots() as $slot) {
+        $sections = $page->getCmsPage()->getSections() ?? new CmsSectionCollection();
+        foreach ($sections as $section) {
+            $blocks = $section->getBlocks() ?? new CmsBlockCollection();
+            foreach ($blocks as $block) {
+                $slots = $block->getSlots() ?? new CmsSlotCollection();
+                foreach ($slots as $slot) {
                     $data = $slot->getData();
                     if (!$data instanceof ProductListingStruct || !$data->getListing()) {
                         continue;

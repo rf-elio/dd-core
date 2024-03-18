@@ -32,6 +32,7 @@
 
 namespace Elio\ElioSearch\Command;
 
+use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
 use Elio\ElioSearch\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -91,6 +92,7 @@ class SyncDataCommand extends Command
                 $syncProfileConfigurations = $this->syncService->getDueSyncProfileConfigurations($context);
             }
 
+            /** @var SyncProfileEntity $syncProfileConfiguration */
             foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
                 $this->syncService->sync($syncProfileConfiguration);
             }

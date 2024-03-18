@@ -187,8 +187,12 @@ class TrackCartSubscriber implements EventSubscriberInterface
                 continue;
             }
 
+            $referencedId = $lineItem->getReferencedId();
+            if (!$referencedId) {
+                continue;
+            }
             /** @var ProductEntity|null $product */
-            $product = $this->productRepository->search(new Criteria([$lineItem->getReferencedId()]), $context)->first();
+            $product = $this->productRepository->search(new Criteria([$referencedId]), $context)->first();
             if (!$product) {
                 continue;
             }
@@ -207,7 +211,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
                 $productNumber,
                 $this->getTrackingSessionId($this->requestStack),
                 $masterProductNumber,
-                $lineItem->getLabel(),
+                $lineItem->getLabel() ?? '',
                 $quantity,
                 $lineItem->getPrice()->getUnitPrice(),
                 $customerId

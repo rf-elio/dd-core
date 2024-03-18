@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,17 +32,28 @@
 
 namespace Elio\ElioSearch\Core\Sync;
 
+use Shopware\Core\Framework\Struct\Collection;
+
 /**
- * Class DeltaDataCollection
- * @package Elio\ElioSearch\Core\Sync\Input
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * Class AbstractDataCollection
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class DeltaDataCollection extends AbstractDataCollection
+abstract class AbstractDataCollection extends Collection
 {
-    public const TYPE_CREATED = 'created';
-    public const TYPE_UPDATED = 'updated';
-    public const TYPE_DELETED = 'deleted';
+    public function __construct(
+        private readonly string $type,
+        iterable $elements = [],
+    )
+    {
+        parent::__construct($elements);
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
 }

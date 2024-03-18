@@ -49,9 +49,9 @@ class ClientApiException extends Exception
     /**
      * The deserialized response object
      *
-     * @var $responseObject;
+     * @var mixed $responseObject;
      */
-    protected $responseObject;
+    protected mixed $responseObject;
 
     /**
      * Constructor

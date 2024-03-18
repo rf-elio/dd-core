@@ -43,7 +43,7 @@ namespace Elio\ElioSearch\Swagger;
  */
 class ClientConfiguration
 {
-    private static $defaultConfiguration;
+    private static ?ClientConfiguration $defaultConfiguration;
 
     /**
      * Associate array to store API key(s)
@@ -149,7 +149,7 @@ class ClientConfiguration
      *
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
      *
-     * @return string API key or token
+     * @return string|null API key or token
      */
     public function getApiKey($apiKeyIdentifier)
     {
@@ -175,7 +175,7 @@ class ClientConfiguration
      *
      * @param string $apiKeyIdentifier API key identifier (authentication scheme)
      *
-     * @return string
+     * @return string|null
      */
     public function getApiKeyPrefix($apiKeyIdentifier)
     {
@@ -384,12 +384,12 @@ class ClientConfiguration
     /**
      * Gets the default configuration instance
      *
-     * @return Configuration
+     * @return ClientConfiguration
      */
     public static function getDefaultConfiguration()
     {
         if (self::$defaultConfiguration === null) {
-            self::$defaultConfiguration = new Configuration();
+            self::$defaultConfiguration = new ClientConfiguration();
         }
 
         return self::$defaultConfiguration;
@@ -398,11 +398,11 @@ class ClientConfiguration
     /**
      * Sets the detault configuration instance
      *
-     * @param Configuration $config An instance of the Configuration Object
+     * @param ClientConfiguration $config An instance of the Configuration Object
      *
      * @return void
      */
-    public static function setDefaultConfiguration(Configuration $config): void
+    public static function setDefaultConfiguration(ClientConfiguration $config): void
     {
         self::$defaultConfiguration = $config;
     }
@@ -428,7 +428,7 @@ class ClientConfiguration
      *
      * @param  string $apiKeyIdentifier name of apikey
      *
-     * @return string API key with the prefix
+     * @return string|null API key with the prefix
      */
     public function getApiKeyWithPrefix($apiKeyIdentifier)
     {

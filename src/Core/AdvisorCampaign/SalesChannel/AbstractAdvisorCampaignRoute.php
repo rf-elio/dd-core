@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioSearch\Core\AdvisorCampaign\SalesChannel;
+
+use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class DeltaDataCollection
- * @package Elio\ElioSearch\Core\Sync\Input
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * Class AbstractAdvisorCampaignRoute
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class DeltaDataCollection extends AbstractDataCollection
+abstract class AbstractAdvisorCampaignRoute
 {
-    public const TYPE_CREATED = 'created';
-    public const TYPE_UPDATED = 'updated';
-    public const TYPE_DELETED = 'deleted';
+    abstract public function getDecorated(): AbstractAdvisorCampaignRoute;
+
+    abstract public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse;
 }

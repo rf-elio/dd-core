@@ -94,7 +94,7 @@ class CategoryTreeUtil
      * and values are the IDs of preceding items. It returns a new associative array where
      * keys are item IDs and values are their respective sorted positions.
      *
-     * @param array $items An array of items where keys are item IDs and values are IDs of preceding items
+     * @param array $categories An array of items where keys are item IDs and values are IDs of preceding items
      *
      * @return array An associative array where keys are item IDs and values are their respective positions after sorting.
      *
@@ -113,7 +113,7 @@ class CategoryTreeUtil
      *
      * @author AI Assistant
      */
-    private static function sortCategories($categories): array
+    private static function sortCategories(array $categories): array
     {
         $sortedCategories = [];
 

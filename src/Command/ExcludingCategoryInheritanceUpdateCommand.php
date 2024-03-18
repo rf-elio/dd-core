@@ -45,14 +45,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CategoryExcludingInheritanceCommand
+ * Class ExcludingCategoryInheritanceUpdateCommand
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceCommand extends Command
+class ExcludingCategoryInheritanceUpdateCommand extends Command
 {
     public function __construct(
         private readonly EntityRepository $categoryRepository,
@@ -64,7 +64,7 @@ class ExcludingCategoryInheritanceCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:exclusion:category-inheritance:update');
+        $this->setName('exclusion:category-inheritance:update');
     }
 
     /**
@@ -89,6 +89,11 @@ class ExcludingCategoryInheritanceCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @param Context $context
+     * @return void
+     * @throws Exception
+     */
     private function updateExcludeInheritance(Context $context): void
     {
         $criteria = new Criteria();
@@ -100,7 +105,7 @@ class ExcludingCategoryInheritanceCommand extends Command
             foreach ($result['customFields'] as $categoryId => $customFields) {
                 /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
-                $actualCustomFields = $category->getCustomFields();
+                $actualCustomFields = $category->getCustomFields() ?? [];
                 // If they already have the same value, we don't need to update to avoid indexer message creation
                 if (array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
                     && array_key_exists(ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)

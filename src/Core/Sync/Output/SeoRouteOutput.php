@@ -49,8 +49,8 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
     public function open(SyncContext $syncContext): void
     {
         $this->salesChannelContexts = $syncContext->getSalesChannelContexts();
-
-        foreach ($this->salesChannelContexts as $languageId => $context) {
+        $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
+        foreach ($contexts as $languageId => $context) {
             $salesChannel = $context->getSalesChannel();
             foreach ($salesChannel->getDomains() as $domain) {
                 if ($domain->getLanguageId() === $context->getLanguageId()) {
@@ -72,8 +72,9 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
      */
     public function write(Collection $collection, SyncContext $syncContext): void
     {
+        $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
         /** @var SalesChannelContext $salesChannelContext */
-        foreach ($this->salesChannelContexts as $salesChannelContext) {
+        foreach ($contexts as $salesChannelContext) {
             if (!isset($this->baseUrl[$salesChannelContext->getLanguageId()])) {
                 $this->logger->error('SalesChannelDomain configuration missing', [
                     'salesChannelId' => $salesChannelContext->getSalesChannelId(),
@@ -100,7 +101,11 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
 
         /** @var DataTypeInterface $item */
         foreach ($items as $item) {
-            $seoRoute = $item->getDataTypeTranslation($context->getLanguageId())?->getExtension(SeoRoute::class);
+            $seoRoute = null;
+            $dataTypeTranslation = $item->getDataTypeTranslation($context->getLanguageId());
+            if ($dataTypeTranslation && method_exists($dataTypeTranslation, 'getExtension')) {
+                $seoRoute = $dataTypeTranslation->getExtension(SeoRoute::class);
+            }
 
             if(!$seoRoute) {
                 continue;

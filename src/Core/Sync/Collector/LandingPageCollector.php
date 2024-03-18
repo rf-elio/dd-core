@@ -45,6 +45,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -88,7 +90,7 @@ class LandingPageCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -107,6 +109,7 @@ class LandingPageCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
+     * @param string $salesChannelId
      * @return Criteria
      */
     protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
@@ -137,15 +140,16 @@ class LandingPageCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return EntityCollection
+     * @return Collection
      */
-    protected function mapCollectedData(array $data): EntityCollection
+    protected function mapCollectedData(array $data): Collection
     {
-        $mappedEntities = new EntityCollection();
+        $mappedEntities = new StructCollection();
         foreach ($data as $languageId => $entities) {
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
                 $dataType = $this->mapLandingPageToDataType($entity);
+                /** @var ContentDataType $mappedEntity */
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);
                 $mappedEntities->set($dataType->getId(), $mappedEntity);

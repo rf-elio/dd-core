@@ -36,6 +36,7 @@ use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Interface DataCollectorInterface
@@ -61,7 +62,7 @@ interface DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator;
 }

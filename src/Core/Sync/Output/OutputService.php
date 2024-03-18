@@ -82,7 +82,7 @@ class OutputService
      */
     protected function getOutput(string $name): OutputInterface
     {
-        /** @var OutputInterface $apiWriter */
+        /** @var OutputInterface $output */
         foreach ($this->outputs as $output) {
             if ($output->supports($name)) {
                 return $output;

@@ -16,14 +16,14 @@ class AdvisorCampaignResponse extends Response
      * @param string $id
      * @param string $name
      * @param AdvisorQuestion[] $activeQuestions
-     * @param iterable|AdvisorQuestion[] $questionPath
+     * @param AdvisorQuestion[] $questionPath
      * @param string $answerPath
      */
     public function __construct(
         protected string $id,
         protected string $name,
         private readonly array $activeQuestions,
-        private readonly iterable $questionPath,
+        private readonly array $questionPath,
         private readonly string $answerPath
     ) {}
 
@@ -54,7 +54,7 @@ class AdvisorCampaignResponse extends Response
     /**
      * @return AdvisorQuestion[]
      */
-    public function getQuestionPath()
+    public function getQuestionPath(): array
     {
         return $this->questionPath;
     }

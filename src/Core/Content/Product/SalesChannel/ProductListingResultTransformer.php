@@ -40,8 +40,10 @@ use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
 use Elio\ElioSearch\Api\Search\Response\TrackingResponse;
 use Elio\ElioSearch\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
+use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -87,7 +89,7 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         $shopwareProductListingResult = new ProductListingResult(
             ProductDefinition::ENTITY_NAME,
             $productListingResponse->getTotalHits(),
-            $productListingResponse->getProducts(),
+            $productListingResponse->getProducts() ?? new ProductCollection(),
             $productListingResponse->getAggregations(),
             $criteria,
             $context->getContext()
@@ -116,7 +118,7 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         ProductListingResult $shopwareProductListingResult
     ) : void
     {
-        $shopwareProductListingResult->setAvailableSortings($productListingResponse->getAvailableSortings());
+        $shopwareProductListingResult->setAvailableSortings($productListingResponse->getAvailableSortings() ?? new ProductSortingCollection());
         if($productListingResponse->getCurrentSorting()) {
             $shopwareProductListingResult->setSorting($productListingResponse->getCurrentSorting()->getKey());
         }
@@ -185,6 +187,8 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
     {
         /** @var TrackingResponse|null $trackingResponse */
         $trackingResponse = $resultCollection->get(TrackingResponse::class);
-        $shopwareProductListingResult->addExtension(TrackingResponse::KEY, $trackingResponse);
+        if ($trackingResponse) {
+            $shopwareProductListingResult->addExtension(TrackingResponse::KEY, $trackingResponse);
+        }
     }
 }

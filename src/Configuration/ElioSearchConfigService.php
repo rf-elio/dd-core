@@ -101,11 +101,19 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             return $this->loadedConfigurations[$salesChannelId][$languagePrefix];
         }
 
+        /** @var array $config */
         $config = $this->systemConfigService->get(self::PLUGIN_CONFIG_PREFIX, $salesChannelId) ?? [];
         parse_str(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'additionalRequestParameters', $languagePrefix) ?? '',
             $additionalRequestParameters
         );
+
+        $correctedAdditionalRequestParameters = [];
+        foreach ($additionalRequestParameters as $additionalRequestParameter) {
+            if (is_string($additionalRequestParameter)) {
+                $correctedAdditionalRequestParameters[] = $additionalRequestParameter;
+            }
+        }
 
         $configuration = new Configuration(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
@@ -119,7 +127,8 @@ class ElioSearchConfigService implements ElioSearchConfigServiceInterface
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioSearch', $languagePrefix)),
-            $additionalRequestParameters,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false,
+            $correctedAdditionalRequestParameters,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,

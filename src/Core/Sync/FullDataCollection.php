@@ -32,8 +32,6 @@
 
 namespace Elio\ElioSearch\Core\Sync;
 
-use Shopware\Core\Framework\Struct\Collection;
-
 /**
  * Class FullDataCollection
  *
@@ -42,17 +40,17 @@ use Shopware\Core\Framework\Struct\Collection;
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FullDataCollection extends Collection
+class FullDataCollection extends AbstractDataCollection
 {
-    public const TYPE_PRODUCT = 'product';
-    public const TYPE_CONTENT = 'content';
-
     public function __construct(
         private readonly string $type,
         iterable $elements = [],
     )
     {
-        parent::__construct($elements);
+        parent::__construct(
+            $this->type,
+            $elements
+        );
     }
 
     public function getType(): string

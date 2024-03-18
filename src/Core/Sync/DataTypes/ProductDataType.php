@@ -52,13 +52,16 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
 
-    public function setVariant(?Variant $variant): void
+    public function setVariant(Variant $variant): void
     {
         $this->variant = $variant;
     }
 
     public function getVariant(): Variant
     {
+        if ($this->variant === null) {
+            throw new \RuntimeException('Variant is not set');
+        }
         return $this->variant;
     }
 

@@ -35,8 +35,8 @@ namespace Elio\ElioSearch\Core\Sync\DataTypes;
 
 interface DataTypeInterface
 {
-    public function getId();
-    public function setId(string $id);
+    public function getId(): string;
+    public function setId(string $id): void;
     public function getIdentifier(): string;
     public function setIdentifier(string $identifier): void;
     public function getDataTypeTranslation(string $languageId): ?DataTypeInterface;

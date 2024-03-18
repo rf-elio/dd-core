@@ -33,6 +33,7 @@
 namespace Elio\ElioSearch\Core\Sync\Output;
 
 
+use Elio\ElioSearch\Core\Sync\AbstractDataCollection;
 use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
@@ -77,6 +78,7 @@ class OutputStream
     {
         foreach ($this->outputs as $output) {
             if ($output instanceof DeltaAwareInterface) {
+                /** @var AbstractDataCollection $dataCollection */
                 if ($dataCollection->getType() === DeltaDataCollection::TYPE_CREATED) {
                     $output->create($dataCollection, $this->syncContext);
                 } elseif ($dataCollection->getType() === DeltaDataCollection::TYPE_UPDATED) {

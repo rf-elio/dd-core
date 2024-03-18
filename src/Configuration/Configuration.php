@@ -58,7 +58,8 @@ class Configuration extends Struct
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
      * @param bool $listingUseElioSearch
-     * @param array<string> $additionalRequestParameters
+     * @param bool $productDetailPageCampaignsActive
+     * @param string[] $additionalRequestParameters
      * @param int $suggestThumbnailSize
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
@@ -91,6 +92,7 @@ class Configuration extends Struct
         private readonly bool $trackProductView,
         private readonly array $disallowTrackingForUserAgents,
         private readonly bool $listingUseElioSearch,
+        private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
         private readonly int $suggestThumbnailSize,
         private readonly bool $botProtectionActive,
@@ -170,7 +172,7 @@ class Configuration extends Struct
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getAdditionalRequestParameters(): array
     {
@@ -353,5 +355,10 @@ class Configuration extends Struct
     public function isAllowStreamIdSearch(): bool
     {
         return $this->allowStreamIdSearch;
+    }
+
+    public function isProductDetailPageCampaignsActive(): bool
+    {
+        return $this->productDetailPageCampaignsActive;
     }
 }

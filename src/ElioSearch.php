@@ -92,6 +92,10 @@ class ElioSearch extends Plugin
      */
     public function activate(ActivateContext $activateContext): void
     {
+        if (!$this->container) {
+            return;
+        }
+
         $filtersSetup = new FilterRestrictionsSetup($this->container);
         $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_ELIO_SEARCH_FILTERS, true);
 
@@ -105,6 +109,10 @@ class ElioSearch extends Plugin
     public function postUpdate(UpdateContext $updateContext): void
     {
         if (!$this->isActive()) {
+            return;
+        }
+
+        if (!$this->container) {
             return;
         }
 
@@ -123,6 +131,10 @@ class ElioSearch extends Plugin
     public function uninstall(UninstallContext $uninstallContext): void
     {
         if ($uninstallContext->keepUserData()) {
+            return;
+        }
+
+        if (!$this->container) {
             return;
         }
 
@@ -177,14 +189,6 @@ class ElioSearch extends Plugin
                         'label' => [
                             'en-GB' => 'Exclude sub categories in content export',
                             'de-DE' => 'Unterkategorien vom Content Export ausschließen',
-                        ]
-                    ],
-                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
-                        'type' => 'bool',
-                        'componentName' => 'sw-field',
-                        'label' => [
-                            'en-GB' => 'Exclude product info in keywords',
-                            'de-DE' => 'Produktinformationen in den Keywords ausschließen',
                         ]
                     ],
                     self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
