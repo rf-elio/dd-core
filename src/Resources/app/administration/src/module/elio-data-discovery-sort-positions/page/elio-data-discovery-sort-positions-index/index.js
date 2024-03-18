@@ -43,7 +43,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-index', {
         },
 
         routerViewTabChanged() {
-            if (this.$route.name === 'elio.search.sort.positions.index.customfilters') {
+            if (this.$route.name === 'elio.data.discovery.sort.positions.index.customfilters') {
                 this.isCustomFiltersTab = true
             } else {
                 this.isCustomFiltersTab = false;

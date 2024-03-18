@@ -27,7 +27,7 @@ Shopware.Component.extend('elio-data-discovery-sorting-restrictions-customfilter
 
         saveFinish() {
             this.isSaveSuccessful = false;
-            this.$router.push({ name: 'elio.search.sorting.restrictions.customFiltersDetail', params: { id: this.newId } });
+            this.$router.push({ name: 'elio.data.discovery.sorting.restrictions.customFiltersDetail', params: { id: this.newId } });
         },
 
         onSave() {

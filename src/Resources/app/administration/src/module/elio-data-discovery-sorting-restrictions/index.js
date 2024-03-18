@@ -50,14 +50,14 @@ Shopware.Module.register('elio-data-discovery-sorting-restrictions', {
                 }
             },
             meta: {
-                parentPath: 'elio.search.sorting.restrictions.index.customfilters'
+                parentPath: 'elio.data.discovery.sorting.restrictions.index.customfilters'
             }
         },
         customFiltersCreate: {
             component: 'elio-data-discovery-sorting-restrictions-customfilters-create',
             path: 'customfilter/create',
             meta: {
-                parentPath: 'elio.search.sorting.restrictions.index.customfilters'
+                parentPath: 'elio.data.discovery.sorting.restrictions.index.customfilters'
             }
         }
     },
@@ -65,7 +65,7 @@ Shopware.Module.register('elio-data-discovery-sorting-restrictions', {
     navigation: [{
         label: 'elio-data-discovery.restrictions.sorting.title',
         color: '#014587',
-        path: 'elio.search.sorting.restrictions.index.global',
+        path: 'elio.data.discovery.sorting.restrictions.index.global',
         icon: 'regular-products',
         parent: 'elio-data-discovery',
         position: 1

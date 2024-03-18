@@ -43,7 +43,7 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-index', {
         },
 
         routerViewTabChanged() {
-            if (this.$route.name === 'elio.search.filter.restrictions.index.customfilters') {
+            if (this.$route.name === 'elio.data.discovery.filter.restrictions.index.customfilters') {
                 this.isCustomFiltersTab = true
             } else {
                 this.isCustomFiltersTab = false;

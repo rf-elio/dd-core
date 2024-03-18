@@ -140,7 +140,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
         },
 
         onCancel() {
-            this.$router.push({ name: 'elio.search.sorting.restrictions.index.customfilters' });
+            this.$router.push({ name: 'elio.data.discovery.sorting.restrictions.index.customfilters' });
         },
 
         async removeDefaultForFilters() {

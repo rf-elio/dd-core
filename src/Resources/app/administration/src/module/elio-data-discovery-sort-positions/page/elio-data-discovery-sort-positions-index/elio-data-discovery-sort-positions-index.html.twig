@@ -4,7 +4,7 @@
         {% block elio_data_discovery_sort_positions_index_page_smart_bar_tabs %}
             <template slot="page-tabs">
                 {% block elio_data_discovery_sort_positions_index_page_smart_bar_tabs_global %}
-                    <sw-tabs-item :route="{ name: 'elio.search.sort.positions.index.global' }">
+                    <sw-tabs-item :route="{ name: 'elio.data.discovery.sort.positions.index.global' }">
                         {{ $tc('elio-data-discovery.sort-positions.tabs.global') }}
                     </sw-tabs-item>
                 {% endblock %}
@@ -25,7 +25,7 @@
                 </sw-button-process>
                 <sw-button v-if="isCustomFiltersTab"
                            class="sw-property-list__button-create"
-                           :routerLink="{ name: 'elio.search.sort.positions.customFiltersCreate' }"
+                           :routerLink="{ name: 'elio.data.discovery.sort.positions.customFiltersCreate' }"
                            variant="primary">
                     {{ $tc('sw-property.list.buttonAddProperty') }}
                 </sw-button>

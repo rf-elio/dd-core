@@ -28,7 +28,7 @@
                     ref="filterList">
 
                 <template slot="column-propertyName" slot-scope="{ item }">
-                    <router-link :to="{ name: 'elio.search.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
+                    <router-link :to="{ name: 'elio.data.discovery.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
                         {{ item.translated.propertyName }}
                     </router-link>
                 </template>
@@ -37,7 +37,7 @@
                 <template slot="actions" slot-scope="{ item }">
                     {% block elio_data_discovery_filter_restrictions_customfilters_grid_columns_actions_detail %}
                     <sw-context-menu-item
-                            :routerLink="{ name: 'elio.search.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
+                            :routerLink="{ name: 'elio.data.discovery.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
                         {{ $tc('elio-data-discovery.restrictions.filter.customFilters.contextMenuView') }}
                     </sw-context-menu-item>
                     {% endblock %}
