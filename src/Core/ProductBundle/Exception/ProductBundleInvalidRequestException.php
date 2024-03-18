@@ -1,15 +1,14 @@
 <?php
 
+namespace Elio\ElioSearch\Core\ProductBundle\Exception;
 
-namespace Elio\FactFinder\Core\ProductBundle\Exception;
-
-use Elio\FactFinder\Core\Exception\FactFinderException;
+use Elio\ElioSearch\Core\Exception\ElioSearchException;
 
 /**
  * Class ProductBundleException
  *
  * @package Elio\FactFinder\Core\ProductBundle\Exception
  */
-class ProductBundleInvalidRequestException extends FactFinderException
+class ProductBundleInvalidRequestException extends ElioSearchException
 {
 }

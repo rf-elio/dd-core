@@ -13,6 +13,10 @@
             <argument type="service" id="elio.search.core.logging.debug" />
         </service>
 
+        <service id="Elio\ElioSearch\Api\Recommendations\RecommendationApi">
+            <argument type="service" id="elio.search.core.logging.debug" />
+        </service>
+
         <!-- transformer -->
         <service id="Elio\ElioSearch\Api\Transform\Transformer">
             <argument type="tagged" tag="elio-search.api.transformer.response"/>

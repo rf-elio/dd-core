@@ -1,15 +1,13 @@
 <?php
 
+namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 
-namespace Elio\FactFinder\Core\ProductBundle\Handler;
-
-
-use Elio\FactFinder\Api\Records\RecordsApi;
-use Elio\FactFinder\Api\Records\Request\SimilarRequest;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
-use Elio\FactFinder\Core\ProductBundle\Excluder;
+use Elio\ElioSearch\Api\Recommendations\RecommendationApi;
+use Elio\ElioSearch\Api\Recommendations\Request\SimilarRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
+use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -20,24 +18,24 @@ use Throwable;
 /**
  * Class SimilarBundleHandler
  *
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  */
 class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'similar';
 
-    private RecordsApi $recordsApi;
-    private FactFinderConfigServiceInterface $configService;
+    private RecommendationApi $RecommendationApi;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * SimilarBundle constructor.
      *
-     * @param RecordsApi $recordsApi
-     * @param FactFinderConfigServiceInterface $configService
+     * @param RecommendationApi $RecommendationApi
+     * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(RecordsApi $recordsApi, FactFinderConfigServiceInterface $configService)
+    public function __construct(RecommendationApi $RecommendationApi, ElioSearchConfigServiceInterface $configService)
     {
-        $this->recordsApi = $recordsApi;
+        $this->RecommendationApi = $RecommendationApi;
         $this->configService = $configService;
     }
 
@@ -72,11 +70,11 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
             throw new ProductBundleInvalidRequestException('Param "id" does not exists');
         }
 
-        $similarRequest = new SimilarRequest($config->getApiChannel());
+        $similarRequest = new SimilarRequest('');
         $similarRequest->setId($request->get('productId'));
         $similarRequest->setMaxResults($criteria->getLimit());
 
-        $resultCollection = $this->recordsApi->getSimilar($similarRequest, $salesChannelContext);
+        $resultCollection = $this->RecommendationApi->getSimilar($similarRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
         return Excluder::exclude($productListing->getProducts(), $config);
     }

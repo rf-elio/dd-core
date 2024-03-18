@@ -1,15 +1,13 @@
 <?php
 
+namespace Elio\ElioSearch\Core\ProductBundle\Handler;
 
-namespace Elio\FactFinder\Core\ProductBundle\Handler;
-
-
-use Elio\FactFinder\Api\Records\RecordsApi;
-use Elio\FactFinder\Api\Records\Request\RecommendationRequest;
-use Elio\FactFinder\Api\Search\Response\ProductListingResponse;
-use Elio\FactFinder\Configuration\FactFinderConfigServiceInterface;
-use Elio\FactFinder\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
-use Elio\FactFinder\Core\ProductBundle\Excluder;
+use Elio\ElioSearch\Api\Recommendations\RecommendationApi;
+use Elio\ElioSearch\Api\Recommendations\Request\RecommendationRequest;
+use Elio\ElioSearch\Api\Search\Response\ProductListingResponse;
+use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
+use Elio\ElioSearch\Core\ProductBundle\Exception\ProductBundleInvalidRequestException;
+use Elio\ElioSearch\Core\ProductBundle\Excluder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -20,24 +18,24 @@ use Throwable;
 /**
  * Class RecommendedBundle
  *
- * @package Elio\FactFinder\Core\ProductBundle
+ * @package Elio\ElioSearch\Core\ProductBundle
  */
 class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'recommendation';
 
-    private RecordsApi $recordsApi;
-    private FactFinderConfigServiceInterface $configService;
+    private RecommendationApi $RecommendationApi;
+    private ElioSearchConfigServiceInterface $configService;
 
     /**
      * RecommendedBundle constructor.
      *
-     * @param RecordsApi $recordsApi
-     * @param FactFinderConfigServiceInterface $configService
+     * @param RecommendationApi $RecommendationApi
+     * @param ElioSearchConfigServiceInterface $configService
      */
-    public function __construct(RecordsApi $recordsApi, FactFinderConfigServiceInterface $configService)
+    public function __construct(RecommendationApi $RecommendationApi, ElioSearchConfigServiceInterface $configService)
     {
-        $this->recordsApi = $recordsApi;
+        $this->RecommendationApi = $RecommendationApi;
         $this->configService = $configService;
     }
 
@@ -72,12 +70,12 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
             throw new ProductBundleInvalidRequestException('Param "productIds" does not exists');
         }
 
-        $recommendationRequest = new RecommendationRequest($config->getApiChannel());
+        $recommendationRequest = new RecommendationRequest('');
         $recommendationRequest->setIds($request->get('productIds'));
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
         $recommendationRequest->setMaxResults($criteria->getLimit());
 
-        $resultCollection = $this->recordsApi->getRecommendations($recommendationRequest, $salesChannelContext);
+        $resultCollection = $this->RecommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
         return Excluder::exclude($productListing->getProducts(), $config);
     }
