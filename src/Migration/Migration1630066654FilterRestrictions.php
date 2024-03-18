@@ -55,14 +55,14 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter_restrictions_filters` (
     `filter_restriction_id` BINARY(16) NOT NULL,
     `filter_id` BINARY(16) NOT NULL,
     PRIMARY KEY (`filter_restriction_id`,`filter_id`),
-    KEY `fk.elio_data_discovery_filter_restrictions_filters.filter_restriction_id` (`filter_restriction_id`),
-    KEY `fk.elio_data_discovery_filter_restrictions_filters.filter_id` (`filter_id`),
-    CONSTRAINT `fk.elio_data_discovery_filter_restrictions_filters.filter_restriction_id`
+    KEY `fk.edd_filter_restrictions_filters.filter_restriction_id` (`filter_restriction_id`),
+    KEY `fk.edd_filter_restrictions_filters.filter_id` (`filter_id`),
+    CONSTRAINT `fk.eddscovery_filter_restrictions_filters.filter_restriction_id`
         FOREIGN KEY (`filter_restriction_id`)
             REFERENCES `elio_data_discovery_filter_restrictions` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_filter_restrictions_filters.filter_id`
+    CONSTRAINT `fk.edd_filter_restrictions_filters.filter_id`
         FOREIGN KEY (`filter_id`)
             REFERENCES `elio_data_discovery_filter` (`id`)
             ON DELETE CASCADE
@@ -80,14 +80,14 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_filter_translation` (
     `elio_data_discovery_filter_id` BINARY(16) NOT NULL,
     `language_id` BINARY(16) NOT NULL,
     PRIMARY KEY (`elio_data_discovery_filter_id`,`language_id`),
-    KEY `fk.elio_data_discovery_filter_translation.elio_data_discovery_filter_id` (`elio_data_discovery_filter_id`),
-    KEY `fk.elio_data_discovery_filter_translation.language_id` (`language_id`),
-    CONSTRAINT `fk.elio_data_discovery_filter_translation.elio_data_discovery_filter_id` 
+    KEY `fk.edd_filter_translation.elio_data_discovery_filter_id` (`elio_data_discovery_filter_id`),
+    KEY `fk.edd_filter_translation.language_id` (`language_id`),
+    CONSTRAINT `fk.edd_filter_translation.elio_data_discovery_filter_id` 
         FOREIGN KEY (`elio_data_discovery_filter_id`) 
             REFERENCES `elio_data_discovery_filter` (`id`) 
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_filter_translation.language_id`
+    CONSTRAINT `fk.edd_filter_translation.language_id`
         FOREIGN KEY (`language_id`) 
             REFERENCES `language` (`id`) 
             ON DELETE CASCADE

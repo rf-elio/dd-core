@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_sync_profile` (
     download_username varchar(255) NULL,
     download_password varchar(255) NULL,
     PRIMARY KEY (`id`),
-    KEY `fk.elio_data_discovery_sync_profile.sales_channel_id` (`sales_channel_id`),
-    CONSTRAINT `fk.elio_data_discovery_sync_profile.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY `fk.edd_sync_profile.sales_channel_id` (`sales_channel_id`),
+    CONSTRAINT `fk.edd_sync_profile.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 
@@ -46,14 +46,14 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_sync_profile_languages` (
     `sync_profile_id` BINARY(16) NOT NULL,
     `language_id` BINARY(16) NOT NULL,
     PRIMARY KEY (`sync_profile_id`,`language_id`),
-    KEY `fk.elio_data_discovery_sync_profile_languages.sync_profile_id` (`sync_profile_id`),
-    KEY `fk.elio_data_discovery_sync_profile_languages.language_id` (`language_id`),
-    CONSTRAINT `fk.elio_data_discovery_sync_profile_languages.sync_profile_id`
+    KEY `fk.edd_sync_profile_languages.sync_profile_id` (`sync_profile_id`),
+    KEY `fk.edd_sync_profile_languages.language_id` (`language_id`),
+    CONSTRAINT `fk.edd_sync_profile_languages.sync_profile_id`
         FOREIGN KEY (`sync_profile_id`)
             REFERENCES `elio_data_discovery_sync_profile` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
-    CONSTRAINT `fk.elio_data_discovery_sync_profile_languages.language_id`
+    CONSTRAINT `fk.edd_sync_profile_languages.language_id`
         FOREIGN KEY (`language_id`)
             REFERENCES `language` (`id`)
             ON DELETE CASCADE
