@@ -79,6 +79,9 @@ class Configuration extends Struct
      * @param array $productRankingOrderDeliveryStates
      * @param int $entityStatusMaxCleanupAgeInDays
      * @param bool $allowStreamIdSearch
+     * @param bool $useProductDetailRecommendations
+     * @param bool $useProductDetailSimilar
+     * @param array $recommendationExcludedProducts
      */
     public function __construct(
         private readonly bool $active,
@@ -112,7 +115,10 @@ class Configuration extends Struct
         private readonly array $productRankingOrderStates,
         private readonly array $productRankingOrderDeliveryStates,
         private readonly int $entityStatusMaxCleanupAgeInDays,
-        private readonly bool $allowStreamIdSearch
+        private readonly bool $allowStreamIdSearch,
+        private readonly bool $useProductDetailRecommendations,
+        private readonly bool $useProductDetailSimilar,
+        private readonly array $recommendationExcludedProducts,
     ) {}
 
     /**
@@ -360,5 +366,20 @@ class Configuration extends Struct
     public function isProductDetailPageCampaignsActive(): bool
     {
         return $this->productDetailPageCampaignsActive;
+    }
+
+    public function isUseProductDetailRecommendations(): bool
+    {
+        return $this->useProductDetailRecommendations;
+    }
+
+    public function isUseProductDetailSimilar(): bool
+    {
+        return $this->useProductDetailSimilar;
+    }
+
+    public function getRecommendationExcludedProducts(): array
+    {
+        return $this->recommendationExcludedProducts;
     }
 }
