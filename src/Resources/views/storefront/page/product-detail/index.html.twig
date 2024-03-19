@@ -23,7 +23,11 @@
     {% set useSimilar = config_by_lang("ElioDataDiscovery.config.useProductDetailSimilar") %}
     {% if useRecommendations or useSimilar %}
         <div data-e-elio-data-discovery-product-detail-cross-selling-url="{{ path('widgets.e-elio-data-discovery.product-cross-selling.detail', {productId: page.product.id}) }}">
-            {{ parent() }}
+            <div class="product-detail-tabs product-detail-cross-selling">
+                {% sw_include '@Storefront/storefront/page/product-detail/cross-selling/tabs.html.twig' with {
+                    crossSellings: page.crossSellings
+                } %}
+            </div>
         </div>
     {% else %}
             {{ parent() }}

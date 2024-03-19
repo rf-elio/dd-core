@@ -24,19 +24,17 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'similar';
 
-    private RecommendationApi $RecommendationApi;
-    private ElioDataDiscoveryConfigServiceInterface $configService;
-
     /**
      * SimilarBundle constructor.
      *
-     * @param RecommendationApi $RecommendationApi
+     * @param RecommendationApi $recommendationApi
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
-    public function __construct(RecommendationApi $RecommendationApi, ElioDataDiscoveryConfigServiceInterface $configService)
+    public function __construct(
+        private readonly RecommendationApi                       $recommendationApi,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
+    )
     {
-        $this->RecommendationApi = $RecommendationApi;
-        $this->configService = $configService;
     }
 
     /**
@@ -71,10 +69,10 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
         }
 
         $similarRequest = new SimilarRequest('');
-        $similarRequest->setId($request->get('productId'));
+        $similarRequest->setId($request->get('productNumber'));
         $similarRequest->setMaxResults($criteria->getLimit() ?? 0);
 
-        $resultCollection = $this->RecommendationApi->getSimilar($similarRequest, $salesChannelContext);
+        $resultCollection = $this->recommendationApi->getSimilar($similarRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
         return Excluder::exclude($productListing->getProducts(), $config);
     }

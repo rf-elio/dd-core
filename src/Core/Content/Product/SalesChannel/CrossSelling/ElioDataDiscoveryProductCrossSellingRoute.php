@@ -8,10 +8,12 @@ use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\SimilarBundleHandlerHandle
 use Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleServiceInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\CrossSellingElement;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\CrossSellingElementCollection;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRouteResponse;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -25,28 +27,21 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSellingRoute
 {
-    private AbstractProductCrossSellingRoute $crossSellingRoute;
-    private ElioDataDiscoveryConfigServiceInterface $configService;
-    private ProductBundleServiceInterface $productBundleService;
-    private TranslatorInterface $translator;
-
     /**
      * @param AbstractProductCrossSellingRoute $crossSellingRoute
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param ProductBundleServiceInterface $productBundleService
      * @param TranslatorInterface $translator
+     * @param EntityRepository $productRepository
      */
     public function __construct(
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        ElioDataDiscoveryConfigServiceInterface $configService,
-        ProductBundleServiceInterface $productBundleService,
-        TranslatorInterface $translator
+        private readonly AbstractProductCrossSellingRoute $crossSellingRoute,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly ProductBundleServiceInterface $productBundleService,
+        private readonly TranslatorInterface $translator,
+        private readonly EntityRepository $productRepository
     )
     {
-        $this->crossSellingRoute = $crossSellingRoute;
-        $this->configService = $configService;
-        $this->productBundleService = $productBundleService;
-        $this->translator = $translator;
     }
 
     /**
@@ -76,6 +71,10 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
             return $productCrossSellingResponse;
         }
 
+        /** @var ProductEntity|null $product */
+        $product = $this->productRepository->search(new Criteria([$productId]), $context->getContext())->first();
+        $productNumber = $product?->getProductNumber();
+
         /** @var CrossSellingElementCollection $crossSellingElementCollection */
         $crossSellingElementCollection = $productCrossSellingResponse->getObject();
 
@@ -83,6 +82,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         $crossSellingCriteria->setLimit($config->getProductDetailSliderLimit());
         if ($config->isUseProductDetailRecommendations()) {
             $request->request->set('productIds', [$productId]);
+            $request->request->set('productNumber', $productNumber);
             $products = $this->productBundleService->getProducts(
                 RecommendedBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
             );
@@ -94,6 +94,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
 
         if ($config->isUseProductDetailSimilar()) {
             $request->request->set('productId', $productId);
+            $request->request->set('productNumber', $productNumber);
             $products = $this->productBundleService->getProducts(
                 SimilarBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
             );

@@ -18,18 +18,14 @@ use Symfony\Component\HttpFoundation\Request;
 class ProductBundleService implements ProductBundleServiceInterface
 {
     /**
-     * @var iterable|ProductBundleHandlerInterface[]
-     */
-    private iterable $productBundles;
-    private ElioDataDiscoveryConfigServiceInterface $configService;
-
-    /**
      * @param iterable|ProductBundleHandlerInterface[] $productBundles
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
-    public function __construct(iterable $productBundles, ElioDataDiscoveryConfigServiceInterface $configService)
+    public function __construct(
+        private readonly iterable                                $productBundles,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
+    )
     {
-        $this->productBundles = $productBundles;
-        $this->configService = $configService;
     }
 
     /**
@@ -45,12 +41,12 @@ class ProductBundleService implements ProductBundleServiceInterface
     {
         $config = $this->configService->getByContext($salesChannelContext);
 
-        if(!$config->isActive()) {
+        if (!$config->isActive()) {
             return new ProductCollection();
         }
 
         foreach ($this->productBundles as $productBundle) {
-            if($productBundle->supports($type)) {
+            if ($productBundle->supports($type)) {
                 return $productBundle->getProducts($request, $criteria, $salesChannelContext);
             }
         }

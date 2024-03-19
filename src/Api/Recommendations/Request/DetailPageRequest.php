@@ -22,7 +22,7 @@ class DetailPageRequest extends ChannelRequest
     private ?float $latitude = null;
     private ?float $longitude = null;
     private ?array $marketIds = null;
-    private ?int $maxCountVariants = null;
+    private ?int $maxCountVariants = 5;
     private string $withCampaigns = 'true';
     private string $withRecommendations = 'true';
     private string $withSimilarProducts = 'true';
