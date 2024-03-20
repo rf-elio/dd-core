@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\Event\SyncGeneratedEvent;
-use Elio\ElioSearch\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
-use Elio\ElioSearch\Core\Sync\Input\InputService;
-use Elio\ElioSearch\Core\Sync\Output\OutputService;
+use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
+use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -46,13 +46,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class SyncService
- * @package Elio\ElioSearch\Core\Sync
+ * @package Elio\ElioDataDiscovery\Core\Sync
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -103,7 +104,7 @@ class SyncService
         }
 
         $salesChannelContexts = new SalesChannelContextCollection();
-        foreach ($syncProfile->getLanguages() as $language) {
+        foreach ($syncProfile->getLanguages() ?? new LanguageCollection() as $language) {
             $salesChannelContexts->add($this->salesChannelContextFactory->create(
                 '',
                 $salesChannel->getId(),
@@ -142,7 +143,7 @@ class SyncService
         }
 
         $outputStream->close();
-        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()->getFirst()));
+        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()));
         $this->setFinishDate($syncProfile, $context);
     }
 
@@ -244,7 +245,7 @@ class SyncService
      */
     protected function getProfileDefinition(SyncProfileEntity $syncProfile): ProfileInterface
     {
-        /** @var ProfileInterface $profileConfiguration */
+        /** @var ProfileInterface $profileDefinition */
         foreach ($this->profileDefinitions as $profileDefinition) {
             if ($profileDefinition->getName() === $syncProfile->getProfile()) {
                 return $profileDefinition;

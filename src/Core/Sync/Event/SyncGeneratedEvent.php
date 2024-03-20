@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Event;
+namespace Elio\ElioDataDiscovery\Core\Sync\Event;
 
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -50,28 +50,12 @@ class SyncGeneratedEvent extends Event
      * SyncGeneratedEvent constructor.
      *
      * @param SyncProfileEntity $syncProfile
-     * @param SalesChannelContext $context
+     * @param SalesChannelContextCollection $contexts
      */
     public function __construct(
-        private SyncProfileEntity $syncProfile,
-        private SalesChannelContext $context
+        private readonly SyncProfileEntity $syncProfile,
+        private readonly SalesChannelContextCollection $contexts
     ) {
-    }
-
-    /**
-     * @return SalesChannelContext
-     */
-    public function getContext(): SalesChannelContext
-    {
-        return $this->context;
-    }
-
-    /**
-     * @param SalesChannelContext $context
-     */
-    public function setContext(SalesChannelContext $context): void
-    {
-        $this->context = $context;
     }
 
     public function getSyncProfile(): SyncProfileEntity
@@ -79,8 +63,8 @@ class SyncGeneratedEvent extends Event
         return $this->syncProfile;
     }
 
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
+    public function getContexts(): SalesChannelContextCollection
     {
-        $this->syncProfile = $syncProfile;
+        return $this->contexts;
     }
 }

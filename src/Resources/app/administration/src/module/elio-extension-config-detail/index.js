@@ -51,7 +51,7 @@ Shopware.Component.override('sw-extension-config', {
 
     methods: {
         async onCreated() {
-            if (this.namespace === 'ElioSearch') {
+            if (this.namespace === 'ElioDataDiscovery') {
                 this.isLanguageDivided = true;
                 await this.loadLanguages();
                 this.updateLanguage();

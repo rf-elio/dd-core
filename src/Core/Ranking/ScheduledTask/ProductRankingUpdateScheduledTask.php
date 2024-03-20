@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Ranking\ScheduledTask;
+namespace Elio\ElioDataDiscovery\Core\Ranking\ScheduledTask;
 
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 /**
  * Class ProductRankingUpdateScheduledTask
- * @package Elio\ElioSearch\Core\Ranking\ScheduledTask
+ * @package Elio\ElioDataDiscovery\Core\Ranking\ScheduledTask
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -47,7 +47,7 @@ class ProductRankingUpdateScheduledTask extends ScheduledTask
 {
     public static function getTaskName(): string
     {
-        return 'elio.search.ranking.product.update';
+        return 'elio.data-discovery.ranking.product.update';
     }
 
     public static function getDefaultInterval(): int

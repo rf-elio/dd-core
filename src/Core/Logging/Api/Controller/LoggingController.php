@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Elio\ElioSearch\Core\Logging\Api\Controller;
+namespace Elio\ElioDataDiscovery\Core\Logging\Api\Controller;
 
-use Elio\ElioSearch\Core\Logging\LoggingService;
+use Elio\ElioDataDiscovery\Core\Logging\LoggingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Throwable;
  * @Route(defaults={"_routeScope"={"api"}})
  * Class LoggingController
  *
- * @package Elio\ElioSearch\Core\Logging\Api\Controller
+ * @package Elio\ElioDataDiscovery\Core\Logging\Api\Controller
  */
 #[Route(defaults: ['_routeScope' => ['api']])]
 class LoggingController extends AbstractController
@@ -29,7 +29,7 @@ class LoggingController extends AbstractController
     ) {}
 
     /**
-     * @Route("/api/_action/elio-search/logging/{index}", name="api.action.elio-search.logging.index", methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/logging/{index}", name="api.action.elio-data-discovery.logging.index", methods={"GET"})
      * @param Request $request
      * @param int $index
      *
@@ -60,7 +60,7 @@ class LoggingController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/elio-search/logging/{index}", name="api.action.elio-search.logging.delete", methods={"DELETE"})
+     * @Route("/api/_action/elio-data-discovery/logging/{index}", name="api.action.elio-data-discovery.logging.delete", methods={"DELETE"})
      * @param int $index
      *
      * @return JsonResponse

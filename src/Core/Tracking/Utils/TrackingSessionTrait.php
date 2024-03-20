@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Utils;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Utils;
 
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -39,7 +39,7 @@ trait TrackingSessionTrait
 {
     private function getTrackingSessionIdKey() : string
     {
-        return 'elioSearchTrackingSessionId';
+        return 'elioDataDiscoveryTrackingSessionId';
     }
 
     /**

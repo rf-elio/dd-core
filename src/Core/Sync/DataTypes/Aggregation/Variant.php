@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes\Aggregation;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation;
 
 
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 
 /**
  *
@@ -43,8 +43,8 @@ class Variant
     private ?ProductDataType $parentProduct = null;
     private string $groupingKey;
     private bool $displayByDefault;
-    private readonly bool $displayByDefaultInListing;
-    private readonly bool $displayByDefaultInSearch;
+    private bool $displayByDefaultInListing = false;
+    private bool $displayByDefaultInSearch = false;
     private int $position = 0;
 
 
@@ -86,5 +86,15 @@ class Variant
     public function setPosition(int $position): void
     {
         $this->position = $position;
+    }
+
+    public function isDisplayByDefaultInListing(): bool
+    {
+        return $this->displayByDefaultInListing;
+    }
+
+    public function isDisplayByDefaultInSearch(): bool
+    {
+        return $this->displayByDefaultInSearch;
     }
 }

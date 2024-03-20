@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
 
-use Elio\ElioSearch\Core\FilterRestrictions\FilterEntity;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\TranslationEntity;
 
 /**
  * Class FilterDefinitionTranslationEntity
- * @package Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -38,7 +38,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class EntityStatusEntity
- * @package Elio\ElioSearch\Core\Sync\Api
+ * @package Elio\ElioDataDiscovery\Core\Sync\Api
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -76,12 +76,12 @@ class EntityStatusEntity extends Entity
 
     public function getEntityId(): ?string
     {
-        return Uuid::fromBytesToHex($this->entityId);
+        return Uuid::fromBytesToHex($this->entityId ?? '');
     }
 
     public function setEntityId(?string $entityId): void
     {
-        $this->entityId = Uuid::fromHexToBytes($entityId);
+        $this->entityId = Uuid::fromHexToBytes($entityId ?? '');
     }
 
     public function getState(): ?string

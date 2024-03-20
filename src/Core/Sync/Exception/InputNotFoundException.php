@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Exception;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class InputNotFoundException
- * @package Elio\ElioSearch\Core\Sync\Exception
+ * @package Elio\ElioDataDiscovery\Core\Sync\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class InputNotFoundException extends ElioSearchException {}
+class InputNotFoundException extends ElioDataDiscoveryException {}

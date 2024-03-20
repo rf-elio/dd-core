@@ -1,15 +1,15 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Search\Request;
+namespace Elio\ElioDataDiscovery\Api\Search\Request;
 
 
-use Elio\ElioSearch\Api\Request\AbTestTrait;
-use Elio\ElioSearch\Api\Request\ChannelRequest;
-use Elio\ElioSearch\Api\Request\CustomParametersTrait;
+use Elio\ElioDataDiscovery\Api\Request\AbTestTrait;
+use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
+use Elio\ElioDataDiscovery\Api\Request\CustomParametersTrait;
 
 /**
  * Class SearchRequest
- * @package Elio\ElioSearch\Api\Search\Request
+ * @package Elio\ElioDataDiscovery\Api\Search\Request
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

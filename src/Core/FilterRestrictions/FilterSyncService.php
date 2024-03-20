@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncCreateException;
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
-use Elio\ElioSearch\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncCreateException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -50,7 +50,7 @@ use Throwable;
 
 /**
  * Class FilterSyncService
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -95,7 +95,9 @@ class FilterSyncService
             $this->update($filter->first(), $property->getName(), $propertyTranslations->getElements(), $context);
         } else {
             // creating
-            $this->create($property->getId(), $property->getName(), $propertyTranslations->getElements(), $type, $context);
+            if ($property->getName()) {
+                $this->create($property->getId(), $property->getName(), $propertyTranslations->getElements(), $type, $context);
+            }
         }
     }
 
@@ -117,7 +119,7 @@ class FilterSyncService
         $propertiesNames = [];
         /** @var PropertyGroupEntity $property */
         foreach ($properties as $property) {
-            $propertiesTranslations[$property->getId()] = $property->getTranslations()->getElements();
+            $propertiesTranslations[$property->getId()] = $property->getTranslations()?->getElements();
             $propertiesNames[$property->getId()] = $property->getName();
         }
 
@@ -135,7 +137,9 @@ class FilterSyncService
             /** @var FilterEntity $filter */
             foreach ($filters as $filter) {
                 $propertiesNamesUpdated[$filter->getPropertyId()] = true; // flag as updated
-                $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations[$filter->getPropertyId()], $context);
+                if ($propertiesNames[$filter->getPropertyId()]) {
+                    $this->update($filter, $propertiesNames[$filter->getPropertyId()], $propertiesTranslations[$filter->getPropertyId()] ?? [], $context);
+                }
             }
         } catch (Throwable $e) {
             $this->logger->error(
@@ -173,7 +177,9 @@ class FilterSyncService
         $propertyIdsToCreate = array_diff_key($propertiesTranslations, $propertiesNamesUpdated);
         try {
             foreach ($propertyIdsToCreate as $propertyId => $propertyTranslations) {
-                $this->create($propertyId, $propertiesNames[$propertyId], $propertyTranslations, $type, $context);
+                if ($propertiesNames[$propertyId]) {
+                    $this->create($propertyId, $propertiesNames[$propertyId], $propertyTranslations ?? [], $type, $context);
+                }
             }
         } catch (Throwable $e) {
             $this->logger->error(
@@ -211,7 +217,7 @@ class FilterSyncService
 
         $createdFilters = [];
         foreach ($filterNames as $filterName) {
-            $filterNameParts = explode('.', $filterName);
+            $filterNameParts = explode('.', (string)$filterName);
 
             $createdFilters[] = [
                 'id' => Uuid::randomHex(),
@@ -252,7 +258,7 @@ class FilterSyncService
         $dataToUpdate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToUpdate[] = [
-                'elioSearchFilterId' => $filterEntity->getId(),
+                'elioDataDiscoveryFilterId' => $filterEntity->getId(),
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];
@@ -294,7 +300,7 @@ class FilterSyncService
         $dataToCreate = [];
         foreach ($propertyTranslations as $propertyTranslation) {
             $dataToCreate[] = [
-                'elioSearchFilterId' => $newFilterId,
+                'elioDataDiscoveryFilterId' => $newFilterId,
                 'languageId' => $propertyTranslation->getLanguageId(),
                 'propertyName' => $propertyTranslation->getName()
             ];

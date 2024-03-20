@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Content\Product\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel;
 
 
-use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioSearch\Api\Search\Request\SearchRequest;
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Content\Product\SalesChannel\Event\ProductSearchRequestBuildedEvent;
-use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
-use Elio\ElioSearch\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
+use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductSearchRequestBuildedEvent;
+use Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationExtension;
+use Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult\DefaultFacetExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +47,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class ProductSearchRequestBuilder
- * @package Elio\ElioSearch\Core\Content\Product\SalesChannel
+ * @package Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -57,16 +57,16 @@ class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
-    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-search-answer-path-';
-    public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'elio_search_additional_request_parameter_';
+    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-data-discovery-answer-path-';
+    public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'elio_data_discovery_additional_request_parameter_';
 
     /**
      * SearchRequestBuilder constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
@@ -164,7 +164,8 @@ class ProductSearchRequestBuilder
                  $filterValues = explode('|', (string) $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
-                     $searchRequest->addFilter($name, json_encode([(float)$min, (float)$max]));
+                     $value = json_encode([(float)$min, (float)$max]) ?: '';
+                     $searchRequest->addFilter($name, $value);
                  }
              }elseif (str_contains($key, 'tree')){
                  $filterValues = explode('|', (string) $filterValues);

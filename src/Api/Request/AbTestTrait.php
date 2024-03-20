@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Request;
+namespace Elio\ElioDataDiscovery\Api\Request;
 
 
 /**
  * Trait AbTestTrait
- * @package Elio\ElioSearch\Api\Request
+ * @package Elio\ElioDataDiscovery\Api\Request
  */
 trait AbTestTrait
 {

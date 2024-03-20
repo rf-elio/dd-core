@@ -1,0 +1,66 @@
+{% block elio_data_discovery_sort_positions_ruler %}
+    <div class="elio-data-discovery-sort-positions-ruler">
+        <sw-loader v-if="isLoading"></sw-loader>
+        <sw-button-group class="elio-data-discovery-sort-positions-buttons">
+            <sw-button size="small"
+                       @click="refreshIndex"
+            >{{ $tc('elio-data-discovery.sort-positions.base.refreshIndex') }}</sw-button>
+            <sw-help-text class="elio-data-discovery-sort-positions-refresh-index-help-text"
+                          :text="$tc('elio-data-discovery.sort-positions.info.help.refresh-index')"
+            ></sw-help-text>
+            <sw-button v-if="category.childCount == 0"
+                       size="small"
+                       @click="syncProducts"
+                       >
+                {{ $tc('elio-data-discovery.sort-positions.base.syncProducts') }}
+            </sw-button>
+            <sw-help-text class="elio-data-discovery-sort-positions-sync-products-help-text"
+                          v-if="category.childCount == 0"
+                          :text="$tc('elio-data-discovery.sort-positions.info.help.sync-products')"
+            ></sw-help-text>
+        </sw-button-group><br><br>
+        <div class="elio-data-discovery-sort-positions-products-tree"
+             v-if="category.childCount > 0"
+        >
+            <sw-card>
+                {{ $tc('elio-data-discovery.sort-positions.info.tree') }}
+            </sw-card>
+            <sw-data-grid
+                    ref="dataGrid"
+                    class="sw-sorted-products-tree-grid__data-grid"
+                    identifier="sw-sorted-products-tree-grid"
+                    :showSelection=false
+                    :showActions=false
+                    :data-source="productsTree"
+                    :columns="productColumns"
+                    :is-loading="isLoading"
+            >
+            </sw-data-grid>
+        </div>
+        <div class="elio-data-discovery-sort-positions-products"
+             v-else
+        >
+            <sw-data-grid
+                    ref="dataGrid"
+                    class="sw-sorted-products-grid__data-grid"
+                    identifier="sw-sorted-products-grid"
+                    :data-source="products"
+                    :columns="productColumns"
+                    :showSelection=false
+                    :showActions=false
+                    :is-loading="isLoading"
+            >
+                <template #column-position="{ item }">
+                    <sw-number-field
+                        v-model="item.position"
+                        number-type="int"
+                        size="small"
+                        placeholder=0
+                        :min="1"
+                        @change="sortDuplicatePositions($event, item)"
+                    />
+                </template>
+            </sw-data-grid>
+        </div>
+    </div>
+{% endblock %}

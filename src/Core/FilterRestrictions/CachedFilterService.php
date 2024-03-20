@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
-use Elio\ElioSearch\Api\Request\ApiRequest;
-use Elio\ElioSearch\Configuration\ElioSearchConfigService;
+use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
@@ -44,7 +44,7 @@ use Throwable;
 
 /**
  * Class CachedFilterService
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Andrey Baev <anb@elio-systems.com>
@@ -56,12 +56,12 @@ class CachedFilterService implements FilterInterface
     /**
      * @param FilterInterface $decorated
      * @param TagAwareAdapterInterface $cache
-     * @param ElioSearchConfigService $configService
+     * @param ElioDataDiscoveryConfigService $configService
      */
     public function __construct(
         private readonly FilterInterface $decorated,
         private readonly TagAwareAdapterInterface $cache,
-        private readonly ElioSearchConfigService $configService
+        private readonly ElioDataDiscoveryConfigService $configService
     ) {}
 
     /**
@@ -71,7 +71,7 @@ class CachedFilterService implements FilterInterface
      * @param string $restrictionType
      * @param ApiRequest $request
      * @param SalesChannelContext $context
-     * @return mixed
+     * @return array
      */
     public function filter(array $items, string $restrictionType, ApiRequest $request, SalesChannelContext $context): array
     {
@@ -92,7 +92,7 @@ class CachedFilterService implements FilterInterface
         $config = $this->configService->getByContext($context);
         $cacheTime = $config->getRestrictionsCacheTime();
 
-        $item = $this->cache->getItem('elio_search.cached_filter_service.filters.' . $type);
+        $item = $this->cache->getItem('elio_data_discovery.cached_filter_service.filters.' . $type);
         try {
             if ($item->isHit() && $item->get()) {
                 return CacheCompressor::uncompress($item);
@@ -124,7 +124,7 @@ class CachedFilterService implements FilterInterface
         string $type,
         ?string $categoryId = null
     ): string {
-        return 'elio_search.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
+        return 'elio_data_discovery.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
             ) . '_' . $type . '_' . $level . ($categoryId ? '_' . $categoryId : '');
     }
 
@@ -133,7 +133,7 @@ class CachedFilterService implements FilterInterface
      */
     private function generateTags(): array
     {
-        return ['elio_search_filtersrestrictions'];
+        return ['elio_data_discovery_filtersrestrictions'];
     }
 
     /**

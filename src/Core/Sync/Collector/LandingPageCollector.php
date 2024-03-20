@@ -30,17 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
-use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
-use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Generator;
-use Shopware\Core\Content\LandingPage\Aggregate\LandingPageTranslation\LandingPageTranslationCollection;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -49,14 +47,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\StructCollection;
+use Shopware\Core\Content\LandingPage\Aggregate\LandingPageTranslation\LandingPageTranslationCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 
 /**
  * Class LandingPageCollector
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collector
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -94,7 +94,7 @@ class LandingPageCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -113,6 +113,7 @@ class LandingPageCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
+     * @param string $salesChannelId
      * @return Criteria
      */
     protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
@@ -125,13 +126,13 @@ class LandingPageCollector implements DataCollectorInterface
         $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
 
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
         ]));
 
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
@@ -157,6 +158,7 @@ class LandingPageCollector implements DataCollectorInterface
                 $translations = $entity->getTranslations();
                 if ($translations->get($entity->getId() . '-' . $languageId)) {
                     $dataType = $this->mapLandingPageToDataType($entity);
+                    /** @var ContentDataType $mappedEntity */
                     $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                     $mappedEntity->addDataTypeTranslation($languageId, $dataType);
                     $mappedEntities->set($dataType->getId(), $mappedEntity);

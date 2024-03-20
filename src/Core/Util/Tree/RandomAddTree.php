@@ -1,10 +1,10 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Util\Tree;
+namespace Elio\ElioDataDiscovery\Core\Util\Tree;
 
 /**
  * Class RandomAddTree
- * @package Elio\ElioSearch\Core\Util\Tree
+ * @package Elio\ElioDataDiscovery\Core\Util\Tree
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>

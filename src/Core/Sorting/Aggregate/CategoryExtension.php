@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sorting\Aggregate;
+namespace Elio\ElioDataDiscovery\Core\Sorting\Aggregate;
 
-use Elio\ElioSearch\Core\Sorting\ProductSortingDefinition;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingDefinition;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
@@ -45,7 +45,7 @@ class CategoryExtension extends EntityExtension
     {
         $collection->add(
             (new OneToManyAssociationField(
-                'elioSearchProductSorting',
+                'elioDataDiscoveryProductSorting',
                 ProductSortingDefinition::class,
                 'category_id'
             ))->addFlags(new Inherited())

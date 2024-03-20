@@ -1,0 +1,86 @@
+{
+  "elio-data-discovery-sync-profile": {
+    "title": "Sync",
+    "description": "",
+    "buttonSave": "Speichern",
+    "buttonCancel": "Abbrechen",
+    "create": {
+      "new-export-name": "Neuer Sync"
+    },
+    "detail": {
+      "placeholderName": "New_Sync_Name",
+      "messageSaveError": "Speichern fehlgeschlagen: \"{error}\"",
+      "textHeadline": "Neuer Sync",
+      "cardTitleBasicInfo" : "Grundlegende Informationen",
+      "labelName": "Name",
+      "labelActive": "Aktiv",
+      "labelProfile": "Profil",
+      "labelType": "Typ",
+      "labelDataType": "Datentyp",
+      "labelOutput": "Ausgabe",
+      "labelInterval": "Intervall",
+      "helpTextInterval": "CRON Beispiel: 0 * * * *",
+      "downloadUsername": "Download Benutzername",
+      "downloadPassword": "Download Passwort",
+      "labelSalesChannel": "Sales Channel",
+      "labelLanguage": "Sprache",
+      "labelLanguages": "Sprachen",
+      "baseCategoryLabel": "Hauptkategorie",
+      "labelExportCommand": "Sync Command",
+      "labelExportCommandForce": "Force",
+      "labelDetails": "Details",
+      "labelLastGenerationStarted": "Letzter Sync gestartet am",
+      "labelLastGenerationFinished": "Letzter Sync abgeschlossen am",
+      "labelNextGenerationDueAt": "Nächste Sync fällig am",
+      "helpTextActive": "Aktiviert oder deaktiviert den Sync",
+      "cardTitleConfig": "Zusätzliche Konfiguration",
+      "noConfigAvailable": "Keine zusätzliche Konfiguration verfügbar",
+      "cardTitleMappings": "Mappings",
+      "buttonMappingAdd": "Neues Mapping hinzufügen",
+      "buttonMappingRemove": "Entfernen",
+      "mappingSourcePlaceholder": "customFields[custom_...]",
+      "columnSource": "Source Field",
+      "columnTarget": "Target Field Name",
+      "messageMappingsEmptyTitle": "Keine Mappings vorhanden",
+      "messageMappingsEmptySubline": "Mappings konfigurieren",
+      "status": {
+        "title": "Status",
+        "exists": "Downloads vorhanden",
+        "notExists": "Download nicht vorhanden",
+        "path": "Pfad: "
+      },
+      "config": {
+        "export_product_categories": "Sync Produkt Kategorien",
+        "export_structure_categories": "Sync Struktur Kategorien",
+        "export_link_categories": "Sync Link Kategorien",
+        "export_footer_categories": "Sync Footer Kategorien",
+        "export_service_categories": "Sync Service Kategorien",
+        "trigger_import_search_data": "Trigger: Import Search Data",
+        "trigger_import_suggest_data": "Trigger: Import Suggest Data"
+      },
+      "download": "Download",
+      "buttonGenerate": "Sync ausführen",
+      "buttonGenerateInProgress": "In Bearbeitung",
+      "messageGeneratingError": "Sync konnte nicht ausgeführt werden: \"{error}\"",
+      "messageGeneratingSuccess": "Sync erfolgreich"
+    },
+    "list": {
+      "buttonCreate": "Sync erstellen",
+      "columns": {
+        "id": "Sync ID",
+        "name": "Name",
+        "active": "Aktiv",
+        "profile": "Profil",
+        "dataType": "Datentyp",
+        "lastGenerationFinishedAt": "Zuletzt ausgeführt",
+        "salesChannel": "Sales Channel",
+        "language": "Sprache"
+      },
+      "contextMenuView": "Bearbeiten",
+      "contextMenuDelete": "Löschen",
+      "textDeleteConfirm": "Willst du wirklich den Sync löschen \"{name}\"?",
+      "buttonCancel": "Abbrechen",
+      "buttonDelete": "Löschen"
+    }
+  }
+}

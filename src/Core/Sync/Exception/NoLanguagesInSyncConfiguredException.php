@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Exception;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class NoLanguagesInSyncConfiguredException
@@ -43,4 +43,4 @@ use Elio\ElioSearch\Core\Exception\ElioSearchException;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class NoLanguagesInSyncConfiguredException extends ElioSearchException {}
+class NoLanguagesInSyncConfiguredException extends ElioDataDiscoveryException {}

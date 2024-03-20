@@ -30,16 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
 
-use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\AbstractDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\DeltaDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class OutputStream
- * @package Elio\ElioSearch\Core\Sync\Output
+ * @package Elio\ElioDataDiscovery\Core\Sync\Output
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -77,6 +78,7 @@ class OutputStream
     {
         foreach ($this->outputs as $output) {
             if ($output instanceof DeltaAwareInterface) {
+                /** @var AbstractDataCollection $dataCollection */
                 if ($dataCollection->getType() === DeltaDataCollection::TYPE_CREATED) {
                     $output->create($dataCollection, $this->syncContext);
                 } elseif ($dataCollection->getType() === DeltaDataCollection::TYPE_UPDATED) {

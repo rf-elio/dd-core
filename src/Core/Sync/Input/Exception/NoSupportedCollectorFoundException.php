@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input\Exception;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input\Exception;
 
 
-use Elio\ElioSearch\Core\Exception\ElioSearchException;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
  * Class NoSupportedCollectorFoundException
- * @package Elio\ElioSearch\Core\Sync\Input\Exception
+ * @package Elio\ElioDataDiscovery\Core\Sync\Input\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class NoSupportedCollectorFoundException extends ElioSearchException {}
+class NoSupportedCollectorFoundException extends ElioDataDiscoveryException {}

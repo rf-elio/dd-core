@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Swagger;
+namespace Elio\ElioDataDiscovery\Swagger;
 
 
 use Exception;
 
 /**
  * Class ClientApiException
- * @package Elio\ElioSearch\Swagger
+ * @package Elio\ElioDataDiscovery\Swagger
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -49,9 +49,9 @@ class ClientApiException extends Exception
     /**
      * The deserialized response object
      *
-     * @var $responseObject;
+     * @var mixed $responseObject;
      */
-    protected $responseObject;
+    protected mixed $responseObject;
 
     /**
      * Constructor

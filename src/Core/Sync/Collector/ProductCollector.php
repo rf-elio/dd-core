@@ -30,19 +30,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigService;
-use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
-use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
-use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
-use Elio\ElioSearch\Core\Sync\Util\ProductUtil;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
+use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioDataDiscovery\Core\Sync\Util\ProductUtil;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Generator;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -60,7 +60,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class ProductCollector
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collector
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -77,7 +77,7 @@ class ProductCollector implements DataCollectorInterface
         private readonly SalesChannelRepository $productRepository,
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly ElioSearchConfigService $configService
+        private readonly ElioDataDiscoveryConfigService $configService
     ) {}
 
     /**
@@ -101,7 +101,7 @@ class ProductCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<EntityCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -136,7 +136,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('options.group');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
-        $criteria->addAssociation('elioSearchProductSorting');
+        $criteria->addAssociation('elioDataDiscoveryProductSorting');
 
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
@@ -172,8 +172,8 @@ class ProductCollector implements DataCollectorInterface
         $criteria = new Criteria($parentProductIds);
         $criteria->addAssociation('children'); // children are required for ProductUtil::isDisplayedByDefault
         $criteria->addAssociation('configuratorSettings');
+        /** @var EntityCollection<SalesChannelProductEntity> return */
         return $this->productRepository->search($criteria, $context);
-
     }
 
     /**
@@ -217,6 +217,7 @@ class ProductCollector implements DataCollectorInterface
                 ));
                 if (
                     $entity->getParentId()
+                    && $parentProducts->get($entity->getParentId())
                     && $parentProduct = ProductDataType::createFrom($parentProducts->get($entity->getParentId()))
                 ) {
                     $parentProduct->setIdentifier($parentProduct->getProductNumber());
@@ -226,7 +227,7 @@ class ProductCollector implements DataCollectorInterface
                     ProductUtil::getGroupingKey($entity, $dataType->getVariant()->getParentProduct())
                 );
                 $displayByDefault = ProductUtil::isDisplayedByDefault($entity, $dataType->getVariant()->getParentProduct());
-                if ($entity->getCustomFields()[ElioSearch::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT] ?? false) {
+                if ($entity->getCustomFields()[ElioDataDiscovery::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT] ?? false) {
                     $displayByDefault = true;
                 }
                 $dataType->getVariant()->setDisplayByDefault($displayByDefault);
@@ -267,6 +268,7 @@ class ProductCollector implements DataCollectorInterface
         foreach ($contexts as $context) {
             $flatCategoryCollection = new CategoryCollection();
             $criteria = new Criteria([$context->getSalesChannel()->getNavigationCategoryId()]);
+            /** @var CategoryEntity $categoryEntity */
             foreach ($this->categoryRepository->search($criteria, $context) as $categoryEntity) {
                 $flatCategoryCollection->add($categoryEntity);
                 $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);

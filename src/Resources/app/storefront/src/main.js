@@ -1,24 +1,24 @@
 import TrackingPlugin from './plugin/tracking/tracking-plugin';
 import TrackingWorkerPlugin from './plugin/tracking/tracking-worker-plugin';
-import ElioSearchFilterPropertySelectPlugin from "./plugin/filter/elio-search-filter-property-select.plugin";
-import ElioSearchFilterRangePlugin from "./plugin/filter/elio-search-filter-range.plugin";
-import ElioSearchFilterTreeSelectPlugin from "./plugin/filter/elio-search-filter-tree-select.plugin";
+import ElioDataDiscoveryFilterPropertySelectPlugin from "./plugin/filter/elio-data-discovery-filter-property-select.plugin";
+import ElioDataDiscoveryFilterRangePlugin from "./plugin/filter/elio-data-discovery-filter-range.plugin";
+import ElioDataDiscoveryFilterTreeSelectPlugin from "./plugin/filter/elio-data-discovery-filter-tree-select.plugin";
 import ElioSuggestAutocompletePlugin from "./plugin/elio-suggest-autocomplete/elio-suggest-autocomplete.plugin";
-import ElioSearchWidgetPlugin from "./plugin/elio-search-widget/elio-search-widget.plugin";
+import ElioDataDiscoveryWidgetPlugin from "./plugin/elio-data-discovery-widget/elio-data-discovery-widget.plugin";
 import ElioProductDetailCrossSellingPlugin from "./plugin/elio-product-detail-cross-selling/elio-product-detail-cross-selling.plugin";
-import ElioSearchHistoryPlugin from "./plugin/elio-search-history/elio-search-history.plugin";
-import ElioSearchTrackerPlugin from "./plugin/elio-search-tracker/elio-search-tracker.plugin";
+import ElioDataDiscoveryHistoryPlugin from "./plugin/elio-data-discovery-history/elio-data-discovery-history.plugin";
+import ElioDataDiscoveryTrackerPlugin from "./plugin/elio-data-discovery-tracker/elio-data-discovery-tracker.plugin";
 import ElioListingPluginExtension from "./plugin/listing/listing.plugin";
 
 const PluginManager = window.PluginManager;
-PluginManager.register('TrackingPlugin', TrackingPlugin, '.elio-search-listing-box');
+PluginManager.register('TrackingPlugin', TrackingPlugin, '.elio-data-discovery-listing-box');
 PluginManager.register('TrackingWorkerPlugin', TrackingWorkerPlugin, document);
-PluginManager.register('ElioSearchFilterPropertySelect', ElioSearchFilterPropertySelectPlugin, '[data-elio-search-filter-property-select]');
-PluginManager.register('ElioSearchFilterRange', ElioSearchFilterRangePlugin, '[data-elio-search-filter-range]');
-PluginManager.register('ElioSearchFilterTreeSelect', ElioSearchFilterTreeSelectPlugin, '[data-elio-search-filter-tree-select]');
+PluginManager.register('ElioDataDiscoveryFilterPropertySelect', ElioDataDiscoveryFilterPropertySelectPlugin, '[data-elio-data-discovery-filter-property-select]');
+PluginManager.register('ElioDataDiscoveryFilterRange', ElioDataDiscoveryFilterRangePlugin, '[data-elio-data-discovery-filter-range]');
+PluginManager.register('ElioDataDiscoveryFilterTreeSelect', ElioDataDiscoveryFilterTreeSelectPlugin, '[data-elio-data-discovery-filter-tree-select]');
 PluginManager.register('ElioSuggestAutocompletePlugin', ElioSuggestAutocompletePlugin, '.e-header-search-form');
-PluginManager.register('ElioSearchTrackerPlugin', ElioSearchTrackerPlugin, '[data-search-tracker]');
-PluginManager.register('ElioSearchHistory', ElioSearchHistoryPlugin, '.e-search-history');
-PluginManager.override('SearchWidget', ElioSearchWidgetPlugin, '[data-search-form]');
-PluginManager.register('ElioProductDetailCrossSellingPlugin', ElioProductDetailCrossSellingPlugin, '[data-e-elio-search-product-detail-cross-selling-url]');
+PluginManager.register('ElioDataDiscoveryTrackerPlugin', ElioDataDiscoveryTrackerPlugin, '[data-search-tracker]');
+PluginManager.register('ElioDataDiscoveryHistory', ElioDataDiscoveryHistoryPlugin, '.e-search-history');
+PluginManager.override('SearchWidget', ElioDataDiscoveryWidgetPlugin, '[data-search-form]');
+PluginManager.register('ElioProductDetailCrossSellingPlugin', ElioProductDetailCrossSellingPlugin, '[data-e-elio-data-discovery-product-detail-cross-selling-url]');
 PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]')

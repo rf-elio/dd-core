@@ -5,49 +5,49 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- Product sorting -->
-        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingDefinition">
-            <tag name="shopware.entity.definition" entity="elio_search_product_sorting"/>
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingDefinition">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_product_sorting"/>
         </service>
-        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingTreeDefinition">
-            <tag name="shopware.entity.definition" entity="elio_search_product_sorting_tree"/>
-        </service>
-
-        <service id="Elio\ElioSearch\Core\Sorting\Aggregate\CategoryExtension">
-            <tag name="shopware.entity.extension"/>
-        </service>
-        <service id="Elio\ElioSearch\Core\Sorting\Aggregate\ProductExtension">
-            <tag name="shopware.entity.extension"/>
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingTreeDefinition">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_product_sorting_tree"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Sorting\ProductSortingService">
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\Aggregate\CategoryExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\Aggregate\ProductExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="elio_search_product_sorting_tree.repository" />
+            <argument type="service" id="elio_data_discovery_product_sorting_tree.repository" />
         </service>
 
-        <service id="Elio\ElioSearch\Command\ProductSortUpdateCommand">
-            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+        <service id="Elio\ElioDataDiscovery\Command\ProductSortUpdateCommand">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService" />
             <tag name="console.command"/>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Sorting\Api\Controller\ProductSortingAdminController" public="true">
-            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\Api\Controller\ProductSortingAdminController" public="true">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Sorting\Api\Controller\SyncProductsToSortingTableController" public="true">
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\Api\Controller\SyncProductsToSortingTableController" public="true">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="Elio\ElioSearch\Core\Sorting\Subscriber\AddProductToSortingTableWrittenSubscriber">
+        <service id="Elio\ElioDataDiscovery\Core\Sorting\Subscriber\AddProductToSortingTableWrittenSubscriber">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="Elio\ElioSearch\Core\Sorting\ProductSortingService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService" />
             <tag name="kernel.event_subscriber" />
         </service>
     </services>

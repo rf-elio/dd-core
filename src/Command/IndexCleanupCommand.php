@@ -30,13 +30,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Command;
+namespace Elio\ElioDataDiscovery\Command;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioSearch\Core\Sync\SyncProfileCollection;
-use Elio\ElioSearch\Core\Sync\SyncProfileEntity;
-use Elio\ElioSearch\Core\Sync\SyncService;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
@@ -48,7 +48,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class IndexCleanupCommand
- * @package Elio\ElioSearch\Command
+ * @package Elio\ElioDataDiscovery\Command
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -67,7 +67,7 @@ class IndexCleanupCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('elio-search:index:cleanup');
+        $this->setName('elio-data-discovery:index:cleanup');
     }
 
     /**
@@ -87,10 +87,16 @@ class IndexCleanupCommand extends Command
             return Command::FAILURE;
         }
 
-        $daysBeforeCleanup = $this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14;
+        $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
         $sortedProfile = $this->getLeastRecentlyFinishedSyncProfile($syncProfiles);
+
+        if (!$sortedProfile->getLastGenerationFinishedAt()) {
+            $output->writeln('<error>No sync executed yet => Can not clean up</error>');
+            return Command::FAILURE;
+        }
+
         $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ?->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
+            ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
             ->modify('-' . $daysBeforeCleanup . 'day');
 
         try {

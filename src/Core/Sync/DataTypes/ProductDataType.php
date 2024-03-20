@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\DataTypes;
+namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\Aggregation\Variant;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Shopware\Core\Content\Product\ProductEntity;
 
 /**
  * Class ProductType
- * @package Elio\ElioSearch\Core\Sync\DataTypes
+ * @package Elio\ElioDataDiscovery\Core\Sync\DataTypes
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -52,13 +52,16 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
 
-    public function setVariant(?Variant $variant): void
+    public function setVariant(Variant $variant): void
     {
         $this->variant = $variant;
     }
 
     public function getVariant(): Variant
     {
+        if ($this->variant === null) {
+            throw new \RuntimeException('Variant is not set');
+        }
         return $this->variant;
     }
 

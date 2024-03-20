@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Consent;
+namespace Elio\ElioDataDiscovery\Core\Consent;
 
 
 use Shopware\Core\Framework\Routing\KernelListenerPriorities;
@@ -44,7 +44,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Class ConsentSubscriber
- * @package Elio\ElioSearch\Core\Consent
+ * @package Elio\ElioDataDiscovery\Core\Consent
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -91,7 +91,7 @@ class ConsentSubscriber implements EventSubscriberInterface
         if ($context === null){
             return;
         }
-        $trackingCookie = $request->cookies->get('elio_search_tracking');
+        $trackingCookie = $request->cookies->get('elio_data_discovery_tracking');
         $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $context);
     }
 
@@ -107,7 +107,7 @@ class ConsentSubscriber implements EventSubscriberInterface
             return;
         }
         $newContext = $restoredEvent->getRestoredSalesChannelContext();
-        $trackingCookie = $request->cookies->get('elio_search_tracking');
+        $trackingCookie = $request->cookies->get('elio_data_discovery_tracking');
         $this->consentService->updateContextIfNecessary(!empty($trackingCookie), $newContext);
     }
 }

@@ -30,17 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
-use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
-use Elio\ElioSearch\Core\Sync\DataTypes\Exception\UnknownContentTypeException;
-use Elio\ElioSearch\Core\Sync\DataTypes\ProductDataType;
-use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusEntity;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\DataTypeInterface;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Exception\UnknownContentTypeException;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
+use Elio\ElioDataDiscovery\Core\Sync\DeltaDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Generator;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -48,7 +48,7 @@ use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Class DeltaInput
- * @package Elio\ElioSearch\Core\Sync\Input
+ * @package Elio\ElioDataDiscovery\Core\Sync\Input
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -63,7 +63,7 @@ class DeltaInput extends BaseInput
         private readonly iterable $collectors,
         private readonly LoggerInterface $logger
     ) {
-        parent::__construct($collectors);
+        parent::__construct($this->collectors);
     }
 
     public function supports(string $type): bool
@@ -102,14 +102,14 @@ class DeltaInput extends BaseInput
             foreach ($changeSetEntityCollection as $changeSetEntity) {
                 if ($changeSetEntity->getDataType() === ProductDataType::class) {
                     $entity = new ProductDataType();
-                    $entity->setId($changeSetEntity->getEntityId());
-                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
                     $entity->setDeletedAt($changeSetEntity->getDeletedAt());
                     $deltaDataCollection->add($entity);
                 } elseif ($changeSetEntity->getDataType() === ContentDataType::class) {
                     $entity = new ContentDataType();
-                    $entity->setId($changeSetEntity->getEntityId());
-                    $entity->setIdentifier($changeSetEntity->getIdentifier());
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
                     $entity->setDeletedAt($changeSetEntity->getDeletedAt());
                     $deltaDataCollection->add($entity);
                 } else {
@@ -148,8 +148,8 @@ class DeltaInput extends BaseInput
     ): void {
         $entityStatusCollection->fmap(function (EntityStatusEntity $entityStatusEntity) use ($entities) {
             /** @var DataTypeInterface|null $dataTypeEntity */
-            $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId());
-            $dataTypeEntity?->setIdentifier($entityStatusEntity->getIdentifier());
+            $dataTypeEntity = $entities->get($entityStatusEntity->getEntityId() ?? '');
+            $dataTypeEntity?->setIdentifier($entityStatusEntity->getIdentifier() ?? '');
         });
     }
 }

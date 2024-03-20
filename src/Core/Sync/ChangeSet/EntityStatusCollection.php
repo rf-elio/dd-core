@@ -30,17 +30,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
  * Class EntityStatusCollection
- * @package Elio\ElioSearch\Core\Sync\Api
+ * @package Elio\ElioDataDiscovery\Core\Sync\Api
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @extends EntityCollection<EntityStatusEntity>
  */
 class EntityStatusCollection extends EntityCollection
 {
@@ -66,6 +67,7 @@ class EntityStatusCollection extends EntityCollection
             return null;
         }
 
+        /** @var EntityStatusEntity|null return */
         return $this->get($id);
     }
 
@@ -77,7 +79,7 @@ class EntityStatusCollection extends EntityCollection
 
         /** @var EntityStatusEntity $element */
         foreach ($this->elements as $element) {
-            $this->map[$this->getMapIdentifier($element->getEntityType(), $element->getIdentifier())] = $element->getId();
+            $this->map[$this->getMapIdentifier($element->getEntityType() ?? '', $element->getIdentifier() ?? '')] = $element->getId();
         }
     }
 
@@ -86,7 +88,7 @@ class EntityStatusCollection extends EntityCollection
         return $type.'-'.$identifier;
     }
 
-    public function getEntityIds()
+    public function getEntityIds(): array
     {
         return array_map(static fn(EntityStatusEntity $entity) => $entity->getEntityId(), $this->elements);
     }

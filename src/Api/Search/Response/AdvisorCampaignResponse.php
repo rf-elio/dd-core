@@ -1,13 +1,13 @@
 <?php
 
-namespace Elio\ElioSearch\Api\Search\Response;
+namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
-use Elio\ElioSearch\Api\Response\Response;
-use Elio\ElioSearch\Core\AdvisorCampaign\AdvisorQuestion;
+use Elio\ElioDataDiscovery\Api\Response\Response;
+use Elio\ElioDataDiscovery\Core\AdvisorCampaign\AdvisorQuestion;
 
 /**
  * Class AdvisorCampaignResponse
- * @package Elio\ElioSearch\Api\Search\Response
+ * @package Elio\ElioDataDiscovery\Api\Search\Response
  * @author Ralf Frommherz
  */
 class AdvisorCampaignResponse extends Response
@@ -16,14 +16,14 @@ class AdvisorCampaignResponse extends Response
      * @param string $id
      * @param string $name
      * @param AdvisorQuestion[] $activeQuestions
-     * @param iterable|AdvisorQuestion[] $questionPath
+     * @param AdvisorQuestion[] $questionPath
      * @param string $answerPath
      */
     public function __construct(
         protected string $id,
         protected string $name,
         private readonly array $activeQuestions,
-        private readonly iterable $questionPath,
+        private readonly array $questionPath,
         private readonly string $answerPath
     ) {}
 
@@ -54,7 +54,7 @@ class AdvisorCampaignResponse extends Response
     /**
      * @return AdvisorQuestion[]
      */
-    public function getQuestionPath()
+    public function getQuestionPath(): array
     {
         return $this->questionPath;
     }

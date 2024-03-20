@@ -30,22 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Search;
+namespace Elio\ElioDataDiscovery\Api\Search;
 
 
-use Elio\ElioSearch\Api\Response\ResponseCollection;
-use Elio\ElioSearch\Api\Search\Request\ContentSearchRequest;
-use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioSearch\Api\Transform\Transformer;
-use Elio\ElioSearch\Core\Logging\ElioSearchLogTrait;
+use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
+use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
+use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioDataDiscovery\Api\Transform\Transformer;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
 /**
  * Class SearchApi
- * @package Elio\ElioSearch\Api\Search
+ * @package Elio\ElioDataDiscovery\Api\Search
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -53,8 +53,7 @@ use Throwable;
  */
 class SearchApi
 {
-    use ElioSearchLogTrait;
-    private Transformer $transformer;
+    use ElioDataDiscoveryLogTrait;
 
     /**
      * SearchApi constructor.

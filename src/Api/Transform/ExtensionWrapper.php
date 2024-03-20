@@ -30,15 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Api\Transform;
+namespace Elio\ElioDataDiscovery\Api\Transform;
 
 
 use Shopware\Core\Framework\Struct\Struct;
-use Elio\ElioSearch\Swagger\ModelInterface;
+use Elio\ElioDataDiscovery\Swagger\ModelInterface;
 
 /**
  * Class ExtensionWrapper
- * @package Elio\ElioSearch\Api\Transform
+ * @package Elio\ElioDataDiscovery\Api\Transform
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -46,7 +46,7 @@ use Elio\ElioSearch\Swagger\ModelInterface;
  */
 class ExtensionWrapper extends Struct
 {
-    public const KEY = 'elio-search-api';
+    public const KEY = 'elio-data-discovery-api';
 
     /**
      * ExtensionWrapper constructor.

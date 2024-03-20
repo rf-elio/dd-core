@@ -17,7 +17,7 @@
         <title lang="de-DE">Such-Einstellungen</title>
 
         <input-field type="bool">
-            <name>searchUseElioSearch</name>
+            <name>searchUseElioDataDiscovery</name>
             <label>Replace shopware search by Data Discovery search</label>
             <label lang="de-DE">Shopware Suche durch die Data Discovery-Suche ersetzten</label>
             <defaultValue>true</defaultValue>
@@ -34,7 +34,7 @@
         <title lang="de-DE">Suggest-Einstellungen</title>
 
         <input-field type="bool">
-            <name>suggestUseElioSearch</name>
+            <name>suggestUseElioDataDiscovery</name>
             <label>Replace shopware suggest by Data Discovery suggest</label>
             <label lang="de-DE">Shopware Suggest durch den Data Discovery-Suggest ersetzten</label>
             <defaultValue>true</defaultValue>
@@ -90,7 +90,7 @@
         <title lang="de-DE">Listing-Einstellungen</title>
 
         <input-field type="bool">
-            <name>listingUseElioSearch</name>
+            <name>listingUseElioDataDiscovery</name>
             <label>Replace shopware listing by Data Discovery listing</label>
             <label lang="de-DE">Shopware Listing durch das Data Discovery-Listing ersetzten</label>
             <defaultValue>true</defaultValue>
@@ -116,6 +116,16 @@
             <name>allowStreamIdSearch</name>
             <label>Allow the use of product stream IDs in the API search</label>
             <label lang="de-DE">Nutzung vom Stream IDs in der API-Suche erlauben</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Product detail page configuration</title>
+        <title lang="de-DE">Produkt-Detailseite-Einstellungen</title>
+        <input-field type="bool">
+            <name>productDetailPageCampaignsActive</name>
+            <label>Product detail campaigns active</label>
+            <label lang="de-DE">Produkt-Detailseiten Kampagnen aktiv</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>

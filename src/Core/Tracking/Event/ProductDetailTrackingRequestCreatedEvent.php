@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Event;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Event;
 
 
-use Elio\ElioSearch\Api\Tracking\Request\ProductDetailTrackingRequest;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\ProductDetailTrackingRequest;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**

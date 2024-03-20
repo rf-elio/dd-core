@@ -30,35 +30,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync;
-
-
-use Shopware\Core\Framework\Struct\Collection;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 /**
  * Class DeltaDataCollection
- * @package Elio\ElioSearch\Core\Sync\Input
+ * @package Elio\ElioDataDiscovery\Core\Sync\Input
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class DeltaDataCollection extends Collection
+class DeltaDataCollection extends AbstractDataCollection
 {
     public const TYPE_CREATED = 'created';
     public const TYPE_UPDATED = 'updated';
     public const TYPE_DELETED = 'deleted';
-
-    public function __construct(
-        private readonly string $type,
-        iterable $elements = [],
-    )
-    {
-        parent::__construct($elements);
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
 }

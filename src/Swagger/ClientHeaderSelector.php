@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Swagger;
+namespace Elio\ElioDataDiscovery\Swagger;
 
 
 /**
  * Class ClientHeaderSelector
- * @package Elio\ElioSearch\Swagger
+ * @package Elio\ElioDataDiscovery\Swagger
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -79,7 +79,7 @@ class ClientHeaderSelector
      *
      * @param string[] $accept Array of header
      *
-     * @return string Accept (e.g. application/json)
+     * @return string|null Accept (e.g. application/json)
      */
     private function selectAcceptHeader($accept)
     {

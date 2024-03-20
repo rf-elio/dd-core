@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 use DateTimeImmutable;
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusEntity;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusEntity;
 use JsonException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -45,7 +45,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Class BaseIndexer
- * @package Elio\ElioSearch\Core\Sync\ChangeSet\Indexer
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

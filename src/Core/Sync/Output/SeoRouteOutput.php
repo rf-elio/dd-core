@@ -1,14 +1,14 @@
 <?php
 
-namespace Elio\ElioSearch\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\DataTypeInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\Struct\Collection;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class SeoRoute
- * @package Elio\ElioSearch\Core\Sync\Output\File
+ * @package Elio\ElioDataDiscovery\Core\Sync\Output\File
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -50,8 +50,8 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
     public function open(SyncContext $syncContext): void
     {
         $this->salesChannelContexts = $syncContext->getSalesChannelContexts();
-
-        foreach ($this->salesChannelContexts as $languageId => $context) {
+        $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
+        foreach ($contexts as $languageId => $context) {
             $salesChannel = $context->getSalesChannel();
             foreach ($salesChannel->getDomains() as $domain) {
                 if ($domain->getLanguageId() === $context->getLanguageId()) {
@@ -73,8 +73,9 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
      */
     public function write(Collection $collection, SyncContext $syncContext): void
     {
+        $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
         /** @var SalesChannelContext $salesChannelContext */
-        foreach ($this->salesChannelContexts as $salesChannelContext) {
+        foreach ($contexts as $salesChannelContext) {
             if (!isset($this->baseUrl[$salesChannelContext->getLanguageId()])) {
                 $this->logger->error('SalesChannelDomain configuration missing', [
                     'salesChannelId' => $salesChannelContext->getSalesChannelId(),
@@ -101,7 +102,11 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
 
         /** @var DataTypeInterface $item */
         foreach ($items as $item) {
-            $seoRoute = $item->getDataTypeTranslation($context->getLanguageId())?->getExtension(SeoRoute::class);
+            $seoRoute = null;
+            $dataTypeTranslation = $item->getDataTypeTranslation($context->getLanguageId());
+            if ($dataTypeTranslation && method_exists($dataTypeTranslation, 'getExtension')) {
+                $seoRoute = $dataTypeTranslation->getExtension(SeoRoute::class);
+            }
 
             if(!$seoRoute) {
                 continue;

@@ -10,22 +10,12 @@ help:
 
 # ------------------------------------------------------------------------------------------------------------
 
-prod: ## Installs all production dependencies
-	composer install --no-dev
-
-dev: ## Installs all dev dependencies
-	composer install
-
-test: ## Starts all Tests
-	php ./vendor/bin/phpunit --configuration=./phpunit.xml
-
-stan: ## Starts the PHPStan Analyser
-	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon
-
-stan-gitlab: ## Starts the PHPStan Analyser
-	php ./vendor/bin/phpstan --memory-limit=1G analyse -c phpstan.neon --error-format=gitlab > ./phpstan-report.json
-
-update: ## Executes the plugin migrations
-	../../../bin/console database:migrate ElioSearch --all
-	../../../bin/console plugin:update ElioSearch
-
+prepare-for-store: ## Preparing package for store
+	rm -rf ElioDataDiscovery
+	mkdir ElioDataDiscovery && mkdir ElioDataDiscovery/src
+	cp -r src ElioDataDiscovery
+	cp composer.json ElioDataDiscovery
+	cp README.md ElioDataDiscovery
+	cp phpstan.neon ElioDataDiscovery
+	zip ElioDataDiscovery.zip ElioDataDiscovery -r
+	rm -rf ElioDataDiscovery

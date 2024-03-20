@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
 use Core\FilterRestrictions\Exception\FilterApplyException;
-use Elio\ElioSearch\Api\Request\ApiRequest;
-use Elio\ElioSearch\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioSearch\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigService;
+use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
+use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
@@ -51,7 +51,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class FilterService
- * @package Elio\ElioSearch\Core\FilterRestrictions
+ * @package Elio\ElioDataDiscovery\Core\FilterRestrictions
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Andrey Baev <anb@elio-systems.com>
@@ -74,14 +74,14 @@ class FilterService implements FilterInterface
      * @param EntityRepository $filterRestrictionsRepository
      * @param EntityRepository $filterRepository
      * @param EntityRepository $categoryRepository
-     * @param ElioSearchConfigService $configService
+     * @param ElioDataDiscoveryConfigService $configService
      * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly EntityRepository $filterRestrictionsRepository,
         private readonly EntityRepository $filterRepository,
         private readonly EntityRepository $categoryRepository,
-        private readonly ElioSearchConfigService $configService,
+        private readonly ElioDataDiscoveryConfigService $configService,
         private readonly LoggerInterface $logger
     ) {}
 
@@ -262,10 +262,10 @@ class FilterService implements FilterInterface
         foreach ($restrictions as $restriction) {
             if ($restriction->isAllowed()) {
                 $allowAll = $restriction->isAllChecked();
-                $allowList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());
+                $allowList = $restriction->getFilters()?->map(fn(FilterEntity $filter) => $filter->getTechnicalName()) ?? [];
             } else {
                 $blockAll = $restriction->isAllChecked();
-                $blockList = $restriction->getFilters()->map(fn(FilterEntity $filter) => $filter->getTechnicalName());;
+                $blockList = $restriction->getFilters()?->map(fn(FilterEntity $filter) => $filter->getTechnicalName()) ?? [];
             }
         }
 
@@ -315,7 +315,6 @@ class FilterService implements FilterInterface
      * @param string|null $salesChannelId
      * @param string|null $languageId
      * @param string $layer
-     * @param string $type
      * @param string|null $categoryId
      * @return Criteria
      */

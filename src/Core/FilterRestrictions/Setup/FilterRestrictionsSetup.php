@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\FilterRestrictions\Setup;
+namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Setup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioSearch\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsDefinition;
-use Elio\ElioSearch\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -57,7 +57,7 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 class FilterRestrictionsSetup
 {
     private ?EntityRepository $filterRepository = null;
-    private readonly ?Connection $connection;
+    private ?Connection $connection = null;
 
     /**
      * @param ContainerInterface $container
@@ -67,20 +67,34 @@ class FilterRestrictionsSetup
     )
     {
         try {
-            $this->filterRepository = $container->get('elio_search_filter.repository');
+            $filterRepository = $container->get('elio_data_discovery_filter.repository');
+            if ($filterRepository instanceof EntityRepository) {
+                $this->filterRepository = $filterRepository;
+            }
+            $connection = $container->get(Connection::class);
+            if ($connection instanceof Connection) {
+                $this->connection = $connection;
+            }
         } catch (ServiceNotFoundException) {
         }
-
-        $this->connection = $container->get(Connection::class);
     }
 
-    public function createFilters(Context $context, ?array $filters = null, $skipIfExists = false): void
+    /**
+     * @param Context $context
+     * @param array|null $filters
+     * @param bool $skipIfExists
+     */
+    public function createFilters(Context $context, ?array $filters = null, bool $skipIfExists = false): void
     {
+        if ($this->filterRepository === null) {
+            return;
+        }
+
         if ($skipIfExists && $this->filterRepository->searchIds(new Criteria(), $context)->getTotal() > 0) {
             return;
         }
 
-        foreach ($filters as $filterName) {
+        foreach ($filters ?? [] as $filterName) {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('technicalName', $filterName));
             $criteria->addFilter(new EqualsFilter('isCustom', true));
@@ -110,6 +124,9 @@ class FilterRestrictionsSetup
      */
     public function removeTables(): void
     {
+        if ($this->connection === null) {
+            return;
+        }
         $tables = [
             FilterDefinitionTranslationDefinition::ENTITY_NAME,
             FilterRestrictionsFilterMapping::ENTITY_NAME,

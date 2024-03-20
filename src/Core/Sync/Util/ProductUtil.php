@@ -30,10 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Util;
+namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
-use Elio\ElioSearch\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Defaults;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
+use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -41,7 +42,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 
 /**
  * Class ProductUtil
- * @package Elio\ElioSearch\Core\Sync\Util
+ * @package Elio\ElioDataDiscovery\Core\Sync\Util
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -143,28 +144,30 @@ class ProductUtil
             return $groupingKey;
         }
 
-        /** @var array{id:string,representation:string,expressionForListings:bool} $configuratorGroupConfig */
-
-        $ids = array_map(function ($groupConfig) {
+        /** @var array{id:string,representation:string,expressionForListings:bool|null}[] $configuratorGroupConfig */
+        $ids = array_map(static function ($groupConfig) {
             if (!($groupConfig['expressionForListings'] ?? false)) {
                 return null;
             }
 
             return $groupConfig['id'] ?: null;
-        }, $configuratorGroupConfig ?: []);
+        }, $configuratorGroupConfig);
 
-        $ids = array_filter($ids, fn ($id) => $id !== null);
+        $ids = array_filter($ids, static fn ($id) => $id !== null);
 
         /** @var array<string,object{name:string,value:string}> */
         $options = $product
             ->getOptions()
-            ->filter(fn(PropertyGroupOptionEntity $propertyGroupOption) => in_array($propertyGroupOption->getGroupId(), $ids))
+            ?->filter(fn(PropertyGroupOptionEntity $propertyGroupOption) => in_array($propertyGroupOption->getGroupId(), $ids))
             ->map(function (PropertyGroupOptionEntity $propertyGroupOption) {
                 $propertyGroup = $propertyGroupOption->getGroup();
-
-                $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
-                $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
-
+                if ($propertyGroup) {
+                    $name  = $propertyGroup->getTranslation('name') ?? $propertyGroup->getName() ?? '';
+                    $value = ValueUtil::cleanValue($propertyGroupOption->getTranslation('name') ?? $propertyGroup->getName()) ?: '';
+                } else {
+                    $name  = '';
+                    $value = '';
+                }
                 return (object)compact('name', 'value');
             });
 
@@ -219,7 +222,7 @@ class ProductUtil
         }
 
         $prices = [];
-        foreach ($context->getSalesChannel()->getCurrencies() as $currency) {
+        foreach ($context->getSalesChannel()->getCurrencies() ?? new CurrencyCollection() as $currency) {
             $currencyPrice = $price;
             if ($currency->getId() !== $context->getCurrency()->getId()) {
                 $currencyPrice *= $currency->getFactor();

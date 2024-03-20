@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\ElioSearch\Migration;
+namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -20,14 +20,14 @@ class Migration1636581600FilterRestrictions extends MigrationStep
     public function update(Connection $connection): void
     {
         $query = <<<SQL
-alter table `elio_search_filter`
+alter table `elio_data_discovery_filter`
     add `technical_name` varchar(255) not null after `id`;
 SQL;
 
         $connection->executeStatement($query);
 
         $query = <<<SQL
-alter table `elio_search_filter_restrictions`
+alter table `elio_data_discovery_filter_restrictions`
     add `language_id` BINARY(16) NULL DEFAULT NULL after `sales_channel_id`;
 SQL;
         $connection->executeStatement($query);

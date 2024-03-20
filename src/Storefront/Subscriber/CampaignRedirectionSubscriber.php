@@ -1,10 +1,13 @@
 <?php
 
-namespace Elio\ElioSearch\Storefront\Subscriber;
+namespace Elio\ElioDataDiscovery\Storefront\Subscriber;
 
 
-use Elio\ElioSearch\Api\Search\Response\CampaignRedirectionResponse;
-use Elio\ElioSearch\Storefront\Exception\CampaignRedirectionException;
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Storefront\Exception\CampaignRedirectionException;
+use Shopware\Core\Content\Cms\Aggregate\CmsBlock\CmsBlockCollection;
+use Shopware\Core\Content\Cms\Aggregate\CmsSection\CmsSectionCollection;
+use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotCollection;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
@@ -19,7 +22,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Handles the redirection campaign redirect
  *
  * Class CampaignRedirectionSubscriber
- * @package Elio\ElioSearch\Storefront\Subscriber
+ * @package Elio\ElioDataDiscovery\Storefront\Subscriber
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -66,9 +69,12 @@ class CampaignRedirectionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        foreach ($page->getCmsPage()->getSections() as $section) {
-            foreach ($section->getBlocks() as $block) {
-                foreach ($block->getSlots() as $slot) {
+        $sections = $page->getCmsPage()->getSections() ?? new CmsSectionCollection();
+        foreach ($sections as $section) {
+            $blocks = $section->getBlocks() ?? new CmsBlockCollection();
+            foreach ($blocks as $block) {
+                $slots = $block->getSlots() ?? new CmsSlotCollection();
+                foreach ($slots as $slot) {
                     $data = $slot->getData();
                     if (!$data instanceof ProductListingStruct || !$data->getListing()) {
                         continue;

@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Configuration;
+namespace Elio\ElioDataDiscovery\Configuration;
 
 
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class Configuration
- * @package Elio\ElioSearch\Configuration
+ * @package Elio\ElioDataDiscovery\Configuration
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -50,15 +50,16 @@ class Configuration extends Struct
      * @param bool $active
      * @param bool $loggingDebugActive
      * @param array<string> $loggingDebugIpFilter
-     * @param bool $searchUseElioSearch
+     * @param bool $searchUseElioDataDiscovery
      * @param bool $trackRequireConsent
      * @param bool $trackCart
      * @param bool $trackCheckout
      * @param bool $trackLogin
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
-     * @param bool $listingUseElioSearch
-     * @param array<string> $additionalRequestParameters
+     * @param bool $listingUseElioDataDiscovery
+     * @param bool $productDetailPageCampaignsActive
+     * @param string[] $additionalRequestParameters
      * @param int $suggestThumbnailSize
      * @param bool $botProtectionActive
      * @param bool $botProtectionUseBadBotList
@@ -66,7 +67,7 @@ class Configuration extends Struct
      * @param array<string> $botProtectionUserAgentFilter
      * @param array<string> $botProtectionIpFilter
      * @param bool $searchUseContentChannel
-     * @param bool $suggestUseElioSearch
+     * @param bool $suggestUseElioDataDiscovery
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
      * @param int $restrictionsCacheTime
@@ -83,14 +84,15 @@ class Configuration extends Struct
         private readonly bool $active,
         protected bool $loggingDebugActive,
         private readonly array $loggingDebugIpFilter,
-        private readonly bool $searchUseElioSearch,
+        private readonly bool $searchUseElioDataDiscovery,
         private readonly bool $trackRequireConsent,
         private readonly bool $trackCart,
         private readonly bool $trackCheckout,
         private readonly bool $trackLogin,
         private readonly bool $trackProductView,
         private readonly array $disallowTrackingForUserAgents,
-        private readonly bool $listingUseElioSearch,
+        private readonly bool $listingUseElioDataDiscovery,
+        private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
         private readonly int $suggestThumbnailSize,
         private readonly bool $botProtectionActive,
@@ -99,7 +101,7 @@ class Configuration extends Struct
         private readonly array $botProtectionUserAgentFilter,
         private readonly array $botProtectionIpFilter,
         private readonly bool $searchUseContentChannel,
-        private readonly bool $suggestUseElioSearch,
+        private readonly bool $suggestUseElioDataDiscovery,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
         private readonly int $restrictionsCacheTime,
@@ -132,9 +134,9 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isSearchUseElioSearch(): bool
+    public function isSearchUseElioDataDiscovery(): bool
     {
-        return $this->searchUseElioSearch;
+        return $this->searchUseElioDataDiscovery;
     }
 
     /**
@@ -164,13 +166,13 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isListingUseElioSearch(): bool
+    public function isListingUseElioDataDiscovery(): bool
     {
-        return $this->listingUseElioSearch;
+        return $this->listingUseElioDataDiscovery;
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public function getAdditionalRequestParameters(): array
     {
@@ -260,9 +262,9 @@ class Configuration extends Struct
     /**
      * @return bool
      */
-    public function isSuggestUseElioSearch(): bool
+    public function isSuggestUseElioDataDiscovery(): bool
     {
-        return $this->suggestUseElioSearch;
+        return $this->suggestUseElioDataDiscovery;
     }
 
     /**
@@ -353,5 +355,10 @@ class Configuration extends Struct
     public function isAllowStreamIdSearch(): bool
     {
         return $this->allowStreamIdSearch;
+    }
+
+    public function isProductDetailPageCampaignsActive(): bool
+    {
+        return $this->productDetailPageCampaignsActive;
     }
 }

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Setup;
+namespace Elio\ElioDataDiscovery\Setup;
 
 use RuntimeException;
 use Shopware\Core\Framework\Context;
@@ -47,7 +47,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class CustomFieldSetup
  *
- * @package Elio\ElioSearch\Setup
+ * @package Elio\ElioDataDiscovery\Setup
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -120,6 +120,7 @@ class CustomFieldSetup
             $upsets[] = $upsert;
         }
 
+        /** @var EntityRepository|null $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         if (!$customFieldSetRepository) {
@@ -241,6 +242,7 @@ class CustomFieldSetup
      */
     private function getFieldSetId(string $customFieldName): ?string
     {
+        /** @var EntityRepository|null $customFieldSetRepository */
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         if (!$customFieldSetRepository) {
@@ -269,6 +271,7 @@ class CustomFieldSetup
             return null;
         }
 
+        /** @var EntityRepository|null $customFieldSetRelationRepository */
         $customFieldSetRelationRepository = $this->container->get('custom_field_set_relation.repository');
 
         if (!$customFieldSetRelationRepository) {
@@ -298,6 +301,7 @@ class CustomFieldSetup
             return null;
         }
 
+        /** @var EntityRepository|null $customFieldRepository */
         $customFieldRepository = $this->container->get('custom_field.repository');
 
         if (!$customFieldRepository) {

@@ -6,7 +6,7 @@ import deepmerge from 'deepmerge'
 export default class ListingPluginExtension extends Plugin {
 
     static options = deepmerge(FilterBasePlugin.options, {
-        listingPropertiesSelector: '.e-elio-search-listing-properties',
+        listingPropertiesSelector: '.e-elio-data-discovery-listing-properties',
         filterPanelSelector: '.filter-panel-items-container',
         filterPanelActiveSelector: '.filter-panel-active-container',
         filterPanelItemDropdownSelector: '.filter-panel-item-dropdown'
@@ -35,10 +35,10 @@ export default class ListingPluginExtension extends Plugin {
 
     /**
      * Replace values on page by search widget response. All data attributes that are present in
-     * ".e-elio-search-listing-properties" element will be processed.
+     * ".e-elio-data-discovery-listing-properties" element will be processed.
      *
      * We iterate all data attributes and search for elements with classes that have a combination of
-     * "e-elio-search-listing-properties" + "-" + dataAttributeName -> e-elio-search-listing-properties-total.
+     * "e-elio-data-discovery-listing-properties" + "-" + dataAttributeName -> e-elio-data-discovery-listing-properties-total.
      *
      * @param response
      * @private
@@ -50,10 +50,12 @@ export default class ListingPluginExtension extends Plugin {
         }
 
         for (const attributeName in listingProperties.dataset) {
-            const attributeValue = listingProperties.dataset[attributeName];
-            const dataAttributeSelector = this.options.listingPropertiesSelector + '-' + attributeName;
-            for (const element of document.querySelectorAll(dataAttributeSelector)) {
-                element.innerHTML = attributeValue;
+            if (listingProperties.dataset.hasOwnProperty(attributeName)) {
+                const attributeValue = listingProperties.dataset[attributeName];
+                const dataAttributeSelector = this.options.listingPropertiesSelector + '-' + attributeName;
+                for (const element of document.querySelectorAll(dataAttributeSelector)) {
+                    element.innerHTML = attributeValue;
+                }
             }
         }
     }

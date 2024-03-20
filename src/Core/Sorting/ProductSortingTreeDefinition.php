@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sorting;
+namespace Elio\ElioDataDiscovery\Core\Sorting;
 
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -47,7 +47,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
  * Class ProductSortingTreeDefinition
- * @package Elio\ElioSearch\Core\Sorting
+ * @package Elio\ElioDataDiscovery\Core\Sorting
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -55,7 +55,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
  */
 class ProductSortingTreeDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'elio_search_product_sorting_tree';
+    public const ENTITY_NAME = 'elio_data_discovery_product_sorting_tree';
 
     public function getEntityName(): string
     {

@@ -30,16 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
-use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
-use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
-use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
-use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
-use Elio\ElioSearch\Core\Sync\Util\CategoryUtil;
-use Elio\ElioSearch\ElioSearch;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
+use Elio\ElioDataDiscovery\Core\Sync\Translator\TranslatorAware;
+use Elio\ElioDataDiscovery\Core\Sync\Util\CategoryUtil;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Generator;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -52,10 +51,11 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 
 /**
  * Class CategoryCollector
- * @package Elio\ElioSearch\Core\Sync\Collector
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collector
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -94,7 +94,7 @@ class CategoryCollector implements DataCollectorInterface
      *
      * @param SalesChannelContextCollection $contexts
      * @param Criteria|null $criteria
-     * @return Generator<StructCollection>
+     * @return Generator<Collection>
      */
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
@@ -133,13 +133,13 @@ class CategoryCollector implements DataCollectorInterface
         $criteria->addFilter(new EqualsFilter('visible', true));
 
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
         ]));
 
         $criteria->addFilter(new OrFilter([
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
-            new EqualsFilter('customFields.' . ElioSearch::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
@@ -161,6 +161,7 @@ class CategoryCollector implements DataCollectorInterface
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
                 $dataType = $this->mapCategoryToDataType($entity);
+                /** @var ContentDataType $mappedEntity */
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);
                 $mappedEntities->set($dataType->getId(), $mappedEntity);

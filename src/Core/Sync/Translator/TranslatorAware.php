@@ -30,20 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Translator;
+namespace Elio\ElioDataDiscovery\Core\Sync\Translator;
 
-use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
-use Shopware\Core\Content\LandingPage\Aggregate\LandingPageTranslation\LandingPageTranslationCollection;
-use Shopware\Core\Content\LandingPage\LandingPageEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class Translator
- * @package Elio\ElioSearch\Core\Sync\Translator
+ * @package Elio\ElioDataDiscovery\Core\Sync\Translator
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>

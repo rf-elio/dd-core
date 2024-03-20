@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Tracking\Subscriber;
+namespace Elio\ElioDataDiscovery\Core\Tracking\Subscriber;
 
-use Elio\ElioSearch\Api\Tracking\Request\CartTrackingRequest;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
-use Elio\ElioSearch\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
-use Elio\ElioSearch\Core\Tracking\Message\TrackingMessage;
-use Elio\ElioSearch\Core\Tracking\Utils\TrackingSessionTrait;
+use Elio\ElioDataDiscovery\Api\Tracking\Request\CartTrackingRequest;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
+use Elio\ElioDataDiscovery\Core\Tracking\Event\CartTrackingRequestCreatedEvent;
+use Elio\ElioDataDiscovery\Core\Tracking\Message\TrackingMessage;
+use Elio\ElioDataDiscovery\Core\Tracking\Utils\TrackingSessionTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
@@ -67,7 +67,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
 
     /**
      * TrackCartSubscriber constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param TrackingAllowedCheckerInterface $trackingAllowedChecker
      * @param MessageBusInterface $bus
      * @param EventDispatcherInterface $eventDispatcher
@@ -75,7 +75,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        private ElioSearchConfigServiceInterface $configService,
+        private ElioDataDiscoveryConfigServiceInterface $configService,
         private TrackingAllowedCheckerInterface $trackingAllowedChecker,
         private MessageBusInterface $bus,
         private EventDispatcherInterface $eventDispatcher,
@@ -187,8 +187,12 @@ class TrackCartSubscriber implements EventSubscriberInterface
                 continue;
             }
 
+            $referencedId = $lineItem->getReferencedId();
+            if (!$referencedId) {
+                continue;
+            }
             /** @var ProductEntity|null $product */
-            $product = $this->productRepository->search(new Criteria([$lineItem->getReferencedId()]), $context)->first();
+            $product = $this->productRepository->search(new Criteria([$referencedId]), $context)->first();
             if (!$product) {
                 continue;
             }
@@ -207,7 +211,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
                 $productNumber,
                 $this->getTrackingSessionId($this->requestStack),
                 $masterProductNumber,
-                $lineItem->getLabel(),
+                $lineItem->getLabel() ?? '',
                 $quantity,
                 $lineItem->getPrice()->getUnitPrice(),
                 $customerId

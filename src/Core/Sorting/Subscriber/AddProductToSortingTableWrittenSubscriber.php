@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Core\Sorting\Subscriber;
+namespace Elio\ElioDataDiscovery\Core\Sorting\Subscriber;
 
-use Elio\ElioSearch\Configuration\ElioSearchConfigService;
-use Elio\ElioSearch\Core\Sorting\ProductSortingService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingService;
 use Shopware\Core\Content\Product\ProductEvents;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -25,7 +25,7 @@ class AddProductToSortingTableWrittenSubscriber implements EventSubscriberInterf
 
     public function onProductCategoryWritten(EntityWrittenEvent $event): void
     {
-        if ($this->systemConfigService->get(ElioSearchConfigService::PLUGIN_CONFIG_PREFIX.'.sortingLocation') !== 'sortDisabled') {
+        if ($this->systemConfigService->get(ElioDataDiscoveryConfigService::PLUGIN_CONFIG_PREFIX.'.sortingLocation') !== 'sortDisabled') {
             $eventIds = $event->getIds();
             $categoryId = $eventIds[0]['categoryId'] ?? null;
             if ($categoryId) {

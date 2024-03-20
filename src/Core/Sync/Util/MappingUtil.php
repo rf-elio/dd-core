@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioSearch\Core\Sync\Util;
+namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
-use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
-use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\DataTypeInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class MappingUtil

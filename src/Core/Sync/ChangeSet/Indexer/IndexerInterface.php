@@ -30,9 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioSearch\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Shopware\Core\Framework\Context;
 
 interface IndexerInterface

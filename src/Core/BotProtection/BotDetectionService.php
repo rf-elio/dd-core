@@ -30,20 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\BotProtection;
+namespace Elio\ElioDataDiscovery\Core\BotProtection;
 
 
-use Elio\ElioSearch\Configuration\Configuration;
-use Elio\ElioSearch\Configuration\ElioSearchConfigServiceInterface;
-use Elio\ElioSearch\Core\BotProtection\Event\BotDetectedEvent;
-use Elio\ElioSearch\Core\BotProtection\Event\BotDetectionEvent;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\BotProtection\Event\BotDetectedEvent;
+use Elio\ElioDataDiscovery\Core\BotProtection\Event\BotDetectionEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BotDetectionService
- * @package Elio\ElioSearch\Core\BotProtection
+ * @package Elio\ElioDataDiscovery\Core\BotProtection
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
@@ -53,11 +53,11 @@ class BotDetectionService implements BotDetectionServiceInterface
 {
     /**
      * BotProtectionService constructor.
-     * @param ElioSearchConfigServiceInterface $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        private readonly ElioSearchConfigServiceInterface $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
@@ -105,7 +105,7 @@ class BotDetectionService implements BotDetectionServiceInterface
 
         // check ip addresses
         $serverVariables = json_encode($request->server->all());
-        if($this->checkList($config->getBotProtectionIpFilter(), $serverVariables)) {
+        if($serverVariables && $this->checkList($config->getBotProtectionIpFilter(), $serverVariables)) {
             return true;
         }
 
@@ -167,6 +167,9 @@ class BotDetectionService implements BotDetectionServiceInterface
 
         $botListPath = __DIR__.'/../../Resources/files/bot-list.txt';
         $botList = file_get_contents($botListPath);
+        if (!$botList) {
+            return false;
+        }
         $botList = explode(PHP_EOL, $botList);
         return $this->checkList($botList, $userAgent);
     }

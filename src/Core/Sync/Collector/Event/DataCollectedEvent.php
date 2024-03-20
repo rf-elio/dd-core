@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Collector\Event;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector\Event;
 
 use Shopware\Core\Framework\Struct\Collection;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class DataCollectedEvent
- * @package Elio\ElioSearch\Core\Sync\Collectors\Event
+ * @package Elio\ElioDataDiscovery\Core\Sync\Collectors\Event
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
@@ -47,7 +47,7 @@ class DataCollectedEvent extends Event
 {
     /**
      * @param string $type
-     * @param EntityCollection $data
+     * @param Collection $data
      */
     public function __construct(
         private readonly string $type,

@@ -30,10 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioSearch\Core\Sync\Input;
+namespace Elio\ElioDataDiscovery\Core\Sync\Input;
 
-use Elio\ElioSearch\Core\Sync\DeltaDataCollection;
-use Elio\ElioSearch\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\AbstractDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
 use Generator;
 
 interface InputInterface
@@ -48,7 +48,7 @@ interface InputInterface
 
     /**
      * @param SyncContext $syncContext
-     * @return Generator<DeltaDataCollection>
+     * @return Generator<AbstractDataCollection>
      */
     public function read(SyncContext $syncContext): Generator;
 }
