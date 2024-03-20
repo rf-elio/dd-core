@@ -121,7 +121,6 @@ class LandingPageCollector implements DataCollectorInterface
         $criteria->addAssociation('salesChannels');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('cmsPage');
-        $criteria->addAssociation('translations');
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
 
@@ -153,16 +152,11 @@ class LandingPageCollector implements DataCollectorInterface
         foreach ($data as $languageId => $entities) {
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
-                // TODO: Eventuell wieder rausnehmen und Association oben entfernen
-                /** @var LandingPageTranslationCollection $translations */
-                $translations = $entity->getTranslations();
-                if ($translations->get($entity->getId() . '-' . $languageId)) {
-                    $dataType = $this->mapLandingPageToDataType($entity);
-                    /** @var ContentDataType $mappedEntity */
-                    $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
-                    $mappedEntity->addDataTypeTranslation($languageId, $dataType);
-                    $mappedEntities->set($dataType->getId(), $mappedEntity);
-                }
+                $dataType = $this->mapLandingPageToDataType($entity);
+                /** @var ContentDataType $mappedEntity */
+                $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
+                $mappedEntity->addDataTypeTranslation($languageId, $dataType);
+                $mappedEntities->set($dataType->getId(), $mappedEntity);
             }
         }
 

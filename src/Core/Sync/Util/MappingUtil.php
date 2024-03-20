@@ -24,12 +24,10 @@ class MappingUtil
                     }
                 }
                 $mappedProperties[$mapping['target']] = $previousObj;
+            } else if ($propertyAccessor->isReadable($dataType, $mapping['source'])) {
+                $mappedProperties[$mapping['target']] = $propertyAccessor->getValue($dataType, $mapping['source']);
             } else {
-                if ($propertyAccessor->isReadable($dataType, $mapping['source'])) {
-                    $mappedProperties[$mapping['target']] = $propertyAccessor->getValue($dataType, $mapping['source']);
-                } else {
-                    $mappedProperties[$mapping['target']] = null;
-                }
+                $mappedProperties[$mapping['target']] = null;
             }
         }
         return $mappedProperties;
