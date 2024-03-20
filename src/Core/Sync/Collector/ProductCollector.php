@@ -52,6 +52,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
@@ -182,14 +183,14 @@ class ProductCollector implements DataCollectorInterface
      * @param EntityCollection<SalesChannelProductEntity> $parentProducts
      * @param CategoryCollection[] $categories
      * @param Configuration $config
-     * @return EntityCollection
+     * @return Collection
      */
     protected function mapCollectedData(
         array $data,
         EntityCollection $parentProducts,
         array $categories,
         Configuration $config
-    ): EntityCollection {
+    ): Collection {
         /** @var EntityCollection<ProductDataType> $mappedEntities */
         $mappedEntities = new EntityCollection();
 

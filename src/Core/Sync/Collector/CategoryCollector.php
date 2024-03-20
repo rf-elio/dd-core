@@ -35,6 +35,7 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Elio\ElioSearch\Core\Sync\Util\CategoryUtil;
@@ -45,8 +46,11 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -124,7 +128,7 @@ class CategoryCollector implements DataCollectorInterface
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
-        $criteria->addAssociation('products');
+        //$criteria->addAssociation('products'); <== Commented out due to OutOfMemoryError; should be implemented elsewhere in the future
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('visible', true));
 
@@ -148,9 +152,9 @@ class CategoryCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return StructCollection
+     * @return Collection
      */
-    protected function mapCollectedData(array $data): StructCollection
+    protected function mapCollectedData(array $data): Collection
     {
         $mappedEntities = new StructCollection();
         foreach ($data as $languageId => $entities) {
@@ -191,6 +195,9 @@ class CategoryCollector implements DataCollectorInterface
         $contentType->setTags($category->getTags());
         $contentType->setCustomFields($this->customFields[$category->getId()] ?? $category->getCustomFields());
         $contentType->addExtension('original', $category);
+        $contentType->addExtension(SeoRoute::class, new SeoRoute(
+            NavigationPageSeoUrlRoute::ROUTE_NAME, $contentType->getId(), ['navigationId' => $contentType->getId()]
+        ));
         return $contentType;
     }
 }

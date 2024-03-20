@@ -35,17 +35,23 @@ namespace Elio\ElioSearch\Core\Sync\Collector;
 use Elio\ElioSearch\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioSearch\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioSearch\Core\Sync\DataTypes\ContentDataType;
+use Elio\ElioSearch\Core\Sync\Output\SeoRoute;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\Translator\TranslatorAware;
 use Elio\ElioSearch\ElioSearch;
 use Generator;
+use Shopware\Core\Content\LandingPage\Aggregate\LandingPageTranslation\LandingPageTranslationCollection;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -114,6 +120,7 @@ class LandingPageCollector implements DataCollectorInterface
         $criteria->addAssociation('salesChannels');
         $criteria->addAssociation('tags');
         $criteria->addAssociation('cmsPage');
+        $criteria->addAssociation('translations');
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('salesChannels.id', $salesChannelId));
 
@@ -137,18 +144,23 @@ class LandingPageCollector implements DataCollectorInterface
      * Maps collected data to dataType
      *
      * @param array $data
-     * @return EntityCollection
+     * @return Collection
      */
-    protected function mapCollectedData(array $data): EntityCollection
+    protected function mapCollectedData(array $data): Collection
     {
-        $mappedEntities = new EntityCollection();
+        $mappedEntities = new StructCollection();
         foreach ($data as $languageId => $entities) {
             /** @var LandingPageEntity $entity */
             foreach ($entities as $entity) {
-                $dataType = $this->mapLandingPageToDataType($entity);
-                $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
-                $mappedEntity->addDataTypeTranslation($languageId, $dataType);
-                $mappedEntities->set($dataType->getId(), $mappedEntity);
+                // TODO: Eventuell wieder rausnehmen und Association oben entfernen
+                /** @var LandingPageTranslationCollection $translations */
+                $translations = $entity->getTranslations();
+                if ($translations->get($entity->getId() . '-' . $languageId)) {
+                    $dataType = $this->mapLandingPageToDataType($entity);
+                    $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
+                    $mappedEntity->addDataTypeTranslation($languageId, $dataType);
+                    $mappedEntities->set($dataType->getId(), $mappedEntity);
+                }
             }
         }
 
@@ -176,6 +188,9 @@ class LandingPageCollector implements DataCollectorInterface
         $contentType->setTags($landingPage->getTags());
         $contentType->setCustomFields($landingPage->getCustomFields());
         $contentType->addExtension('original', $landingPage);
+        $contentType->addExtension(SeoRoute::class, new SeoRoute(
+            LandingPageSeoUrlRoute::ROUTE_NAME, $contentType->getId(), ['landingPageId' => $contentType->getId()]
+        ));
         return $contentType;
     }
 }

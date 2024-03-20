@@ -10,6 +10,7 @@ use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
 use Elio\ElioSearch\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioSearch\Core\Sync\SyncContext;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

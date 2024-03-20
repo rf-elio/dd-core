@@ -3,6 +3,7 @@
 namespace Elio\ElioSearch\Core\Sync\Util;
 
 use Elio\ElioSearch\Core\Sync\DataTypes\DataTypeInterface;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class MappingUtil
@@ -13,8 +14,8 @@ class MappingUtil
     {
         $mappedProperties = [];
         foreach ($mappings as $mapping) {
-            if (str_contains((string) $mapping['source'], '.')) {
-                $parts = explode('.',(string) $mapping['source']);
+            if (str_contains((string)$mapping['source'], '.')) {
+                $parts = explode('.', (string)$mapping['source']);
                 $previousObj = $dataType;
                 foreach ($parts as $part) {
                     if ($part === 'first') {
@@ -25,7 +26,11 @@ class MappingUtil
                 }
                 $mappedProperties[$mapping['target']] = $previousObj;
             } else {
-                $mappedProperties[$mapping['target']] = $propertyAccessor->getValue($dataType, $mapping['source']);
+                if ($propertyAccessor->isReadable($dataType, $mapping['source'])) {
+                    $mappedProperties[$mapping['target']] = $propertyAccessor->getValue($dataType, $mapping['source']);
+                } else {
+                    $mappedProperties[$mapping['target']] = null;
+                }
             }
         }
         return $mappedProperties;
