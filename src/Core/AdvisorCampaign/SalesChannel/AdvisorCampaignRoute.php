@@ -89,7 +89,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
      *      summary="Fetch a list of products",
      *      description="List products that match the given criteria. For performance ressons a limit should always be set.",
      *      operationId="readProduct",
-     *      tags={"Store API", "FF"},
+     *      tags={"Store API", "Advisor"},
      *      @OA\Parameter(name="Api-Basic-Parameters"),
      *      @OA\Response(
      *          response="200",

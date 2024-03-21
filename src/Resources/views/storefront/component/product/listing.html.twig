@@ -28,6 +28,8 @@
 {# feedback text integration + cms advisor campaign handling #}
 {% block element_product_listing_row %}
     {% set showListing = true %}
+    {% block element_product_listing_row_show_listing_set %}
+    {% endblock %}
 
     {% if showListing %}
         {# feedback text #}

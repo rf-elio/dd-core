@@ -33,8 +33,6 @@ export default class ElioProductDetailCrossSellingPlugin extends Plugin {
         ElementLoadingIndicatorUtil.create(this.el);
         this._client.get(this.options.url, response => {
             try {
-                console.log(response);
-
                 const crossSellingSlider = this.el.querySelector(this.options.productDetailCrossSellingSelector);
                 if (crossSellingSlider) {
                     crossSellingSlider.innerHTML = response;
