@@ -59,7 +59,7 @@ class ContentDataType extends Struct implements DataTypeInterface
     private ?string $name = null;
     private ?string $type = null;
     private ?string $description = null;
-    private ?string $title = null;
+    private ?string $metaTitle = null;
     private ?string $seoText = null;
     private ?SeoUrlCollection $seoUrls = null;
     private ?string $keywords = null;
@@ -98,14 +98,14 @@ class ContentDataType extends Struct implements DataTypeInterface
         $this->description = $description;
     }
 
-    public function getTitle(): ?string
+    public function getMetaTitle(): ?string
     {
-        return $this->title;
+        return $this->metaTitle;
     }
 
-    public function setTitle(?string $title): void
+    public function setMetaTitle(?string $metaTitle): void
     {
-        $this->title = $title;
+        $this->metaTitle = $metaTitle;
     }
 
     public function getSeoText(): ?string

@@ -183,9 +183,13 @@ class CategoryCollector implements DataCollectorInterface
         $contentType = new ContentDataType();
         $contentType->setId($category->getId());
         $contentType->setName($category->getName());
-        $contentType->setType($category->getType());
+        $contentType->setType(
+            $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ??
+            $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
+            'category'
+        );
         $contentType->setDescription($category->getDescription());
-        $contentType->setTitle($category->getMetaTitle());
+        $contentType->setMetaTitle($category->getMetaTitle());
         $contentType->setSeoText($category->getMetaDescription());
         $contentType->setSeoUrls($category->getSeoUrls());
         $contentType->setKeywords($category->getKeywords());

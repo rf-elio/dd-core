@@ -64,7 +64,7 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('exclusion:category-inheritance:update');
+        $this->setName('elio-data-discovery:category-inheritance:update');
     }
 
     /**
@@ -99,6 +99,9 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
         $criteria = new Criteria();
         $categories = $this->categoryRepository->search($criteria, $context);
         $result = CategoryUtil::buildCustomFieldInheritanceForCategories($categories);
+        $parentalExclude = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE;
+        $exportTypeParent = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT;
+        $exportTypeInherited = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED;
 
         if (array_key_exists('customFields', $result) && !empty($result['customFields'])) {
             $dataToUpdate = [];
@@ -106,17 +109,18 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
                 /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
                 $actualCustomFields = $category->getCustomFields() ?? [];
-                // If they already have the same value, we don't need to update to avoid indexer message creation
-                if (array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $actualCustomFields)
-                    && array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)
-                    && $actualCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] === $customFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE]
-                ) {
+
+                if (!$this->hasNotChanged($customFields, $actualCustomFields, $parentalExclude)) {
+                    $actualCustomFields[$parentalExclude] = $customFields[$parentalExclude];
+                    if (!$this->hasNotChanged($customFields, $actualCustomFields, $exportTypeInherited)) {
+                        $actualCustomFields[$exportTypeParent] = $customFields[$exportTypeInherited];
+                    }
+                } elseif (!$this->hasNotChanged($customFields, $actualCustomFields, $exportTypeInherited)) {
+                    $actualCustomFields[$exportTypeParent] = $customFields[$exportTypeInherited];
+                } else {
                     continue;
                 }
-                // Inherit only this field. For safety reasons, we don't inherit the whole custom fields
-                if (array_key_exists(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, $customFields)) {
-                    $actualCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE] = $customFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE];
-                }
+
                 $dataToUpdate[] = [
                     'id' => $categoryId,
                     'customFields' => $actualCustomFields
@@ -126,5 +130,28 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
                 $this->categoryRepository->update($dataToUpdate, $context);
             }
         }
+    }
+
+    private function hasNotChanged(array $customFields, array $actualCustomFields, string $customField): bool
+    {
+        $parentalExclude = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE;
+        $exportTypeParent = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT;
+        $exportTypeInherited = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED;
+
+        if ($customField === $parentalExclude) {
+            return array_key_exists($parentalExclude, $actualCustomFields)
+                && array_key_exists($parentalExclude, $customFields)
+                && $actualCustomFields[$parentalExclude] === $customFields[$parentalExclude];
+        }
+
+        if ($customField === $exportTypeInherited) {
+            return (array_key_exists($exportTypeInherited, $customFields)
+                && array_key_exists($exportTypeParent, $actualCustomFields)
+                && $actualCustomFields[$exportTypeParent] === $customFields[$exportTypeInherited])
+                || !array_key_exists($exportTypeInherited, $customFields)
+                || array_key_exists($exportTypeInherited, $actualCustomFields);
+        }
+
+        return true;
     }
 }
