@@ -121,8 +121,8 @@ class ContentItem extends Struct
         return $this->position;
     }
 
-    public function hasImageUrl(): string
+    public function hasImageUrl(): bool
     {
-        return $this->getImageUrl();
+        return !empty($this->getImageUrl());
     }
 }
