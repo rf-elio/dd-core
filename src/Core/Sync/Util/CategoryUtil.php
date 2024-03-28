@@ -82,13 +82,13 @@ class CategoryUtil
             // apply the category type for child categories to child categories that don't have an own type
             if(
                 (
-                    !isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE]) ||
-                    empty($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE])
+                    !isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT]) ||
+                    empty($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT])
                 ) &&
                 isset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) &&
                 !empty($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
             ) {
-                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] = $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
+                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT] = $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
             }
 
             // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)

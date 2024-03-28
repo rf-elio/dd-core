@@ -41,14 +41,15 @@ use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Generator;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\LandingPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 
 /**
  * Class LandingPageCollector
@@ -172,7 +173,12 @@ class LandingPageCollector implements DataCollectorInterface
         $contentType = new ContentDataType();
         $contentType->setId($landingPage->getId());
         $contentType->setName($landingPage->getName());
-        $contentType->setTitle($landingPage->getMetaTitle());
+        $contentType->setType(
+            $landingPage->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ??
+                $landingPage->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
+                'landingpage'
+        );
+        $contentType->setMetaTitle($landingPage->getMetaTitle());
         $contentType->setSeoText($landingPage->getMetaDescription());
         $contentType->setSeoUrls($landingPage->getSeoUrls());
         $contentType->setKeywords($landingPage->getKeywords());
@@ -180,6 +186,9 @@ class LandingPageCollector implements DataCollectorInterface
         $contentType->setTags($landingPage->getTags());
         $contentType->setCustomFields($landingPage->getCustomFields());
         $contentType->addExtension('original', $landingPage);
+        $contentType->addExtension(SeoRoute::class, new SeoRoute(
+            LandingPageSeoUrlRoute::ROUTE_NAME, $contentType->getId(), ['landingPageId' => $contentType->getId()]
+        ));
         return $contentType;
     }
 }

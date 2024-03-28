@@ -42,7 +42,7 @@
                     <ul class="nav nav-tabs">
                         {% if hasProducts %}
                             <li class="nav-item active">
-                                <a data-toggle="pill"
+                                <a data-bs-toggle="pill"
                                    class="nav-link product-detail-tab-navigation-link active"
                                    href="#products">
                                     {{ 'elioDataDiscovery.content-listing.tab-products-label'|trans|sw_sanitize }}
@@ -51,8 +51,8 @@
                         {% endif %}
 
                         {% for contentGroup in contentListingResponse.contentGroups %}
-                            <li class="nav-item{% if not hasProducts and loop.first %} active{% endif %}">
-                                <a data-toggle="pill"
+                            <li class="nav-item {% if not hasProducts and loop.first %} active{% endif %}">
+                                <a data-bs-toggle="pill"
                                    class="nav-link product-detail-tab-navigation-link {% if not hasProducts and loop.first %} active{% endif %}"
                                    href="#{{ contentGroup.type }}">
                                     {{ ('elioDataDiscovery.content-listing.tabs.' ~ contentGroup.label)|trans|sw_sanitize }}

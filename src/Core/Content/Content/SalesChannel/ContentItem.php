@@ -4,6 +4,7 @@ namespace Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel;
 
 
 use DateTimeInterface;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * Class ContentItem
@@ -13,7 +14,7 @@ use DateTimeInterface;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ContentItem
+class ContentItem extends Struct
 {
     /**
      * @param string $id
@@ -118,5 +119,10 @@ class ContentItem
     public function getPosition(): int
     {
         return $this->position;
+    }
+
+    public function hasImageUrl(): bool
+    {
+        return !empty($this->getImageUrl());
     }
 }
