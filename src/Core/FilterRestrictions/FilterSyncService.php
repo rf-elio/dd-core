@@ -69,13 +69,16 @@ class FilterSyncService
         private readonly EntityRepository $propertyRepository,
         private readonly EntityRepository $filterRepository,
         private readonly EntityRepository $filterTranslationRepository,
-        private readonly LoggerInterface $logger
-    ) {}
+        private readonly LoggerInterface  $logger
+    )
+    {
+    }
 
     /**
      * Sync filter from property for propertyId
      * @param Context $context
      * @param string $propertyId
+     * @param string $type
      */
     public function syncOne(Context $context, string $propertyId, string $type): void
     {
@@ -198,9 +201,10 @@ class FilterSyncService
      *
      * @param array $filterNames
      * @param Context $context
+     * @param bool $isSortingType
      * @return void
      */
-    public function createNotExistedFilters(array $filterNames, Context $context): void
+    public function createNotExistedFilters(array $filterNames, Context $context, bool $isSortingType = false): void
     {
         $filterNames = array_unique($filterNames);
         $criteria = new Criteria();
@@ -217,17 +221,19 @@ class FilterSyncService
 
         $createdFilters = [];
         foreach ($filterNames as $filterName) {
-            $filterNameParts = explode('.', (string)$filterName);
+            $filterNameParts = explode($isSortingType ? ':' : '.', (string)$filterName);
+
+            $propertyName = $isSortingType ? implode(' ', $filterNameParts) : ucfirst(end($filterNameParts));
 
             $createdFilters[] = [
                 'id' => Uuid::randomHex(),
                 'propertyName' => ucfirst(end($filterNameParts)),
                 'technicalName' => $filterName,
-                'type' => FilterEntity::FILTER_TYPE_FILTER,
+                'type' => $isSortingType ? FilterEntity::FILTER_TYPE_SORTING : FilterEntity::FILTER_TYPE_FILTER,
                 'isCustom' => true,
                 'translations' => [
                     Defaults::LANGUAGE_SYSTEM => [
-                        'propertyName' => ucfirst(end($filterNameParts))
+                        'propertyName' => $propertyName
                     ]
                 ]
             ];
@@ -278,10 +284,10 @@ class FilterSyncService
      */
     private function create
     (
-        string $propertyId,
-        string $propertyName,
-        array $propertyTranslations,
-        string $type,
+        string  $propertyId,
+        string  $propertyName,
+        array   $propertyTranslations,
+        string  $type,
         Context $context
     ): void
     {
