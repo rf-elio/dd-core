@@ -54,7 +54,6 @@
             <label>Suggest accepted types in order</label>
             <label lang="de-DE">Akzeptierte Typen in der Reihenfolge vorschlagen</label>
             <placeholder>searchTerm|category|productName</placeholder>
-            <defaultValue>searchTerm|category|productName</defaultValue>
             <helpText>Accepted types for suggest result: searchTerm|category|productName</helpText>
             <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis vorschlagen: searchTerm|category|productName</helpText>
         </input-field>
