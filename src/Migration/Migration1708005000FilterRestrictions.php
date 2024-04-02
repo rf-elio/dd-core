@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,75 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation;
+namespace Elio\ElioDataDiscovery\Migration;
 
-use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\TranslationEntity;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 
 /**
- * Class FilterDefinitionTranslationEntity
- * @package Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Andrey Baev <anb@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class Migration1708005000FilterRestrictions
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FilterDefinitionTranslationEntity extends TranslationEntity
+class Migration1708005000FilterRestrictions
 {
-    /**
-     * @var string|null
-     */
-    protected $label;
-
-    /**
-     * @var FilterEntity|null
-     */
-    protected $filter;
-
-    /**
-     * @var string
-     */
-    protected $filterId;
-
-    /**
-     * @return FilterEntity|null
-     */
-    public function getFilter(): ?FilterEntity
+    public function getCreationTimestamp(): int
     {
-        return $this->filter;
+        return 1708005000;
     }
 
     /**
-     * @param FilterEntity|null $filter
+     * @throws Exception
      */
-    public function setFilter(?FilterEntity $filter): void
+    public function update(Connection $connection): void
     {
-        $this->filter = $filter;
+        $connection->executeStatement('ALTER TABLE elio_data_discovery_filter_translation RENAME COLUMN property_name TO label;');
     }
 
-    /**
-     * @return string
-     */
-    public function getFilterId(): string
+    public function updateDestructive(Connection $connection): void
     {
-        return $this->filterId;
-    }
-
-    /**
-     * @param string $filterId
-     */
-    public function setFilterId(string $filterId): void
-    {
-        $this->filterId = $filterId;
-    }
-
-    public function getLabel(): ?string
-    {
-        return $this->label;
-    }
-
-    public function setLabel(?string $label): void
-    {
-        $this->label = $label;
+        // implement update destructive
     }
 }

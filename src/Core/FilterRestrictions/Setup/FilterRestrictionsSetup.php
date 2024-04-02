@@ -108,7 +108,7 @@ class FilterRestrictionsSetup
                 [
                     [
                         'id' => $newFilterId,
-                        'propertyName' => $filterName,
+                        'label' => $filterName,
                         'technicalName' => $filterName,
                         'type' => 'filter',
                         'isCustom' => true
