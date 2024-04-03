@@ -32,8 +32,10 @@
 
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event;
 
+use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -48,7 +50,9 @@ class ProductListingResultTransformerEvent extends Event
 {
     public function __construct(
         private ProductListingResult $productListingResult,
-        private SalesChannelContext $salesChannelContext
+        private SalesChannelContext $salesChannelContext,
+        private SearchRequest $searchRequest,
+        private Request $request
     ) {}
 
     public function getProductListingResult(): ProductListingResult
@@ -69,5 +73,25 @@ class ProductListingResultTransformerEvent extends Event
     public function setSalesChannelContext(SalesChannelContext $salesChannelContext): void
     {
         $this->salesChannelContext = $salesChannelContext;
+    }
+
+    public function getSearchRequest(): SearchRequest
+    {
+        return $this->searchRequest;
+    }
+
+    public function setSearchRequest(SearchRequest $searchRequest): void
+    {
+        $this->searchRequest = $searchRequest;
+    }
+
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
     }
 }

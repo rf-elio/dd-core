@@ -55,7 +55,7 @@ class FilterEntity extends Entity
     /**
      * @var string|null
      */
-    protected ?string $propertyName = null;
+    protected ?string $label = null;
 
     /**
      * @var string
@@ -88,22 +88,6 @@ class FilterEntity extends Entity
      */
     protected $translations;
     protected bool $displayedByDefault = false;
-
-    /**
-     * @return string|null
-     */
-    public function getPropertyName(): ?string
-    {
-        return $this->propertyName;
-    }
-
-    /**
-     * @param string|null $propertyName
-     */
-    public function setPropertyName(?string $propertyName): void
-    {
-        $this->propertyName = $propertyName;
-    }
 
     /**
      * @return bool
@@ -226,5 +210,15 @@ class FilterEntity extends Entity
     public function setIsDisplayedByDefault(bool $isDisplayedByDefault): void
     {
         $this->displayedByDefault = $isDisplayedByDefault;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): void
+    {
+        $this->label = $label;
     }
 }

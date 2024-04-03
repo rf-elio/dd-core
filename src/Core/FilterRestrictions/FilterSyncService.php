@@ -69,13 +69,16 @@ class FilterSyncService
         private readonly EntityRepository $propertyRepository,
         private readonly EntityRepository $filterRepository,
         private readonly EntityRepository $filterTranslationRepository,
-        private readonly LoggerInterface $logger
-    ) {}
+        private readonly LoggerInterface  $logger
+    )
+    {
+    }
 
     /**
      * Sync filter from property for propertyId
      * @param Context $context
      * @param string $propertyId
+     * @param string $type
      */
     public function syncOne(Context $context, string $propertyId, string $type): void
     {
@@ -102,7 +105,7 @@ class FilterSyncService
     }
 
     /**
-     * Sync all properties to filters, sync propertyNames, creating new filters, deleting old filters
+     * Sync all properties to filters, sync labels, creating new filters, deleting old filters
      * @param Context $context
      * @param string $type
      */
@@ -198,9 +201,10 @@ class FilterSyncService
      *
      * @param array $filterNames
      * @param Context $context
+     * @param bool $isSortingType
      * @return void
      */
-    public function createNotExistedFilters(array $filterNames, Context $context): void
+    public function createNotExistedFilters(array $filterNames, Context $context, bool $isSortingType = false): void
     {
         $filterNames = array_unique($filterNames);
         $criteria = new Criteria();
@@ -217,17 +221,19 @@ class FilterSyncService
 
         $createdFilters = [];
         foreach ($filterNames as $filterName) {
-            $filterNameParts = explode('.', (string)$filterName);
+            $filterNameParts = explode($isSortingType ? ':' : '.', (string)$filterName);
+
+            $label = $isSortingType ? implode(' ', $filterNameParts) : ucfirst(end($filterNameParts));
 
             $createdFilters[] = [
                 'id' => Uuid::randomHex(),
-                'propertyName' => ucfirst(end($filterNameParts)),
+                'label' => $label,
                 'technicalName' => $filterName,
-                'type' => FilterEntity::FILTER_TYPE_FILTER,
+                'type' => $isSortingType ? FilterEntity::FILTER_TYPE_SORTING : FilterEntity::FILTER_TYPE_FILTER,
                 'isCustom' => true,
                 'translations' => [
                     Defaults::LANGUAGE_SYSTEM => [
-                        'propertyName' => ucfirst(end($filterNameParts))
+                        'label' => $label
                     ]
                 ]
             ];
@@ -239,19 +245,19 @@ class FilterSyncService
     }
 
     /**
-     * Update filter info in database with provided propertyName and propertyTranslations
+     * Update filter info in database with provided label and propertyTranslations
      * @param FilterEntity $filterEntity
-     * @param string $propertyName
+     * @param string $label
      * @param array $propertyTranslations
      * @param Context $context
      */
-    private function update(FilterEntity $filterEntity, string $propertyName, array $propertyTranslations, Context $context): void
+    private function update(FilterEntity $filterEntity, string $label, array $propertyTranslations, Context $context): void
     {
         $this->filterRepository->update(
             [[
                 'id' => $filterEntity->getId(),
-                'propertyName' => $propertyName,
-                'technicalName' => $propertyName
+                'label' => $label,
+                'technicalName' => $label
             ]],
             $context
         );
@@ -260,7 +266,7 @@ class FilterSyncService
             $dataToUpdate[] = [
                 'elioDataDiscoveryFilterId' => $filterEntity->getId(),
                 'languageId' => $propertyTranslation->getLanguageId(),
-                'propertyName' => $propertyTranslation->getName()
+                'label' => $propertyTranslation->getName()
             ];
         }
         if (count($dataToUpdate) > 0) {
@@ -269,19 +275,19 @@ class FilterSyncService
     }
 
     /**
-     * Create filter in database with provided propertyId, propertyName and propertyTranslations
+     * Create filter in database with provided propertyId, label and propertyTranslations
      * @param string $propertyId
-     * @param string $propertyName
+     * @param string $label
      * @param array $propertyTranslations
      * @param string $type
      * @param Context $context
      */
     private function create
     (
-        string $propertyId,
-        string $propertyName,
-        array $propertyTranslations,
-        string $type,
+        string  $propertyId,
+        string  $label,
+        array   $propertyTranslations,
+        string  $type,
         Context $context
     ): void
     {
@@ -289,8 +295,8 @@ class FilterSyncService
         $this->filterRepository->create(
             [[
                 'id' => $newFilterId,
-                'propertyName' => $propertyName,
-                'technicalName' => $propertyName,
+                'label' => $label,
+                'technicalName' => $label,
                 'type' => $type,
                 'propertyId' => $propertyId,
                 'isCustom' => false
@@ -302,7 +308,7 @@ class FilterSyncService
             $dataToCreate[] = [
                 'elioDataDiscoveryFilterId' => $newFilterId,
                 'languageId' => $propertyTranslation->getLanguageId(),
-                'propertyName' => $propertyTranslation->getName()
+                'label' => $propertyTranslation->getName()
             ];
         }
         if (count($dataToCreate) > 0) {

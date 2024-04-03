@@ -49,7 +49,7 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
 
     computed: {
         identifier() {
-            return this.placeholder(this.filter, 'propertyName');
+            return this.placeholder(this.filter, 'label');
         },
 
         filterRepository() {
@@ -64,7 +64,7 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
         },
 
         useNaturalSorting() {
-            return this.sortBy === 'elio_data_discovery_filter.propertyName';
+            return this.sortBy === 'elio_data_discovery_filter.label';
         },
     },
 

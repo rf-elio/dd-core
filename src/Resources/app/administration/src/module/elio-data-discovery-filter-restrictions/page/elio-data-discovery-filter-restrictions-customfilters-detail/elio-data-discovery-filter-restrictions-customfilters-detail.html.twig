@@ -4,7 +4,7 @@
         {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_header %}
             <template slot="smart-bar-header">
                 {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_header_title %}
-                    <h2>{{ placeholder(filter, 'propertyName', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline')) }}</h2>
+                    <h2>{{ placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline')) }}</h2>
                 {% endblock %}
             </template>
         {% endblock %}
@@ -47,7 +47,7 @@
             <sw-card-view slot="content">
                 {% block elio_data_discovery_filter_restrictions_customfilters_detail_content_language_info %}
                     <sw-language-info
-                            :entityDescription="placeholder(filter, 'propertyName', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline'))">
+                            :entityDescription="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline'))">
                     </sw-language-info>
                 {% endblock %}
 
@@ -62,11 +62,11 @@
                     {% endblock %}
                     {% block elio_data_discovery_filter_restrictions_customfilters_detail_base_name %}
                         <sw-field
-                                v-model="filter.propertyName"
+                                v-model="filter.label"
                                 type="text"
                                 required
                                 :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelName')"
-                                :placeholder="placeholder(filter, 'propertyName', $tc('elio-data-discovery.restrictions.filter.filters.placeholderPropertyName'))"/>
+                                :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.placeholderLabel'))"/>
                     {% endblock %}
                 </sw-card>
             </sw-card-view>

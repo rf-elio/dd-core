@@ -57,7 +57,6 @@ class ProductSearchRequestBuilder
 {
     protected const PARAM_PAGE = 'p';
     protected const PARAM_SORT = 'order';
-    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-data-discovery-answer-path-';
     public const ADDITIONAL_REQUEST_PARAM_PREFIX = 'elio_data_discovery_additional_request_parameter_';
 
     /**

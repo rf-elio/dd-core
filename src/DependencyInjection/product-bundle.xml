@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService">
+            <argument type="tagged" tag="elio-data-discovery.product-bundle" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <tag name="elio-data-discovery.product-bundle"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\ProductBundle\Handler\SimilarBundleHandlerHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <tag name="elio-data-discovery.product-bundle"/>
+        </service>
+    </services>
+</container>

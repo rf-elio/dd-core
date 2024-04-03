@@ -27,9 +27,9 @@
                     :disableDataFetching="true"
                     ref="filterList">
 
-                <template slot="column-propertyName" slot-scope="{ item }">
+                <template slot="column-label" slot-scope="{ item }">
                     <router-link :to="{ name: 'elio.data.discovery.filter.restrictions.customFiltersDetail', params: { id: item.id } }">
-                        {{ item.translated.propertyName }}
+                        {{ item.translated.label }}
                     </router-link>
                 </template>
 
@@ -58,7 +58,7 @@
                                   :title="$tc('global.default.warning')"
                                   @modal-close="onCloseDeleteModal">
                             <p>
-                                {{ $tc('elio-data-discovery.restrictions.filter.customFilters.textDeleteConfirm', 0, { propertyName: item.translated.propertyName }) }}
+                                {{ $tc('elio-data-discovery.restrictions.filter.customFilters.textDeleteConfirm', 0, { label: item.translated.label }) }}
                             </p>
 
                             <template slot="modal-footer">

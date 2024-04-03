@@ -60,11 +60,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ProductListingResultTransformer implements ProductListingResultTransformerInterface
 {
-    public const LISTING_MODE_PARAMETER = 'elio_data_discovery_listing_mode';
-
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher
-    ) {}
+    )
+    {
+    }
 
     /**
      * Transforms the ProductListingResponse to an shopware ProductListingResult
@@ -79,12 +79,12 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
      */
     public function transform(
         ProductListingResponse $productListingResponse,
-        Criteria $criteria,
-        SalesChannelContext $context,
-        ResponseCollection $resultCollection,
-        SearchRequest $searchRequest,
-        Request $request
-    ) : ProductListingResult
+        Criteria               $criteria,
+        SalesChannelContext    $context,
+        ResponseCollection     $resultCollection,
+        SearchRequest          $searchRequest,
+        Request                $request
+    ): ProductListingResult
     {
         $shopwareProductListingResult = new ProductListingResult(
             ProductDefinition::ENTITY_NAME,
@@ -98,10 +98,9 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
-//        $this->addTracking($resultCollection, $shopwareProductListingResult);
-//        $this->handleListingMode($shopwareProductListingResult, $searchRequest, $request);
+        $this->addTracking($resultCollection, $shopwareProductListingResult);
 
-        $event = new ProductListingResultTransformerEvent($shopwareProductListingResult, $context);
+        $event = new ProductListingResultTransformerEvent($shopwareProductListingResult, $context, $searchRequest, $request);
         $this->eventDispatcher->dispatch($event);
         return $event->getProductListingResult();
     }
@@ -115,11 +114,11 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
      */
     protected function addSorting(
         ProductListingResponse $productListingResponse,
-        ProductListingResult $shopwareProductListingResult
-    ) : void
+        ProductListingResult   $shopwareProductListingResult
+    ): void
     {
         $shopwareProductListingResult->setAvailableSortings($productListingResponse->getAvailableSortings() ?? new ProductSortingCollection());
-        if($productListingResponse->getCurrentSorting()) {
+        if ($productListingResponse->getCurrentSorting()) {
             $shopwareProductListingResult->setSorting($productListingResponse->getCurrentSorting()->getKey());
         }
     }
@@ -133,9 +132,9 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
      */
     protected function addPagination(
         ProductListingResponse $productListingResponse,
-        ProductListingResult $shopwareProductListingResult,
-        Criteria $criteria
-    ) : void
+        ProductListingResult   $shopwareProductListingResult,
+        Criteria               $criteria
+    ): void
     {
         $limit = $productListingResponse->getHitsPerPage();
         $page = $productListingResponse->getCurrentPage();
@@ -153,7 +152,10 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
      * @param ResponseCollection $resultCollection
      * @param EntitySearchResult $shopwareProductListingResult
      */
-    protected function addCampaigns(ResponseCollection $resultCollection, EntitySearchResult $shopwareProductListingResult) : void
+    protected function addCampaigns(
+        ResponseCollection $resultCollection,
+        EntitySearchResult $shopwareProductListingResult
+    ): void
     {
         // redirect campaigns
         /** @var CampaignRedirectionResponse|null $campaignRedirectionResponse */
@@ -183,7 +185,10 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
      * @param EntitySearchResult $shopwareProductListingResult
      * @return void
      */
-    protected function addTracking(ResponseCollection $resultCollection, EntitySearchResult $shopwareProductListingResult) : void
+    protected function addTracking(
+        ResponseCollection $resultCollection,
+        EntitySearchResult $shopwareProductListingResult
+    ): void
     {
         /** @var TrackingResponse|null $trackingResponse */
         $trackingResponse = $resultCollection->get(TrackingResponse::class);

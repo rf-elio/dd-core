@@ -37,7 +37,7 @@
                          @dragstart="onDragStart"
                          v-for="filter in allList"
                          :data-filter-id="filter.id"
-                    >{{ filter.translated.propertyName }}</div>
+                    >{{ filter.translated.label }}</div>
                 </div>
             </div>
             <div class="ruler-tab">
@@ -77,7 +77,7 @@
                          @dragstart="onDragStart"
                          v-for="filter in allowList"
                          :data-filter-id="filter.id"
-                    >{{ filter.propertyName }}</div>
+                    >{{ filter.label }}</div>
                 </div>
             </div>
             <div class="ruler-tab">
@@ -117,7 +117,7 @@
                          @dragstart="onDragStart"
                          v-for="filter in blockList"
                          :data-filter-id="filter.id"
-                    >{{ filter.propertyName }}</div>
+                    >{{ filter.label }}</div>
                 </div>
             </div>
         </div>

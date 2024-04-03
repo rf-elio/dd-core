@@ -27,13 +27,13 @@
             "sortDirection": "Aufsteigende Sortierung",
             "textHeadline": "Neue Eigenschaft"
           },
-          "placeholderPropertyName": "Eigenschaftsname",
+          "placeholderLabel": "Eigenschaftsname",
           "placeholderTechnicalName": "Technischername"
         },
         "customFilters": {
           "contextMenuView": "Bearbeiten",
           "contextMenuDelete": "Löschen",
-          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{propertyName}\" wirklich löschen?",
+          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{label}\" wirklich löschen?",
           "buttonCancel": "Abbrechen",
           "buttonDelete": "Löschen",
           "buttonAdd": "Hinzufügen",
@@ -85,13 +85,13 @@
             "labelTechnicalName": "Technischername",
             "textHeadline": "Neue Eigenschaft"
           },
-          "placeholderPropertyName": "Eigenschaftsname",
+          "placeholderLabel": "Eigenschaftsname",
           "placeholderTechnicalName": "Technischername"
         },
         "customFilters": {
           "contextMenuView": "Bearbeiten",
           "contextMenuDelete": "Löschen",
-          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{propertyName}\" wirklich löschen?",
+          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{label}\" wirklich löschen?",
           "buttonCancel": "Abbrechen",
           "buttonDelete": "Löschen",
           "buttonAdd": "Hinzufügen",
