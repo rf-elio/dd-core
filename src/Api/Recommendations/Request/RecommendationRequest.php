@@ -9,42 +9,10 @@ class RecommendationRequest extends ChannelRequest
     /**
      * @var string[]
      */
-    private array $ids;
-    private int $maxResults;
+    private array $productIds;
+    private int $limit;
     private ?string $sessionId = null;
 
-
-    /**
-     * @return string[]
-     */
-    public function getIds(): array
-    {
-        return $this->ids;
-    }
-
-    /**
-     * @param string[] $ids
-     */
-    public function setIds(array $ids): void
-    {
-        $this->ids = $ids;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxResults(): int
-    {
-        return $this->maxResults;
-    }
-
-    /**
-     * @param int $maxResults
-     */
-    public function setMaxResults(int $maxResults): void
-    {
-        $this->maxResults = $maxResults;
-    }
 
     /**
      * @return string|null
@@ -62,4 +30,29 @@ class RecommendationRequest extends ChannelRequest
         $this->sessionId = $sessionId;
     }
 
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getProductIds(): array
+    {
+        return $this->productIds;
+    }
+
+    /**
+     * @param string[] $productIds
+     */
+    public function setProductIds(array $productIds): void
+    {
+        $this->productIds = $productIds;
+    }
 }

@@ -11,324 +11,118 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
  */
 class DetailPageRequest extends ChannelRequest
 {
-    private string $id;
-    private string $idsOnly = 'false';
-    private string $idType = 'productNumber';
-    private int $maxResultsRecommendations = 0;
-    private int $maxResultsSimilarProducts = 10;
-    private string $usePersonalization = 'true';
-    private ?string $sessionId = null;
-    private ?string $purchaserId = null;
-    private ?float $latitude = null;
-    private ?float $longitude = null;
-    private ?array $marketIds = null;
-    private ?int $maxCountVariants = 5;
-    private string $withCampaigns = 'true';
-    private string $withRecommendations = 'true';
-    private string $withSimilarProducts = 'true';
-    private string $withRecord = 'true';
+    private string $productNumber;
+    private bool $withRecommendations = true;
+    private bool $withSimilarProducts = true;
+    private int $limitRecommendations = 0;
+    private int $limitSimilarProducts = 10;
+    private int $limitVariants = 5;
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getProductNumber(): string
     {
-        return $this->id;
+        return $this->productNumber;
     }
 
     /**
-     * @param string $id
-     *
-     * @return $this
+     * @param string $productNumber
+     * @return DetailPageRequest
      */
-    public function setId(string $id): self
+    public function setProductNumber(string $productNumber): self
     {
-        $this->id = $id;
+        $this->productNumber = $productNumber;
         return $this;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getIdType(): string
-    {
-        return $this->idType;
-    }
-
-    /**
-     * @param string $idType
-     *
-     * @return $this
-     */
-    public function setIdType(string $idType): self
-    {
-        $this->idType = $idType;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxResultsRecommendations(): int
-    {
-        return $this->maxResultsRecommendations;
-    }
-
-    /**
-     * @param int $maxResultsRecommendations
-     *
-     * @return $this
-     */
-    public function setMaxResultsRecommendations(int $maxResultsRecommendations): self
-    {
-        $this->maxResultsRecommendations = $maxResultsRecommendations;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxResultsSimilarProducts(): int
-    {
-        return $this->maxResultsSimilarProducts;
-    }
-
-    /**
-     * @param int $maxResultsSimilarProducts
-     *
-     * @return $this
-     */
-    public function setMaxResultsSimilarProducts(int $maxResultsSimilarProducts): self
-    {
-        $this->maxResultsSimilarProducts = $maxResultsSimilarProducts;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSessionId(): ?string
-    {
-        return $this->sessionId;
-    }
-
-    /**
-     * @param string|null $sessionId
-     *
-     * @return $this
-     */
-    public function setSessionId(?string $sessionId): self
-    {
-        $this->sessionId = $sessionId;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPurchaserId(): ?string
-    {
-        return $this->purchaserId;
-    }
-
-    /**
-     * @param string|null $purchaserId
-     *
-     * @return $this
-     */
-    public function setPurchaserId(?string $purchaserId): self
-    {
-        $this->purchaserId = $purchaserId;
-        return $this;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * @param float|null $latitude
-     *
-     * @return $this
-     */
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-        return $this;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * @param float|null $longitude
-     *
-     * @return $this
-     */
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-        return $this;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getMarketIds(): ?array
-    {
-        return $this->marketIds;
-    }
-
-    /**
-     * @param array|null $marketIds
-     *
-     * @return $this
-     */
-    public function setMarketIds(?array $marketIds): self
-    {
-        $this->marketIds = $marketIds;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getMaxCountVariants(): ?int
-    {
-        return $this->maxCountVariants;
-    }
-
-    /**
-     * @param int|null $maxCountVariants
-     *
-     * @return $this
-     */
-    public function setMaxCountVariants(?int $maxCountVariants): self
-    {
-        $this->maxCountVariants = $maxCountVariants;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIdsOnly(): string
-    {
-        return $this->idsOnly;
-    }
-
-    /**
-     * @param string $idsOnly
-     *
-     * @return $this
-     */
-    public function setIdsOnly(string $idsOnly): self
-    {
-        $this->idsOnly = $idsOnly;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsePersonalization(): string
-    {
-        return $this->usePersonalization;
-    }
-
-    /**
-     * @param string $usePersonalization
-     *
-     * @return $this
-     */
-    public function setUsePersonalization(string $usePersonalization): self
-    {
-        $this->usePersonalization = $usePersonalization;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWithCampaigns(): string
-    {
-        return $this->withCampaigns;
-    }
-
-    /**
-     * @param string $withCampaigns
-     *
-     * @return $this
-     */
-    public function setWithCampaigns(string $withCampaigns): self
-    {
-        $this->withCampaigns = $withCampaigns;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWithRecommendations(): string
+    public function getWithRecommendations(): bool
     {
         return $this->withRecommendations;
     }
 
     /**
-     * @param string $withRecommendations
-     *
+     * @param bool $withRecommendations
      * @return $this
      */
-    public function setWithRecommendations(string $withRecommendations): self
+    public function setWithRecommendations(bool $withRecommendations): self
     {
         $this->withRecommendations = $withRecommendations;
         return $this;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getWithSimilarProducts(): string
+    public function getWithSimilarProducts(): bool
     {
         return $this->withSimilarProducts;
     }
 
     /**
-     * @param string $withSimilarProducts
-     *
+     * @param bool $withSimilarProducts
      * @return $this
      */
-    public function setWithSimilarProducts(string $withSimilarProducts): self
+    public function setWithSimilarProducts(bool $withSimilarProducts): self
     {
         $this->withSimilarProducts = $withSimilarProducts;
         return $this;
     }
 
     /**
-     * @return string
+     * @param int $limitRecommendations
+     * @return $this
      */
-    public function getWithRecord(): string
+    public function setLimitRecommendations(int $limitRecommendations): self
     {
-        return $this->withRecord;
+        $this->limitRecommendations = $limitRecommendations;
+        return $this;
     }
 
     /**
-     * @param string $withRecord
-     *
+     * @return int
+     */
+    public function getLimitRecommendations(): int
+    {
+        return $this->limitRecommendations;
+    }
+
+    /**
+     * @param int $limitSimilarProducts
      * @return $this
      */
-    public function setWithRecord(string $withRecord): self
+    public function setLimitSimilarProducts(int $limitSimilarProducts): self
     {
-        $this->withRecord = $withRecord;
+        $this->limitSimilarProducts = $limitSimilarProducts;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimitSimilarProducts(): int
+    {
+        return $this->limitSimilarProducts;
+    }
+
+    /**
+     * @param int $limitVariants
+     * @return $this
+     */
+    public function setLimitVariants(int $limitVariants): self
+    {
+        $this->limitVariants = $limitVariants;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimitVariants(): int
+    {
+        return $this->limitVariants;
     }
 }

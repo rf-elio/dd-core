@@ -35,8 +35,6 @@ namespace Elio\ElioDataDiscovery\Core\AdvisorCampaign\Subscriber;
 use Elio\ElioDataDiscovery\Api\Search\Request\AdvisorStatus;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductSearchRequestBuildedEvent;
-use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
-use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -50,6 +48,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class AdvisorSubscriber implements EventSubscriberInterface
 {
+    public const LISTING_MODE_PARAMETER = 'elio_data_discovery_listing_mode';
+    public const LISTING_ADVISOR = 'advisor';
+    protected const ANSWER_PATH_REQUEST_PARAM_PREFIX = 'elio-data-discovery-answer-path-';
+
     /**
      * @return string[]
      */
@@ -74,9 +76,10 @@ class AdvisorSubscriber implements EventSubscriberInterface
         $answerPath = null;
 
         foreach ($payload as $key => $value) {
-            if (str_starts_with($key, ProductSearchRequestBuilder::ANSWER_PATH_REQUEST_PARAM_PREFIX)) {
-                $campaignId = str_replace(ProductSearchRequestBuilder::ANSWER_PATH_REQUEST_PARAM_PREFIX, '', $key);
+            if (str_starts_with($key, self::ANSWER_PATH_REQUEST_PARAM_PREFIX)) {
+                $campaignId = str_replace(self::ANSWER_PATH_REQUEST_PARAM_PREFIX, '', $key);
                 $answerPath = $value;
+                break;
             }
         }
 
@@ -93,23 +96,21 @@ class AdvisorSubscriber implements EventSubscriberInterface
         ProductListingResultTransformerEvent $event
     ): void
     {
-        $shopwareProductListingResult = $event->getProductListingResult();
-        $searchRequest = $event->getSearchRequest();
-        $request = $event->getRequest();
-
-        $listingMode = $request->get(ProductListingResultTransformer::LISTING_MODE_PARAMETER);
-
-        if ($listingMode === ProductListingResultTransformer::LISTING_ADVISOR) {
-            $showListing = false;
-            $advisorStatus = $searchRequest->getExtension(AdvisorStatus::class);
-            if ($advisorStatus instanceof AdvisorStatus && !empty($advisorStatus->getAnswerPath())) {
-                $showListing = true;
-            }
-
-            $shopwareProductListingResult->addExtension('advisor-listing', new ArrayEntity([
-                'showListing' => $showListing
-            ]));
+        // if listing mode is not advisor, do nothing
+        if ($event->getRequest()->get(self::LISTING_MODE_PARAMETER) !== self::LISTING_ADVISOR) {
+            return;
         }
+
+        $showListing = false;
+        $advisorStatus = $event->getSearchRequest()->getExtension(AdvisorStatus::class);
+        if ($advisorStatus instanceof AdvisorStatus && !empty($advisorStatus->getAnswerPath())) {
+            $showListing = true;
+        }
+
+        $shopwareProductListingResult = $event->getProductListingResult();
+        $shopwareProductListingResult->addExtension('advisor-listing', new ArrayEntity([
+            'showListing' => $showListing
+        ]));
 
         $event->setProductListingResult($shopwareProductListingResult);
     }

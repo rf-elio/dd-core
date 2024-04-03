@@ -6,55 +6,40 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 
 class SimilarRequest extends ChannelRequest
 {
-    private string $id;
-    private string $idType = 'productNumber';
-    private int $maxResults;
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
+    private string $productNumber;
+    private int $limit;
 
     /**
      * @return int
      */
-    public function getMaxResults(): int
+    public function getLimit(): int
     {
-        return $this->maxResults;
+        return $this->limit;
     }
 
     /**
-     * @param int $maxResults
+     * @param int $limit
+     * @return void
      */
-    public function setMaxResults(int $maxResults): void
+    public function setLimit(int $limit): void
     {
-        $this->maxResults = $maxResults;
+        $this->limit = $limit;
     }
 
     /**
      * @return string
      */
-    public function getIdType(): string
+    public function getProductNumber(): string
     {
-        return $this->idType;
+        return $this->productNumber;
     }
 
     /**
-     * @param string $idType
+     * @param string $productNumber
+     * @return void
      */
-    public function setIdType(string $idType): void
+    public function setProductNumber(string $productNumber): void
     {
-        $this->idType = $idType;
+        $this->productNumber = $productNumber;
     }
 }

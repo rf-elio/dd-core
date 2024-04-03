@@ -27,29 +27,21 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
 {
     public const TYPE = 'cartRecommended';
 
-    private RecommendationApi $RecommendationApi;
-    private ElioDataDiscoveryConfigServiceInterface $configService;
-    private CartService $cartService;
-    private EntityRepository $productRepository;
-
     /**
      * CartRecommendedBundle constructor.
      *
-     * @param RecommendationApi $RecommendationApi
+     * @param RecommendationApi $recommendationApi
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param CartService $cartService
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        RecommendationApi $RecommendationApi,
-        ElioDataDiscoveryConfigServiceInterface $configService,
-        CartService $cartService,
-        EntityRepository $productRepository
-    ) {
-        $this->RecommendationApi = $RecommendationApi;
-        $this->configService = $configService;
-        $this->cartService = $cartService;
-        $this->productRepository = $productRepository;
+        private readonly RecommendationApi                       $recommendationApi,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly CartService                             $cartService,
+        private readonly EntityRepository                        $productRepository
+    )
+    {
     }
 
     /**
@@ -81,10 +73,10 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
         }
 
         $recommendationRequest = new RecommendationRequest('');
-        $recommendationRequest->setIds($productNumbers);
+        $recommendationRequest->setProductIds($productNumbers);
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
 
-        $resultCollection = $this->RecommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
+        $resultCollection = $this->recommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
         return Excluder::exclude($productListing->getProducts(), $config);
     }
@@ -110,6 +102,6 @@ class CartRecommendedBundleHandlerHandler implements ProductBundleHandlerInterfa
         }
 
         $products = $this->productRepository->search(new Criteria($ids), $salesChannelContext->getContext());
-        return $products->map(static fn (ProductEntity $product) => $product->getProductNumber());
+        return $products->map(static fn(ProductEntity $product) => $product->getProductNumber());
     }
 }

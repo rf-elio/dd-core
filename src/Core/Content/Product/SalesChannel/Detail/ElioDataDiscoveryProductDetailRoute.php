@@ -103,10 +103,9 @@ class ElioDataDiscoveryProductDetailRoute extends AbstractProductDetailRoute
         }
 
         $detailPageRequest = (new DetailPageRequest(''))
-            ->setId($productDetailResponse->getProduct()->getProductNumber())
-            ->setWithSimilarProducts('false')
-            ->setWithRecommendations('false')
-            ->setWithRecord('false');
+            ->setProductNumber($productDetailResponse->getProduct()->getProductNumber())
+            ->setWithSimilarProducts(false)
+            ->setWithRecommendations(false);
 
         try {
             $responseCollection = $this->recordsApi->getDetailPage($detailPageRequest, $context);

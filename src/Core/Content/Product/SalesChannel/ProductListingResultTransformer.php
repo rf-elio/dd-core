@@ -60,9 +60,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ProductListingResultTransformer implements ProductListingResultTransformerInterface
 {
-    public const LISTING_MODE_PARAMETER = 'elio_data_discovery_listing_mode';
-    public const LISTING_ADVISOR = 'advisor';
-
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher
     )
@@ -101,7 +98,7 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         $this->addSorting($productListingResponse, $shopwareProductListingResult);
         $this->addPagination($productListingResponse, $shopwareProductListingResult, $criteria);
         $this->addCampaigns($resultCollection, $shopwareProductListingResult);
-//        $this->addTracking($resultCollection, $shopwareProductListingResult);
+        $this->addTracking($resultCollection, $shopwareProductListingResult);
 
         $event = new ProductListingResultTransformerEvent($shopwareProductListingResult, $context, $searchRequest, $request);
         $this->eventDispatcher->dispatch($event);

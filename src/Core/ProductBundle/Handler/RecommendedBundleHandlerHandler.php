@@ -24,19 +24,17 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 {
     public const TYPE = 'recommendation';
 
-    private RecommendationApi $RecommendationApi;
-    private ElioDataDiscoveryConfigServiceInterface $configService;
-
     /**
      * RecommendedBundle constructor.
      *
-     * @param RecommendationApi $RecommendationApi
+     * @param RecommendationApi $recommendationApi
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
-    public function __construct(RecommendationApi $RecommendationApi, ElioDataDiscoveryConfigServiceInterface $configService)
+    public function __construct(
+        private readonly RecommendationApi                       $recommendationApi,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
+    )
     {
-        $this->RecommendationApi = $RecommendationApi;
-        $this->configService = $configService;
     }
 
     /**
@@ -71,11 +69,11 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
         }
 
         $recommendationRequest = new RecommendationRequest('');
-        $recommendationRequest->setIds($request->get('productIds'));
+        $recommendationRequest->setProductIds($request->get('productIds'));
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
-        $recommendationRequest->setMaxResults($criteria->getLimit() ?? 0);
+        $recommendationRequest->setLimit($criteria->getLimit() ?? 0);
 
-        $resultCollection = $this->RecommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
+        $resultCollection = $this->recommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
         return Excluder::exclude($productListing->getProducts(), $config);
     }
