@@ -29,6 +29,10 @@
 {% block element_product_listing_row %}
     {% set showListing = true %}
     {% block element_product_listing_row_show_listing_set %}
+        {# we don't show the listing for cms campaigns if there is no selection done yet #}
+        {% if searchResult.hasExtension('advisor-listing') %}
+            {% set showListing = searchResult.getExtension('advisor-listing').showListing %}
+        {% endif %}
     {% endblock %}
 
     {% if showListing %}
@@ -49,5 +53,36 @@
     {% endif %}
 {% endblock %}
 
+{# advisor campaigns #}
+{% block element_product_listing_wrapper_content %}
+    {% block element_product_listing_advisor %}
+        {% if searchResult and searchResult.hasExtension('AdvisorCampaignResponseCollection') %}
+            {% set advisorCampaignResponseCollection = searchResult.getExtension('AdvisorCampaignResponseCollection') %}
+            {% for advisorCampaign in advisorCampaignResponseCollection.advisorCampaignResponses %}
+                {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/advisor-campaign/index.html.twig' with {
+                    advisorCampaign: advisorCampaign,
+                    searchResult: searchResult
+                } %}
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
+    {{ parent() }}
+{% endblock %}
 
+{# we don't show the no products message for cms advisor campaigns #}
+{% block element_product_listing_col_empty %}
+    {% if not searchResult.hasExtension('advisor-listing') %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
 
+{# we hide the sorting if we are on a cms advisor campaign and no selection was made by the user #}
+{% block element_product_listing_sorting %}
+    {% set showListing = true %}
+    {% if searchResult.hasExtension('advisor-listing') %}
+        {% set showListing = searchResult.getExtension('advisor-listing').showListing %}
+    {% endif %}
+    {% if showListing %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+.sw-cms-el-edd-advisor-campaign {
+  padding: 10px;
+  width: 100%;
+
+  .edd-advisor-campaign-question {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .edd-advisor-campaign-answer {
+    line-height: 1.5;
+    font-size: 13px;
+  }
+}
+
+.edd-advisor-campaign-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: start;
+  margin: 0 -10px;
+}
+
+.edd-advisor-campaign-col {
+  flex: 0 0 25%;
+  padding: 0 10px;
+}
+
+.edd-advisor-campaign-question {
+  color: #52667a;
+  font-weight: 600;
+}
+
+.edd-advisor-campaign-answer {
+  height: 100%;
+  padding: 10px;
+  border: 1px solid #d1d9e0;
+  border-radius: 5px;
+}

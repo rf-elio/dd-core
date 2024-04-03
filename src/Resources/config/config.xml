@@ -124,14 +124,14 @@
         <title lang="de-DE">Recommendations</title>
         <input-field type="bool">
             <name>useProductDetailRecommendations</name>
-            <label>Display the FACT-Finder product recommendation slider on product detail pages</label>
-            <label lang="de-DE">FACT-Finder Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
+            <label>Display the product recommendation slider on product detail pages</label>
+            <label lang="de-DE">Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
         <input-field type="bool">
             <name>useProductDetailSimilar</name>
-            <label>Display the FACT-Finder similar slider on product detail pages</label>
-            <label lang="de-DE">FACT-Finder ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
+            <label>Display the similar slider on product detail pages</label>
+            <label lang="de-DE">Ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
         <component name="sw-entity-multi-id-select">
