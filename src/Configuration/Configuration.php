@@ -79,6 +79,7 @@ class Configuration extends Struct
      * @param array $productRankingOrderDeliveryStates
      * @param int $entityStatusMaxCleanupAgeInDays
      * @param bool $allowStreamIdSearch
+     * @param bool $suggestToggleHighlight
      */
     public function __construct(
         private readonly bool $active,
@@ -102,6 +103,7 @@ class Configuration extends Struct
         private readonly array $botProtectionIpFilter,
         private readonly bool $searchUseContentChannel,
         private readonly bool $suggestUseElioDataDiscovery,
+        private readonly bool $suggestToggleHighlight,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
         private readonly int $restrictionsCacheTime,
@@ -360,5 +362,10 @@ class Configuration extends Struct
     public function isProductDetailPageCampaignsActive(): bool
     {
         return $this->productDetailPageCampaignsActive;
+    }
+
+    public function isSuggestToggleHighlight(): bool
+    {
+        return $this->suggestToggleHighlight;
     }
 }
