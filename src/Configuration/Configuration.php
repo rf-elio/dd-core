@@ -68,7 +68,7 @@ class Configuration extends Struct
      * @param array<string> $botProtectionIpFilter
      * @param bool $searchUseContentChannel
      * @param bool $suggestUseElioDataDiscovery
-     *  @param bool $suggestToggleHighlight
+     * @param bool $suggestToggleHighlight
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
      * @param int $restrictionsCacheTime
