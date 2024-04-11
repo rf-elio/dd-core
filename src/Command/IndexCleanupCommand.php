@@ -82,8 +82,8 @@ class IndexCleanupCommand extends Command
         /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
 
-        if ($this->hasNotExecutedSyncProfiles($syncProfiles)) {
-            $output->writeln('<error>Cannot cleanup because, sync profile(s) exists that have not been executed yet.</error>');
+        if ($syncProfiles->count() <= 0 || $this->hasNotExecutedSyncProfiles($syncProfiles)) {
+            $output->writeln('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>');
             return Command::FAILURE;
         }
 
