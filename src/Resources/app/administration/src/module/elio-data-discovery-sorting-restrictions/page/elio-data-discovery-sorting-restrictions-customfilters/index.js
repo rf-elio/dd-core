@@ -23,7 +23,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
     data() {
         return {
             filtersGroup: null,
-            sortBy: 'propertyName',
+            sortBy: 'label',
             sortDirection: 'ASC',
             isLoading: false,
             showDeleteModal: false
@@ -44,7 +44,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
         },
 
         useNaturalSorting() {
-            return this.sortBy === 'elio_data_discovery_filter.propertyName';
+            return this.sortBy === 'elio_data_discovery_filter.label';
         },
 
         filtersColumns() {

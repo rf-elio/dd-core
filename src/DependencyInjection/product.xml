@@ -29,6 +29,29 @@
             <argument type="service" id="elio.data-discovery.core.logging.default" />
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
+            <argument type="service" id="elio.data-discovery.core.logging.debug" />
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService" />
+            <argument type="service" id="translator"/>
+            <argument type="service" id="product.repository"/>
+        </service>
+
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
                  decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"
                  decoration-priority="-3000"

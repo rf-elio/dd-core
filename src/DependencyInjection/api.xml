@@ -13,6 +13,10 @@
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi">
+            <argument type="service" id="elio.data-discovery.core.logging.debug" />
+        </service>
+
         <!-- transformer -->
         <service id="Elio\ElioDataDiscovery\Api\Transform\Transformer">
             <argument type="tagged" tag="elio-data-discovery.api.transformer.response"/>

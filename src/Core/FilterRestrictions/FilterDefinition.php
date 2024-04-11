@@ -92,7 +92,7 @@ class FilterDefinition extends EntityDefinition
                 new ApiAware(),
                 new Required()
             ),
-            (new TranslatedField('propertyName'))->addFlags(new ApiAware()),
+            (new TranslatedField('label'))->addFlags(new ApiAware()),
             (new BoolField('is_custom', 'isCustom'))->addFlags(
                 new ApiAware(),
                 new Required()

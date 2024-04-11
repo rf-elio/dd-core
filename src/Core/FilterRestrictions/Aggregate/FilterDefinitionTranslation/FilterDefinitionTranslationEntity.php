@@ -48,7 +48,7 @@ class FilterDefinitionTranslationEntity extends TranslationEntity
     /**
      * @var string|null
      */
-    protected $propertyName;
+    protected $label;
 
     /**
      * @var FilterEntity|null
@@ -59,22 +59,6 @@ class FilterDefinitionTranslationEntity extends TranslationEntity
      * @var string
      */
     protected $filterId;
-
-    /**
-     * @return string|null
-     */
-    public function getPropertyName(): ?string
-    {
-        return $this->propertyName;
-    }
-
-    /**
-     * @param string|null $propertyName
-     */
-    public function setPropertyName(?string $propertyName): void
-    {
-        $this->propertyName = $propertyName;
-    }
 
     /**
      * @return FilterEntity|null
@@ -108,4 +92,13 @@ class FilterDefinitionTranslationEntity extends TranslationEntity
         $this->filterId = $filterId;
     }
 
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): void
+    {
+        $this->label = $label;
+    }
 }

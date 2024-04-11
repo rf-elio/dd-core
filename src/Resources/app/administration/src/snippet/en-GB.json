@@ -21,17 +21,17 @@
           "buttonCancel": "Cancel",
           "detail": {
             "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Property Name",
+            "labelName": "Label",
             "labelTechnicalName": "Technical Name",
             "textHeadline": "New Property"
           },
-          "placeholderPropertyName": "Property Name",
+          "placeholderLabel": "Label",
           "placeholderTechnicalName": "Technical Name"
         },
         "customFilters": {
           "contextMenuView": "Edit",
           "contextMenuDelete": "Delete",
-          "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+          "textDeleteConfirm": "Are you sure you really want to delete the property \"{label}\"?",
           "buttonCancel": "Cancel",
           "buttonDelete": "Delete",
           "buttonAdd": "Add",
@@ -79,19 +79,19 @@
           "buttonCancel": "Cancel",
           "detail": {
             "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Property Name",
+            "labelName": "Label",
             "labelTechnicalName": "Technical Name",
             "displayByDefault": "Display by default",
             "sortDirection": "Ascending sorting",
             "textHeadline": "New Property"
           },
-          "placeholderPropertyName": "Property Name",
+          "placeholderLabel": "Label",
           "placeholderTechnicalName": "Technical Name"
         },
         "customFilters": {
           "contextMenuView": "Edit",
           "contextMenuDelete": "Delete",
-          "textDeleteConfirm": "Are you sure you really want to delete the property \"{propertyName}\"?",
+          "textDeleteConfirm": "Are you sure you really want to delete the property \"{label}\"?",
           "buttonCancel": "Cancel",
           "buttonDelete": "Delete",
           "buttonAdd": "Add",

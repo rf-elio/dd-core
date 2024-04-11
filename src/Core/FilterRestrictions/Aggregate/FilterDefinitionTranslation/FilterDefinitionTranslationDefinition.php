@@ -79,7 +79,7 @@ class FilterDefinitionTranslationDefinition extends EntityTranslationDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-           (new StringField('property_name', 'propertyName'))->addFlags(
+           (new StringField('label', 'label'))->addFlags(
                new ApiAware(),
                new Required()
            )
