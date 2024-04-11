@@ -43,5 +43,15 @@
                 <argument type="service" id="twig"/>
             </call>
         </service>
+
+        <service id="Elio\ElioDataDiscovery\Storefront\Controller\AdvisorCampaignController" public="true">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\AdvisorCampaign\SalesChannel\AdvisorCampaignRoute" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
     </services>
 </container>

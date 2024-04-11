@@ -145,5 +145,30 @@
         "global": "Products"
       }
     }
+  },
+  "sw-cms": {
+    "blocks": {
+      "commerce": {
+        "advisorCampaign": {
+          "label": "Advisor campaign"
+        }
+      }
+    },
+    "elements": {
+      "advisorCampaign": {
+        "label": "Advisor campaign",
+        "config": {
+          "campaignParameterName": "Campaign parameter: name",
+          "campaignParameterValue": "Campaign parameter: value",
+          "productsTitle": "Products title"
+        },
+        "content": {
+          "question": "Advisor's question?",
+          "firstAnswer": "First answer",
+          "secondAnswer": "Second answer",
+          "thirdAnswer": "Third answer"
+        }
+      }
+    }
   }
 }

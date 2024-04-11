@@ -17,6 +17,10 @@
                 "category": "Kategorien",
                 "page": "Inhalte"
             }
+        },
+        "advisor-campaign": {
+            "reset-btn": "Reset",
+            "no-products-found": "No products found for your selection"
         }
     }
 }

@@ -1,0 +1,15 @@
+{% block element_e_dd_advisor_campaign %}
+    {% set config = element.fieldConfig.elements %}
+
+    <div class="e-dd-advisor-campaign-lazy"
+         data-elio-data-siscovery-advisor-campaign-url="{{ path('frontend.e-dd.campaign.advisor') }}"
+         data-elio-data-siscovery-advisor-campaign-parameter-name="{{ config.campaignParameterName.value|escape }}"
+         data-elio-data-siscovery-advisor-campaign-parameter-value="{{ config.campaignParameterValue.value|escape }}"
+    >
+        {% if config.productsTitle.value %}
+            <h3>{{ config.productsTitle.value }}</h3>
+        {% endif %}
+
+        <div class="e-dd-advisor-campaign-lazy-container"></div>
+    </div>
+{% endblock %}

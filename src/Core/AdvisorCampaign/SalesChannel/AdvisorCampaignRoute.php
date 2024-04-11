@@ -54,6 +54,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
+
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
@@ -70,9 +71,8 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SearchApi $searchApi,
         private readonly ProductSearchRequestBuilder $searchRequestBuilder,
-        private readonly ProductListingResultTransformer  $productListingResultTransformer
-    )
-    {
+        private readonly ProductListingResultTransformer $productListingResultTransformer
+    ) {
     }
 
     /**
@@ -85,7 +85,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 
     /**
      * @OA\Post(
-     *      path="/ff/campaign/advisor",
+     *      path="/edd/campaign/advisor",
      *      summary="Fetch a list of products",
      *      description="List products that match the given criteria. For performance ressons a limit should always be set.",
      *      operationId="readProduct",
@@ -109,7 +109,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
      *          )
      *     )
      * )
-     * @Route("/store-api/ff/campaign/advisor", name="store-api.e_ff.campaign.advisor", methods={"GET", "POST"})
+     * @Route("/store-api/edd/campaign/advisor", name="store-api.e_dd.campaign.advisor", methods={"GET", "POST"})
      */
     public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse
     {

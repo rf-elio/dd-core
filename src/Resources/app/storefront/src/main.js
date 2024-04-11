@@ -9,6 +9,8 @@ import ElioProductDetailCrossSellingPlugin from "./plugin/elio-product-detail-cr
 import ElioDataDiscoveryHistoryPlugin from "./plugin/elio-data-discovery-history/elio-data-discovery-history.plugin";
 import ElioDataDiscoveryTrackerPlugin from "./plugin/elio-data-discovery-tracker/elio-data-discovery-tracker.plugin";
 import ElioListingPluginExtension from "./plugin/listing/listing.plugin";
+import ElioAdvisorCampaignPlugin from "./plugin/elio-advisor-campaign/elio-advisor-campaign.plugin";
+import ElioAdvisorCampaignCmsLoaderPlugin from "./plugin/elio-advisor-campaign/elio-advisor-campaign-cms-loader.plugin";
 
 const PluginManager = window.PluginManager;
 PluginManager.register('TrackingPlugin', TrackingPlugin, '.elio-data-discovery-listing-box');
@@ -20,5 +22,7 @@ PluginManager.register('ElioSuggestAutocompletePlugin', ElioSuggestAutocompleteP
 PluginManager.register('ElioDataDiscoveryTrackerPlugin', ElioDataDiscoveryTrackerPlugin, '[data-search-tracker]');
 PluginManager.register('ElioDataDiscoveryHistory', ElioDataDiscoveryHistoryPlugin, '.e-search-history');
 PluginManager.override('SearchWidget', ElioDataDiscoveryWidgetPlugin, '[data-search-form]');
+PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]');
+PluginManager.register('ElioAdvisorCampaignPlugin', ElioAdvisorCampaignPlugin, '.e-dd-advisor-campaign');
+PluginManager.register('ElioAdvisorCampaignCmsLoaderPlugin', ElioAdvisorCampaignCmsLoaderPlugin, '.e-dd-advisor-campaign-lazy');
 PluginManager.register('ElioProductDetailCrossSellingPlugin', ElioProductDetailCrossSellingPlugin, '[data-e-elio-data-discovery-product-detail-cross-selling-url]');
-PluginManager.register('ElioListingPluginExtension', ElioListingPluginExtension, '[data-listing]')

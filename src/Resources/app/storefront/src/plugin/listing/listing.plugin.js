@@ -63,11 +63,10 @@ export default class ListingPluginExtension extends Plugin {
     _updateFilterPanel (response) {
         const newFilterPanel = response.querySelector(this.options.filterPanelSelector);
         const currentFilterPanel = document.querySelector(this.options.filterPanelSelector);
-        if (!newFilterPanel) {
+        if (!newFilterPanel || !currentFilterPanel) {
             console.warn('newFilterPanel or currentFilterPanel do not exist', newFilterPanel, currentFilterPanel);
             return;
         }
-
 
         this._replaceFilters(newFilterPanel, currentFilterPanel);
         this._disableFilters(newFilterPanel, currentFilterPanel);

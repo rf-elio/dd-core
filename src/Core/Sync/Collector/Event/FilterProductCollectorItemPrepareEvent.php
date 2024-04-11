@@ -30,22 +30,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\AdvisorCampaign\SalesChannel;
+namespace Elio\ElioDataDiscovery\Core\Sync\Collector\Event;
 
-use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class AbstractAdvisorCampaignRoute
+ * Class FilterProductCollectorItemPrepareEvent
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-abstract class AbstractAdvisorCampaignRoute
+class FilterProductCollectorItemPrepareEvent extends Event
 {
-    abstract public function getDecorated(): AbstractAdvisorCampaignRoute;
-    abstract public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse;
+    private bool $exclude = false;
+
+    public function __construct(
+        private readonly SalesChannelProductEntity $product,
+        private readonly ProductDataType $item,
+    ) {
+    }
+
+    public function getProduct(): SalesChannelProductEntity
+    {
+        return $this->product;
+    }
+
+    public function getItem(): ProductDataType
+    {
+        return $this->item;
+    }
+
+    public function isExclude(): bool
+    {
+        return $this->exclude;
+    }
+
+    public function setExclude(bool $exclude): void
+    {
+        $this->exclude = $exclude;
+    }
 }

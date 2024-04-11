@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
@@ -245,6 +246,12 @@ class ProductCollector implements DataCollectorInterface
                     $dataType->getVariant()->setPosition($position);
                 } elseif ($displayByDefault) {
                     $dataType->getVariant()->setPosition(-1);
+                }
+
+                $event = new FilterProductCollectorItemPrepareEvent($entity, $dataType);
+                $this->dispatcher->dispatch($event);
+                if ($event->isExclude()) {
+                    continue;
                 }
 
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
