@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterContentCollectorItemPrepareEvent;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
 use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
 use Elio\ElioDataDiscovery\Core\Sync\Translator\TranslatorAware;
@@ -160,6 +161,13 @@ class CategoryCollector implements DataCollectorInterface
             /** @var CategoryEntity $entity */
             foreach ($entities as $entity) {
                 $dataType = $this->mapCategoryToDataType($entity);
+
+                $event = new FilterContentCollectorItemPrepareEvent($entity, $dataType);
+                $this->dispatcher->dispatch($event);
+                if ($event->isExclude()) {
+                    continue;
+                }
+
                 /** @var ContentDataType $mappedEntity */
                 $mappedEntity = $mappedEntities->get($dataType->getId()) ?? $dataType;
                 $mappedEntity->addDataTypeTranslation($languageId, $dataType);

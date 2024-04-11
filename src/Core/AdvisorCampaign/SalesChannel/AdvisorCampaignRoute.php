@@ -83,34 +83,7 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
         throw new DecorationPatternException(self::class);
     }
 
-    /**
-     * @OA\Post(
-     *      path="/edd/campaign/advisor",
-     *      summary="Fetch a list of products",
-     *      description="List products that match the given criteria. For performance ressons a limit should always be set.",
-     *      operationId="readProduct",
-     *      tags={"Store API", "Advisor"},
-     *      @OA\Parameter(name="Api-Basic-Parameters"),
-     *      @OA\Response(
-     *          response="200",
-     *          description="Entity search result containing products",
-     *          @OA\JsonContent(
-     *              type="object",
-     *              allOf={
-     *                  @OA\Schema(ref="#/components/schemas/EntitySearchResult"),
-     *                  @OA\Schema(type="object",
-     *                      @OA\Property(
-     *                          type="array",
-     *                          property="elements",
-     *                          @OA\Items(ref="#/components/schemas/Product")
-     *                      )
-     *                  )
-     *              }
-     *          )
-     *     )
-     * )
-     * @Route("/store-api/edd/campaign/advisor", name="store-api.e_dd.campaign.advisor", methods={"GET", "POST"})
-     */
+    #[Route(path: '/store-api/edd/campaign/advisor', name: 'store-api.e_dd.campaign.advisor', methods: ['GET', 'POST'])]
     public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse
     {
         $config = $this->configService->getByContext($context);
