@@ -138,6 +138,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addAssociation('tags');
         $criteria->addAssociation('configuratorSettings');
         $criteria->addAssociation('elioDataDiscoveryProductSorting');
+        $criteria->addAssociation('elioDataDiscoveryProductSortingTree');
 
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));

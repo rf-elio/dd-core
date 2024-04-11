@@ -33,14 +33,16 @@
                                 <div class="elio-content-listing-teaser-text">{{ item.description }}</div>
                             {% endblock %}
                         </div>
-                        <div class="col align-self-end">
-                            {% block component_content_item_box_url %}
-                                <a class="btn btn-success" href="{{ item.url }}">
-                                    {{ 'elioDataDiscovery.content-listing.content-item-open-label'|trans|sw_sanitize }}
-                                </a>
-                            {% endblock %}
-                        </div>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col align-self-start">
+                    {% block component_content_item_box_url %}
+                        <a class="btn btn-success" href="{{ item.url }}">
+                            {{ 'elioDataDiscovery.content-listing.content-item-open-label'|trans|sw_sanitize }}
+                        </a>
+                    {% endblock %}
                 </div>
             </div>
         </div>

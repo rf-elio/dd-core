@@ -42,4 +42,7 @@ use Shopware\Core\Framework\Struct\Struct;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-abstract class Response extends Struct {}
+abstract class Response extends Struct
+{
+    public const DATA_SOURCE = 'data_source';
+}

@@ -92,6 +92,11 @@ class SyncDataCommand extends Command
                 $syncProfileConfigurations = $this->syncService->getDueSyncProfileConfigurations($context);
             }
 
+            if ($syncProfileConfigurations->count() <= 0) {
+                $output->writeln('<info>No sync profiles present - create a new sync profile in SW admin.</info>');
+                return Command::SUCCESS;
+            }
+
             /** @var SyncProfileEntity $syncProfileConfiguration */
             foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
                 $this->syncService->sync($syncProfileConfiguration);

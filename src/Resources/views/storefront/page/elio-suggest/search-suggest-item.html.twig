@@ -34,16 +34,18 @@
                         {% set searchMatchPairs = {} %}
                         {% set nameLowerArray = item.name|lower|split('') %}
 
-                        {% for letter in nameLowerArray %}
-                            {% set index = loop.index0 %}
-                            {% set restOfTheWord = nameLowerArray[index:]|join %}
+                        {% if config_by_lang('ElioDataDiscovery.config.suggestToggleHighlight') %}
+                            {% for letter in nameLowerArray %}
+                                {% set index = loop.index0 %}
+                                {% set restOfTheWord = nameLowerArray[index:]|join %}
 
-                            {% if restOfTheWord starts with searchTerm|lower %}
-                                {% set match = item.name|split('')|slice(index, searchTerm|length)|join %}
+                                {% if restOfTheWord starts with searchTerm|lower %}
+                                    {% set match = item.name|split('')|slice(index, searchTerm|length)|join %}
 
-                                {% set searchMatchPairs = searchMatchPairs|merge({(match): "<span class='highlight'>"~match~"</span>"}) %}
-                            {% endif %}
-                        {% endfor %}
+                                    {% set searchMatchPairs = searchMatchPairs|merge({(match): "<span class='highlight'>"~match~"</span>"}) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
 
                         <div class="col search-suggest-product-name text-truncate">
                             {{ item.name|replace(searchMatchPairs)|raw }}

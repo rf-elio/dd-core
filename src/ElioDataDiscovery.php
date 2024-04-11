@@ -62,6 +62,7 @@ class ElioDataDiscovery extends Plugin
     public const CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE = 'ElioDataDiscoveryContentExportCategory';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type';
     public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type_inherited';
+    public const CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_type_parent';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude';
     public const CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_parental_exclude';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_inherited';
@@ -170,6 +171,15 @@ class ElioDataDiscovery extends Plugin
                             'en-GB' => 'Type for sub categories',
                             'de-DE' => 'Typ für Unterkategorien',
                         ]
+                    ],
+                    self::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT => [
+                        'type' => 'text',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Inherited type (from parent) automatically set',
+                            'de-DE' => 'Geerbter Typ (aus Eltern) automatisch festgelegt',
+                        ],
+                        'disabled' => true
                     ],
                     self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE => [
                         'type' => 'bool',

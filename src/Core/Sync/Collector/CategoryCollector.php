@@ -48,7 +48,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\StructCollection;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Storefront\Framework\Seo\SeoUrlRoute\NavigationPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 
 /**
  * Class CategoryCollector
@@ -125,7 +127,7 @@ class CategoryCollector implements DataCollectorInterface
         $criteria->addAssociation('cmsPage');
         $criteria->addAssociation('seoUrls');
         $criteria->addAssociation('translations');
-        $criteria->addAssociation('products');
+        //$criteria->addAssociation('products'); <== Commented out due to OutOfMemoryError; should be implemented elsewhere in the future
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('visible', true));
 
@@ -181,9 +183,13 @@ class CategoryCollector implements DataCollectorInterface
         $contentType = new ContentDataType();
         $contentType->setId($category->getId());
         $contentType->setName($category->getName());
-        $contentType->setType($category->getType());
+        $contentType->setType(
+            $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ??
+            $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
+            'category'
+        );
         $contentType->setDescription($category->getDescription());
-        $contentType->setTitle($category->getMetaTitle());
+        $contentType->setMetaTitle($category->getMetaTitle());
         $contentType->setSeoText($category->getMetaDescription());
         $contentType->setSeoUrls($category->getSeoUrls());
         $contentType->setKeywords($category->getKeywords());
@@ -193,6 +199,9 @@ class CategoryCollector implements DataCollectorInterface
         $contentType->setTags($category->getTags());
         $contentType->setCustomFields($this->customFields[$category->getId()] ?? $category->getCustomFields());
         $contentType->addExtension('original', $category);
+        $contentType->addExtension(SeoRoute::class, new SeoRoute(
+            NavigationPageSeoUrlRoute::ROUTE_NAME, $contentType->getId(), ['navigationId' => $contentType->getId()]
+        ));
         return $contentType;
     }
 }

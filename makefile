@@ -11,4 +11,11 @@ help:
 # ------------------------------------------------------------------------------------------------------------
 
 prepare-for-store: ## Preparing package for store
-	rm LICENSE && rm CHANGELOG.md
+	rm -rf ElioDataDiscovery
+	mkdir ElioDataDiscovery && mkdir ElioDataDiscovery/src
+	cp -r src ElioDataDiscovery
+	cp composer.json ElioDataDiscovery
+	cp README.md ElioDataDiscovery
+	cp phpstan.neon ElioDataDiscovery
+	zip ElioDataDiscovery.zip ElioDataDiscovery -r
+	rm -rf ElioDataDiscovery

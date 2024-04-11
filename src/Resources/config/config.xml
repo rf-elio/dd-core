@@ -54,7 +54,6 @@
             <label>Suggest accepted types in order</label>
             <label lang="de-DE">Akzeptierte Typen in der Reihenfolge vorschlagen</label>
             <placeholder>searchTerm|category|productName</placeholder>
-            <defaultValue>searchTerm|category|productName</defaultValue>
             <helpText>Accepted types for suggest result: searchTerm|category|productName</helpText>
             <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis vorschlagen: searchTerm|category|productName</helpText>
         </input-field>
@@ -83,6 +82,13 @@
             <defaultValue>200</defaultValue>
             <helpText>The size of thumbnail for image that will be send to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
             <helpText lang="de-DE">Die Größe der Thumbnail, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. In den Kategorie-Listing werden normale Bilder verwendet.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>suggestToggleHighlight</name>
+            <label>Toggle hightlighting in suggest</label>
+            <label lang="de-DE">Hervorhebung in den Vorschlägen umschalten</label>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
