@@ -68,6 +68,7 @@ class Configuration extends Struct
      * @param array<string> $botProtectionIpFilter
      * @param bool $searchUseContentChannel
      * @param bool $suggestUseElioDataDiscovery
+     * @param bool $suggestToggleHighlight
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
      * @param int $restrictionsCacheTime
@@ -106,6 +107,7 @@ class Configuration extends Struct
         private readonly array $botProtectionIpFilter,
         private readonly bool $searchUseContentChannel,
         private readonly bool $suggestUseElioDataDiscovery,
+        private readonly bool $suggestToggleHighlight,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
         private readonly int $restrictionsCacheTime,
@@ -368,6 +370,11 @@ class Configuration extends Struct
     public function isProductDetailPageCampaignsActive(): bool
     {
         return $this->productDetailPageCampaignsActive;
+    }
+
+    public function isSuggestToggleHighlight(): bool
+    {
+        return $this->suggestToggleHighlight;
     }
 
     public function isUseProductDetailRecommendations(): bool

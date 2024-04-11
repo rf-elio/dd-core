@@ -137,6 +137,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestUseElioDataDiscovery', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleHighlight', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,
