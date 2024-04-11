@@ -50,9 +50,8 @@ class FilterProductCollectorItemPrepareEvent extends Event
 
     public function __construct(
         private readonly SalesChannelProductEntity $product,
-        private readonly ProductDataType           $item,
-    )
-    {
+        private readonly ProductDataType $item,
+    ) {
     }
 
     public function getProduct(): SalesChannelProductEntity

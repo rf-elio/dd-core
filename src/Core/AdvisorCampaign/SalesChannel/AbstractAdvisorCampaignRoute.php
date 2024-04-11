@@ -47,6 +47,5 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class AbstractAdvisorCampaignRoute
 {
     abstract public function getDecorated(): AbstractAdvisorCampaignRoute;
-
     abstract public function load(Request $request, SalesChannelContext $context): ProductSearchRouteResponse;
 }

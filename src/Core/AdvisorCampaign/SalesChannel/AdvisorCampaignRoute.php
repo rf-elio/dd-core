@@ -54,6 +54,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
+
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
  */
@@ -70,9 +71,8 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SearchApi $searchApi,
         private readonly ProductSearchRequestBuilder $searchRequestBuilder,
-        private readonly ProductListingResultTransformer  $productListingResultTransformer
-    )
-    {
+        private readonly ProductListingResultTransformer $productListingResultTransformer
+    ) {
     }
 
     /**
