@@ -18,7 +18,7 @@ class ContentItem
     /**
      * @param string $id
      * @param string $type
-     * @param string $contentStructure
+     * @param array $contentStructure
      * @param string $title
      * @param string $description
      * @param string $url
@@ -30,7 +30,7 @@ class ContentItem
     public function __construct(
         private readonly string             $id,
         private readonly string             $type,
-        private readonly string             $contentStructure,
+        private readonly array              $contentStructure,
         private readonly string             $title,
         private readonly string             $description,
         private readonly string             $url,
@@ -38,7 +38,9 @@ class ContentItem
         private readonly ?DateTimeInterface $publicationDate,
         private readonly int                $priority,
         private readonly int                $position
-    ) {}
+    )
+    {
+    }
 
     /**
      * @return string
@@ -57,9 +59,9 @@ class ContentItem
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getContentStructure(): string
+    public function getContentStructure(): array
     {
         return $this->contentStructure;
     }
