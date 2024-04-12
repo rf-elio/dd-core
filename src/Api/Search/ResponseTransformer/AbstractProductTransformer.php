@@ -34,13 +34,9 @@ namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Elio\ElioBatteryIncludedApiClient\Model\Result;
-use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
-use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
-use Elio\ElioDataDiscovery\Swagger\ModelInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -69,14 +65,6 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
         private readonly Connection           $connection
     )
     {
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
-    {
-        return $model instanceof Result && $request instanceof ProductSearchRequest;
     }
 
     /**
