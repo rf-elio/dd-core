@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
  * Class Migration1708005000FilterRestrictions
@@ -43,7 +44,7 @@ use Doctrine\DBAL\Exception;
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class Migration1708005000FilterRestrictions
+class Migration1708005000FilterRestrictions extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
@@ -55,7 +56,7 @@ class Migration1708005000FilterRestrictions
      */
     public function update(Connection $connection): void
     {
-        $connection->executeStatement('ALTER TABLE elio_data_discovery_filter_translation RENAME COLUMN property_name TO label;');
+        $connection->executeStatement('ALTER TABLE `elio_data_discovery_filter_translation` RENAME COLUMN `property_name` TO `label`;');
     }
 
     public function updateDestructive(Connection $connection): void
