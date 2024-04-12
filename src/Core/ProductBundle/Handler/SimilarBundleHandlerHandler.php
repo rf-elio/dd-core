@@ -74,6 +74,9 @@ class SimilarBundleHandlerHandler implements ProductBundleHandlerInterface
 
         $resultCollection = $this->recommendationApi->getSimilar($similarRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
+        if (!$productListing) {
+            return new ProductCollection();
+        }
         return Excluder::exclude($productListing->getProducts(), $config);
     }
 }

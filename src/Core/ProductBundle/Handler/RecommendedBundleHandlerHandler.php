@@ -75,6 +75,9 @@ class RecommendedBundleHandlerHandler implements ProductBundleHandlerInterface
 
         $resultCollection = $this->recommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
         $productListing = $resultCollection->get(ProductListingResponse::class);
+        if (!$productListing) {
+            return new ProductCollection();
+        }
         return Excluder::exclude($productListing->getProducts(), $config);
     }
 }
