@@ -44,6 +44,26 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  */
 class SyncProfileCollection extends EntityCollection
 {
+    /**
+     * Searches for the sync profile with the oldest generation finished at date.
+     * @return SyncProfileEntity|null
+     */
+    public function getLeastRecentlyFinishedSyncProfile(): ?SyncProfileEntity
+    {
+        $this->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
+        return $this->first();
+    }
+
+    /**
+     * Checks if there are any sync profiles for that we don't have an execution yet.
+     *
+     * @return bool
+     */
+    public function hasNotExecutedSyncProfiles(): bool
+    {
+        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
+    }
+
     protected function getExpectedClass(): string
     {
         return SyncProfileEntity::class;

@@ -112,6 +112,23 @@
             </call>
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\CategorySyncAdminController" public="true">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\IndexCommandsAdminController" public="true">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="Elio\ElioDataDiscovery\Command\SyncDataCommand">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <argument type="service" id="elio.data-discovery.core.logging.default" />
@@ -131,9 +148,13 @@
         </service>
 
         <service id="Elio\ElioDataDiscovery\Command\ExcludingCategoryInheritanceUpdateCommand">
-            <argument type="service" id="category.repository" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
             <argument type="service" id="elio.data-discovery.core.logging.default" />
             <tag name="console.command"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService">
+            <argument type="service" id="category.repository" />
         </service>
 
         <!-- message handler -->
@@ -141,5 +162,11 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <tag name="messenger.message_handler" />
         </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\IndexHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
+            <tag name="messenger.message_handler" />
+        </service>
+
     </services>
 </container>

@@ -75,8 +75,7 @@ class RankingUpdateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Update ranking...');
-        $context = Context::createDefaultContext();
-        $this->productRankingUpdateService->updateProductRanking($context);
+        $this->productRankingUpdateService->updateProductRanking(Context::createDefaultContext());
         $output->writeln('<info>Ranking updated</info>');
         return Command::SUCCESS;
     }

@@ -30,58 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
 use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class CategorySyncAdminController
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+#[Route(defaults: ['_routeScope' => ['api']])]
+class CategorySyncAdminController extends AbstractController
 {
     public function __construct(
         private readonly CategoryInheritanceService $categoryInheritanceService,
-        private readonly LoggerInterface  $logger
-    )
-    {
-        parent::__construct();
-    }
+    ) {}
 
-    protected function configure(): void
+    #[Route(path:'/api/edd-category-exclusion', name: 'api.custom.elio_data_discovery_category.category-exclusion', methods: ['GET'] )]
+    public function categoryExclusion(): Response
     {
-        $this->setName('elio-data-discovery:category-inheritance:update');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $context = Context::createDefaultContext();
         try {
-            $this->categoryInheritanceService->updateExcludeInheritance($context);
+            $this->categoryInheritanceService->updateExcludeInheritance(Context::createDefaultContext());
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return Command::SUCCESS;
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

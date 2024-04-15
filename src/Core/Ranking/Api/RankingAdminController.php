@@ -30,58 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Ranking\Api;
 
-use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
+use Elio\ElioDataDiscovery\Core\Ranking\ProductRankingUpdateService;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class RankingAdminController
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+#[Route(defaults: ['_routeScope' => ['api']])]
+class RankingAdminController extends AbstractController
 {
     public function __construct(
-        private readonly CategoryInheritanceService $categoryInheritanceService,
-        private readonly LoggerInterface  $logger
-    )
-    {
-        parent::__construct();
-    }
+        private readonly ProductRankingUpdateService $productRankingUpdateService
+    ) {}
 
-    protected function configure(): void
+    #[Route(path:'/api/edd-ranking-update', name: 'api.custom.elio_data_discovery_ranking.ranking-update', methods: ['GET'] )]
+    public function rankingUpdate(): Response
     {
-        $this->setName('elio-data-discovery:category-inheritance:update');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $context = Context::createDefaultContext();
         try {
-            $this->categoryInheritanceService->updateExcludeInheritance($context);
+            $this->productRankingUpdateService->updateProductRanking(Context::createDefaultContext());
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return Command::SUCCESS;
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

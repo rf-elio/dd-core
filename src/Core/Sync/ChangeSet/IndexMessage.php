@@ -30,58 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
-use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
-use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class IndexMessage
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+class IndexMessage implements AsyncMessageInterface
 {
+    /**
+     * @param Context $context
+     */
     public function __construct(
-        private readonly CategoryInheritanceService $categoryInheritanceService,
-        private readonly LoggerInterface  $logger
+        private readonly Context $context
     )
     {
-        parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this->setName('elio-data-discovery:category-inheritance:update');
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
+     * @return Context
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function getContext(): Context
     {
-        $context = Context::createDefaultContext();
-        try {
-            $this->categoryInheritanceService->updateExcludeInheritance($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
-        }
-        return Command::SUCCESS;
+        return $this->context;
     }
 }

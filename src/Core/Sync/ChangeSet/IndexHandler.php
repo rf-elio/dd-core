@@ -30,58 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
-use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
 use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class IndexHandler
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+
+#[AsMessageHandler]
+class IndexHandler
 {
     public function __construct(
-        private readonly CategoryInheritanceService $categoryInheritanceService,
-        private readonly LoggerInterface  $logger
-    )
-    {
-        parent::__construct();
-    }
+        private readonly ChangeSetService $changeSetService
+    ) {}
 
-    protected function configure(): void
+    /**
+     * Starts the sync
+     *
+     * @param IndexMessage $message
+     * @throws Exception
+     */
+    public function __invoke(IndexMessage $message): void
     {
-        $this->setName('elio-data-discovery:category-inheritance:update');
+        $this->changeSetService->index($message->getContext());
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
+     * @return iterable<string>
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public static function getHandledMessages(): iterable
     {
-        $context = Context::createDefaultContext();
-        try {
-            $this->categoryInheritanceService->updateExcludeInheritance($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
-        }
-        return Command::SUCCESS;
+        return [
+            IndexMessage::class
+        ];
     }
 }

@@ -204,7 +204,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
             const headers = {
                 Authorization: `Bearer ${Shopware.Service('loginService').getToken()}`,
             };
-            const endpoint = `refresh-index`;
+            const endpoint = `edd-refresh-index`;
             initContainer.httpClient.get(endpoint, { headers });
         },
         async saveAll() {

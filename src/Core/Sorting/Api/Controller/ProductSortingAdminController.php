@@ -15,7 +15,7 @@ class ProductSortingAdminController extends AbstractController
         private readonly ProductSortingService $productSortingService
     ) {}
 
-    #[Route(path:'/api/refresh-index', name: 'api.custom.elio_data_discovery_product_sorting.refresh-index', methods: ['GET'] )]
+    #[Route(path:'/api/edd-refresh-index', name: 'api.custom.elio_data_discovery_product_sorting.refresh-index', methods: ['GET'] )]
     public function refreshIndex(): Response
     {
         $this->productSortingService->sort(Context::createDefaultContext());
