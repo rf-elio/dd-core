@@ -62,12 +62,14 @@ Shopware.Module.register('elio-data-discovery-sorting-restrictions', {
         }
     },
 
-    navigation: [{
-        label: 'elio-data-discovery.restrictions.sorting.title',
-        color: '#014587',
-        path: 'elio.data.discovery.sorting.restrictions.index.global',
+    settingsItem: [{
+        to: 'elio.data.discovery.sorting.restrictions.index.global',
+        group: 'plugins',
         icon: 'regular-products',
-        parent: 'elio-data-discovery',
-        position: 1
+        iconComponent: 'elio-data-discovery-plugin-icon',
+        id: '',
+        name: '',
+        label: 'elio-data-discovery.restrictions.sorting.title',
+        color: '#014587'
     }]
 });

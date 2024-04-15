@@ -20,12 +20,14 @@ Shopware.Module.register('elio-data-discovery-commands', {
         }
     },
 
-    navigation: [{
-        label: 'elio-data-discovery-commands.title',
-        color: '#014587',
-        path: 'elio.data.discovery.commands.index',
+    settingsItem: [{
+        to: 'elio.data.discovery.commands.index',
+        group: 'plugins',
         icon: 'regular-products',
-        parent: 'elio-data-discovery',
-        position: 3
+        iconComponent: 'elio-data-discovery-plugin-icon',
+        id: '',
+        name: '',
+        label: 'elio-data-discovery-commands.title',
+        color: '#014587'
     }]
 });

@@ -1,4 +1,3 @@
-import './module/elio-data-discovery/index';
 import './module/elio-extension-config-detail/index';
 import './module/elio-data-discovery-sync-profile/index';
 import './module/elio-data-discovery-logging/index';
@@ -18,6 +17,10 @@ import enGB from './snippet/en-GB.json';
 
 Shopware.Locale.extend('de-DE', deDE);
 Shopware.Locale.extend('en-GB', enGB);
+
+(async function initDependencies() {
+    await import(/* webpackMode: 'eager' */ './component/elio-data-discovery-plugin-icon');
+})();
 
 Shopware.Module.register('sw-category-tab-ruler', {
     routeMiddleware(next, currentRoute) {
