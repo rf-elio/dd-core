@@ -23,10 +23,6 @@ Shopware.Component.extend('elio-data-discovery-sync-profile-create', 'elio-data-
                 trigger_import_suggest_data: false
             }
             this.elio_data_discovery_sync_profile.interval = '0 */4 * * *';
-
-            this.elio_data_discovery_sync_profile.type = 'export';
-            this.elio_data_discovery_sync_profile.dataType = 'product';
-            this.elio_data_discovery_sync_profile.format = 'csv';
             this.elio_data_discovery_sync_profile.active = true;
             this.elio_data_discovery_sync_profile.mapping = {};
             this.elio_data_discovery_sync_profile.downloadUsername = 'elio-data-discovery';

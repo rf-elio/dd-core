@@ -4,6 +4,7 @@
     "description": "",
     "buttonSave": "Speichern",
     "buttonCancel": "Abbrechen",
+    "noActiveExtensions": "Um das Sync-Modul von Elio Data Discovery nutzen zu können, müssen Sie das Erweiterungs-Plugin mit Unterstützung für Synchronisierungsprofile aktivieren",
     "create": {
       "new-export-name": "Neuer Sync"
     },

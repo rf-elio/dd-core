@@ -36,7 +36,8 @@ interface ProfileInterface
 {
     public const FEATURES = [
         'multiLanguageSupport' => false,
-        'deltaSupport' => true
+        'deltaSupport' => true,
+        'categorySelection' => false,
     ];
 
     public function getName(): string;

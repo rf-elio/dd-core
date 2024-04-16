@@ -4,6 +4,7 @@
     "description": "",
     "buttonSave": "Save",
     "buttonCancel": "Cancel",
+    "noActiveExtensions": "In order to use Sync module of Elio Data Discovery you would need to activate the extension plugin with sync profiles support",
     "create": {
       "new-export-name": "New Sync"
     },
