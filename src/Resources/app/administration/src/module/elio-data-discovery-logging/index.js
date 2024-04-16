@@ -31,12 +31,14 @@ Shopware.Module.register('elio-data-discovery-logging', {
         }
     },
 
-    navigation: [{
-        label: 'elio-data-discovery-logging.title',
-        color: '#014587',
-        path: 'elio.data.discovery.logging.list',
+    settingsItem: [{
+        to: 'elio.data.discovery.logging.list',
+        group: 'plugins',
         icon: 'regular-products',
-        parent: 'elio-data-discovery',
-        position: 3
+        iconComponent: 'elio-data-discovery-plugin-icon',
+        id: '',
+        name: '',
+        label: 'elio-data-discovery-logging.title',
+        color: '#014587'
     }]
 });

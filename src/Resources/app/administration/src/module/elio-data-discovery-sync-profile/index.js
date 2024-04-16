@@ -50,12 +50,14 @@ Shopware.Module.register('elio-data-discovery-sync-profile', {
         }
     },
 
-    navigation: [{
-        label: 'elio-data-discovery-sync-profile.title',
-        color: '#014587',
-        path: 'elio.data.discovery.sync.profile.list',
+    settingsItem: [{
+        to: 'elio.data.discovery.sync.profile.list',
+        group: 'plugins',
         icon: 'regular-products',
-        parent: 'elio-data-discovery',
-        position: 1
+        iconComponent: 'elio-data-discovery-plugin-icon',
+        id: '',
+        name: '',
+        label: 'elio-data-discovery-sync-profile.title',
+        color: '#014587'
     }]
 });
