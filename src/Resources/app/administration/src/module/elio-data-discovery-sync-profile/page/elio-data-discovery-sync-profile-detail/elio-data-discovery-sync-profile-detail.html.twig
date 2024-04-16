@@ -43,7 +43,11 @@
                     </sw-language-info>
                 {% endblock %}
 
-                <sw-card v-if="elio_data_discovery_sync_profile" :title="$tc('elio-data-discovery-sync-profile.detail.cardTitleBasicInfo')" :isLoading="isLoading">
+                <sw-alert v-if="!isExtensionsActive" variant="warning" class="sw-error-summary">
+                    {{ $tc('elio-data-discovery-sync-profile.noActiveExtensions') }}
+                </sw-alert>
+
+                <sw-card positionIdentifier="1" v-if="elio_data_discovery_sync_profile" :title="$tc('elio-data-discovery-sync-profile.detail.cardTitleBasicInfo')" :isLoading="isLoading">
                     <sw-container slot="grid" rows="auto auto">
                         <sw-card-section divider="bottom">
                             {% block elio_data_discovery_sync_profile_detail_basic_info %}
@@ -51,6 +55,7 @@
                                         v-model="elio_data_discovery_sync_profile.name"
                                         type="text"
                                         required
+                                        :error="elioDataDiscoverySyncProfileNameError"
                                         :label="$tc('elio-data-discovery-sync-profile.detail.labelName')"
                                         :placeholder="placeholder(elio_data_discovery_sync_profile, 'name', $tc('elio-data-discovery-sync-profile.detail.placeholderName'))">
                                 </sw-field>
@@ -59,6 +64,7 @@
                                             v-model="elio_data_discovery_sync_profile.profile"
                                             type="select"
                                             required
+                                            :error="elioDataDiscoverySyncProfileProfileError"
                                             :options="profiles"
                                             :label="$tc('elio-data-discovery-sync-profile.detail.labelProfile')"
                                             @change="onChangeProfile">
@@ -68,6 +74,7 @@
                                             v-model="elio_data_discovery_sync_profile.dataType"
                                             type="select"
                                             required
+                                            :error="elioDataDiscoverySyncProfileDataTypeError"
                                             :options="dataTypes"
                                             :label="$tc('elio-data-discovery-sync-profile.detail.labelDataType')">
                                     </sw-field>
@@ -82,6 +89,7 @@
                                         v-model="elio_data_discovery_sync_profile.interval"
                                         type="text"
                                         required
+                                        :error="elioDataDiscoverySyncProfileIntervalError"
                                         :label="$tc('elio-data-discovery-sync-profile.detail.labelInterval')"
                                         placeholder="0 * * * *"
                                         :helpText="$tc('elio-data-discovery-sync-profile.detail.helpTextInterval')">
@@ -114,6 +122,7 @@
                                             type="select"
                                             required
                                             :options="salesChannelIdsList"
+                                            :error="elioDataDiscoverySyncProfileSalesChannelIdError"
                                             :label="$tc('elio-data-discovery-sync-profile.detail.labelSalesChannel')"
                                             @change="onSalesChannelChange">
                                     </sw-field>
@@ -137,10 +146,11 @@
                                     >
                                     </sw-entity-single-select>
                                     <sw-entity-multi-select
-                                            v-if="baseCategories"
+                                            v-if="features.categorySelection && baseCategories"
                                             v-model="baseCategories"
                                             required
                                             entity-name="category"
+                                            :error="elioDataDiscoverySyncProfileBaseCategoryIdsError"
                                             :label="$tc('elio-data-discovery-sync-profile.detail.baseCategoryLabel')"
                                             @change="onChangeBaseCategory"
                                     />
@@ -241,7 +251,7 @@
                     </sw-container>
                 </sw-card>
 
-                <sw-card v-if="elio_data_discovery_sync_profile && (elio_data_discovery_sync_profile.dataType === 'Elio\\ElioDataDiscovery\\Core\\Sync\\DataTypes\\ContentType' || type == 'export')"
+                <sw-card positionIdentifier="2" v-if="elio_data_discovery_sync_profile && (elio_data_discovery_sync_profile.dataType === 'Elio\\ElioDataDiscovery\\Core\\Sync\\DataTypes\\ContentType' || type == 'export')"
                          :title="$tc('elio-data-discovery-sync-profile.detail.cardTitleConfig')"
                          :isLoading="isLoading">
                     <div v-if="elio_data_discovery_sync_profile.dataType === 'Elio\\ElioDataDiscovery\\Core\\Sync\\DataTypes\\ContentType'">
@@ -276,7 +286,7 @@
                     </div>
                 </sw-card>
 
-                <sw-card :class="[{'elio-data-discovery-mappings--empty':isMappingsEmpty}]"
+                <sw-card positionIdentifier="3" :class="[{'elio-data-discovery-mappings--empty':isMappingsEmpty}]"
                          v-if="!isNew"
                          :title="$tc('elio-data-discovery-sync-profile.detail.cardTitleMappings')"
                          :isLoading="isLoading">

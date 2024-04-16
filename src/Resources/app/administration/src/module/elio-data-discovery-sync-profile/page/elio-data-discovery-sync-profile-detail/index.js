@@ -3,12 +3,14 @@ import './elio-data-discovery-sync-profile-detail.scss';
 
 const {Mixin} = Shopware;
 const {Criteria, EntityCollection} = Shopware.Data;
+const {mapPropertyErrors} = Shopware.Component.getComponentHelper();
 
 Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
     template: template,
     inject: [
         'repositoryFactory',
-        'elioDataDiscoverySyncProfile'
+        'elioDataDiscoverySyncProfile',
+        'entityValidationService'
     ],
     mixins: [
         Mixin.getByName('notification'),
@@ -72,7 +74,8 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             newLanguageId: null,
             currentLanguageId: null,
             languageId: null,
-            languageCriteria: new Criteria
+            languageCriteria: new Criteria,
+            isExtensionsActive: true
         };
     },
 
@@ -81,6 +84,15 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
     },
 
     computed: {
+        ...mapPropertyErrors('elio_data_discovery_sync_profile', [
+            'name',
+            'profile',
+            'dataType',
+            'interval',
+            'salesChannelId',
+            'baseCategoryIds',
+        ]),
+
         identifier() {
             return this.placeholder(this.elio_data_discovery_sync_profile, 'name');
         },
@@ -205,8 +217,12 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
         },
 
         _loadProfiles() {
-             this.elioDataDiscoverySyncProfile.getProfiles().then((response) => {
+            this.elioDataDiscoverySyncProfile.getProfiles().then((response) => {
+                let isFound = false;
+
                 Object.entries(response.profiles).forEach(([key, data]) => {
+                    isFound = true;
+                    this.isExtensionsActive = true;
                     this.profiles.push({
                         id: key,
                         name: data['name'],
@@ -214,6 +230,10 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
                         features: data['features']
                     })
                 });
+
+                if (!isFound) {
+                    this.isExtensionsActive = false;
+                }
 
                 this.onChangeProfile(this.profiles[0].id);
             });
@@ -281,6 +301,20 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
                     message: this.$tc('elio-data-discovery-sync-profile.detail.messageSaveError', 0, {
                         error: 'Please select at least one language'
                     })
+                });
+                this.isLoading = false;
+                return;
+            }
+
+            if (!this.entityValidationService.validate(this.elio_data_discovery_sync_profile)) {
+                const titleSaveError = this.$tc('global.default.error');
+                const messageSaveError = this.$tc(
+                    'global.notification.notificationSaveErrorMessageRequiredFieldsInvalid',
+                );
+
+                this.createNotificationError({
+                    title: titleSaveError,
+                    message: messageSaveError,
                 });
                 this.isLoading = false;
                 return;
