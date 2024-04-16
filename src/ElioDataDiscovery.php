@@ -32,7 +32,16 @@
 
 namespace Elio\ElioDataDiscovery;
 
-use Elio\ElioDataDiscovery\Core\FilterRestrictions\Setup\FilterRestrictionsSetup;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\Aggregate\FilterDefinitionTranslation\FilterDefinitionTranslationDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsDefinition;
+use Elio\ElioDataDiscovery\Core\FilterRestrictions\FilterRestrictionsFilterMapping;
+use Doctrine\DBAL\Connection;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingDefinition;
+use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingTreeDefinition;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusDefinition;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping;
 use Elio\ElioDataDiscovery\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Content\Category\CategoryDefinition;
@@ -44,6 +53,7 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
@@ -130,15 +140,34 @@ class ElioDataDiscovery extends Plugin
      */
     public function uninstall(UninstallContext $uninstallContext): void
     {
-        if ($uninstallContext->keepUserData()) {
+        if ($uninstallContext->keepUserData() || !$this->container) {
             return;
         }
 
-        if (!$this->container) {
-            return;
+        try {
+            $connection = $this->container->get(Connection::class);
+            if ($connection instanceof Connection) {
+                $tables = [
+                    FilterDefinitionTranslationDefinition::ENTITY_NAME,
+                    FilterRestrictionsFilterMapping::ENTITY_NAME,
+                    FilterRestrictionsDefinition::ENTITY_NAME,
+                    FilterDefinition::ENTITY_NAME,
+                    EntityStatusDefinition::ENTITY_NAME,
+                    ProductSortingTreeDefinition::ENTITY_NAME,
+                    ProductSortingDefinition::ENTITY_NAME,
+                    SyncProfileLanguageMapping::ENTITY_NAME,
+                    SyncProfileDefinition::ENTITY_NAME,
+                ];
+
+                foreach ($tables as $table) {
+                    $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', $table));
+                }
+            }
+        } catch (ServiceNotFoundException) {
         }
 
-        (new FilterRestrictionsSetup($this->container))->removeTables();
+        $customFieldSetup = new CustomFieldSetup($this->container);
+        $customFieldSetup->uninstall($this->getCustomFieldSets());
     }
 
     private function getCustomFieldSets(): array
@@ -228,40 +257,40 @@ class ElioDataDiscovery extends Plugin
                     ]
                 ],
                 'relations' => [CategoryDefinition::ENTITY_NAME, LandingPageDefinition::ENTITY_NAME],
-                self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT => [
-                    'label' => [
-                        'en-GB' => 'ElioDataDiscovery product',
-                        'de-DE' => 'ElioDataDiscovery product',
-                    ],
-                    'fields' => [
-                        self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [
-                            'type' => 'int',
-                            'componentName' => 'sw-field',
-                            'label' => [
-                                'en-GB' => 'Order count',
-                                'de-DE' => 'Anzahl Bestellungen'
-                            ]
-                        ],//{"type": "number", "label": {"en-GB": "xcvxcv"}, "helpText": {"en-GB": null}, "numberType": "float", "placeholder": {"en-GB": null}, "componentName": "sw-field", "customFieldType": "number", "customFieldPosition": 1}
-                        self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT => [
-                            'type' => 'float',
-                            'componentName' => 'sw-field',
-                            'label' => [
-                                'en-GB' => 'Order amount',
-                                'de-DE' => 'Bestellwert'
-                            ]
-                        ],
-                        self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT => [
-                            'type' => 'bool',
-                            'componentName' => 'sw-field',
-                            'label' => [
-                                'en-GB' => 'Displayed product/variant in search result / navigation',
-                                'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
-                            ]
+            ],
+            self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT => [
+                'label' => [
+                    'en-GB' => 'ElioDataDiscovery product',
+                    'de-DE' => 'ElioDataDiscovery product',
+                ],
+                'fields' => [
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT => [
+                        'type' => 'int',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Order count',
+                            'de-DE' => 'Anzahl Bestellungen'
+                        ]
+                    ],//{"type": "number", "label": {"en-GB": "xcvxcv"}, "helpText": {"en-GB": null}, "numberType": "float", "placeholder": {"en-GB": null}, "componentName": "sw-field", "customFieldType": "number", "customFieldPosition": 1}
+                    self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT => [
+                        'type' => 'float',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Order amount',
+                            'de-DE' => 'Bestellwert'
                         ]
                     ],
-                    'relations' => [ProductDefinition::ENTITY_NAME]
-                ]
-            ],
+                    self::CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT => [
+                        'type' => 'bool',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Displayed product/variant in search result / navigation',
+                            'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
+                        ]
+                    ]
+                ],
+                'relations' => [ProductDefinition::ENTITY_NAME]
+            ]
         ];
     }
 }
