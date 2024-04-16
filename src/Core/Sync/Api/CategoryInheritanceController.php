@@ -54,7 +54,7 @@ class CategoryInheritanceController extends AbstractController
         private readonly CategoryInheritanceService $categoryInheritanceService,
     ) {}
 
-    #[Route(path:'/api/_action/elio-data-discovery/category-exclusion', name: 'api.custom.elio_data_discovery_category.category-exclusion', methods: ['GET'] )]
+    #[Route(path:'/api/_action/elio-data-discovery/category-inheritance-update', name: 'api.custom.elio_data_discovery_category.category-inheritance-update', methods: ['GET'] )]
     public function categoryExclusion(): Response
     {
         try {

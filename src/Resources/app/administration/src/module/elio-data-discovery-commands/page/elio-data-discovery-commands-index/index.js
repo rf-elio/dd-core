@@ -37,7 +37,7 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
                 },
                 "categoryInheritanceUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'category-exclusion'
+                    'endpoint': 'category-inheritance-update'
                 },
                 "syncData": {
                     'handler': 'generateSyncData',
