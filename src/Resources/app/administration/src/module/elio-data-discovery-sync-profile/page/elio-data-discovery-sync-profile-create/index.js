@@ -36,7 +36,7 @@ Shopware.Component.extend('elio-data-discovery-sync-profile-create', 'elio-data-
 
         onSaveFinish() {
             this.isSaveSuccessful = false;
-            this.$router.push({ name: 'elio.data.discovery.sync.profile.detail', params: { id: this.elio_data_discovery_export.id } });
+            this.$router.push({ name: 'elio.data.discovery.sync.profile.detail', params: { id: this.elio_data_discovery_sync_profile.id } });
         },
 
         onSave() {
