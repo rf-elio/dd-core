@@ -102,9 +102,6 @@ class ElioDataDiscovery extends Plugin
             return;
         }
 
-        $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($activateContext->getContext(), self::DEFAULT_FILTERS, true);
-
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install($this->getCustomFieldSets());
     }
@@ -121,9 +118,6 @@ class ElioDataDiscovery extends Plugin
         if (!$this->container) {
             return;
         }
-
-        $filtersSetup = new FilterRestrictionsSetup($this->container);
-        $filtersSetup->createFilters($updateContext->getContext(), self::DEFAULT_FILTERS);
 
         $customFieldSetup = new CustomFieldSetup($this->container);
         $customFieldSetup->install($this->getCustomFieldSets());
