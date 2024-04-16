@@ -30,38 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\Api;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
-use Exception;
 use Shopware\Core\Framework\Context;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class CategorySyncAdminController
+ * Class IndexMessage
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-#[Route(defaults: ['_routeScope' => ['api']])]
-class CategorySyncAdminController extends AbstractController
+class IndexMessage implements AsyncMessageInterface
 {
+    /**
+     * @param Context $context
+     */
     public function __construct(
-        private readonly CategoryInheritanceService $categoryInheritanceService,
-    ) {}
-
-    #[Route(path:'/api/edd-category-exclusion', name: 'api.custom.elio_data_discovery_category.category-exclusion', methods: ['GET'] )]
-    public function categoryExclusion(): Response
+        private readonly Context $context
+    )
     {
-        try {
-            $this->categoryInheritanceService->updateExcludeInheritance(Context::createDefaultContext());
-        } catch (Exception $e) {
-            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @return Context
+     */
+    public function getContext(): Context
+    {
+        return $this->context;
     }
 }

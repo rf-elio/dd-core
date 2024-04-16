@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
 use Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class SyncProfileHandler
- * @package Elio\ElioDataDiscovery\Core\Export
+ * Class IndexHandler
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
+
 #[AsMessageHandler]
-class SyncProfileHandler
+class IndexHandler
 {
     public function __construct(
-        private readonly SyncService $syncService
+        private readonly ChangeSetService $changeSetService
     ) {}
 
     /**
      * Starts the sync
      *
-     * @param SyncProfileMessage $message
+     * @param IndexMessage $message
      * @throws Exception
      */
-    public function __invoke(SyncProfileMessage $message): void
+    public function __invoke(IndexMessage $message): void
     {
-        $this->syncService->sync($message->getSyncProfile());
+        $this->changeSetService->index($message->getContext());
     }
 
     /**
@@ -68,7 +69,7 @@ class SyncProfileHandler
     public static function getHandledMessages(): iterable
     {
         return [
-            SyncProfileMessage::class
+            IndexMessage::class
         ];
     }
 }

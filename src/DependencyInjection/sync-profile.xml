@@ -112,14 +112,14 @@
             </call>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\CategorySyncAdminController" public="true">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\CategoryInheritanceController" public="true">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\IndexCommandsAdminController" public="true">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Api\IndexController" public="true">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
@@ -147,7 +147,7 @@
             <tag name="console.command"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Command\ExcludingCategoryInheritanceUpdateCommand">
+        <service id="Elio\ElioDataDiscovery\Command\CategoryInheritanceUpdateCommand">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
             <argument type="service" id="elio.data-discovery.core.logging.default" />
             <tag name="console.command"/>
@@ -158,12 +158,12 @@
         </service>
 
         <!-- message handler -->
-        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileHandler">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Message\SyncProfileHandler">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\IndexHandler">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Message\IndexHandler">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <tag name="messenger.message_handler" />
         </service>

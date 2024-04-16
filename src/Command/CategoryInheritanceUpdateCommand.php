@@ -41,14 +41,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class CategoryInheritanceUpdateCommand
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+class CategoryInheritanceUpdateCommand extends Command
 {
     public function __construct(
         private readonly CategoryInheritanceService $categoryInheritanceService,

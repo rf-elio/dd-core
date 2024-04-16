@@ -21,27 +21,27 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
             commands: {
                 "indexCleanup": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'edd-index-cleanup'
+                    'endpoint': 'index-cleanup'
                 },
                 "indexUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'edd-index-update'
+                    'endpoint': 'index-update'
                 },
                 "productSortUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'edd-refresh-index'
+                    'endpoint': 'refresh-index'
                 },
                 "rankingUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'edd-ranking-update'
+                    'endpoint': 'ranking-update'
                 },
-                "excludingCategoryInheritanceUpdate": {
+                "categoryInheritanceUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'edd-category-exclusion'
+                    'endpoint': 'category-exclusion'
                 },
                 "syncData": {
                     'handler': 'generateSyncData',
-                    'endpoint': 'edd-category-exclusion',
+                    'endpoint': '',
                     'argument': {
                         'name': 'syncProfileId',
                         'value': '<syncProfileId>'
@@ -94,7 +94,7 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
             };
             const endpoint = this.commands[command].endpoint;
 
-            initContainer.httpClient.get(endpoint, {headers}).then((response) => {
+            initContainer.httpClient.get(('/api/_action/elio-data-discovery/' + endpoint), {headers}).then((response) => {
                 let feedback = '';
                 if (!response.data || response.data === '') {
                     feedback = this.$tc('elio-data-discovery-commands.commandFinishedSuccess')
@@ -116,7 +116,6 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
         },
 
         generateSyncData(command) {
-            console.log('generateSyncData');
             this.isLoading = true;
             this.commands[command].processing = true;
 
@@ -137,7 +136,9 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
             }, that.commands[command].updateInterval || 3000);
 
             this.elioDataDiscoverySyncProfile.generate(this.commands[command].argument.value).then((responce) => {
-                console.log(responce);
+                this.createNotificationSuccess({
+                    message: this.$tc('elio-data-discovery-commands.commandStartedAsync')
+                });
             }).catch((exception) => {
                 this.createNotificationError({
                     message: this.$tc('elio-data-discovery-sync-profile.detail.messageGeneratingError', 0, {

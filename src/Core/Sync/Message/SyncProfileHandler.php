@@ -30,58 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-use Shopware\Core\Framework\Context;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Exception;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class SyncProfileMessage
+ * Class SyncProfileHandler
  * @package Elio\ElioDataDiscovery\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileMessage
+#[AsMessageHandler]
+class SyncProfileHandler
 {
-    /**
-     * @param SyncProfileEntity $syncProfile
-     * @param Context $context
-     */
     public function __construct(
-        private SyncProfileEntity $syncProfile,
-        private Context $context
+        private readonly SyncService $syncService
     ) {}
 
     /**
-     * @return Context
+     * Starts the sync
+     *
+     * @param SyncProfileMessage $message
+     * @throws Exception
      */
-    public function getContext(): Context
+    public function __invoke(SyncProfileMessage $message): void
     {
-        return $this->context;
+        $this->syncService->sync($message->getSyncProfile());
     }
 
     /**
-     * @param Context $context
+     * @return iterable<string>
      */
-    public function setContext(Context $context): void
+    public static function getHandledMessages(): iterable
     {
-        $this->context = $context;
-    }
-
-    /**
-     * @return SyncProfileEntity
-     */
-    public function getSyncProfile(): SyncProfileEntity
-    {
-        return $this->syncProfile;
-    }
-
-    /**
-     * @param SyncProfileEntity $syncProfile
-     */
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
-    {
-        $this->syncProfile = $syncProfile;
+        return [
+            SyncProfileMessage::class
+        ];
     }
 }

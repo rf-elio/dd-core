@@ -54,7 +54,7 @@ class RankingAdminController extends AbstractController
         private readonly ProductRankingUpdateService $productRankingUpdateService
     ) {}
 
-    #[Route(path:'/api/edd-ranking-update', name: 'api.custom.elio_data_discovery_ranking.ranking-update', methods: ['GET'] )]
+    #[Route(path:'/api/_action/elio-data-discovery/ranking-update', name: 'api.custom.elio_data_discovery_ranking.ranking-update', methods: ['GET'] )]
     public function rankingUpdate(): Response
     {
         try {

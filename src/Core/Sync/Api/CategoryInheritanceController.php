@@ -30,45 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
+use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
 use Exception;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Shopware\Core\Framework\Context;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class IndexHandler
+ * Class CategoryInheritanceController
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-
-#[AsMessageHandler]
-class IndexHandler
+#[Route(defaults: ['_routeScope' => ['api']])]
+class CategoryInheritanceController extends AbstractController
 {
     public function __construct(
-        private readonly ChangeSetService $changeSetService
+        private readonly CategoryInheritanceService $categoryInheritanceService,
     ) {}
 
-    /**
-     * Starts the sync
-     *
-     * @param IndexMessage $message
-     * @throws Exception
-     */
-    public function __invoke(IndexMessage $message): void
+    #[Route(path:'/api/_action/elio-data-discovery/category-exclusion', name: 'api.custom.elio_data_discovery_category.category-exclusion', methods: ['GET'] )]
+    public function categoryExclusion(): Response
     {
-        $this->changeSetService->index($message->getContext());
-    }
-
-    /**
-     * @return iterable<string>
-     */
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            IndexMessage::class
-        ];
+        try {
+            $this->categoryInheritanceService->updateExcludeInheritance(Context::createDefaultContext());
+        } catch (Exception $e) {
+            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

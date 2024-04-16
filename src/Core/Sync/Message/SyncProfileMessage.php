@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2024, elio GmbH.
+ * Copyright (c) 2021, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,29 +30,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class IndexMessage
- *
+ * Class SyncProfileMessage
+ * @package Elio\ElioDataDiscovery\Core\Export
  * @category Shopware
- * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ * @author Danil Lukov <dl@elio-systems.com>
+ * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class IndexMessage implements AsyncMessageInterface
+class SyncProfileMessage
 {
     /**
+     * @param SyncProfileEntity $syncProfile
      * @param Context $context
      */
     public function __construct(
-        private readonly Context $context
-    )
-    {
-    }
+        private SyncProfileEntity $syncProfile,
+        private Context $context
+    ) {}
 
     /**
      * @return Context
@@ -60,5 +60,29 @@ class IndexMessage implements AsyncMessageInterface
     public function getContext(): Context
     {
         return $this->context;
+    }
+
+    /**
+     * @param Context $context
+     */
+    public function setContext(Context $context): void
+    {
+        $this->context = $context;
+    }
+
+    /**
+     * @return SyncProfileEntity
+     */
+    public function getSyncProfile(): SyncProfileEntity
+    {
+        return $this->syncProfile;
+    }
+
+    /**
+     * @param SyncProfileEntity $syncProfile
+     */
+    public function setSyncProfile(SyncProfileEntity $syncProfile): void
+    {
+        $this->syncProfile = $syncProfile;
     }
 }
