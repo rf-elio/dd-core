@@ -1,42 +1,42 @@
 {
     "elio-data-discovery-commands": {
-        "title": "Befehle",
-        "description": "Befehle Panel",
+        "title": "Aktionen",
+        "description": "Übersicht der Aktionen",
         "commandFinishedSuccess": "Befehl wurde erfolgreich abgeschlossen.",
         "commandStartedAsync": "Befehl wurde erfolgreich asynchron im Hintergrund gestartet.",
         "indexCleanup": {
             "header": "IndexCleanupCommand",
-            "description": "Der IndexCleanup-Befehl entfernt alle unnötigen gelöschten Entitäten mit dem Status 'gelöscht' aus dem System, das bereits mit dem externen System synchronisiert ist. Es überprüft dies anhand des letzten Generierungssynchronisationsdatums aller Profile.",
+            "description": "Der IndexCleanup-Befehl entfernt alle nicht mehr benötigen Einträge aus dem Index.",
             "button": "Index Cleanup",
             "command": "./bin/console elio-data-discovery:index:cleanup"
         },
         "indexUpdate": {
             "header": "IndexUpdateCommand",
-            "description": "Index Update berechnet den Hash der Synchronisationsdatenelemente (Produkt / Inhalt) in der Datenbanktabelle elio_data_discovery_entity_status neu.",
+            "description": "Aktualisiert den Index welcher für Delta-Updates der Search-Engine genutzt wird.",
             "button": "Index Update",
             "command": "./bin/console elio-data-discovery:index:update"
         },
         "productSortUpdate": {
             "header": "ProductSortUpdateCommand",
-            "description": "Die Schaltfläche \"Sortierung aktualisieren\" berechnet die Sortierpositionen für die übergeordneten Kategorien aus den untergeordneten neu. Sie durchläuft alle Kategorien des Shops.",
+            "description": "Aktualisiert die Kategorie spezifischen Produktpositionen",
             "button": "Sortierung aktualisieren",
             "command": "./bin/console elio-data-discovery:product-sort:update"
         },
         "rankingUpdate": {
             "header": "RankingUpdateCommand",
-            "description": "Die Schaltfläche \"Ranking Update\" sucht nach Bestellungen in den zuletzt konfigurierten Tagen (Standard 14) innerhalb des vom Plugin konfigurierten Status und berechnet das Ranking für das Produkt basierend auf der Anzahl der bestellten Produkte und dem Bestellbetrag.",
+            "description": "Aktualisiert das Ranking der Produkte basierend auf den Bestellungen der letzten 14 Tage (konfigurierbar).",
             "button": "Ranking Update",
             "command": "./bin/console elio-data-discovery:ranking:update"
         },
         "syncData": {
             "header": "SyncDataCommand",
-            "description": "Generiert die Synchronisationsdaten für die gegebene Synchronisationsprofil-ID <syncProfileId>. Optional kann das Flag -f hinzugefügt werden, um die Synchronisation über das gegebene Datumsbereichsintervall zu erzwingen. Wenn das Erweiterungsplugin die Import-API unterstützt -> kann auch den Import im externen System auslösen.",
+            "description": "Synchronisiert Produkte und Inhalte mit der Search-Engine.",
             "button": "Sync Data",
             "command": "./bin/console bin/console elio-data-discovery:profiles:sync [-f] <syncProfileId>"
         },
         "categoryInheritanceUpdate": {
             "header": "CategoryInheritanceUpdateCommand",
-            "description": "Synchronisiert die benutzerdefinierten Felder der 'sync-excluded'-Gruppe für die Kategorien basierend auf der Konfiguration",
+            "description": "Übernimmt vererbte Einstellungen der Inhaltssuche in die Unterkategorien.",
             "button": "Category Excluding Update",
             "command": "./bin/console elio-data-discovery:category-inheritance:update"
         }
