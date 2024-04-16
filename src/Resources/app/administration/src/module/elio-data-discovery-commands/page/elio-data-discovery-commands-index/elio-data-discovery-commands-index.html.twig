@@ -1,0 +1,36 @@
+<sw-page class="elio-data-discovery-logging-list">
+    <sw-card-view slot="content">
+        <sw-loader v-if="isLoading" size="50px"></sw-loader>
+        <sw-card positionIdentifier="1">
+            <div v-for="(command, index) in commands" class="command">
+                <div class="command-header">
+                    {{ header(index) }}
+                </div>
+                <div class="command-container">
+                    <div class="command-button-container">
+                        <sw-button size="small"
+                                   :is-loading="commands[index].processing"
+                                   :disabled="isLoading"
+                                   @click="handle(command.handler, index)"
+                        >{{ button(index) }}</sw-button>
+                    </div>
+                    <div v-if="getCommandArgumentInput(index)" class="command-input-container">
+                        <sw-field type="text"
+                                  v-model="getCommandArgumentInput(index).value"
+                        ></sw-field>
+                    </div>
+                    <div class="command-field-container">
+                        <sw-field
+                                v-model="getCommandText(index)"
+                                type="text"
+                                readonly>
+                        </sw-field>
+                    </div>
+                </div>
+                <div class="command-description">
+                    {{ description(index) }}
+                </div>
+            </div>
+        </sw-card>
+    </sw-card-view>
+</sw-page>

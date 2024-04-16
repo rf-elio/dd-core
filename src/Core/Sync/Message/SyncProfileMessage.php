@@ -30,42 +30,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Shopware\Core\Framework\Context;
 
 /**
- * Class SyncProfileCollection
- * @package Elio\ElioDataDiscovery\Core\Sync
+ * Class SyncProfileMessage
+ * @package Elio\ElioDataDiscovery\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileCollection extends EntityCollection
+class SyncProfileMessage
 {
     /**
-     * Searches for the sync profile with the oldest generation finished at date.
-     * @return SyncProfileEntity|null
+     * @param SyncProfileEntity $syncProfile
+     * @param Context $context
      */
-    public function getLeastRecentlyFinishedSyncProfile(): ?SyncProfileEntity
+    public function __construct(
+        private SyncProfileEntity $syncProfile,
+        private Context $context
+    ) {}
+
+    /**
+     * @return Context
+     */
+    public function getContext(): Context
     {
-        $this->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
-        return $this->first();
+        return $this->context;
     }
 
     /**
-     * Checks if there are any sync profiles for that we don't have an execution yet.
-     *
-     * @return bool
+     * @param Context $context
      */
-    public function hasNotExecutedSyncProfiles(): bool
+    public function setContext(Context $context): void
     {
-        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
+        $this->context = $context;
     }
 
-    protected function getExpectedClass(): string
+    /**
+     * @return SyncProfileEntity
+     */
+    public function getSyncProfile(): SyncProfileEntity
     {
-        return SyncProfileEntity::class;
+        return $this->syncProfile;
+    }
+
+    /**
+     * @param SyncProfileEntity $syncProfile
+     */
+    public function setSyncProfile(SyncProfileEntity $syncProfile): void
+    {
+        $this->syncProfile = $syncProfile;
     }
 }

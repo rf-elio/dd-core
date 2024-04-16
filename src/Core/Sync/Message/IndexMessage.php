@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,45 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-
-use Exception;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class SyncProfileHandler
- * @package Elio\ElioDataDiscovery\Core\Export
+ * Class IndexMessage
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-#[AsMessageHandler]
-class SyncProfileHandler
+class IndexMessage implements AsyncMessageInterface
 {
-    public function __construct(
-        private readonly SyncService $syncService
-    ) {}
-
     /**
-     * Starts the sync
-     *
-     * @param SyncProfileMessage $message
-     * @throws Exception
+     * @param Context $context
      */
-    public function __invoke(SyncProfileMessage $message): void
+    public function __construct(
+        private readonly Context $context
+    )
     {
-        $this->syncService->sync($message->getSyncProfile());
     }
 
     /**
-     * @return iterable<string>
+     * @return Context
      */
-    public static function getHandledMessages(): iterable
+    public function getContext(): Context
     {
-        return [
-            SyncProfileMessage::class
-        ];
+        return $this->context;
     }
 }

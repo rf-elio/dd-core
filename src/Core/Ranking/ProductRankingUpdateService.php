@@ -158,7 +158,7 @@ class ProductRankingUpdateService
 
         // set rounded percentage value
         $sql = 'UPDATE `product_translation` pt
-                SET custom_fields = JSON_SET(custom_fields, "$.'.$targetField.'", IFNULL((
+                SET custom_fields = JSON_SET(IFNULL(custom_fields, "{}"), "$.'.$targetField.'", IFNULL((
                     SELECT ROUND(SUM('.$field.') / '.$maxValueFromAllOrders.'  * 100)
                     FROM `order_line_item` oli
                     INNER JOIN `order` o ON o.id = oli.order_id AND o.version_id = oli.order_version_id

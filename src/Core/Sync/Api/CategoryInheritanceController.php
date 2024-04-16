@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,58 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
+use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
+use Exception;
 use Shopware\Core\Framework\Context;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class SyncProfileMessage
- * @package Elio\ElioDataDiscovery\Core\Export
+ * Class CategoryInheritanceController
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileMessage
+#[Route(defaults: ['_routeScope' => ['api']])]
+class CategoryInheritanceController extends AbstractController
 {
-    /**
-     * @param SyncProfileEntity $syncProfile
-     * @param Context $context
-     */
     public function __construct(
-        private SyncProfileEntity $syncProfile,
-        private Context $context
+        private readonly CategoryInheritanceService $categoryInheritanceService,
     ) {}
 
-    /**
-     * @return Context
-     */
-    public function getContext(): Context
+    #[Route(path:'/api/_action/elio-data-discovery/category-inheritance-update', name: 'api.custom.elio_data_discovery_category.category-inheritance-update', methods: ['GET'] )]
+    public function categoryExclusion(): Response
     {
-        return $this->context;
-    }
-
-    /**
-     * @param Context $context
-     */
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
-    /**
-     * @return SyncProfileEntity
-     */
-    public function getSyncProfile(): SyncProfileEntity
-    {
-        return $this->syncProfile;
-    }
-
-    /**
-     * @param SyncProfileEntity $syncProfile
-     */
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
-    {
-        $this->syncProfile = $syncProfile;
+        try {
+            $this->categoryInheritanceService->updateExcludeInheritance(Context::createDefaultContext());
+        } catch (Exception $e) {
+            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

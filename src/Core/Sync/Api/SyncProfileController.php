@@ -35,7 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 use Elio\ElioDataDiscovery\Core\Sync\Output\CSVOutput;
 use Elio\ElioDataDiscovery\Core\Sync\ProfileInterface;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
-use Elio\ElioDataDiscovery\Core\Sync\SyncProfileMessage;
+use Elio\ElioDataDiscovery\Core\Sync\Message\SyncProfileMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;

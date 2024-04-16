@@ -2,6 +2,7 @@ import './module/elio-data-discovery/index';
 import './module/elio-extension-config-detail/index';
 import './module/elio-data-discovery-sync-profile/index';
 import './module/elio-data-discovery-logging/index';
+import './module/elio-data-discovery-commands/index';
 import './module/elio-data-discovery-filter-restrictions/index';
 import './module/elio-data-discovery-sorting-restrictions/index';
 import './module/elio-data-discovery-sort-positions/index';

@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,41 +32,35 @@
 
 namespace Elio\ElioDataDiscovery\Command;
 
-use DateTimeImmutable;
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioDataDiscovery\Core\Sync\SyncProfileCollection;
-use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class IndexCleanupCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class CategoryInheritanceUpdateCommand
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexCleanupCommand extends Command
+class CategoryInheritanceUpdateCommand extends Command
 {
     public function __construct(
-        private readonly SyncService $syncService,
-        private readonly ChangeSetService $changeSetService,
-        private readonly SystemConfigService $configService,
-        private readonly LoggerInterface $logger
-    ) {
+        private readonly CategoryInheritanceService $categoryInheritanceService,
+        private readonly LoggerInterface  $logger
+    )
+    {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this->setName('elio-data-discovery:index:cleanup');
+        $this->setName('elio-data-discovery:category-inheritance:update');
     }
 
     /**
@@ -78,32 +72,16 @@ class IndexCleanupCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $context = Context::createDefaultContext();
-        /** @var SyncProfileCollection $syncProfiles */
-        $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
-
-        if ($syncProfiles->count() <= 0 || $syncProfiles->hasNotExecutedSyncProfiles()) {
-            $output->writeln('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>');
-            return Command::FAILURE;
-        }
-
-        $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
-        $sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile();
-
-        $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
-            ->modify('-' . $daysBeforeCleanup . 'day');
-
         try {
-            $this->changeSetService->cleanup($cleanupDate, $context);
+            $this->categoryInheritanceService->updateExcludeInheritance($context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'line' => $e->getLine()
             ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
             return Command::FAILURE;
         }
-
         return Command::SUCCESS;
     }
 }

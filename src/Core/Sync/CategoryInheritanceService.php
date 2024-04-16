@@ -30,71 +30,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use Elio\ElioDataDiscovery\Core\Sync\Util\CategoryUtil;
 use Elio\ElioDataDiscovery\ElioDataDiscovery;
-use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ExcludingCategoryInheritanceUpdateCommand
+ * Class CategoryInheritanceService
  *
  * @category Shopware
  * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class ExcludingCategoryInheritanceUpdateCommand extends Command
+class CategoryInheritanceService
 {
     public function __construct(
-        private readonly EntityRepository $categoryRepository,
-        private readonly LoggerInterface  $logger
+        private readonly EntityRepository $categoryRepository
     )
     {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->setName('elio-data-discovery:category-inheritance:update');
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $context = Context::createDefaultContext();
-        try {
-            $this->updateExcludeInheritance($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
-        }
-        return Command::SUCCESS;
-    }
-
-    /**
-     * @param Context $context
-     * @return void
-     * @throws Exception
-     */
-    private function updateExcludeInheritance(Context $context): void
+    public function updateExcludeInheritance(Context $context): void
     {
         $criteria = new Criteria();
         $categories = $this->categoryRepository->search($criteria, $context);
@@ -146,8 +107,8 @@ class ExcludingCategoryInheritanceUpdateCommand extends Command
 
         if ($customField === $exportTypeInherited) {
             return (array_key_exists($exportTypeInherited, $customFields)
-                && array_key_exists($exportTypeParent, $actualCustomFields)
-                && $actualCustomFields[$exportTypeParent] === $customFields[$exportTypeInherited])
+                    && array_key_exists($exportTypeParent, $actualCustomFields)
+                    && $actualCustomFields[$exportTypeParent] === $customFields[$exportTypeInherited])
                 || !array_key_exists($exportTypeInherited, $customFields)
                 || array_key_exists($exportTypeInherited, $actualCustomFields);
         }

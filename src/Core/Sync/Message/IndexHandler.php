@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Exception;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class SyncProfileCollection
- * @package Elio\ElioDataDiscovery\Core\Sync
+ * Class IndexHandler
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileCollection extends EntityCollection
+
+#[AsMessageHandler]
+class IndexHandler
 {
-    /**
-     * Searches for the sync profile with the oldest generation finished at date.
-     * @return SyncProfileEntity|null
-     */
-    public function getLeastRecentlyFinishedSyncProfile(): ?SyncProfileEntity
-    {
-        $this->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
-        return $this->first();
-    }
+    public function __construct(
+        private readonly ChangeSetService $changeSetService
+    ) {}
 
     /**
-     * Checks if there are any sync profiles for that we don't have an execution yet.
+     * Starts the sync
      *
-     * @return bool
+     * @param IndexMessage $message
+     * @throws Exception
      */
-    public function hasNotExecutedSyncProfiles(): bool
+    public function __invoke(IndexMessage $message): void
     {
-        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
+        $this->changeSetService->index($message->getContext());
     }
 
-    protected function getExpectedClass(): string
+    /**
+     * @return iterable<string>
+     */
+    public static function getHandledMessages(): iterable
     {
-        return SyncProfileEntity::class;
+        return [
+            IndexMessage::class
+        ];
     }
 }

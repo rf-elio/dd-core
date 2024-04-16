@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Ranking\Api;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Elio\ElioDataDiscovery\Core\Ranking\ProductRankingUpdateService;
+use Exception;
+use Shopware\Core\Framework\Context;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class SyncProfileCollection
- * @package Elio\ElioDataDiscovery\Core\Sync
+ * Class RankingAdminController
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileCollection extends EntityCollection
+#[Route(defaults: ['_routeScope' => ['api']])]
+class RankingAdminController extends AbstractController
 {
-    /**
-     * Searches for the sync profile with the oldest generation finished at date.
-     * @return SyncProfileEntity|null
-     */
-    public function getLeastRecentlyFinishedSyncProfile(): ?SyncProfileEntity
-    {
-        $this->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
-        return $this->first();
-    }
+    public function __construct(
+        private readonly ProductRankingUpdateService $productRankingUpdateService
+    ) {}
 
-    /**
-     * Checks if there are any sync profiles for that we don't have an execution yet.
-     *
-     * @return bool
-     */
-    public function hasNotExecutedSyncProfiles(): bool
+    #[Route(path:'/api/_action/elio-data-discovery/ranking-update', name: 'api.custom.elio_data_discovery_ranking.ranking-update', methods: ['GET'] )]
+    public function rankingUpdate(): Response
     {
-        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
-    }
-
-    protected function getExpectedClass(): string
-    {
-        return SyncProfileEntity::class;
+        try {
+            $this->productRankingUpdateService->updateProductRanking(Context::createDefaultContext());
+        } catch (Exception $e) {
+            return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 }

@@ -30,42 +30,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Exception;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class SyncProfileCollection
- * @package Elio\ElioDataDiscovery\Core\Sync
+ * Class SyncProfileHandler
+ * @package Elio\ElioDataDiscovery\Core\Export
  * @category Shopware
  * @author elio GmbH <support@elio-systems.com>
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileCollection extends EntityCollection
+#[AsMessageHandler]
+class SyncProfileHandler
 {
-    /**
-     * Searches for the sync profile with the oldest generation finished at date.
-     * @return SyncProfileEntity|null
-     */
-    public function getLeastRecentlyFinishedSyncProfile(): ?SyncProfileEntity
-    {
-        $this->sort(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt()?->getTimestamp());
-        return $this->first();
-    }
+    public function __construct(
+        private readonly SyncService $syncService
+    ) {}
 
     /**
-     * Checks if there are any sync profiles for that we don't have an execution yet.
+     * Starts the sync
      *
-     * @return bool
+     * @param SyncProfileMessage $message
+     * @throws Exception
      */
-    public function hasNotExecutedSyncProfiles(): bool
+    public function __invoke(SyncProfileMessage $message): void
     {
-        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
+        $this->syncService->sync($message->getSyncProfile());
     }
 
-    protected function getExpectedClass(): string
+    /**
+     * @return iterable<string>
+     */
+    public static function getHandledMessages(): iterable
     {
-        return SyncProfileEntity::class;
+        return [
+            SyncProfileMessage::class
+        ];
     }
 }

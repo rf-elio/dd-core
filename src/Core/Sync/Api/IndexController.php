@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,65 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
-use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Elio\ElioDataDiscovery\Core\Sync\Message\IndexMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileCollection;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use DateTimeImmutable;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Shopware\Core\Framework\Context;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class IndexCleanupCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class IndexController
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexCleanupCommand extends Command
+#[Route(defaults: ['_routeScope' => ['api']])]
+class IndexController extends AbstractController
 {
     public function __construct(
-        private readonly SyncService $syncService,
-        private readonly ChangeSetService $changeSetService,
+        private readonly SyncService         $syncService,
+        private readonly ChangeSetService    $changeSetService,
         private readonly SystemConfigService $configService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
-    }
-
-    protected function configure(): void
+        private readonly MessageBusInterface $messageBus,
+    )
     {
-        $this->setName('elio-data-discovery:index:cleanup');
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    #[Route(path:'/api/_action/elio-data-discovery/index-cleanup', name: 'api.custom.elio_data_discovery_index.index-cleanup', methods: ['GET'])]
+    public function indexCleanup(): Response
     {
         $context = Context::createDefaultContext();
         /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
 
-        if ($syncProfiles->count() <= 0 || $syncProfiles->hasNotExecutedSyncProfiles()) {
-            $output->writeln('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>');
-            return Command::FAILURE;
+        if (
+            $syncProfiles->count() <= 0
+            || $syncProfiles->hasNotExecutedSyncProfiles()
+            || !($sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile())
+        ) {
+            return new Response('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
-        $sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile();
-
+        $daysBeforeCleanup = (int)($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
         $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
             ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
             ->modify('-' . $daysBeforeCleanup . 'day');
@@ -96,14 +95,19 @@ class IndexCleanupCommand extends Command
         try {
             $this->changeSetService->cleanup($cleanupDate, $context);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
+            return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
 
-        return Command::SUCCESS;
+    #[Route(path:'/api/_action/elio-data-discovery/index-update', name: 'api.custom.elio_data_discovery_index.index-update', methods: ['GET'])]
+    public function indexUpdate(): Response
+    {
+        try {
+            $this->messageBus->dispatch((new Envelope(new IndexMessage(Context::createDefaultContext())))->with(new DelayStamp(1000)));
+        } catch (Exception $e) {
+            return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return new JsonResponse(['mode' => 'async']);
     }
 }
