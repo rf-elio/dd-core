@@ -3,11 +3,14 @@ import template from './elio-data-discovery-filter-restrictions-customfilters-de
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
+const {mapPropertyErrors} = Shopware.Component.getComponentHelper();
+
 Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilters-detail', {
     template: template,
 
     inject: [
-        'repositoryFactory'
+        'repositoryFactory',
+        'entityValidationService'
     ],
 
     mixins: [
@@ -48,6 +51,11 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
     },
 
     computed: {
+        ...mapPropertyErrors('filter', [
+            'technicalName',
+            'label'
+        ]),
+
         identifier() {
             return this.placeholder(this.filter, 'label');
         },
@@ -108,6 +116,15 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
         onSave() {
             this.isSaveSuccessful = false;
             this.isLoading = true;
+
+            if (!this.entityValidationService.validate(this.filter)) {
+                this.createNotificationError({
+                    title: this.$tc('global.default.error'),
+                    message: this.$tc('global.notification.notificationSaveErrorMessageRequiredFieldsInvalid'),
+                });
+                this.isLoading = false;
+                return;
+            }
 
             return this.filterRepository.save(this.filter).then(() => {
                 this.loadEntityData();

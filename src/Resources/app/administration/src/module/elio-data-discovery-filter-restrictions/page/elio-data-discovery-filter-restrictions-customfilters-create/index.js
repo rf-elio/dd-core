@@ -20,6 +20,7 @@ Shopware.Component.extend('elio-data-discovery-filter-restrictions-customfilters
             this.filter.technicalName = 'technicalName'
             this.filter.label = 'label';
             this.filter.type = 'filter'
+            this.filter.displayedByDefault = false;
             this.newId = this.filter.id;
 
             this.isLoading = false;

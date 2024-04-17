@@ -51,12 +51,13 @@
                     </sw-language-info>
                 {% endblock %}
 
-                <sw-card v-if="filter" :title="$tc('elio-data-discovery.restrictions.sorting.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
+                <sw-card positionIdentifier="1" v-if="filter" :title="$tc('elio-data-discovery.restrictions.sorting.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
                     {% block elio_data_discovery_sorting_restrictions_customfilters_detail_technical_name %}
                         <sw-field
                                 v-model="filter.technicalName"
                                 type="text"
                                 required
+                                :error="filterTechnicalNameError"
                                 :label="$tc('elio-data-discovery.restrictions.sorting.filters.detail.labelTechnicalName')"
                                 :placeholder="placeholder(filter, 'technicalName', $tc('elio-data-discovery.restrictions.sorting.filters.placeholderTechnicalName'))"/>
                     {% endblock %}
@@ -65,6 +66,7 @@
                                 v-model="filter.label"
                                 type="text"
                                 required
+                                :error="filterLabelError"
                                 :label="$tc('elio-data-discovery.restrictions.sorting.filters.detail.labelName')"
                                 :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.sorting.filters.placeholderLabel'))"/>
                     {% endblock %}

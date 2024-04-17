@@ -86,7 +86,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
         getFiltersColumns() {
             return [{
                 property: 'technicalName',
-                label: 'elio-data-discovery.restrictions.sorting.customFilters.list.columnTechnicalName',
+                label: this.$tc('elio-data-discovery.restrictions.sorting.customFilters.list.columnTechnicalName'),
                 routerLink: 'elio.data.discovery.sorting.restrictions.customFiltersDetail',
                 inlineEdit: 'string',
                 allowResize: false,
