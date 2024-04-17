@@ -16,6 +16,7 @@
                     </div>
                     <div v-if="getCommandArgumentInput(index)" class="command-input-container">
                         <sw-field type="text"
+                                  :placeholder="getCommandArgumentInput(index).placeholder"
                                   v-model="getCommandArgumentInput(index).value"
                         ></sw-field>
                     </div>
