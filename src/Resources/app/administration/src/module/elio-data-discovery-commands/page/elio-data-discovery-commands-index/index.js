@@ -44,7 +44,8 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
                     'endpoint': '',
                     'argument': {
                         'name': 'syncProfileId',
-                        'value': '<syncProfileId>'
+                        'value': '',
+                        'placeholder': '<syncProfileId>'
                     },
                     'updateInterval': 3000,
                     'status': null
@@ -94,7 +95,7 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
             };
             const endpoint = this.commands[command].endpoint;
 
-            initContainer.httpClient.get(('/api/_action/elio-data-discovery/' + endpoint), {headers}).then((response) => {
+            initContainer.httpClient.get(('/_action/elio-data-discovery/' + endpoint), {headers}).then((response) => {
                 let feedback = '';
                 if (!response.data || response.data === '') {
                     feedback = this.$tc('elio-data-discovery-commands.commandFinishedSuccess')

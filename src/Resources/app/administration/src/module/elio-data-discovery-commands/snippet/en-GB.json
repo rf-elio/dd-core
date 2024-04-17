@@ -32,7 +32,7 @@
             "header": "SyncDataCommand",
             "description": "Generating the sync data for the given sync profile id <syncProfileId>. Optionally add flag -f to force the sync over the given date range interval. If extension plugin supports import API -> may also trigger the import in the external system.",
             "button": "Sync Data",
-            "command": "./bin/console bin/console elio-data-discovery:profiles:sync [-f] <syncProfileId>"
+            "command": "./bin/console elio-data-discovery:profiles:sync [-f] <syncProfileId>"
         },
         "categoryInheritanceUpdate": {
             "header": "CategoryInheritanceUpdateCommand",
