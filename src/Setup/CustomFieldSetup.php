@@ -177,10 +177,6 @@ class CustomFieldSetup
             $entity = $customFieldProperties['entity'] ?? false;
             $options = $customFieldProperties['options'] ?? null;
 
-            if ($configType === 'bool') {
-                $configType = 'checkbox';
-            }
-
             $customField = [
                 'name' => $customFieldName,
                 'type' => $type,
