@@ -194,6 +194,17 @@ class CustomFieldSetup
                 ]
             ];
 
+            if ($configType === 'bool') {
+                $customField['config']['type'] = 'checkbox';
+                $customField['config']['customFieldType'] = 'checkbox';
+            }
+
+            if (in_array($configType, ['int', 'float'])) {
+                $customField['config']['type'] = 'number';
+                $customField['config']['numberType'] = $type;
+                $customField['config']['customFieldType'] = 'number';
+            }
+
             // adding support for select field
             if ($type === 'select' && $options) {
                 unset($customField['config']['type']);
