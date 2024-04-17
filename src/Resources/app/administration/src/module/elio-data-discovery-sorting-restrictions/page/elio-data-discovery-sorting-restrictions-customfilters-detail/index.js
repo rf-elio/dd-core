@@ -3,11 +3,14 @@ import template from './elio-data-discovery-sorting-restrictions-customfilters-d
 const { Mixin } = Shopware;
 const { Criteria } = Shopware.Data;
 
+const {mapPropertyErrors} = Shopware.Component.getComponentHelper();
+
 Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilters-detail', {
     template: template,
 
     inject: [
-        'repositoryFactory'
+        'repositoryFactory',
+        'entityValidationService'
     ],
 
     mixins: [
@@ -49,6 +52,11 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
     },
 
     computed: {
+        ...mapPropertyErrors('filter', [
+            'technicalName',
+            'label'
+        ]),
+
         identifier() {
             return this.placeholder(this.filter, 'label');
         },
@@ -124,6 +132,15 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
                 this.filter.technicalName += ':asc';
             } else {
                 this.filter.technicalName += ':desc';
+            }
+
+            if (!this.entityValidationService.validate(this.filter)) {
+                this.createNotificationError({
+                    title: this.$tc('global.default.error'),
+                    message: this.$tc('global.notification.notificationSaveErrorMessageRequiredFieldsInvalid'),
+                });
+                this.isLoading = false;
+                return;
             }
 
             return this.filterRepository.save(this.filter).then(() => {

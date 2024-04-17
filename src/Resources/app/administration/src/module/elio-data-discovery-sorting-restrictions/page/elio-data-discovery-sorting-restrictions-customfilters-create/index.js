@@ -20,6 +20,7 @@ Shopware.Component.extend('elio-data-discovery-sorting-restrictions-customfilter
             this.filter.technicalName = 'technicalName'
             this.filter.label = 'label';
             this.filter.type = 'sorting';
+            this.filter.displayedByDefault = false;
             this.newId = this.filter.id;
 
             this.isLoading = false;
