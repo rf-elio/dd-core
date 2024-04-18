@@ -203,15 +203,15 @@
                                                         </sw-field>
                                                         <sw-button variant="primary"
                                                                    size="small"
-                                                                   v-if="status.exists"
-                                                                   :disabled="!status.exists"
+                                                                   v-if="status.finished"
+                                                                   :disabled="!status.finished"
                                                                    @click="onDownloadExport">
                                                             {{ $tc('elio-data-discovery-sync-profile.detail.download') }}
                                                         </sw-button>
                                                         <sw-button variant="danger"
                                                                    size="small"
-                                                                   v-if="!status.exists"
-                                                                   :disabled="!status.exists"
+                                                                   v-if="!status.finished"
+                                                                   :disabled="!status.finished"
                                                                    @click="onDownloadExport">
                                                             {{ $tc('elio-data-discovery-sync-profile.detail.status.notExists') }}
                                                         </sw-button>

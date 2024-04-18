@@ -64,7 +64,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             elio_data_discovery_sync_profile_config: {},
             commandForce: false,
             status: {
-                exists: false,
+                finished: false,
                 location: ''
             },
             isGenerating: false,
@@ -440,7 +440,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             const that = this;
             this.updateTimer = setTimeout(function requestStatus() {
                 that._updateStatus();
-                if (that.status.exists === true) {
+                if (that.status.finished === true) {
                     clearTimeout(that.updateTimer);
                     that.isGenerating = false;
                     that.createNotificationSuccess({

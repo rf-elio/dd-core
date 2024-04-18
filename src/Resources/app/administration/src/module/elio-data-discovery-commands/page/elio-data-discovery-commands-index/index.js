@@ -118,25 +118,24 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
 
         generateSyncData(command) {
             this.isLoading = true;
-            this.commands[command].processing = true;
+            // this.commands[command].processing = true; JS/VUE bug
 
             const that = this;
             this.commands[command].updateTimer = setTimeout(function requestStatus() {
                 that._updateStatus(command);
                 if (that.commands[command].status === true) {
-                    clearTimeout(that.commands[command].updateTimer);
                     that.createNotificationSuccess({
                         title: that.$tc('global.default.success'),
                         message: that.$tc('elio-data-discovery-sync-profile.detail.messageGeneratingSuccess')
                     });
-                    that.isLoading = false;
-                    that.commands[command].processing = false;
+                    clearTimeout(that.commands[command].updateTimer);
                 } else {
                     that.commands[command].updateTimer = setTimeout(requestStatus, that.commands[command].updateInterval || 3000);
                 }
             }, that.commands[command].updateInterval || 3000);
 
             this.elioDataDiscoverySyncProfile.generate(this.commands[command].argument.value).then((responce) => {
+                that.isLoading = false;
                 this.createNotificationSuccess({
                     message: this.$tc('elio-data-discovery-commands.commandStartedAsync')
                 });
@@ -153,7 +152,7 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
 
         _updateStatus(command) {
             this.elioDataDiscoverySyncProfile.getStatus(this.commands[command].argument.value).then((response) => {
-                if (response.data.exists === true) {
+                if (response.data.finished === true) {
                     this.commands[command].status = true;
                 }
             })
