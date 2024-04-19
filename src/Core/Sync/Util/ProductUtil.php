@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use Elio\ElioDataDiscovery\Core\Defaults;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -51,6 +52,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
  */
 class ProductUtil
 {
+    public const DISPLAY_GROUP_EXTENSION_NAME = 'childDisplayGroups';
 
     /**
      * Searches for the best matching thumbnail
@@ -106,18 +108,17 @@ class ProductUtil
             return true;
         }
 
-
         // specific property should be shown
         if ($variantListingConfig->getDisplayParent() === null && $variantListingConfig->getMainVariantId() === null) {
             if (empty($variantListingConfig->getConfiguratorGroupConfig())) {
                 return false;
             }
 
-            $children = $parentProduct->getChildren() ?: [];
+            $childDisplayGroups = $parentProduct->getExtension(self::DISPLAY_GROUP_EXTENSION_NAME) ?? new ArrayStruct([]);
             $displayGroups = [];
-            foreach ($children as $child) {
-                if (!in_array($child->getDisplayGroup(), $displayGroups, true)) {
-                    $displayGroups[$child->getId()] = $child->getDisplayGroup();
+            foreach ($childDisplayGroups as $childProductId => $childDisplayGroup) {
+                if (!in_array($childDisplayGroup, $displayGroups, true)) {
+                    $displayGroups[$childProductId] = $childDisplayGroup;
                 }
             }
 

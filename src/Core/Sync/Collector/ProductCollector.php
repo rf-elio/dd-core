@@ -32,6 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
+use Doctrine\DBAL\Connection;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
@@ -53,7 +54,9 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
@@ -78,7 +81,8 @@ class ProductCollector implements DataCollectorInterface
         private readonly SalesChannelRepository $productRepository,
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly ElioDataDiscoveryConfigService $configService
+        private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly Connection $connection
     ) {}
 
     /**
@@ -124,6 +128,7 @@ class ProductCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
+     * @param string $salesChannelId
      * @return Criteria
      */
     protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
@@ -172,10 +177,31 @@ class ProductCollector implements DataCollectorInterface
         }
 
         $criteria = new Criteria($parentProductIds);
-        $criteria->addAssociation('children'); // children are required for ProductUtil::isDisplayedByDefault
         $criteria->addAssociation('configuratorSettings');
-        /** @var EntityCollection<SalesChannelProductEntity> return */
-        return $this->productRepository->search($criteria, $context);
+        $parentProducts = $this->productRepository->search($criteria, $context);
+
+        // $displayGroups are required for ProductUtil::isDisplayedByDefault
+        $displayGroups = $this->connection->fetchAllAssociative('
+            SELECT LOWER(HEX(id)) AS id, LOWER(HEX(parent_id)) AS parentId, display_group AS displayGroup
+            FROM product
+            WHERE parent_id IN (:parentIds)',
+            [
+                'parentIds' => Uuid::fromHexToBytesList($parentProductIds)
+            ],
+            ['parentIds' => Connection::PARAM_STR_ARRAY]
+        );
+
+        foreach($displayGroups as $row) {
+            $parentId = $row['parentId'];
+            $parentProduct = $parentProducts->get($parentId);
+            if (!$parentProduct) {
+                continue;
+            }
+            $childDisplayGroups = $parentProduct->getExtension(ProductUtil::DISPLAY_GROUP_EXTENSION_NAME) ?? new ArrayStruct();
+            $childDisplayGroups[$row['id']] = $row['displayGroup'];
+            $parentProduct->addExtension(ProductUtil::DISPLAY_GROUP_EXTENSION_NAME, $childDisplayGroups);
+        }
+        return $parentProducts;
     }
 
     /**

@@ -27,6 +27,7 @@
             <argument type="service" id="sales_channel.category.repository" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\CategoryCollector">
