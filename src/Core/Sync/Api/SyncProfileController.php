@@ -109,18 +109,18 @@ class SyncProfileController extends AbstractController
      * @Route("/api/_action/elio-data-discovery/export/status/{id}", name="api.action.elio-data-discovery.export.status", methods={"GET"})
      * @throws FilesystemException
      */
-    public function features(string $id, Context $context): JsonResponse
+    public function status(string $id, Context $context): JsonResponse
     {
         try {
             $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);
             return new JsonResponse([
-                'exists' => $this->exists($syncProfile),
-                'path' => CSVOutput::createFileName(self::BASE_DIR, $syncProfile)
+                'finished' => $syncProfile->getLastGenerationFinishedAt() > $syncProfile->getLastGenerationStartedAt(),
+                'started' => $syncProfile->getLastGenerationStartedAt(),
+                'finishedAt' => $syncProfile->getLastGenerationFinishedAt(),
             ]);
         } catch (\Exception) {
             return new JsonResponse([
-                'exists' => false,
-                'location' => ''
+                'finished' => false,
             ]);
         }
     }
