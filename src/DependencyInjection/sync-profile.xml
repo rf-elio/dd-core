@@ -125,7 +125,6 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

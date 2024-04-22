@@ -33,7 +33,6 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileCollection;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
@@ -41,7 +40,6 @@ use Shopware\Core\Defaults;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Shopware\Core\Framework\Context;
@@ -59,18 +57,16 @@ use Symfony\Component\HttpFoundation\Response;
 class IndexController extends AbstractController
 {
     public function __construct(
-        private readonly SyncService         $syncService,
-        private readonly ChangeSetService    $changeSetService,
-        private readonly SystemConfigService $configService,
-        private readonly MessageBusInterface $messageBus
-    )
-    {
+        private readonly SyncService $syncService,
+        private readonly ChangeSetService $changeSetService,
+        private readonly SystemConfigService $configService
+    ) {
     }
 
     /**
      * @throws Exception
      */
-    #[Route(path:'/api/_action/elio-data-discovery/index-cleanup', name: 'api.custom.elio_data_discovery_index.index-cleanup', methods: ['GET'])]
+    #[Route(path: '/api/_action/elio-data-discovery/index-cleanup', name: 'api.custom.elio_data_discovery_index.index-cleanup', methods: ['GET'])]
     public function indexCleanup(): Response
     {
         $context = Context::createDefaultContext();
@@ -82,7 +78,8 @@ class IndexController extends AbstractController
             || $syncProfiles->hasNotExecutedSyncProfiles()
             || !($sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile())
         ) {
-            return new Response('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new Response('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>',
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $daysBeforeCleanup = (int)($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
@@ -98,11 +95,11 @@ class IndexController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    #[Route(path:'/api/_action/elio-data-discovery/index-update', name: 'api.custom.elio_data_discovery_index.index-update', methods: ['GET'])]
-    public function indexUpdate(): Response
+    #[Route(path: '/api/_action/elio-data-discovery/index-update', name: 'api.custom.elio_data_discovery_index.index-update', methods: ['GET'])]
+    public function indexUpdate(Context $context): Response
     {
         try {
-            $this->messageBus->dispatch(new StartIndexMessage(Context::createDefaultContext()));
+            $this->changeSetService->startIndexers($context);
         } catch (Exception $e) {
             return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
