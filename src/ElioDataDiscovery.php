@@ -69,7 +69,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class ElioDataDiscovery extends Plugin
 {
     // Plugin Features which can be enabled and developed (or decorated) in extensions plugins
-    public const FEATURE_CURRENCY_SPECIFIC_PRICES = 'currency-specific-prices';
     public const FEATURE_ADVISOR = 'advisor';
     public const FEATURE_PRODUCT_RECOMMENDATIONS = 'product-recommendations';
     public const FEATURE_TRACKING = 'tracking';
