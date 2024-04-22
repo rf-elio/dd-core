@@ -4,6 +4,10 @@
       "title": "Data Discovery",
       "description": ""
     },
+    "features": {
+      "enabled":  "The feature {feature} is supported.",
+      "disabled": "The feature {feature} is not supported by any of your active extension plugins."
+    },
     "restrictions": {
       "filter": {
         "title": "Filter Configuration",

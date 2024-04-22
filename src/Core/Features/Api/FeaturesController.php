@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,63 +30,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Features;
+namespace Elio\ElioDataDiscovery\Core\Features\Api;
 
-
-use Elio\ElioDataDiscovery\Core\Features\Event\FeatureLoadEvent;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Elio\ElioDataDiscovery\Core\Features\FeatureService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class FeatureService
- * @package Elio\ElioDataDiscovery\Core\Features
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class FeaturesController
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FeatureService implements FeatureServiceInterface
+#[Route(defaults: ['_routeScope' => ['api']])]
+class FeaturesController extends AbstractController
 {
-    /**
-     * @var array
-     */
-    private array $features;
-
-    /**
-     * FeatureService constructor.
-     */
     public function __construct(
-        private readonly EventDispatcherInterface $eventDispatcher
-    )
-    {
-        $this->features = $this->readConfig();
-        $this->loadExtensionFeatures();
-    }
+        private readonly FeatureService $featureService,
+    ) {}
 
-    /**
-     * @return array
-     */
-    protected function readConfig() : array
+    #[Route(path:'/api/_action/elio-data-discovery/features/{key}', name: 'api.custom.elio_data_discovery_category.features.get', methods: ['GET'] )]
+    public function getFeature(string $key): Response
     {
-        $configFilePath = __DIR__.'/../../Resources/config/features.config';
-        $config = parse_ini_file($configFilePath);
-        return $config !== false ? $config : [];
-    }
-
-    /**
-     * @return FeatureContext
-     */
-    public function getContext() : FeatureContext
-    {
-        return new FeatureContext($this->features);
-    }
-
-    /**
-     * @return void
-     */
-    private function loadExtensionFeatures(): void
-    {
-        $event = new FeatureLoadEvent($this->features);
-        $this->eventDispatcher->dispatch($event);
-        $this->features = $event->getFeatures();
+        $isEnabled = $this->featureService->getContext()->isEnabled($key);
+        return new JsonResponse([
+            'key' => $key,
+            'enabled' => $isEnabled,
+        ]);
     }
 }

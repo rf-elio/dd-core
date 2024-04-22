@@ -34,6 +34,8 @@ namespace Elio\ElioDataDiscovery\Configuration;
 
 use Elio\ElioDataDiscovery\Configuration\Event\ConfigurationLoadedEvent;
 use Elio\ElioDataDiscovery\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Features\FeatureService;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
@@ -69,7 +71,8 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
     public function __construct(
         private readonly SystemConfigService $systemConfigService,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly EntityRepository $languageRepository
+        private readonly EntityRepository $languageRepository,
+        private readonly FeatureService $featureService,
     ) {}
 
     /**
@@ -120,14 +123,14 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
             ConfigParserUtil::prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseElioDataDiscovery', $languagePrefix) ?? false,
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix)),
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix)),
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix)),
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix)),
-            !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix)),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix))),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCart', $languagePrefix))),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackCheckout', $languagePrefix))),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix))),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix))),
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioDataDiscovery', $languagePrefix)),
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false,
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_ADVISOR,ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false),
             $correctedAdditionalRequestParameters,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
@@ -150,8 +153,8 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'allowStreamIdSearch', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations', $languagePrefix) ?? false,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailSimilar', $languagePrefix) ?? false,
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations', $languagePrefix) ?? false),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailSimilar', $languagePrefix) ?? false),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
         );
 
@@ -191,5 +194,10 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
         }
 
         return '';
+    }
+
+    private function checkFeatureEnabled(string $featureName, ?bool $configValue = false): bool
+    {
+        return $configValue && $this->featureService->getContext()->isEnabled($featureName);
     }
 }

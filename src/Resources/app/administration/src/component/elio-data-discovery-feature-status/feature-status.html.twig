@@ -1,0 +1,5 @@
+{% block edd_feature_status %}
+    <sw-alert v-if="!isLoading" :variant="notificationVariant" class="sw-error-summary">
+        {{ statusText }}
+    </sw-alert>
+{% endblock %}
