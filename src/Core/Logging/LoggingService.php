@@ -15,7 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class LoggingService implements LoggingServiceInterface
 {
-    public const FILE_NAME = 'elio_data_discovery_finder';
+    public const FILE_NAME = 'elio_data_discovery';
     public const LOG_FORMAT = <<<EOT
     {
         method: {method}

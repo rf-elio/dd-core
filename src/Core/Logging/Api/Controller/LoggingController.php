@@ -37,8 +37,8 @@ class LoggingController extends AbstractController
      */
     public function index(Request $request, int $index = 0): JsonResponse
     {
-        $offset = $request->get('offset', 0);
-        $limit = $request->get('limit', 10);
+        $offset = (int)$request->get('offset', 0);
+        $limit = (int)$request->get('limit', 10);
 
         try {
             $contents = $this->loggingService->getLogContents($index);
