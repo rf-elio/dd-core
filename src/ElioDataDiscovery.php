@@ -86,7 +86,7 @@ class ElioDataDiscovery extends Plugin
 
     public function executeComposerCommands(): bool
     {
-        return true;
+        return false;
     }
 
     /**
