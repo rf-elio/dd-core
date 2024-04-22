@@ -11,11 +11,13 @@ Shopware.Service('cmsService').registerCmsElement({
     defaultConfig: {
         campaignParameterName: {
             source: 'static',
-            value: 'campaignId'
+            value: 'campaignId',
+            required: true
         },
         campaignParameterValue: {
             source: 'static',
-            value: ''
+            value: '',
+            required: true
         },
         productsTitle: {
             source: 'static',

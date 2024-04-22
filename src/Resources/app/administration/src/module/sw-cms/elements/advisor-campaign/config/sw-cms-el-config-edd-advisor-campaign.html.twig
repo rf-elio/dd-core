@@ -1,19 +1,25 @@
 {% block sw_cms_el_config_edd_advisor_campaign %}
     <div class="sw-cms-el-config-edd-advisor-campaign">
+        <component is="elio-data-discovery-feature-status" feature="advisor" />
         <sw-text-field
-                :label="$tc('sw-cms.elements.advisorCampaign.config.campaignParameterName')"
-                v-model="element.config.campaignParameterName.value"
-                @element-update="onElementUpdate">
+            :label="$tc('sw-cms.elements.advisorCampaign.config.campaignParameterName')"
+            v-model="element.config.campaignParameterName.value"
+            @element-update="onElementUpdate"
+            required
+        >
         </sw-text-field>
         <sw-text-field
             :label="$tc('sw-cms.elements.advisorCampaign.config.campaignParameterValue')"
             v-model="element.config.campaignParameterValue.value"
-            @element-update="onElementUpdate">
+            @element-update="onElementUpdate"
+            required
+        >
         </sw-text-field>
         <sw-text-field
             :label="$tc('sw-cms.elements.advisorCampaign.config.productsTitle')"
             v-model="element.config.productsTitle.value"
-            @element-update="onElementUpdate">
+            @element-update="onElementUpdate"
+        >
         </sw-text-field>
     </div>
 {% endblock %}

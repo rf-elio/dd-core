@@ -1,3 +1,4 @@
+import './component/elio-data-discovery-feature-status/index';
 import './module/elio-extension-config-detail/index';
 import './module/elio-data-discovery-sync-profile/index';
 import './module/elio-data-discovery-logging/index';

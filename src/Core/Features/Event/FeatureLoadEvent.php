@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2021, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,63 +30,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Features;
+namespace Elio\ElioDataDiscovery\Core\Features\Event;
 
-
-use Elio\ElioDataDiscovery\Core\Features\Event\FeatureLoadEvent;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class FeatureService
- * @package Elio\ElioDataDiscovery\Core\Features
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
+ * Class FeatureLoadEvent
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class FeatureService implements FeatureServiceInterface
+class FeatureLoadEvent extends Event
 {
     /**
-     * @var array
-     */
-    private array $features;
-
-    /**
-     * FeatureService constructor.
+     * @param array $features
      */
     public function __construct(
-        private readonly EventDispatcherInterface $eventDispatcher
+        private array $features
     )
     {
-        $this->features = $this->readConfig();
-        $this->loadExtensionFeatures();
     }
 
     /**
      * @return array
      */
-    protected function readConfig() : array
+    public function getFeatures(): array
     {
-        $configFilePath = __DIR__.'/../../Resources/config/features.config';
-        $config = parse_ini_file($configFilePath);
-        return $config !== false ? $config : [];
+        return $this->features;
     }
 
     /**
-     * @return FeatureContext
-     */
-    public function getContext() : FeatureContext
-    {
-        return new FeatureContext($this->features);
-    }
-
-    /**
+     * @param array $features
      * @return void
      */
-    private function loadExtensionFeatures(): void
+    public function setFeatures(array $features): void
     {
-        $event = new FeatureLoadEvent($this->features);
-        $this->eventDispatcher->dispatch($event);
-        $this->features = $event->getFeatures();
+        $this->features = $features;
     }
 }
