@@ -84,11 +84,6 @@ class ElioDataDiscovery extends Plugin
     public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_display_product_by_default';
     public const DEFAULT_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
-    public function executeComposerCommands(): bool
-    {
-        return false;
-    }
-
     /**
      * Adds the additional service definitions
      *
