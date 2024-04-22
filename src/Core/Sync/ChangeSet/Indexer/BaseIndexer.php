@@ -76,14 +76,13 @@ abstract class BaseIndexer implements IndexerInterface
     abstract protected function getEntityIdentifier(Struct $entity): string;
 
     /**
-     * Checks if indexer is supported
+     * Provides the unique indexer identifier
      *
-     * @param string $type
-     * @return bool
+     * @return string
      */
-    public function supports(string $type): bool
+    public function getIdentifier(): string
     {
-        return $this->dataType === $type;
+        return static::class;
     }
 
     /**

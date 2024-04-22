@@ -30,35 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\Message;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
-/**
- * Class IndexMessage
- *
- * @category Shopware
- * @author Andrei Baev <anb@elio-systems.com>
- * @author elio GmbH <support@elio-systems.com>
- * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
- */
-class IndexMessage implements AsyncMessageInterface
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Exception;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+#[AsMessageHandler]
+class StartIndexHandler
 {
-    /**
-     * @param Context $context
-     */
     public function __construct(
-        private readonly Context $context
-    )
+        private readonly ChangeSetService $changeSetService
+    ) {}
+
+    /**
+     * Starts the sync
+     *
+     * @param StartIndexMessage $message
+     * @throws Exception
+     */
+    public function __invoke(StartIndexMessage $message): void
     {
+        $this->changeSetService->startIndexers($message->getContext());
     }
 
     /**
-     * @return Context
+     * @return iterable<string>
      */
-    public function getContext(): Context
+    public static function getHandledMessages(): iterable
     {
-        return $this->context;
+        return [
+            StartIndexMessage::class
+        ];
     }
 }

@@ -30,46 +30,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\Message;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class IndexHandler
- *
- * @category Shopware
- * @author Andrei Baev <anb@elio-systems.com>
- * @author elio GmbH <support@elio-systems.com>
+ * Class IndexMessage
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-
-#[AsMessageHandler]
-class IndexHandler
+class StartIndexMessage implements AsyncMessageInterface
 {
     public function __construct(
-        private readonly ChangeSetService $changeSetService
-    ) {}
-
-    /**
-     * Starts the sync
-     *
-     * @param IndexMessage $message
-     * @throws Exception
-     */
-    public function __invoke(IndexMessage $message): void
-    {
-        $this->changeSetService->index($message->getContext());
+        protected readonly Context $context
+    ) {
     }
 
-    /**
-     * @return iterable<string>
-     */
-    public static function getHandledMessages(): iterable
+    public function getContext(): Context
     {
-        return [
-            IndexMessage::class
-        ];
+        return $this->context;
     }
 }

@@ -32,13 +32,15 @@
 
 namespace Elio\ElioDataDiscovery\Command;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexMessage;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class IndexUpdateCommand
@@ -51,7 +53,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class IndexUpdateCommand extends Command
 {
     public function __construct(
-        private readonly ChangeSetService $changeSetService,
+        private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger
     ) {
         parent::__construct();
@@ -73,7 +75,7 @@ class IndexUpdateCommand extends Command
         $context = Context::createDefaultContext();
 
         try {
-            $this->changeSetService->index($context);
+            $this->messageBus->dispatch(new StartIndexMessage($context));
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),

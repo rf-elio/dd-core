@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
@@ -45,6 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ChangeSetService
 {
@@ -52,13 +54,9 @@ class ChangeSetService
     public const KEY_UPDATED = 'updated';
     public const KEY_DELETED = 'deleted';
 
-    /**
-     * @param EntityRepository $entityStatusRepository
-     * @param IndexerInterface[] $indexers
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         private readonly EntityRepository $entityStatusRepository,
+        private readonly MessageBusInterface $messageBus,
         private readonly iterable $indexers,
         private readonly LoggerInterface $logger
     ) {}
@@ -117,7 +115,7 @@ class ChangeSetService
      * @param Context $context
      * @return void
      */
-    public function index(Context $context): void
+    public function startIndexers(Context $context): void
     {
         $entitiesStatus = $this->entityStatusRepository->search(new Criteria(), $context);
         /** @var EntityStatusCollection $currentEntityStatusCollection */
@@ -127,15 +125,39 @@ class ChangeSetService
 
         /** @var IndexerInterface $indexer */
         foreach ($this->indexers as $indexer) {
-            $entityStatuses = $indexer->index($currentEntityStatusCollection, $context);
+            $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
+                'indexer' => $indexer->getIdentifier()
+            ]);
+            $this->messageBus->dispatch(new IndexUpdateMessage(
+                $indexer->getIdentifier(),
+                $currentEntityStatusCollection,
+                $context
+            ));
+        }
+    }
+
+    public function index(
+        string $indexerIdentifier,
+        EntityStatusCollection $entityStatusCollection,
+        Context $context
+    ): void
+    {
+        /** @var IndexerInterface $indexer */
+        foreach ($this->indexers as $indexer) {
+            if ($indexer->getIdentifier() !== $indexerIdentifier) {
+                continue;
+            }
+
+            $this->logger->info('Changeset: Indexer start', [
+                'indexer' => $indexerIdentifier
+            ]);
+            $entityStatuses = $indexer->index($entityStatusCollection, $context);
             $this->persistEntityStatusCollection($entityStatuses, $context);
-            $this->logger->info('Changeset: Indexing', [
-                'indexer' => $indexer::class,
+            $this->logger->info('Changeset: Indexer done', [
+                'indexer' => $indexerIdentifier,
                 'changes' => $entityStatuses->count()
             ]);
         }
-
-        $this->logger->info('Changeset: Indexing finished');
     }
 
     /**

@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
+
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
-interface IndexerInterface
+/**
+ * Class IndexUpdateMessage
+ * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ */
+class IndexUpdateMessage implements AsyncMessageInterface
 {
-    /**
-     * Provides a unique indexer identifier
-     *
-     * @return string
-     */
-    public function getIdentifier(): string;
-    /**
-     * Indexing data
-     *
-     * @param EntityStatusCollection $currentEntityStatusCollection
-     * @param Context $context
-     * @return EntityStatusCollection
-     */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection;
+    public function __construct(
+        protected  readonly string $indexerIdentifier,
+        protected  readonly EntityStatusCollection $entityStatusCollection,
+        protected  readonly Context $context
+    ) {
+    }
+
+    public function getContext(): Context
+    {
+        return $this->context;
+    }
+
+    public function getEntityStatusCollection(): EntityStatusCollection
+    {
+        return $this->entityStatusCollection;
+    }
+
+    public function getIndexerIdentifier(): string
+    {
+        return $this->indexerIdentifier;
+    }
 }

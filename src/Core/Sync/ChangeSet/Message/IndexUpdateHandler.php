@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
+namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
-use Shopware\Core\Framework\Context;
 
-interface IndexerInterface
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+#[AsMessageHandler]
+class IndexUpdateHandler
 {
+    public function __construct(
+        private readonly ChangeSetService $changeSetService
+    ) {}
+
     /**
-     * Provides a unique indexer identifier
-     *
-     * @return string
+     * @param IndexUpdateMessage $message
      */
-    public function getIdentifier(): string;
+    public function __invoke(IndexUpdateMessage $message): void
+    {
+        $this->changeSetService->index(
+            $message->getIndexerIdentifier(),
+            $message->getEntityStatusCollection(),
+            $message->getContext()
+        );
+    }
+
     /**
-     * Indexing data
-     *
-     * @param EntityStatusCollection $currentEntityStatusCollection
-     * @param Context $context
-     * @return EntityStatusCollection
+     * @return iterable<string>
      */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection;
+    public static function getHandledMessages(): iterable
+    {
+        return [
+            IndexUpdateMessage::class
+        ];
+    }
 }

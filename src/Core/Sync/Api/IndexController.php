@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Api;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Elio\ElioDataDiscovery\Core\Sync\Message\IndexMessage;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileCollection;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
@@ -41,9 +41,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Shopware\Core\Framework\Context;
@@ -64,7 +62,7 @@ class IndexController extends AbstractController
         private readonly SyncService         $syncService,
         private readonly ChangeSetService    $changeSetService,
         private readonly SystemConfigService $configService,
-        private readonly MessageBusInterface $messageBus,
+        private readonly MessageBusInterface $messageBus
     )
     {
     }
@@ -104,7 +102,7 @@ class IndexController extends AbstractController
     public function indexUpdate(): Response
     {
         try {
-            $this->messageBus->dispatch((new Envelope(new IndexMessage(Context::createDefaultContext())))->with(new DelayStamp(1000)));
+            $this->messageBus->dispatch(new StartIndexMessage(Context::createDefaultContext()));
         } catch (Exception $e) {
             return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

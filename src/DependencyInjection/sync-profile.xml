@@ -59,6 +59,7 @@
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService">
             <argument type="service" id="elio_data_discovery_entity_status.repository" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <argument type="tagged" tag="elio-data-discovery.sync.indexer" />
             <argument type="service" id="elio.data-discovery.core.logging.default" />
         </service>
@@ -136,7 +137,7 @@
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Command\IndexUpdateCommand">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
             <argument type="service" id="elio.data-discovery.core.logging.default" />
             <tag name="console.command"/>
         </service>
@@ -163,11 +164,13 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
             <tag name="messenger.message_handler" />
         </service>
-
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Message\IndexHandler">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexHandler">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
             <tag name="messenger.message_handler" />
         </service>
-
+        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>
