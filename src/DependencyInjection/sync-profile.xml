@@ -80,10 +80,6 @@
             <tag name="elio-data-discovery.sync.api.output"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Output\AsyncOutput">
-            <tag name="elio-data-discovery.sync.api.output"/>
-        </service>
-
         <!-- inputs -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService">
             <argument type="tagged" tag="elio-data-discovery.sync.api.input"/>
@@ -102,6 +98,13 @@
             <tag name="elio-data-discovery.sync.api.input"/>
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService">
+            <argument type="service" id="elio_data_discovery_sync_profile.repository"/>
+            <argument type="service" id="elio_data_discovery_sync_profile_execution.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
         <service id="Elio\ElioDataDiscovery\Core\Sync\SyncService">
             <argument type="service" id="elio_data_discovery_sync_profile.repository"/>
             <argument type="tagged" tag="elio-data-discovery.sync.profile"/>
@@ -109,9 +112,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="elio.data-discovery.core.logging.default"/>
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="elio_data_discovery_sync_profile_execution.repository"/>
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService"/>
             <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
         </service>
 
@@ -185,6 +186,7 @@
         <service id="Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService"/>
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService"/>
             <tag name="messenger.message_handler"/>
         </service>
     </services>

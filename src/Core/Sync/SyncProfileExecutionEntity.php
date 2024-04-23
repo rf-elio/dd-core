@@ -46,38 +46,48 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 class SyncProfileExecutionEntity extends Entity
 {
     use EntityIdTrait;
+    protected string $syncProfileId;
+    protected SyncProfileEntity $syncProfile;
+    protected ?int $totalCount = null;
+    protected ?int $processedCount = null;
 
-    protected string $entityId = '';
-    protected ?int $total = 0;
-    protected ?int $processed = 0;
-
-    public function getEntityId(): string
+    public function getSyncProfileId(): string
     {
-        return $this->entityId;
+        return $this->syncProfileId;
     }
 
-    public function setEntityId(string $entityId): void
+    public function setSyncProfileId(string $syncProfileId): void
     {
-        $this->entityId = $entityId;
+        $this->syncProfileId = $syncProfileId;
     }
 
-    public function getTotal(): ?int
+    public function getSyncProfile(): SyncProfileEntity
     {
-        return $this->total;
+        return $this->syncProfile;
     }
 
-    public function setTotal(?int $total): void
+    public function setSyncProfile(SyncProfileEntity $syncProfile): void
     {
-        $this->total = $total;
+        $this->syncProfile = $syncProfile;
     }
 
-    public function getProcessed(): ?int
+    public function getTotalCount(): ?int
     {
-        return $this->processed;
+        return $this->totalCount;
     }
 
-    public function setProcessed(?int $processed): void
+    public function setTotalCount(?int $totalCount): void
     {
-        $this->processed = $processed;
+        $this->totalCount = $totalCount;
+    }
+
+    public function getProcessedCount(): ?int
+    {
+        return $this->processedCount;
+    }
+
+    public function setProcessedCount(?int $processedCount): void
+    {
+        $this->processedCount = $processedCount;
     }
 }

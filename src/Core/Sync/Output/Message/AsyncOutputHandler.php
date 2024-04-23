@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Output\Message;
 use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Elio\ElioDataDiscovery\Core\Sync\SyncStatusService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -48,9 +49,12 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class AsyncOutputHandler
 {
+    public const SUPPORTS_ASYNC_FEATURE = 'asyncOutputSupport';
+
     public function __construct(
         private readonly OutputService $outputService,
-        private readonly SyncService $syncService
+        private readonly SyncService $syncService,
+        private readonly SyncStatusService $syncStatusService
     ) {}
 
     /**
@@ -59,9 +63,25 @@ class AsyncOutputHandler
      */
     public function __invoke(AsyncOutputMessage $message): void
     {
-        $outputStream = $this->outputService->createOutputStream($message->getSyncContext());
+        $syncProfileExecutionEntity = $this->syncStatusService->getSyncProfileExecutionById(
+            $message->getSyncProfileExecutionEntityId(),
+            $message->getContext()
+        );
+
+        $sycProfileEntity = $this->syncService->getSyncProfileEntity(
+            $message->getSyncProfileEntityId(),
+            $message->getContext()
+        );
+        $syncContext = $this->syncService->createSyncContext($sycProfileEntity);
+        $outputStream = $this->outputService->createOutputStream($syncContext);
         $outputStream->write($message->getDataCollection());
-        $this->syncService->increaseProcessedCount($message->getExecutionRecordId(), $outputStream, $message->getSyncContext(), $message->getContext());
+        $this->syncStatusService->increaseProcessedCount($syncProfileExecutionEntity);
+        $this->syncStatusService->checkSyncProfileExecutionStatus(
+            $syncProfileExecutionEntity,
+            $outputStream,
+            $syncContext,
+            $message->getContext()
+        );
     }
 
     /**

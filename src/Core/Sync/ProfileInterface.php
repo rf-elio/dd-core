@@ -32,13 +32,15 @@
 
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
+use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler;
+
 interface ProfileInterface
 {
     public const FEATURES = [
         'multiLanguageSupport' => false,
         'deltaSupport' => true,
         'categorySelection' => false,
-        'asyncOutputSupport' => false,
+        AsyncOutputHandler::SUPPORTS_ASYNC_FEATURE => false,
     ];
 
     public function getName(): string;

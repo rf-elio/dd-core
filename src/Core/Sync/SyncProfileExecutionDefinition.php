@@ -33,12 +33,13 @@
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 /**
@@ -84,9 +85,10 @@ class SyncProfileExecutionDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new ApiAware(), new PrimaryKey(), new Required()),
-            (new BlobField('sync_profile_id', 'syncProfileId'))->addFlags(new ApiAware(), new Required()),
-            (new IntField('total', 'total'))->addFlags(new ApiAware()),
-            (new IntField('processed', 'processed'))->addFlags(new ApiAware()),
+            (new FkField('sync_profile_id', 'syncProfileId', SyncProfileDefinition::class))->addFlags(new ApiAware(), new Required()),
+            (new IntField('total_count', 'totalCount'))->addFlags(new ApiAware()),
+            (new IntField('processed_count', 'processedCount'))->addFlags(new ApiAware()),
+            new ManyToOneAssociationField('syncProfile', 'sync_profile_id', SyncProfileDefinition::class, 'id', false),
         ]);
     }
 }

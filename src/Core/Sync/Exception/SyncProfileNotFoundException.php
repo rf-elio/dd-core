@@ -30,42 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\Output;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
-use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
-use Shopware\Core\Framework\Struct\Collection;
+
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
- * Class AsyncOutput
- *
- * @category Shopware
- * @author Andrei Baev <anb@elio-systems.com>
- * @author elio GmbH <support@elio-systems.com>
+ * Class SyncProfileNotFoundException
+ * @package Elio\ElioDataDiscovery\Core\Sync\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class AsyncOutput implements OutputInterface, WriteAwareInterface, HandleInterface
-{
-    public const SUPPORTS_ASYNC_FEATURE = 'asyncOutputSupport';
-
-    const TYPE = self::class;
-
-    public function supports(string $type): bool
-    {
-        return self::TYPE === $type;
-    }
-
-    public function open(SyncContext $syncContext): void
-    {
-        // nothing to open there
-    }
-
-    public function close(): void
-    {
-        // nothing to close there yet
-    }
-
-    public function write(Collection $collection, SyncContext $syncContext): void
-    {
-        // TODO: Implement write() method.
-    }
-}
+class SyncProfileNotFoundException extends ElioDataDiscoveryException {}

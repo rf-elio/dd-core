@@ -33,7 +33,8 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Output\Message;
 
 use Elio\ElioDataDiscovery\Core\Sync\AbstractDataCollection;
-use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileExecutionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 use Symfony\Component\Serializer\Annotation\Ignore;
@@ -49,32 +50,25 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 class AsyncOutputMessage implements AsyncMessageInterface
 {
     public function __construct(
-        protected readonly SyncContext $syncContext,
-        protected readonly Context     $context,
-        protected readonly string      $executionRecordId,
-        protected readonly string      $dataCollectionSerialized
-    )
-    {
+        protected readonly string $syncProfileEntityId,
+        protected readonly Context $context,
+        protected readonly string $syncProfileExecutionEntityId,
+        protected readonly string $dataCollectionSerialized
+    ) {
     }
 
     public static function create(
-        SyncContext            $syncContext,
-        Context                $context,
-        string                 $executionRecordId,
+        string $syncProfileEntityId,
+        Context $context,
+        SyncProfileExecutionEntity $syncProfileExecutionEntity,
         AbstractDataCollection $dataCollection
-    ): AsyncOutputMessage
-    {
+    ): AsyncOutputMessage {
         return new AsyncOutputMessage(
-            $syncContext,
+            $syncProfileEntityId,
             $context,
-            $executionRecordId,
-            base64_encode(serialize($dataCollection))
+            $syncProfileExecutionEntity->getId(),
+            base64_encode(gzencode(serialize($dataCollection)))
         );
-    }
-
-    public function getSyncContext(): SyncContext
-    {
-        return $this->syncContext;
     }
 
     public function getContext(): Context
@@ -90,11 +84,19 @@ class AsyncOutputMessage implements AsyncMessageInterface
     #[Ignore]
     public function getDataCollection(): AbstractDataCollection
     {
-        return unserialize(base64_decode($this->dataCollectionSerialized));
+        return unserialize(
+            gzdecode(base64_decode($this->dataCollectionSerialized)),
+            ['allowed_classes' => true]
+        );
     }
 
-    public function getExecutionRecordId(): string
+    public function getSyncProfileExecutionEntityId(): string
     {
-        return $this->executionRecordId;
+        return $this->syncProfileExecutionEntityId;
+    }
+
+    public function getSyncProfileEntityId(): string
+    {
+        return $this->syncProfileEntityId;
     }
 }

@@ -30,51 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Migration;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
-use Shopware\Core\Framework\Migration\MigrationStep;
+
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
- * Class Migration1708005001SyncProfileExecution
- *
- * @category Shopware
- * @author Andrei Baev <anb@elio-systems.com>
- * @author elio GmbH <support@elio-systems.com>
+ * Class SyncProfileExecutionNotActiveException
+ * @package Elio\ElioDataDiscovery\Core\Sync\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class Migration1708005001SyncProfileExecution extends MigrationStep
-{
-    public function getCreationTimestamp(): int
-    {
-        return 1708005001;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function update(Connection $connection): void
-    {
-        $query = <<<SQL
-CREATE TABLE IF NOT EXISTS `elio_data_discovery_sync_profile_execution` (
-    `id`                BINARY(16) NOT NULL,
-    `created_at`        DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at`        DATETIME(3) NULL ON UPDATE CURRENT_TIMESTAMP(3),
-    `sync_profile_id`   BINARY(16) NOT NULL,
-    `total_count`       INT(11) NULL DEFAULT NULL,
-    `processed_count`   INT(11) NULL DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY (`sync_profile_id`),
-    CONSTRAINT elio_data_discovery_sync_profile_id_fk FOREIGN KEY (sync_profile_id) REFERENCES `elio_data_discovery_sync_profile` (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-SQL;
-
-        $connection->executeStatement($query);
-    }
-
-    public function updateDestructive(Connection $connection): void
-    {
-        // implement update destructive
-    }
-}
+class SyncProfileExecutionNotActiveException extends ElioDataDiscoveryException {}
