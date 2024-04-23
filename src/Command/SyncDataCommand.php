@@ -82,6 +82,11 @@ class SyncDataCommand extends Command
         try {
             if($exportId) {
                 $syncProfileConfiguration = $this->syncService->getSyncProfileConfiguration($exportId, $context);
+                if (!$force && !$this->syncService->isSyncProfileDue($syncProfileConfiguration)) {
+                    $output->writeln('<info>Sync profile is not due</info>');
+                    return Command::SUCCESS;
+                }
+
                 $this->syncService->sync($syncProfileConfiguration);
                 return Command::SUCCESS;
             }
@@ -93,7 +98,7 @@ class SyncDataCommand extends Command
             }
 
             if ($syncProfileConfigurations->count() <= 0) {
-                $output->writeln('<info>No sync profiles present - create a new sync profile in SW admin.</info>');
+                $output->writeln('<info>No due sync profiles found</info>');
                 return Command::SUCCESS;
             }
 

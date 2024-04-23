@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,20 +32,21 @@
 
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
-use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
-interface ProfileInterface
+/**
+ * Class SyncProfileExecutionCollection
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ * @extends EntityCollection<SyncProfileExecutionEntity>
+ */
+class SyncProfileExecutionCollection extends EntityCollection
 {
-    public const FEATURES = [
-        'multiLanguageSupport' => false,
-        'deltaSupport' => true,
-        'categorySelection' => false,
-        AsyncOutputHandler::SUPPORTS_ASYNC_FEATURE => false,
-    ];
-
-    public function getName(): string;
-    public function getDataTypes(): array;
-    public function getInput(): string;
-    public function getOutputs(): array;
-    public function getFeatures(): array;
+    protected function getExpectedClass(): string
+    {
+        return SyncProfileExecutionEntity::class;
+    }
 }

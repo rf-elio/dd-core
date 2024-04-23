@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
-
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
 /**
- * Class IndexUpdateCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class SyncProfileExecutionEntity
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateCommand extends Command
+class SyncProfileExecutionEntity extends Entity
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
+    use EntityIdTrait;
+    protected string $syncProfileId;
+    protected SyncProfileEntity $syncProfile;
+    protected ?int $totalCount = null;
+    protected ?int $processedCount = null;
+
+    public function getSyncProfileId(): string
+    {
+        return $this->syncProfileId;
     }
 
-    protected function configure(): void
+    public function setSyncProfileId(string $syncProfileId): void
     {
-        $this->setName('elio-data-discovery:index:update');
+        $this->syncProfileId = $syncProfileId;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function getSyncProfile(): SyncProfileEntity
     {
-        $context = Context::createDefaultContext();
+        return $this->syncProfile;
+    }
 
-        try {
-            $this->changeSetService->startIndexers($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
+    public function setSyncProfile(SyncProfileEntity $syncProfile): void
+    {
+        $this->syncProfile = $syncProfile;
+    }
 
-        return Command::SUCCESS;
+    public function getTotalCount(): ?int
+    {
+        return $this->totalCount;
+    }
+
+    public function setTotalCount(?int $totalCount): void
+    {
+        $this->totalCount = $totalCount;
+    }
+
+    public function getProcessedCount(): ?int
+    {
+        return $this->processedCount;
+    }
+
+    public function setProcessedCount(?int $processedCount): void
+    {
+        $this->processedCount = $processedCount;
     }
 }

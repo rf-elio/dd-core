@@ -30,37 +30,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output\Message;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
+use Elio\ElioDataDiscovery\Core\Sync\AbstractDataCollection;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileExecutionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
- * Class IndexUpdateMessage
- * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class AsyncOutputMessage
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateMessage implements AsyncMessageInterface
+class AsyncOutputMessage implements AsyncMessageInterface
 {
     public function __construct(
-        protected readonly string  $indexerIdentifier,
+        protected readonly string $syncProfileEntityId,
         protected readonly Context $context,
-        protected readonly string  $entityStatusCollectionSerialized
-    )
-    {
+        protected readonly string $syncProfileExecutionEntityId,
+        protected readonly string $dataCollectionSerialized
+    ) {
     }
 
-    public static function create(string $indexerIdentifier, Context $context, EntityStatusCollection $entityStatusCollection): IndexUpdateMessage
-    {
-        return new IndexUpdateMessage(
-            $indexerIdentifier,
+    public static function create(
+        string $syncProfileEntityId,
+        Context $context,
+        SyncProfileExecutionEntity $syncProfileExecutionEntity,
+        AbstractDataCollection $dataCollection
+    ): AsyncOutputMessage {
+        return new AsyncOutputMessage(
+            $syncProfileEntityId,
             $context,
-            base64_encode(serialize($entityStatusCollection))
+            $syncProfileExecutionEntity->getId(),
+            base64_encode(gzencode(serialize($dataCollection)))
         );
     }
 
@@ -69,19 +76,27 @@ class IndexUpdateMessage implements AsyncMessageInterface
         return $this->context;
     }
 
+    public function getDataCollectionSerialized(): string
+    {
+        return $this->dataCollectionSerialized;
+    }
+
     #[Ignore]
-    public function getEntityStatusCollection(): EntityStatusCollection
+    public function getDataCollection(): AbstractDataCollection
     {
-        return unserialize(base64_decode($this->entityStatusCollectionSerialized));
+        return unserialize(
+            gzdecode(base64_decode($this->dataCollectionSerialized)),
+            ['allowed_classes' => true]
+        );
     }
 
-    public function getIndexerIdentifier(): string
+    public function getSyncProfileExecutionEntityId(): string
     {
-        return $this->indexerIdentifier;
+        return $this->syncProfileExecutionEntityId;
     }
 
-    public function getEntityStatusCollectionSerialized(): string
+    public function getSyncProfileEntityId(): string
     {
-        return $this->entityStatusCollectionSerialized;
+        return $this->syncProfileEntityId;
     }
 }

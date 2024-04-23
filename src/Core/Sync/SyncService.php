@@ -33,9 +33,11 @@
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
-use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\SyncProfileNotFoundException;
 use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler;
+use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputMessage;
 use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
 use Exception;
 use InvalidArgumentException;
@@ -49,7 +51,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class SyncService
@@ -62,15 +64,15 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class SyncService
 {
     public function __construct(
-        private readonly EntityRepository                   $syncProfileRepository,
-        private readonly iterable                           $profileDefinitions,
-        private readonly InputService                       $inputService,
-        private readonly OutputService                      $outputService,
+        private readonly EntityRepository $syncProfileRepository,
+        private readonly iterable $profileDefinitions,
+        private readonly InputService $inputService,
+        private readonly OutputService $outputService,
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        private readonly LoggerInterface                    $logger,
-        private readonly EventDispatcherInterface           $eventDispatcher,
-    )
-    {
+        private readonly LoggerInterface $logger,
+        private readonly SyncStatusService $syncStatusService,
+        private readonly MessageBusInterface $bus
+    ) {
     }
 
     /**
@@ -83,13 +85,61 @@ class SyncService
     public function sync(SyncProfileEntity $syncProfile): void
     {
         $context = Context::createDefaultContext();
+        $syncContext = $this->createSyncContext($syncProfile);
+        $input = $this->inputService->getInput($syncContext);
+        $outputStream = $this->outputService->createOutputStream($syncContext);
+
+        $this->logger->info('Sync: Starting', [
+            'id' => $syncProfile->getId(),
+            'name' => $syncProfile->getName(),
+            'languages' => $syncProfile->getLanguages()?->getIds(),
+            'profileDefinition' => [
+                'name' => $syncContext->getProfileDefinition()->getName(),
+                'input' => $syncContext->getProfileDefinition()->getInput(),
+                'outputs' => $syncContext->getProfileDefinition()->getOutputs(),
+                'features' => $syncContext->getProfileDefinition()->getFeatures(),
+                'dataTypes' => $syncContext->getProfileDefinition()->getDataTypes(),
+            ],
+            'currentProfile' => [
+                'input' => $input::class,
+                'dataType' => $syncProfile->getDataType(),
+            ]
+        ]);
+
+        $execution = $this->syncStatusService->createNewSyncProfileExecution($syncProfile, $context);
+        $asyncWrite = $syncContext->getProfileDefinition()->getFeatures()[AsyncOutputHandler::SUPPORTS_ASYNC_FEATURE];
+        $outputStream->open();
+
+        $totalCount = 0;
+        foreach ($input->read($syncContext) as $dataCollection) {
+            $totalCount++;
+            if ($asyncWrite) {
+                $this->bus->dispatch(AsyncOutputMessage::create(
+                    $syncProfile->getId(),
+                    $context,
+                    $execution,
+                    $dataCollection
+                ));
+            } else {
+                $outputStream->write($dataCollection);
+            }
+        }
+
+        $this->syncStatusService->setTotalCount($execution, $totalCount, $context);
+        if (!$asyncWrite || $totalCount <= 0) {
+            $this->syncStatusService->increaseProcessedCount($execution, $totalCount);
+            $this->syncStatusService->checkSyncProfileExecutionStatus($execution, $outputStream, $syncContext, $context);
+        }
+    }
+
+    public function createSyncContext(SyncProfileEntity $syncProfile): SyncContext
+    {
         $salesChannel = $syncProfile->getSalesChannel();
         if (!$salesChannel || !$salesChannel->getDomains()) {
             $this->logger->info(
                 'Cannot generate product sync: association "salesChannel.domains" is missing',
                 ['id' => $syncProfile->getId()]
             );
-
             throw new RuntimeException(sprintf(
                 'Cannot generate product sync "%s": association "salesChannel.domains" is missing',
                 $syncProfile->getName()
@@ -97,8 +147,12 @@ class SyncService
         }
 
         if (($syncProfile->getLanguages()?->count() ?? 0) <= 0) {
+            $this->logger->info(
+                'Cannot generate product sync: no languages configured or association "languages" is missing',
+                ['id' => $syncProfile->getId()]
+            );
             throw new NoLanguagesInSyncConfiguredException(sprintf(
-                'No languages in sync "%s" configured',
+                'No languages in sync "%s" configured or association "languages" is missing',
                 $syncProfile->getName()
             ));
         }
@@ -114,37 +168,21 @@ class SyncService
         }
 
         $profileDefinition = $this->getProfileDefinition($syncProfile);
-        $syncContext = new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts);
-        $input = $this->inputService->getInput($syncContext);
-        $outputStream = $this->outputService->createOutputStream($syncContext);
+        return new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts);
+    }
 
-        $this->logger->info('Sync: Starting', [
-            'id' => $syncProfile->getId(),
-            'name' => $syncProfile->getName(),
-            'languages' => $syncProfile->getLanguages()?->getIds(),
-            'profileDefinition' => [
-                'name' => $profileDefinition->getName(),
-                'input' => $profileDefinition->getInput(),
-                'outputs' => $profileDefinition->getOutputs(),
-                'features' => $profileDefinition->getFeatures(),
-                'dataTypes' => $profileDefinition->getDataTypes(),
-            ],
-            'currentProfile' => [
-                'input' => $input::class,
-                'dataType' => $syncProfile->getDataType(),
-            ]
-        ]);
+    public function getSyncProfileEntity(string $id, Context $context): SyncProfileEntity
+    {
+        $criteria = new Criteria([$id]);
+        $criteria->addAssociation('salesChannel.domains');
+        $criteria->addAssociation('languages');
+        $syncProfileEntity = $this->syncProfileRepository->search($criteria, $context)->first();
 
-        $this->setStartDate($syncProfile, $context);
-        $outputStream->open();
-
-        foreach ($input->read($syncContext) as $dataCollection) {
-            $outputStream->write($dataCollection);
+        if (!$syncProfileEntity) {
+            throw new SyncProfileNotFoundException(sprintf('Sync profile for id %s not found', $id));
         }
 
-        $outputStream->close();
-        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()));
-        $this->setFinishDate($syncProfile, $context);
+        return $syncProfileEntity;
     }
 
     /**
@@ -190,12 +228,11 @@ class SyncService
      */
     public function getDueSyncProfileConfigurations(Context $context): SyncProfileCollection
     {
-        $now = new DateTimeImmutable();
         $syncProfiles = $this->getSyncProfileConfigurations($context);
         $dueSyncProfiles = new SyncProfileCollection();
         /** @var SyncProfileEntity $syncProfile */
         foreach ($syncProfiles as $syncProfile) {
-            if (!$syncProfile->getNextGenerationDueAt() || $syncProfile->getNextGenerationDueAt() <= $now) {
+            if ($this->isSyncProfileDue($syncProfile)) {
                 $dueSyncProfiles->add($syncProfile);
             }
         }
@@ -203,38 +240,10 @@ class SyncService
         return $dueSyncProfiles;
     }
 
-    /**
-     * Changes generation started date for profile
-     *
-     * @param SyncProfileEntity $syncProfile
-     * @param Context $context
-     * @return void
-     */
-    protected function setStartDate(SyncProfileEntity $syncProfile, Context $context): void
+    public function isSyncProfileDue(SyncProfileEntity $syncProfile): bool
     {
-        $this->syncProfileRepository->update([
-            [
-                'id' => $syncProfile->getId(),
-                'lastGenerationStartedAt' => new DateTimeImmutable(),
-            ]
-        ], $context);
-    }
-
-    /**
-     * Changes generation finished date for profile
-     *
-     * @param SyncProfileEntity $syncProfile
-     * @param Context $context
-     * @return void
-     */
-    protected function setFinishDate(SyncProfileEntity $syncProfile, Context $context): void
-    {
-        $this->syncProfileRepository->update([
-            [
-                'id' => $syncProfile->getId(),
-                'lastGenerationFinishedAt' => new DateTimeImmutable(),
-            ]
-        ], $context);
+        $now = new DateTimeImmutable();
+        return !$syncProfile->getNextGenerationDueAt() || $syncProfile->getNextGenerationDueAt() <= $now;
     }
 
     /**

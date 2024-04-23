@@ -20,53 +20,57 @@
             <tag name="shopware.entity.definition" entity="elio_data_discovery_entity_status"/>
         </service>
 
+        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileExecutionDefinition">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile_execution"/>
+        </service>
+
         <!--   Sync    -->
         <!--   Collector    -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\ProductCollector">
-            <argument type="service" id="sales_channel.product.repository" />
-            <argument type="service" id="sales_channel.category.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\CategoryCollector">
-            <argument type="service" id="sales_channel.category.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\LandingPageCollector">
-            <argument type="service" id="sales_channel.landing_page.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sales_channel.landing_page.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
 
         <!--    Api Sync    -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\ProductIndexer">
-            <argument type="service" id="product.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.indexer"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\CategoryIndexer">
-            <argument type="service" id="category.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.indexer"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\LandingPageIndexer">
-            <argument type="service" id="landing_page.repository" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="landing_page.repository"/>
+            <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.indexer"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService">
-            <argument type="service" id="elio_data_discovery_entity_status.repository" />
-            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
-            <argument type="tagged" tag="elio-data-discovery.sync.indexer" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="elio_data_discovery_entity_status.repository"/>
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
+            <argument type="tagged" tag="elio-data-discovery.sync.indexer"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
         </service>
 
         <!-- outputs -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService">
-            <argument type="tagged" tag="elio-data-discovery.sync.api.output" />
+            <argument type="tagged" tag="elio-data-discovery.sync.api.output"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Output\SeoRouteOutput">
@@ -78,98 +82,112 @@
 
         <!-- inputs -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService">
-            <argument type="tagged" tag="elio-data-discovery.sync.api.input" />
+            <argument type="tagged" tag="elio-data-discovery.sync.api.input"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\DeltaInput">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <argument type="tagged" tag="elio-data-discovery.sync.collector" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
-            <tag name="elio-data-discovery.sync.api.input" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <argument type="tagged" tag="elio-data-discovery.sync.collector"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
+            <tag name="elio-data-discovery.sync.api.input"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Input\FullInput">
-            <argument type="tagged" tag="elio-data-discovery.sync.collector" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
-            <tag name="elio-data-discovery.sync.api.input" />
+            <argument type="tagged" tag="elio-data-discovery.sync.collector"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
+            <tag name="elio-data-discovery.sync.api.input"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService">
+            <argument type="service" id="elio_data_discovery_sync_profile.repository"/>
+            <argument type="service" id="elio_data_discovery_sync_profile_execution.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\SyncService">
-            <argument type="service" id="elio_data_discovery_sync_profile.repository" />
-            <argument type="tagged" tag="elio-data-discovery.sync.profile" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService" />
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
-            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="elio_data_discovery_sync_profile.repository"/>
+            <argument type="tagged" tag="elio-data-discovery.sync.profile"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Input\InputService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService"/>
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Api\SyncProfileController" public="true">
-            <argument type="tagged" tag="elio-data-discovery.sync.profile" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
-            <argument type="service" id="shopware.filesystem.private" />
+            <argument type="tagged" tag="elio-data-discovery.sync.profile"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
+            <argument type="service" id="shopware.filesystem.private"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Api\CategoryInheritanceController" public="true">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\Api\IndexController" public="true">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Command\SyncDataCommand">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Command\IndexUpdateCommand">
-            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <tag name="console.command"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Command\IndexCleanupCommand">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Command\CategoryInheritanceUpdateCommand">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService" />
-            <argument type="service" id="elio.data-discovery.core.logging.default" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <tag name="console.command"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService">
-            <argument type="service" id="category.repository" />
+            <argument type="service" id="category.repository"/>
         </service>
 
         <!-- message handler -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\Message\SyncProfileHandler">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService" />
-            <tag name="messenger.message_handler" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <tag name="messenger.message_handler"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexHandler">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <tag name="messenger.message_handler" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <tag name="messenger.message_handler"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateHandler">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService" />
-            <tag name="messenger.message_handler" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\Output\OutputService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncStatusService"/>
+            <tag name="messenger.message_handler"/>
         </service>
     </services>
 </container>

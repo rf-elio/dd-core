@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
-use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler;
 
-interface ProfileInterface
-{
-    public const FEATURES = [
-        'multiLanguageSupport' => false,
-        'deltaSupport' => true,
-        'categorySelection' => false,
-        AsyncOutputHandler::SUPPORTS_ASYNC_FEATURE => false,
-    ];
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
-    public function getName(): string;
-    public function getDataTypes(): array;
-    public function getInput(): string;
-    public function getOutputs(): array;
-    public function getFeatures(): array;
-}
+/**
+ * Class SyncProfileExecutionNotActiveException
+ * @package Elio\ElioDataDiscovery\Core\Sync\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ */
+class SyncProfileExecutionNotActiveException extends ElioDataDiscoveryException {}

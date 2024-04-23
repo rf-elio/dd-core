@@ -41,6 +41,7 @@ use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingDefinition;
 use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingTreeDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileExecutionDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping;
 use Elio\ElioDataDiscovery\Setup\CustomFieldSetup;
 use Exception;
@@ -162,6 +163,7 @@ class ElioDataDiscovery extends Plugin
                     ProductSortingDefinition::ENTITY_NAME,
                     SyncProfileLanguageMapping::ENTITY_NAME,
                     SyncProfileDefinition::ENTITY_NAME,
+                    SyncProfileExecutionDefinition::ENTITY_NAME
                 ];
 
                 foreach ($tables as $table) {
