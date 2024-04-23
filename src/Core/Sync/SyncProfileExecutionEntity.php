@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
-
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
 /**
- * Class IndexUpdateCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class SyncProfileExecutionEntity
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateCommand extends Command
+class SyncProfileExecutionEntity extends Entity
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
+    use EntityIdTrait;
+
+    protected string $entityId = '';
+    protected ?int $total = 0;
+    protected ?int $processed = 0;
+
+    public function getEntityId(): string
+    {
+        return $this->entityId;
     }
 
-    protected function configure(): void
+    public function setEntityId(string $entityId): void
     {
-        $this->setName('elio-data-discovery:index:update');
+        $this->entityId = $entityId;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function getTotal(): ?int
     {
-        $context = Context::createDefaultContext();
+        return $this->total;
+    }
 
-        try {
-            $this->changeSetService->startIndexers($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
+    public function setTotal(?int $total): void
+    {
+        $this->total = $total;
+    }
 
-        return Command::SUCCESS;
+    public function getProcessed(): ?int
+    {
+        return $this->processed;
+    }
+
+    public function setProcessed(?int $processed): void
+    {
+        $this->processed = $processed;
     }
 }

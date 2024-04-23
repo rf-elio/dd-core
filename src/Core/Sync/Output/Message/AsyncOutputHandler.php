@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output\Message;
 
-
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\DBAL\Exception;
+use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Class IndexUpdateCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class AsyncOutputHandler
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateCommand extends Command
+#[AsMessageHandler]
+class AsyncOutputHandler
 {
     public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
-    }
+        private readonly OutputService $outputService,
+        private readonly SyncService $syncService
+    ) {}
 
-    protected function configure(): void
+    /**
+     * @param AsyncOutputMessage $message
+     * @throws Exception
+     */
+    public function __invoke(AsyncOutputMessage $message): void
     {
-        $this->setName('elio-data-discovery:index:update');
+        $outputStream = $this->outputService->createOutputStream($message->getSyncContext());
+        $outputStream->write($message->getDataCollection());
+        $this->syncService->increaseProcessedCount($message->getExecutionRecordId(), $outputStream, $message->getSyncContext(), $message->getContext());
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
+     * @return iterable<string>
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public static function getHandledMessages(): iterable
     {
-        $context = Context::createDefaultContext();
-
-        try {
-            $this->changeSetService->startIndexers($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
-
-        return Command::SUCCESS;
+        return [
+            AsyncOutputMessage::class
+        ];
     }
 }

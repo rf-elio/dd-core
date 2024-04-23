@@ -30,58 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
+namespace Elio\ElioDataDiscovery\Core\Sync;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * Class IndexUpdateMessage
- * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class SyncProfileExecutionCollection
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ * @extends EntityCollection<SyncProfileExecutionEntity>
  */
-class IndexUpdateMessage implements AsyncMessageInterface
+class SyncProfileExecutionCollection extends EntityCollection
 {
-    public function __construct(
-        protected readonly string  $indexerIdentifier,
-        protected readonly Context $context,
-        protected readonly string  $entityStatusCollectionSerialized
-    )
+    protected function getExpectedClass(): string
     {
-    }
-
-    public static function create(string $indexerIdentifier, Context $context, EntityStatusCollection $entityStatusCollection): IndexUpdateMessage
-    {
-        return new IndexUpdateMessage(
-            $indexerIdentifier,
-            $context,
-            base64_encode(serialize($entityStatusCollection))
-        );
-    }
-
-    public function getContext(): Context
-    {
-        return $this->context;
-    }
-
-    #[Ignore]
-    public function getEntityStatusCollection(): EntityStatusCollection
-    {
-        return unserialize(base64_decode($this->entityStatusCollectionSerialized));
-    }
-
-    public function getIndexerIdentifier(): string
-    {
-        return $this->indexerIdentifier;
-    }
-
-    public function getEntityStatusCollectionSerialized(): string
-    {
-        return $this->entityStatusCollectionSerialized;
+        return SyncProfileExecutionEntity::class;
     }
 }

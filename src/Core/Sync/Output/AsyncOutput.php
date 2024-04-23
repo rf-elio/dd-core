@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Core\Sync\Output;
 
-
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Elio\ElioDataDiscovery\Core\Sync\SyncContext;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
- * Class IndexUpdateCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class AsyncOutput
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateCommand extends Command
+class AsyncOutput implements OutputInterface, WriteAwareInterface, HandleInterface
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
+    public const SUPPORTS_ASYNC_FEATURE = 'asyncOutputSupport';
+
+    const TYPE = self::class;
+
+    public function supports(string $type): bool
+    {
+        return self::TYPE === $type;
     }
 
-    protected function configure(): void
+    public function open(SyncContext $syncContext): void
     {
-        $this->setName('elio-data-discovery:index:update');
+        // nothing to open there
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     * @throws Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function close(): void
     {
-        $context = Context::createDefaultContext();
+        // nothing to close there yet
+    }
 
-        try {
-            $this->changeSetService->startIndexers($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
-
-        return Command::SUCCESS;
+    public function write(Collection $collection, SyncContext $syncContext): void
+    {
+        // TODO: Implement write() method.
     }
 }

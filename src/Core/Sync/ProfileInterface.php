@@ -38,6 +38,7 @@ interface ProfileInterface
         'multiLanguageSupport' => false,
         'deltaSupport' => true,
         'categorySelection' => false,
+        'asyncOutputSupport' => false,
     ];
 
     public function getName(): string;

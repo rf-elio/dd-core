@@ -33,10 +33,14 @@
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
+use Doctrine\DBAL\Connection;
 use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
 use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\AsyncOutput;
+use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputMessage;
 use Elio\ElioDataDiscovery\Core\Sync\Output\OutputService;
+use Elio\ElioDataDiscovery\Core\Sync\Output\OutputStream;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -46,10 +50,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class SyncService
@@ -69,6 +75,9 @@ class SyncService
         private readonly AbstractSalesChannelContextFactory $salesChannelContextFactory,
         private readonly LoggerInterface                    $logger,
         private readonly EventDispatcherInterface           $eventDispatcher,
+        private readonly EntityRepository                   $syncProfileExecutionRepository,
+        private readonly Connection                         $connection,
+        private readonly MessageBusInterface                $messageBus,
     )
     {
     }
@@ -135,16 +144,125 @@ class SyncService
             ]
         ]);
 
+        $executionRecord = $this->createNewSyncProfileExecution($syncProfile, $context);
         $this->setStartDate($syncProfile, $context);
         $outputStream->open();
 
+        $totalCount = 0;
         foreach ($input->read($syncContext) as $dataCollection) {
-            $outputStream->write($dataCollection);
+            $totalCount++;
+
+            if ($profileDefinition->getFeatures()[AsyncOutput::SUPPORTS_ASYNC_FEATURE] ?? false) {
+                $this->messageBus->dispatch(AsyncOutputMessage::create(
+                    $syncContext,
+                    $context,
+                    $executionRecord->getId(),
+                    $dataCollection
+                ));
+            } else {
+                $outputStream->write($dataCollection);
+            }
         }
 
+        $this->setTotalCount($executionRecord, $totalCount, $context);
+        if (!($profileDefinition->getFeatures()[AsyncOutput::SUPPORTS_ASYNC_FEATURE] ?? false)) {
+            $this->increaseProcessedCount($executionRecord->getId(), $outputStream, $syncContext, $context, $totalCount);
+        }
+    }
+
+    /**
+     * Creates new sync profile execution record and returns it
+     * @param SyncProfileEntity $syncProfile
+     * @param Context $context
+     * @return SyncProfileExecutionEntity
+     */
+    private function createNewSyncProfileExecution(
+        SyncProfileEntity $syncProfile,
+        Context           $context
+    ): SyncProfileExecutionEntity
+    {
+        $newId = Uuid::randomHex();
+        $this->syncProfileExecutionRepository->create([
+            [
+                'id' => $newId,
+                'syncProfileId' => $syncProfile->getId(),
+                'total' => 0,
+                'processed' => 0,
+                'createdAt' => new DateTimeImmutable(),
+            ]
+        ], $context);
+
+        return $this->syncProfileExecutionRepository->search(new Criteria([$newId]), $context)->first();
+    }
+
+    /**
+     * Sets total count of data chunks for sync profile execution record
+     *
+     * @param SyncProfileExecutionEntity $executionRecord
+     * @param int $totalCount
+     * @param Context $context
+     * @return void
+     */
+    private function setTotalCount(
+        SyncProfileExecutionEntity $executionRecord,
+        int                        $totalCount,
+        Context                    $context
+    ): void
+    {
+        $this->syncProfileExecutionRepository->update([
+            [
+                'id' => $executionRecord->getId(),
+                'total' => $totalCount,
+            ]
+        ], $context);
+    }
+
+    /**
+     * @param string $executionRecordId
+     * @param OutputStream $outputStream
+     * @param SyncContext $syncContext
+     * @param Context $context
+     * @param int $processedCount
+     * @return void
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function increaseProcessedCount(
+        string       $executionRecordId,
+        OutputStream $outputStream,
+        SyncContext  $syncContext,
+        Context      $context,
+        int          $processedCount = 1
+    ): void
+    {
+        $id = UUid::fromHexToBytes($executionRecordId);
+
+        $this->connection->executeQuery('
+            UPDATE `elio_data_discovery_sync_profile_execution`
+            SET `processed` = `processed` + :processedCount
+            WHERE id = :id',
+            [
+                'id' => $id,
+                'processedCount' => $processedCount,
+            ]
+        );
+
+        $result = $this->connection->fetchAssociative('
+            SELECT `processed`, `total`
+            FROM `elio_data_discovery_sync_profile_execution`
+            WHERE id = :id
+            ORDER BY `createdAt` DESC',
+            [
+                'id' => $id,
+            ]
+        );
+
+        echo('<pre>');
+        var_dump($result);
+        die();
+
         $outputStream->close();
-        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncProfile, $syncContext->getSalesChannelContexts()));
-        $this->setFinishDate($syncProfile, $context);
+        $this->eventDispatcher->dispatch(new SyncGeneratedEvent($syncContext->getSyncProfile(), $syncContext->getSalesChannelContexts()));
+        $this->setFinishDate($syncContext->getSyncProfile(), $context);
     }
 
     /**

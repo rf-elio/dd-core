@@ -128,10 +128,10 @@ class ChangeSetService
             $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
                 'indexer' => $indexer->getIdentifier()
             ]);
-            $this->messageBus->dispatch(new IndexUpdateMessage(
+            $this->messageBus->dispatch(IndexUpdateMessage::create(
                 $indexer->getIdentifier(),
-                $currentEntityStatusCollection,
-                $context
+                $context,
+                $currentEntityStatusCollection
             ));
         }
     }

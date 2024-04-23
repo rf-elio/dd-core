@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 /**
- * Copyright (c) 2023, elio GmbH.
+ * Copyright (c) 2024, elio GmbH.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Command;
+namespace Elio\ElioDataDiscovery\Migration;
 
-
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
- * Class IndexUpdateCommand
- * @package Elio\ElioDataDiscovery\Command
+ * Class Migration1708005001SyncProfileExecution
+ *
  * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
  * @author elio GmbH <support@elio-systems.com>
- * @author Danil Lukov <dl@elio-systems.com>
- * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateCommand extends Command
+class Migration1708005001SyncProfileExecution extends MigrationStep
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService,
-        private readonly LoggerInterface $logger
-    ) {
-        parent::__construct();
-    }
-
-    protected function configure(): void
+    public function getCreationTimestamp(): int
     {
-        $this->setName('elio-data-discovery:index:update');
+        return 1708005001;
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function update(Connection $connection): void
     {
-        $context = Context::createDefaultContext();
+        $query = <<<SQL
+CREATE TABLE IF NOT EXISTS `elio_data_discovery_sync_profile_execution` (
+    `id`                BINARY(16) NOT NULL,
+    `sync_profile_id`   BINARY(16) NOT NULL,
+    `created_at`        DATETIME(3) NOT NULL,
+    `total`             INT(11) NULL,
+    `processed`         INT(11) NULL,
+    `updated_at`        DATETIME(3) NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL;
 
-        try {
-            $this->changeSetService->startIndexers($context);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'line' => $e->getLine()
-            ]);
-            $output->writeln('<error>'.$e->getMessage().'</error>');
-            return Command::FAILURE;
-        }
+        $connection->executeStatement($query);
+    }
 
-        return Command::SUCCESS;
+    public function updateDestructive(Connection $connection): void
+    {
+        // implement update destructive
     }
 }
