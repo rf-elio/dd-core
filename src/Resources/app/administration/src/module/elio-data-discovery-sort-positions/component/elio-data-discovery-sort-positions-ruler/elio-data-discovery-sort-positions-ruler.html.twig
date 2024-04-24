@@ -3,10 +3,10 @@
         <sw-loader v-if="isLoading"></sw-loader>
         <sw-button-group class="elio-data-discovery-sort-positions-buttons">
             <sw-button size="small"
-                       @click="refreshIndex"
-            >{{ $tc('elio-data-discovery.sort-positions.base.refreshIndex') }}</sw-button>
-            <sw-help-text class="elio-data-discovery-sort-positions-refresh-index-help-text"
-                          :text="$tc('elio-data-discovery.sort-positions.info.help.refresh-index')"
+                       @click="recalculateSort"
+            >{{ $tc('elio-data-discovery.sort-positions.base.recalculateSort') }}</sw-button>
+            <sw-help-text class="elio-data-discovery-sort-positions-recalculate-sort-help-text"
+                          :text="$tc('elio-data-discovery.sort-positions.info.help.recalculate-sort')"
             ></sw-help-text>
             <sw-button v-if="category.childCount == 0"
                        size="small"

@@ -199,12 +199,12 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
                 product.position = currentPositionNumber;
             });
         },
-        refreshIndex() {
+        recalculateSort() {
             const initContainer = Shopware.Application.getContainer('init');
             const headers = {
                 Authorization: `Bearer ${Shopware.Service('loginService').getToken()}`,
             };
-            const endpoint = `edd-refresh-index`;
+            const endpoint = `_action/elio-data-discovery/recalculate-sort`;
             initContainer.httpClient.get(endpoint, { headers });
         },
         async saveAll() {

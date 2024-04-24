@@ -66,7 +66,11 @@ CREATE TABLE IF NOT EXISTS `elio_data_discovery_sync_profile_execution` (
     `processed_count`   INT(11) NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY (`sync_profile_id`),
-    CONSTRAINT elio_data_discovery_sync_profile_id_fk FOREIGN KEY (sync_profile_id) REFERENCES `elio_data_discovery_sync_profile` (id)
+    CONSTRAINT elio_data_discovery_sync_profile_id_fk 
+        FOREIGN KEY (sync_profile_id) 
+        REFERENCES `elio_data_discovery_sync_profile` (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 

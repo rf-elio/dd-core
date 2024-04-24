@@ -134,12 +134,12 @@
       "base": {
         "syncProducts": "Sync products",
         "position": "Position",
-        "refreshIndex": "Refresh Index"
+        "recalculateSort": "Recalculate"
       },
       "info": {
         "help": {
           "sync-products": "The \"Sync products\" button adds products of this category into the sorting table below and removes deleted products if necessary.",
-          "refresh-index": "The \"Refresh Index\" button recalculates the sorting positions for the parent category. Changes to sorting positions have to be saved first."
+          "recalculate-sort": "The \"Recalculate\" button recalculates the sorting positions for the parent category. Changes to sorting positions have to be saved first."
         },
         "sorting-disabled": "Product sorting is disabled. Enable it in the plugin configuration.",
         "tree": "This table can not be edited. It displays computed sorting positions of all products in its child categories."

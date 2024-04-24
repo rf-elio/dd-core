@@ -162,8 +162,8 @@ class ElioDataDiscovery extends Plugin
                     ProductSortingTreeDefinition::ENTITY_NAME,
                     ProductSortingDefinition::ENTITY_NAME,
                     SyncProfileLanguageMapping::ENTITY_NAME,
-                    SyncProfileDefinition::ENTITY_NAME,
-                    SyncProfileExecutionDefinition::ENTITY_NAME
+                    SyncProfileExecutionDefinition::ENTITY_NAME,
+                    SyncProfileDefinition::ENTITY_NAME
                 ];
 
                 foreach ($tables as $table) {

@@ -134,12 +134,12 @@
       "base": {
         "syncProducts": "Produkte synchronisieren",
         "position": "Position",
-        "refreshIndex": "Index aktualisieren"
+        "recalculateSort": "Neuberechnen"
       },
       "info": {
         "help": {
           "sync-products": "Der \"Produkte synchronisieren\" Button erlaubt das Hinzufügen von Produkten der Kategorie in die Sortiertabelle und entfernt gelöschte Produkte wenn nötig.",
-          "refresh-index": "Der \"Index aktualisieren\" Button berechnet die Sortierpositionen der Produkte für die Eltern-Kategorie neu. Änderungen an den Sortier-Positionen müssen jedoch erst gespeichert werden."
+          "recalculate-sort": "Der \"Neuberechnen\" Button berechnet die Sortierpositionen der Produkte für die Eltern-Kategorie neu. Änderungen an den Sortier-Positionen müssen jedoch erst gespeichert werden."
         },
         "sorting-disabled": "Die Positionssortierung ist deaktiviert. Aktivieren Sie sie in der Plugin-Konfiguration.",
         "tree": "Diese Tabelle kann nicht editiert werden. Hier werden die berechneten Sortierpositionen aller Produkte in den Unterkategorien ausgegeben."

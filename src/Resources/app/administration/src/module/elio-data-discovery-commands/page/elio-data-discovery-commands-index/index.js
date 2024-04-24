@@ -29,7 +29,7 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
                 },
                 "productSortUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'refresh-index'
+                    'endpoint': 'recalculate-sort'
                 },
                 "rankingUpdate": {
                     'handler': 'simpleCommandGet',
