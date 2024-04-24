@@ -75,7 +75,7 @@ class ProductCollector implements DataCollectorInterface
     use TranslatorAware;
 
     public const TYPE = ProductDataType::class;
-    public const CHUNK_SIZE = 100;
+    public const CHUNK_SIZE = 50;
 
     public function __construct(
         private readonly SalesChannelRepository $productRepository,

@@ -175,7 +175,7 @@ class SyncService
     {
         $criteria = new Criteria([$id]);
         $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages');
+        $criteria->addAssociation('languages.locale');
         $syncProfileEntity = $this->syncProfileRepository->search($criteria, $context)->first();
 
         if (!$syncProfileEntity) {
