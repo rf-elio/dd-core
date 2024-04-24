@@ -128,8 +128,8 @@ class SyncService
         $this->syncStatusService->setTotalCount($execution, $totalCount, $context);
         if (!$asyncWrite || $totalCount <= 0) {
             $this->syncStatusService->increaseProcessedCount($execution, $totalCount);
-            $this->syncStatusService->checkSyncProfileExecutionStatus($execution, $outputStream, $syncContext, $context);
         }
+        $this->syncStatusService->checkSyncProfileExecutionStatus($execution, $outputStream, $syncContext, $context);
     }
 
     public function createSyncContext(SyncProfileEntity $syncProfile): SyncContext
