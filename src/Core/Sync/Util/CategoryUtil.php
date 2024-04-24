@@ -67,9 +67,6 @@ class CategoryUtil
      */
     public static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
     {
-        // if we exclude product info in main category we don't inherit its exclusion to child categories
-        unset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS]);
-
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
             $category = $node->getValue();

@@ -82,8 +82,6 @@ class ElioDataDiscovery extends Plugin
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude';
     public const CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_parental_exclude';
     public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_INHERITED = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_inherited';
-    public const CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'content_export_exclude_product_info';
-    public const CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_export_priority';
     public const CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY = self::CUSTOM_FIELD_TECHNICAL_NAME_CATEGORY_LANDING_PAGE . '_' . 'category_custom_search_query';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_count';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_amount';
@@ -236,30 +234,13 @@ class ElioDataDiscovery extends Plugin
                             'de-DE' => 'Unterkategorien vom Content Export ausschließen',
                         ]
                     ],
-                    self::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE_PRODUCT_INFO_IN_KEYWORDS => [
-                        'type' => 'bool',
-                        'componentName' => 'sw-field',
-                        'label' => [
-                            'en-GB' => 'Exclude product info in keywords',
-                            'de-DE' => 'Produktinformationen in den Keywords ausschließen',
-                        ]
-                    ],
-                    self::CUSTOM_FIELD_CATEGORY_EXPORT_PRIORITY => [
-                        'type' => 'text',
-                        'componentName' => 'sw-field',
-                        'placeholder' => '50',
-                        'label' => [
-                            'en-GB' => 'Priority',
-                            'de-DE' => 'Priorität',
-                        ],
-                    ],
                     self::CUSTOM_FIELD_CATEGORY_CUSTOM_SEARCH_QUERY => [
                         'type' => 'text',
                         'componentName' => 'sw-field',
                         'placeholder' => 'brandline={category.name}&Manufacturer={parent.name}',
                         'label' => [
-                            'en-GB' => 'Custom search query',
-                            'de-DE' => 'Individuelle Suchanfrage'
+                            'en-GB' => 'Custom search query (Note: Verify that your data discovery extension is able to handle custom search queries)',
+                            'de-DE' => 'Individuelle Suchanfrage (Hinweis: Stellen Sie sicher, dass Ihre Data Discovery-Erweiterung individuelle Suchanfragen verarbeiten kann)'
                         ]
                     ]
                 ],
@@ -278,7 +259,7 @@ class ElioDataDiscovery extends Plugin
                             'en-GB' => 'Order count',
                             'de-DE' => 'Anzahl Bestellungen'
                         ]
-                    ],//{"type": "number", "label": {"en-GB": "xcvxcv"}, "helpText": {"en-GB": null}, "numberType": "float", "placeholder": {"en-GB": null}, "componentName": "sw-field", "customFieldType": "number", "customFieldPosition": 1}
+                    ],
                     self::CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT => [
                         'type' => 'float',
                         'componentName' => 'sw-field',

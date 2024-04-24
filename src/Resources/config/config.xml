@@ -372,6 +372,11 @@
         <title>Advanced</title>
         <title lang="de-DE">Advanced</title>
 
+        <component name="elio-data-discovery-feature-status">
+            <name>additionalRequestParameters</name>
+            <feature>additionalRequestParameters</feature>
+        </component>
+
         <component name="sw-textarea-field">
             <name>additionalRequestParameters</name>
             <label>Additional parameters for request to Data Discovery</label>
