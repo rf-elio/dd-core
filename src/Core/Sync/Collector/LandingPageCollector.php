@@ -63,13 +63,16 @@ use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 class LandingPageCollector implements DataCollectorInterface
 {
     use TranslatorAware;
+
     public const TYPE = ContentDataType::class;
     public const CHUNK_SIZE = 500;
 
     public function __construct(
-        private readonly SalesChannelRepository $landingPageRepository,
+        private readonly SalesChannelRepository   $landingPageRepository,
         private readonly EventDispatcherInterface $dispatcher
-    ) {}
+    )
+    {
+    }
 
     /**
      * Checks if collector is supported
@@ -178,18 +181,22 @@ class LandingPageCollector implements DataCollectorInterface
      */
     protected function mapLandingPageToDataType(LandingPageEntity $landingPage): ContentDataType
     {
+        $landingPageTranslation = $landingPage->getTranslated() ?? [];
+
         $contentType = new ContentDataType();
         $contentType->setId($landingPage->getId());
-        $contentType->setName($landingPage->getName());
+        $contentType->setName($landingPageTranslation['name'] ?? $landingPage->getName());
         $contentType->setType(
+            $landingPageTranslation['customFields'][ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] ??
             $landingPage->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ??
-                $landingPage->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
-                'landingpage'
+            $landingPageTranslation['customFields'][ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT] ??
+            $landingPage->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
+            'landingpage'
         );
-        $contentType->setMetaTitle($landingPage->getMetaTitle());
-        $contentType->setSeoText($landingPage->getMetaDescription());
+        $contentType->setMetaTitle($landingPageTranslation['metaTitle'] ?? $landingPage->getMetaTitle());
+        $contentType->setSeoText($landingPageTranslation['metaDescription'] ?? $landingPage->getMetaDescription());
         $contentType->setSeoUrls($landingPage->getSeoUrls());
-        $contentType->setKeywords($landingPage->getKeywords());
+        $contentType->setKeywords($landingPageTranslation['keywords'] ?? $landingPage->getKeywords());
         $contentType->setCreatedAt($landingPage->getCreatedAt());
         $contentType->setTags($landingPage->getTags());
         $contentType->setCustomFields($landingPage->getCustomFields());

@@ -26,7 +26,7 @@ use Symfony\Component\Routing\RouterInterface;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInterface
+class SeoRouteOutput implements OutputInterface, WriteAwareInterface, InitAwareInterface
 {
     public const TYPE = self::class;
 
@@ -47,8 +47,9 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
         return self::TYPE === $type;
     }
 
-    public function open(SyncContext $syncContext): void
+    public function init(SyncContext $syncContext): void
     {
+        $this->baseUrl = [];
         $this->salesChannelContexts = $syncContext->getSalesChannelContexts();
         $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
         foreach ($contexts as $languageId => $context) {
@@ -60,12 +61,6 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, HandleInte
                 }
             }
         }
-    }
-
-    public function close(): void
-    {
-        $this->baseUrl = [];
-        $this->salesChannelContexts = new SalesChannelContextCollection();
     }
 
     /**

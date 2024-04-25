@@ -108,6 +108,7 @@ class SyncService
 
         $execution = $this->syncStatusService->createNewSyncProfileExecution($syncProfile, $context);
         $asyncWrite = $syncContext->getProfileDefinition()->getFeatures()[AsyncOutputHandler::SUPPORTS_ASYNC_FEATURE];
+        $outputStream->init();
         $outputStream->open();
 
         $totalCount = 0;
