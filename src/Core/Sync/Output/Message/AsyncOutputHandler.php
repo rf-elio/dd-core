@@ -74,6 +74,7 @@ class AsyncOutputHandler
         );
         $syncContext = $this->syncService->createSyncContext($sycProfileEntity);
         $outputStream = $this->outputService->createOutputStream($syncContext);
+        $outputStream->init();
         $outputStream->write($message->getDataCollection());
         $this->syncStatusService->increaseProcessedCount($syncProfileExecutionEntity);
         $this->syncStatusService->checkSyncProfileExecutionStatus(

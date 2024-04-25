@@ -64,14 +64,17 @@ use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 class CategoryCollector implements DataCollectorInterface
 {
     use TranslatorAware;
+
     public const TYPE = ContentDataType::class;
     public const CHUNK_SIZE = 500;
     private array $customFields = [];
 
     public function __construct(
-        private readonly SalesChannelRepository $categoryRepository,
+        private readonly SalesChannelRepository   $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher
-    ) {}
+    )
+    {
+    }
 
     /**
      * Checks if collector is supported
@@ -188,22 +191,27 @@ class CategoryCollector implements DataCollectorInterface
      */
     protected function mapCategoryToDataType(CategoryEntity $category): ContentDataType
     {
+        $categoryTranslation = $category->getTranslated() ?? [];
+
         $contentType = new ContentDataType();
         $contentType->setId($category->getId());
-        $contentType->setName($category->getName());
+        $contentType->setName($categoryTranslation['name'] ?? $category->getName());
         $contentType->setType(
+            $categoryTranslation['customFields'][ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE] ??
             $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE) ??
+            $categoryTranslation['customFields'][ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT] ??
             $category->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT) ??
             'category'
         );
-        $contentType->setDescription($category->getDescription());
-        $contentType->setMetaTitle($category->getMetaTitle());
-        $contentType->setSeoText($category->getMetaDescription());
+
+        $contentType->setDescription($categoryTranslation['description'] ?? $category->getDescription());
+        $contentType->setMetaTitle($categoryTranslation['metaTitle'] ?? $category->getMetaTitle());
+        $contentType->setSeoText($categoryTranslation['metaDescription'] ?? $category->getMetaDescription());
         $contentType->setSeoUrls($category->getSeoUrls());
-        $contentType->setKeywords($category->getKeywords());
+        $contentType->setKeywords($categoryTranslation['keywords'] ?? $category->getKeywords());
         $contentType->setMedia($category->getMedia());
         $contentType->setCreatedAt($category->getCreatedAt());
-        $contentType->setBreadcrumb($category->getBreadcrumb());
+        $contentType->setBreadcrumb($categoryTranslation['breadcrumb'] ?? $category->getBreadcrumb());
         $contentType->setTags($category->getTags());
         $contentType->setCustomFields($this->customFields[$category->getId()] ?? $category->getCustomFields());
         $contentType->addExtension('original', $category);

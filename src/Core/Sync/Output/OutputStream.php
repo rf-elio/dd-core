@@ -65,6 +65,15 @@ class OutputStream
         }
     }
 
+    public function init(): void
+    {
+        foreach ($this->outputs as $output) {
+            if ($output instanceof InitAwareInterface) {
+                $output->init($this->syncContext);
+            }
+        }
+    }
+
     public function close(): void
     {
         foreach ($this->outputs as $output) {
