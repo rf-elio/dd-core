@@ -34,26 +34,18 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Shopware\Core\Framework\Context;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
- * Class IndexUpdateMessage
- * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
+ * Class AsyncIndexUpdateMessage
+ *
+ * @category Shopware
+ * @author Andrei Baev <anb@elio-systems.com>
+ * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class IndexUpdateMessage
+class AsyncIndexUpdateMessage extends IndexUpdateMessage implements AsyncMessageInterface
 {
-    public function __construct(
-        protected readonly string  $indexerIdentifier,
-        protected readonly Context $context,
-        protected readonly string  $entityStatusCollectionSerialized
-    )
-    {
-    }
-
     public static function create(string $indexerIdentifier, Context $context, EntityStatusCollection $entityStatusCollection): self
     {
         return new self(
@@ -61,26 +53,5 @@ class IndexUpdateMessage
             $context,
             base64_encode(serialize($entityStatusCollection))
         );
-    }
-
-    public function getContext(): Context
-    {
-        return $this->context;
-    }
-
-    #[Ignore]
-    public function getEntityStatusCollection(): EntityStatusCollection
-    {
-        return unserialize(base64_decode($this->entityStatusCollectionSerialized));
-    }
-
-    public function getIndexerIdentifier(): string
-    {
-        return $this->indexerIdentifier;
-    }
-
-    public function getEntityStatusCollectionSerialized(): string
-    {
-        return $this->entityStatusCollectionSerialized;
     }
 }

@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 
 use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\AsyncIndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Psr\Log\LoggerInterface;
@@ -113,9 +114,10 @@ class ChangeSetService
      * Indexing updated entries
      *
      * @param Context $context
+     * @param bool $isAsync
      * @return void
      */
-    public function startIndexers(Context $context): void
+    public function startIndexers(Context $context, bool $isAsync = false): void
     {
         $entitiesStatus = $this->entityStatusRepository->search(new Criteria(), $context);
         /** @var EntityStatusCollection $currentEntityStatusCollection */
@@ -128,11 +130,20 @@ class ChangeSetService
             $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
                 'indexer' => $indexer->getIdentifier()
             ]);
-            $this->messageBus->dispatch(IndexUpdateMessage::create(
-                $indexer->getIdentifier(),
-                $context,
-                $currentEntityStatusCollection
-            ));
+            if ($isAsync) {
+                $message = AsyncIndexUpdateMessage::create(
+                    $indexer->getIdentifier(),
+                    $context,
+                    $currentEntityStatusCollection
+                );
+            } else {
+                $message = IndexUpdateMessage::create(
+                    $indexer->getIdentifier(),
+                    $context,
+                    $currentEntityStatusCollection
+                );
+            }
+            $this->messageBus->dispatch($message);
         }
     }
 
