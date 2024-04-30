@@ -6,15 +6,11 @@ import './page/elio-data-discovery-sorting-restrictions-customfilters';
 import './page/elio-data-discovery-sorting-restrictions-customfilters-detail';
 import './page/elio-data-discovery-sorting-restrictions-customfilters-create';
 
-(async function initDependencies() {
-    await import(/* webpackMode: 'eager' */ './component/elio-data-discovery-sorting-restrictions-ruler');
-})();
-
 Shopware.Module.register('elio-data-discovery-sorting-restrictions', {
     type: 'plugin',
     name: 'ElioDataDiscoverySortingRestrictions',
     title: 'elio-data-discovery.restrictions.sorting.title',
-    description: 'elio-data-discovery.restrictions.sorting.description',
+    description: 'elio-data-discovery.restrictions.filter.description',
     color: '#014587',
     icon: 'default-action-tags',
 

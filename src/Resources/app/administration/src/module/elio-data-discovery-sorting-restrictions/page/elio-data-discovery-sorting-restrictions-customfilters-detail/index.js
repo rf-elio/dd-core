@@ -149,7 +149,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restrictions-customfilt
                 this.isSaveSuccessful = true;
             }).catch((exception) => {
                 this.createNotificationError({
-                    message: this.$tc('elio-data-discovery.restrictions.sorting.filters.messageSaveError')
+                    message: this.$tc('elio-data-discovery.restrictions.filter.filters.messageSaveError')
                 });
                 this.isLoading = false;
                 throw exception;

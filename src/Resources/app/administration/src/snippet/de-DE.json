@@ -1,178 +1,131 @@
 {
-  "elio-data-discovery": {
-    "global": {
-      "title": "Data Discovery",
-      "description": ""
-    },
-    "features": {
-      "enabled":  "Die Funktion {feature} wird unterstützt.",
-      "disabled": "Die Funktion {feature} wird von keinem Ihrer aktiven Erweiterungs-Plugins unterstützt."
-    },
-    "restrictions": {
-      "filter": {
-        "title": "Filter Konfiguration",
-        "description": "",
-        "tabs": {
-          "global": "Global",
-          "search": "Suche",
-          "navigation": "Navigation",
-          "customfilters": "Eigene Filter",
-          "category": "Filter Konfiguration"
+    "elio-data-discovery": {
+        "global": {
+            "title": "Data Discovery",
+            "description": ""
         },
-        "filters": {
-          "messageSaveError": "Speichern ist fehlgeschlagen",
-          "buttonSave": "Speichern",
-          "buttonCancel": "Abbrechen",
-          "detail": {
-            "cardTitleGroupInfo" : "Grundlegende Informationen",
-            "labelName": "Eigenschaft",
-            "labelTechnicalName": "Technischername",
-            "displayByDefault": "Display by default",
-            "sortDirection": "Aufsteigende Sortierung",
-            "textHeadline": "Neue Eigenschaft"
-          },
-          "placeholderLabel": "Eigenschaftsname",
-          "placeholderTechnicalName": "Technischername"
+        "features": {
+            "enabled": "Die Funktion {feature} wird unterstützt.",
+            "disabled": "Die Funktion {feature} wird von keinem Ihrer aktiven Erweiterungs-Plugins unterstützt."
         },
-        "customFilters": {
-          "contextMenuView": "Bearbeiten",
-          "contextMenuDelete": "Löschen",
-          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{label}\" wirklich löschen?",
-          "buttonCancel": "Abbrechen",
-          "buttonDelete": "Löschen",
-          "buttonAdd": "Hinzufügen",
-          "list": {
-            "columnTechnicalName": "Technischername"
-          }
-        },
-        "ruler": {
-          "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
-          "tabs": {
-            "permissions": "Berechtigungen",
-            "available": {
-              "header": "Verfügbar"
+        "restrictions": {
+            "filter": {
+                "title": "Filter Konfiguration",
+                "description": "",
+                "tabs": {
+                    "global": "Global",
+                    "search": "Suche",
+                    "navigation": "Navigation",
+                    "customfilters": "Eigene Filter",
+                    "category": "Filter Konfiguration"
+                },
+                "filters": {
+                    "messageSaveError": "Speichern ist fehlgeschlagen",
+                    "buttonSave": "Speichern",
+                    "buttonCancel": "Abbrechen",
+                    "detail": {
+                        "cardTitleGroupInfo": "Grundlegende Informationen",
+                        "labelName": "Eigenschaft",
+                        "labelTechnicalName": "Technischername",
+                        "textHeadline": "Neue Eigenschaft"
+                    },
+                    "placeholderLabel": "Eigenschaftsname",
+                    "placeholderTechnicalName": "Technischername"
+                },
+                "customFilters": {
+                    "contextMenuView": "Bearbeiten",
+                    "contextMenuDelete": "Löschen",
+                    "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{label}\" wirklich löschen?",
+                    "buttonCancel": "Abbrechen",
+                    "buttonDelete": "Löschen",
+                    "buttonAdd": "Hinzufügen",
+                    "list": {
+                        "columnTechnicalName": "Technischername"
+                    }
+                },
+                "ruler": {
+                    "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
+                    "tabs": {
+                        "permissions": "Berechtigungen",
+                        "available": {
+                            "header": "Verfügbar"
+                        },
+                        "allowed": {
+                            "header": "Erlaubt",
+                            "permissions": {
+                                "allowAll": "Alle erlauben",
+                                "allowOnlySelected": "Allow only selected"
+                            }
+                        },
+                        "blocked": {
+                            "header": "Ausgeschlossen",
+                            "permissions": {
+                                "blockAll": "Alle ausschließen",
+                                "blockOnlySelected": "Nur Auswahl ausschließen"
+                            }
+                        }
+                    }
+                }
             },
-            "allowed": {
-              "header": "Erlaubt",
-              "permissions": {
-                "allowAll": "Alle erlauben",
-                "allowOnlySelected": "Allow only selected"
-              }
-            },
-            "blocked": {
-              "header": "Ausgeschlossen",
-              "permissions": {
-                "blockAll": "Alle ausschließen",
-                "blockOnlySelected": "Nur Auswahl ausschließen"
-              }
+            "sorting": {
+                "title": "Sorting Konfiguration",
+                "tabs": {
+                    "customfilters": "Optionen sortieren",
+                    "category": "Sortier Konfiguration"
+                },
+                "filters": {
+                    "detail": {
+                        "displayByDefault": "Display by default",
+                        "sortDirection": "Aufsteigende Sortierung"
+                    }
+                }
             }
-          }
-        }
-      },
-      "sorting": {
-        "title": "Sorting Konfiguration",
-        "description": "",
-        "tabs": {
-          "global": "Global",
-          "search": "Suche",
-          "navigation": "Navigation",
-          "customfilters": "Optionen sortieren",
-          "category": "Sortier Konfiguration"
         },
-        "filters": {
-          "messageSaveError": "Speichern fehlgeschlagen",
-          "buttonSave": "Speichern",
-          "buttonCancel": "Abbrechen",
-          "detail": {
-            "cardTitleGroupInfo" : "Grundlegende Informationen",
-            "labelName": "Eigenschaftsname",
-            "labelTechnicalName": "Technischername",
-            "textHeadline": "Neue Eigenschaft"
-          },
-          "placeholderLabel": "Eigenschaftsname",
-          "placeholderTechnicalName": "Technischername"
-        },
-        "customFilters": {
-          "contextMenuView": "Bearbeiten",
-          "contextMenuDelete": "Löschen",
-          "textDeleteConfirm": "Möchtest Du die Eigenschaft \"{label}\" wirklich löschen?",
-          "buttonCancel": "Abbrechen",
-          "buttonDelete": "Löschen",
-          "buttonAdd": "Hinzufügen",
-          "list": {
-            "columnTechnicalName": "Technischername"
-          }
-        },
-        "ruler": {
-          "inheritance": "Geerbt von All-Sales-Kanal-Einstellungen",
-          "tabs": {
-            "permissions": "permissions",
-            "available": {
-              "header": "Verfügbar"
+        "sort-positions": {
+            "title": "Sortierpositionen",
+            "description": "",
+            "base": {
+                "syncProducts": "Produkte synchronisieren",
+                "position": "Position",
+                "recalculateSort": "Neuberechnen"
             },
-            "allowed": {
-              "header": "Erlaubt",
-              "permissions": {
-                "allowAll": "Alle erlauben",
-                "allowOnlySelected": "Nur Auswahl erlauben"
-              }
+            "info": {
+                "help": {
+                    "sync-products": "Der \"Produkte synchronisieren\" Button erlaubt das Hinzufügen von Produkten der Kategorie in die Sortiertabelle und entfernt gelöschte Produkte wenn nötig.",
+                    "recalculate-sort": "Der \"Neuberechnen\" Button berechnet die Sortierpositionen der Produkte für die Eltern-Kategorie neu. Änderungen an den Sortier-Positionen müssen jedoch erst gespeichert werden."
+                },
+                "sorting-disabled": "Die Positionssortierung ist deaktiviert. Aktivieren Sie sie in der Plugin-Konfiguration.",
+                "tree": "Diese Tabelle kann nicht editiert werden. Hier werden die berechneten Sortierpositionen aller Produkte in den Unterkategorien ausgegeben."
             },
-            "blocked": {
-              "header": "Ausgeschlossen",
-              "permissions": {
-                "blockAll": "Alle ausschließen",
-                "blockOnlySelected": "Nur Auswahl ausschließen"
-              }
+            "tabs": {
+                "category": "Position-Sortierung",
+                "global": "Produkte"
             }
-          }
         }
-      }
     },
-    "sort-positions": {
-      "title": "Sortierpositionen",
-      "description": "",
-      "base": {
-        "syncProducts": "Produkte synchronisieren",
-        "position": "Position",
-        "recalculateSort": "Neuberechnen"
-      },
-      "info": {
-        "help": {
-          "sync-products": "Der \"Produkte synchronisieren\" Button erlaubt das Hinzufügen von Produkten der Kategorie in die Sortiertabelle und entfernt gelöschte Produkte wenn nötig.",
-          "recalculate-sort": "Der \"Neuberechnen\" Button berechnet die Sortierpositionen der Produkte für die Eltern-Kategorie neu. Änderungen an den Sortier-Positionen müssen jedoch erst gespeichert werden."
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "advisorCampaign": {
+                    "label": "Berater Kampagne"
+                }
+            }
         },
-        "sorting-disabled": "Die Positionssortierung ist deaktiviert. Aktivieren Sie sie in der Plugin-Konfiguration.",
-        "tree": "Diese Tabelle kann nicht editiert werden. Hier werden die berechneten Sortierpositionen aller Produkte in den Unterkategorien ausgegeben."
-      },
-      "tabs": {
-        "category": "Position-Sortierung",
-        "global": "Produkte"
-      }
-    }
-  },
-  "sw-cms": {
-    "blocks": {
-      "commerce": {
-        "advisorCampaign": {
-          "label": "Berater Kampagne"
+        "elements": {
+            "advisorCampaign": {
+                "label": "Berater Kampagne",
+                "config": {
+                    "campaignParameterName": "Kampagnen Parameter: Name",
+                    "campaignParameterValue": "Kampagnen Parameter: Wert",
+                    "productsTitle": "Produkt-Titel"
+                },
+                "content": {
+                    "question": "Frage?",
+                    "firstAnswer": "Erste Antwort",
+                    "secondAnswer": "Zweite Antwort",
+                    "thirdAnswer": "Dritte Antwort"
+                }
+            }
         }
-      }
-    },
-    "elements": {
-      "advisorCampaign": {
-        "label": "Berater Kampagne",
-        "config": {
-          "campaignParameterName": "Kampagnen Parameter: Name",
-          "campaignParameterValue": "Kampagnen Parameter: Wert",
-          "productsTitle": "Produkt-Titel"
-        },
-        "content": {
-          "question": "Frage?",
-          "firstAnswer": "Erste Antwort",
-          "secondAnswer": "Zweite Antwort",
-          "thirdAnswer": "Dritte Antwort"
-        }
-      }
     }
-  }
 }

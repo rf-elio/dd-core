@@ -1,178 +1,131 @@
 {
-  "elio-data-discovery": {
-    "global": {
-      "title": "Data Discovery",
-      "description": ""
-    },
-    "features": {
-      "enabled":  "The feature {feature} is supported.",
-      "disabled": "The feature {feature} is not supported by any of your active extension plugins."
-    },
-    "restrictions": {
-      "filter": {
-        "title": "Filter Configuration",
-        "description": "",
-        "tabs": {
-          "global": "Global",
-          "search": "Search",
-          "navigation": "Navigation",
-          "customfilters": "Custom Filters",
-          "category": "Filter Configuration"
+    "elio-data-discovery": {
+        "global": {
+            "title": "Data Discovery",
+            "description": ""
         },
-        "filters": {
-          "messageSaveError": "Error while saving",
-          "buttonSave": "Save",
-          "buttonCancel": "Cancel",
-          "detail": {
-            "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Label",
-            "labelTechnicalName": "Technical Name",
-            "textHeadline": "New Property"
-          },
-          "placeholderLabel": "Label",
-          "placeholderTechnicalName": "Technical Name"
+        "features": {
+            "enabled": "The feature {feature} is supported.",
+            "disabled": "The feature {feature} is not supported by any of your active extension plugins."
         },
-        "customFilters": {
-          "contextMenuView": "Edit",
-          "contextMenuDelete": "Delete",
-          "textDeleteConfirm": "Are you sure you really want to delete the property \"{label}\"?",
-          "buttonCancel": "Cancel",
-          "buttonDelete": "Delete",
-          "buttonAdd": "Add",
-          "list": {
-            "columnTechnicalName": "Technical Name"
-          }
-        },
-        "ruler": {
-          "inheritance": "Inherited from all-saleschannel settings",
-          "tabs": {
-            "permissions": "Permissions",
-            "available": {
-              "header": "Available"
+        "restrictions": {
+            "filter": {
+                "title": "Filter Configuration",
+                "description": "",
+                "tabs": {
+                    "global": "Global",
+                    "search": "Search",
+                    "navigation": "Navigation",
+                    "customfilters": "Custom Filters",
+                    "category": "Filter Configuration"
+                },
+                "filters": {
+                    "messageSaveError": "Error while saving",
+                    "buttonSave": "Save",
+                    "buttonCancel": "Cancel",
+                    "detail": {
+                        "cardTitleGroupInfo": "Basic information",
+                        "labelName": "Label",
+                        "labelTechnicalName": "Technical Name",
+                        "textHeadline": "New Property"
+                    },
+                    "placeholderLabel": "Label",
+                    "placeholderTechnicalName": "Technical Name"
+                },
+                "customFilters": {
+                    "contextMenuView": "Edit",
+                    "contextMenuDelete": "Delete",
+                    "textDeleteConfirm": "Are you sure you really want to delete the property \"{label}\"?",
+                    "buttonCancel": "Cancel",
+                    "buttonDelete": "Delete",
+                    "buttonAdd": "Add",
+                    "list": {
+                        "columnTechnicalName": "Technical Name"
+                    }
+                },
+                "ruler": {
+                    "inheritance": "Inherited from all-saleschannel settings",
+                    "tabs": {
+                        "permissions": "Permissions",
+                        "available": {
+                            "header": "Available"
+                        },
+                        "allowed": {
+                            "header": "Allowed",
+                            "permissions": {
+                                "allowAll": "Allow all",
+                                "allowOnlySelected": "Allow only selected"
+                            }
+                        },
+                        "blocked": {
+                            "header": "Blocked",
+                            "permissions": {
+                                "blockAll": "Exclude all",
+                                "blockOnlySelected": "Exclude only selected"
+                            }
+                        }
+                    }
+                }
             },
-            "allowed": {
-              "header": "Allowed",
-              "permissions": {
-                "allowAll": "Allow all",
-                "allowOnlySelected": "Allow only selected"
-              }
-            },
-            "blocked": {
-              "header": "Blocked",
-              "permissions": {
-                "blockAll": "Exclude all",
-                "blockOnlySelected": "Exclude only selected"
-              }
+            "sorting": {
+                "title": "Sorting Configuration",
+                "tabs": {
+                    "customfilters": "Sort options",
+                    "category": "Sorting Configuration"
+                },
+                "filters": {
+                    "detail": {
+                        "displayByDefault": "Display by default",
+                        "sortDirection": "Ascending sorting"
+                    }
+                }
             }
-          }
-        }
-      },
-      "sorting": {
-        "title": "Sorting Configuration",
-        "description": "",
-        "tabs": {
-          "global": "Global",
-          "search": "Search",
-          "navigation": "Navigation",
-          "customfilters": "Sort options",
-          "category": "Sorting Configuration"
         },
-        "filters": {
-          "messageSaveError": "Error while saving",
-          "buttonSave": "Save",
-          "buttonCancel": "Cancel",
-          "detail": {
-            "cardTitleGroupInfo" : "Basic information",
-            "labelName": "Label",
-            "labelTechnicalName": "Technical Name",
-            "displayByDefault": "Display by default",
-            "sortDirection": "Ascending sorting",
-            "textHeadline": "New Property"
-          },
-          "placeholderLabel": "Label",
-          "placeholderTechnicalName": "Technical Name"
-        },
-        "customFilters": {
-          "contextMenuView": "Edit",
-          "contextMenuDelete": "Delete",
-          "textDeleteConfirm": "Are you sure you really want to delete the property \"{label}\"?",
-          "buttonCancel": "Cancel",
-          "buttonDelete": "Delete",
-          "buttonAdd": "Add",
-          "list": {
-            "columnTechnicalName": "Technical Name"
-          }
-        },
-        "ruler": {
-          "inheritance": "Inherited from all-saleschannel settings",
-          "tabs": {
-            "permissions": "Permissions",
-            "available": {
-              "header": "Available"
+        "sort-positions": {
+            "title": "Sorting Positions",
+            "description": "",
+            "base": {
+                "syncProducts": "Sync products",
+                "position": "Position",
+                "recalculateSort": "Recalculate"
             },
-            "allowed": {
-              "header": "Allowed",
-              "permissions": {
-                "allowAll": "Allow all",
-                "allowOnlySelected": "Allow only selected"
-              }
+            "info": {
+                "help": {
+                    "sync-products": "The \"Sync products\" button adds products of this category into the sorting table below and removes deleted products if necessary.",
+                    "recalculate-sort": "The \"Recalculate\" button recalculates the sorting positions for the parent category. Changes to sorting positions have to be saved first."
+                },
+                "sorting-disabled": "Product sorting is disabled. Enable it in the plugin configuration.",
+                "tree": "This table can not be edited. It displays computed sorting positions of all products in its child categories."
             },
-            "blocked": {
-              "header": "Blocked",
-              "permissions": {
-                "blockAll": "Exclude all",
-                "blockOnlySelected": "Exclude only selected"
-              }
+            "tabs": {
+                "category": "Position Sorting",
+                "global": "Products"
             }
-          }
         }
-      }
     },
-    "sort-positions": {
-      "title": "Sorting Positions",
-      "description": "",
-      "base": {
-        "syncProducts": "Sync products",
-        "position": "Position",
-        "recalculateSort": "Recalculate"
-      },
-      "info": {
-        "help": {
-          "sync-products": "The \"Sync products\" button adds products of this category into the sorting table below and removes deleted products if necessary.",
-          "recalculate-sort": "The \"Recalculate\" button recalculates the sorting positions for the parent category. Changes to sorting positions have to be saved first."
+    "sw-cms": {
+        "blocks": {
+            "commerce": {
+                "advisorCampaign": {
+                    "label": "Advisor campaign"
+                }
+            }
         },
-        "sorting-disabled": "Product sorting is disabled. Enable it in the plugin configuration.",
-        "tree": "This table can not be edited. It displays computed sorting positions of all products in its child categories."
-      },
-      "tabs": {
-        "category": "Position Sorting",
-        "global": "Products"
-      }
-    }
-  },
-  "sw-cms": {
-    "blocks": {
-      "commerce": {
-        "advisorCampaign": {
-          "label": "Advisor campaign"
+        "elements": {
+            "advisorCampaign": {
+                "label": "Advisor campaign",
+                "config": {
+                    "campaignParameterName": "Campaign parameter: name",
+                    "campaignParameterValue": "Campaign parameter: value",
+                    "productsTitle": "Products title"
+                },
+                "content": {
+                    "question": "Advisor's question?",
+                    "firstAnswer": "First answer",
+                    "secondAnswer": "Second answer",
+                    "thirdAnswer": "Third answer"
+                }
+            }
         }
-      }
-    },
-    "elements": {
-      "advisorCampaign": {
-        "label": "Advisor campaign",
-        "config": {
-          "campaignParameterName": "Campaign parameter: name",
-          "campaignParameterValue": "Campaign parameter: value",
-          "productsTitle": "Products title"
-        },
-        "content": {
-          "question": "Advisor's question?",
-          "firstAnswer": "First answer",
-          "secondAnswer": "Second answer",
-          "thirdAnswer": "Third answer"
-        }
-      }
     }
-  }
 }

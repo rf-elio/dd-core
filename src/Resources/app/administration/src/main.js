@@ -20,6 +20,7 @@ Shopware.Locale.extend('de-DE', deDE);
 Shopware.Locale.extend('en-GB', enGB);
 
 (async function initDependencies() {
+    await import(/* webpackMode: 'eager' */ './component/elio-data-discovery-restriction-ruler');
     await import(/* webpackMode: 'eager' */ './component/elio-data-discovery-plugin-icon');
 })();
 

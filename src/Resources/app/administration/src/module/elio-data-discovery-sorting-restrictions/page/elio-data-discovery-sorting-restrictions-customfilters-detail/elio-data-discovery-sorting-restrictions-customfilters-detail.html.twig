@@ -4,7 +4,7 @@
         {% block elio_data_discovery_sorting_restrictions_customfilters_detail_smart_bar_header %}
             <template slot="smart-bar-header">
                 {% block elio_data_discovery_sorting_restrictions_customfilters_detail_smart_bar_header_title %}
-                    <h2>{{ placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.sorting.filters.detail.textHeadline')) }}</h2>
+                    <h2>{{ placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline')) }}</h2>
                 {% endblock %}
             </template>
         {% endblock %}
@@ -15,7 +15,7 @@
                     <sw-button class="sw-property-detail__back-action"
                                :disabled="isLoading"
                                @click="onCancel">
-                        {{ $tc('elio-data-discovery.restrictions.sorting.filters.buttonCancel') }}
+                        {{ $tc('elio-data-discovery.restrictions.filter.filters.buttonCancel') }}
                     </sw-button>
                 {% endblock %}
 
@@ -28,7 +28,7 @@
                             variant="primary"
                             @process-finish="saveFinish"
                             @click.prevent="onSave">
-                        {{ $tc('elio-data-discovery.restrictions.sorting.filters.buttonSave') }}
+                        {{ $tc('elio-data-discovery.restrictions.filter.filters.buttonSave') }}
                     </sw-button-process>
                 {% endblock %}
             </template>
@@ -47,19 +47,19 @@
             <sw-card-view slot="content">
                 {% block elio_data_discovery_sorting_restrictions_customfilters_detail_content_language_info %}
                     <sw-language-info
-                            :entityDescription="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.sorting.filters.detail.textHeadline'))">
+                            :entityDescription="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline'))">
                     </sw-language-info>
                 {% endblock %}
 
-                <sw-card positionIdentifier="1" v-if="filter" :title="$tc('elio-data-discovery.restrictions.sorting.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
+                <sw-card positionIdentifier="1" v-if="filter" :title="$tc('elio-data-discovery.restrictions.filter.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
                     {% block elio_data_discovery_sorting_restrictions_customfilters_detail_technical_name %}
                         <sw-field
                                 v-model="filter.technicalName"
                                 type="text"
                                 required
                                 :error="filterTechnicalNameError"
-                                :label="$tc('elio-data-discovery.restrictions.sorting.filters.detail.labelTechnicalName')"
-                                :placeholder="placeholder(filter, 'technicalName', $tc('elio-data-discovery.restrictions.sorting.filters.placeholderTechnicalName'))"/>
+                                :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelTechnicalName')"
+                                :placeholder="placeholder(filter, 'technicalName', $tc('elio-data-discovery.restrictions.filter.filters.placeholderTechnicalName'))"/>
                     {% endblock %}
                     {% block elio_data_discovery_sorting_restrictions_customfilters_detail_base_name %}
                         <sw-field
@@ -67,8 +67,8 @@
                                 type="text"
                                 required
                                 :error="filterLabelError"
-                                :label="$tc('elio-data-discovery.restrictions.sorting.filters.detail.labelName')"
-                                :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.sorting.filters.placeholderLabel'))"/>
+                                :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelName')"
+                                :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.placeholderLabel'))"/>
                     {% endblock %}
                     {% block elio_data_discovery_sorting_restrictions_customfilters_detail_sort_direction %}
                         <sw-field
