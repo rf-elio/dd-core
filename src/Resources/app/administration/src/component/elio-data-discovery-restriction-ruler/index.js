@@ -312,7 +312,6 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
             this.isLoading = true;
             var operator = this;
 
-            // Removing old links from elio_data_discovery_filter_restrictions_filters table
             var criteria = new Criteria();
             criteria.addAssociation('filters');
             criteria.addFilter(
