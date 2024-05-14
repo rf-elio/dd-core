@@ -7,7 +7,7 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
         inputMinValue: '',
         inputMaxValue: '',
         rangeUnit: '',
-        elioDataDiscoveryFilterName: 'elio-data-discovery-slider',
+        elioDataDiscoveryFilterName: 'elio-data-discovery-range',
     });
 
     /**
@@ -16,11 +16,20 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
      */
     getValues() {
         const values = {};
+        let valuePresent = false;
+        if (this._inputMin.value.length > 0) {
+            values[this.options.minKey] = this._inputMin.value;
+            valuePresent = true;
+        }
+        if (this._inputMax.value.length > 0) {
+            values[this.options.maxKey] = this._inputMax.value;
+            valuePresent = true;
+        }
 
-        values[this.options.minKey] = this._inputMin.value;
-        values[this.options.maxKey] = this._inputMax.value;
-        values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
-
+        if (valuePresent) {
+            values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
+        }
+        console.log(values)
         return values;
     }
 
@@ -42,14 +51,14 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
         if (this._inputMin.value.length || this._inputMax.value.length) {
             if (this._inputMin.value.length) {
                 labels.push({
-                    label: `${this.options.name} ${this.options.snippets.filterRangeActiveMinLabel} ${this._inputMin.value} ${this.options.rangeUnit}`,
+                    label: `${this.options.snippets.filterRangeActiveMinLabel} ${this._inputMin.value} ${this.options.rangeUnit}`,
                     id: this.options.minKey,
                 });
             }
 
             if (this._inputMax.value.length) {
                 labels.push({
-                    label: `${this.options.name} ${this.options.snippets.filterRangeActiveMaxLabel} ${this._inputMax.value} ${this.options.rangeUnit}`,
+                    label: `${this.options.snippets.filterRangeActiveMaxLabel} ${this._inputMax.value} ${this.options.rangeUnit}`,
                     id: this.options.maxKey,
                 });
             }
