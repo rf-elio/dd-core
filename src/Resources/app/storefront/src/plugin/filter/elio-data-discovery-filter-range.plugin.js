@@ -4,8 +4,6 @@ import deepmerge from 'deepmerge';
 export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugin {
 
     static options = deepmerge(FilterRangePlugin.options, {
-        inputMinValue: '',
-        inputMaxValue: '',
         rangeUnit: '',
         elioDataDiscoveryFilterName: 'elio-data-discovery-range',
     });
@@ -29,7 +27,6 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
         if (valuePresent) {
             values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this._inputMin.value + '~' + this._inputMax.value];
         }
-        console.log(values)
         return values;
     }
 
