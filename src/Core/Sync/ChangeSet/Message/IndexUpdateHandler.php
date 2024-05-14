@@ -61,7 +61,8 @@ class IndexUpdateHandler
     public static function getHandledMessages(): iterable
     {
         return [
-            IndexUpdateMessage::class
+            IndexUpdateMessage::class,
+            AsyncIndexUpdateMessage::class
         ];
     }
 }
