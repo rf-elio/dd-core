@@ -77,7 +77,6 @@ export default class ListingPluginExtension extends Plugin {
 
     _replaceFilters (newFilterPanel, currentFilterPanel) {
         const newFilterDropdowns = newFilterPanel.querySelectorAll(this.options.filterPanelItemDropdownSelector);
-
         let lastInsertedFilter = null;
         newFilterDropdowns.forEach(newFilterDropdown => {
             const currentFilterDropdown = currentFilterPanel.querySelector(`#${newFilterDropdown.id}`);

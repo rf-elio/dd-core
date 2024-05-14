@@ -23,16 +23,19 @@
                         } %}
                     {% endfor %}
                 {% endif %}
-            {% elseif style == 'SLIDER' %}
+            {% elseif style == 'RANGE' %}
                 {% if elioDataDiscoveryAggregation.min > 0 and elioDataDiscoveryAggregation.max > 0 %}
                     {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-range.html.twig' with {
-                        price: elioDataDiscoveryAggregation,
                         sidebar: sidebar,
-                        name: elioDataDiscoveryAggregation.name,
-                        minKey: 'min-' ~ elioDataDiscoveryAggregation.name,
-                        maxKey: 'max-' ~ elioDataDiscoveryAggregation.name,
+                        name: elioDataDiscoveryAggregation.technicalName,
+                        minKey: 'min-' ~ elioDataDiscoveryAggregation.technicalName,
+                        maxKey: 'max-' ~ elioDataDiscoveryAggregation.technicalName,
+                        unit: elioDataDiscoveryAggregation.unit,
                         displayName: elioDataDiscoveryAggregation.name,
-                        rangeUnit: elioDataDiscoveryAggregation.unit
+                        lowerBound: elioDataDiscoveryAggregation.min,
+                        minInputValue: elioDataDiscoveryAggregation.min,
+                        maxInputValue: elioDataDiscoveryAggregation.max,
+                        pluginSelector: 'elio-data-discovery-filter-range',
                     } %}
                 {% endif %}
             {% elseif style == 'TREE' %}
