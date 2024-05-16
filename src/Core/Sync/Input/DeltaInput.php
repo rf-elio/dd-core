@@ -122,22 +122,67 @@ class DeltaInput extends BaseInput
         }
 
         foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
+            $existingIds = [];
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
                 foreach ($collector->collect($contexts, $criteria) as $collection) {
+                    /** @var DataTypeInterface $entity */
+                    foreach($collection as $entity) {
+                        $existingIds[] = $entity->getId();
+                    }
+
                     $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
                     yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $collection);
                 }
             }
+
+            $missingIds = array_diff($changeSetEntityCollection->getEntityIds(), $existingIds);
+            $deltaDataCollection = new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, []);
+            foreach ($missingIds as $missingId) {
+                $changeSetEntity = $changeSetEntityCollection->getEntityStatusByEntityId($missingId);
+                if ($changeSetEntity && $changeSetEntity->getDataType() === ProductDataType::class) {
+                    $entity = new ProductDataType();
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
+                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                    $deltaDataCollection->add($entity);
+                }
+            }
+
+            if ($deltaDataCollection->count() > 0) {
+                yield $deltaDataCollection;
+            }
         }
 
         foreach ($changeSet->getUpdated() as $entityType => $changeSetEntityCollection) {
+            $existingIds = [];
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
             foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
                 foreach ($collector->collect($contexts, $criteria) as $collection) {
+                    /** @var DataTypeInterface $entity */
+                    foreach($collection as $entity) {
+                        $existingIds[] = $entity->getId();
+                    }
+
                     $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
                     yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $collection);
                 }
+            }
+
+            $missingIds = array_diff($changeSetEntityCollection->getEntityIds(), $existingIds);
+            $deltaDataCollection = new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, []);
+            foreach ($missingIds as $missingId) {
+                $changeSetEntity = $changeSetEntityCollection->getEntityStatusByEntityId($missingId);
+                if ($changeSetEntity && $changeSetEntity->getDataType() === ProductDataType::class) {
+                    $entity = new ProductDataType();
+                    $entity->setId($changeSetEntity->getEntityId() ?? '');
+                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
+                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                    $deltaDataCollection->add($entity);
+                }
+            }
+            if ($deltaDataCollection->count() > 0) {
+                yield $deltaDataCollection;
             }
         }
     }

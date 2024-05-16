@@ -92,4 +92,16 @@ class EntityStatusCollection extends EntityCollection
     {
         return array_map(static fn(EntityStatusEntity $entity) => $entity->getEntityId(), $this->elements);
     }
+
+    public function getEntityStatusByEntityId(string $entityId): ?EntityStatusEntity
+    {
+        /** @var EntityStatusEntity $element */
+        foreach ($this->elements as $element) {
+            if ($element->getEntityId() === $entityId) {
+                return $element;
+            }
+        }
+
+        return null;
+    }
 }
