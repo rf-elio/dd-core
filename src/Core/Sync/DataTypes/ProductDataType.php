@@ -51,6 +51,7 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
 
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
+    private ?string $visibility = null;
 
     public function setVariant(Variant $variant): void
     {
@@ -73,5 +74,15 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     public function setThumbnailUrl(?string $thumbnailUrl): void
     {
         $this->thumbnailUrl = $thumbnailUrl;
+    }
+
+    public function getVisibility(): ?string
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(?string $visibility): void
+    {
+        $this->visibility = $visibility;
     }
 }
