@@ -1,6 +1,8 @@
 .elio-content-listing-entry
 {
   margin-bottom: 30px;
+  padding-right: calc(var(--bs-gutter-x)* .5);
+  padding-left: calc(var(--bs-gutter-x)* .5);
 }
 .elio-content-listing-content
 {
