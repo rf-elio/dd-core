@@ -51,7 +51,7 @@ class IndexUpdateHandler
         $this->changeSetService->index(
             $message->getIndexerIdentifier(),
             $message->getEntityStatusCollection(),
-            $message->getContext()
+            $message->getSalesChannelContext()
         );
     }
 

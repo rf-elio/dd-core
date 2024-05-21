@@ -39,12 +39,12 @@ use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\LandingPage\LandingPageDefinition;
 use Shopware\Core\Content\LandingPage\LandingPageEntity;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class LandingPageIndexer
@@ -60,7 +60,7 @@ class LandingPageIndexer extends BaseIndexer
     public const ENTITY_TYPE = LandingPageDefinition::ENTITY_NAME;
 
     public function __construct(
-        EntityRepository $landingPageRepository,
+        SalesChannelRepository $landingPageRepository,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $landingPageRepository);
@@ -69,10 +69,10 @@ class LandingPageIndexer extends BaseIndexer
     /**
      * Gets criteria
      *
-     * @param Context $context
+     * @param SalesChannelContext $salesChannelContext
      * @return Criteria
      */
-    protected function getCriteria(Context $context): Criteria
+    protected function getCriteria(SalesChannelContext $salesChannelContext): Criteria
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -85,7 +85,7 @@ class LandingPageIndexer extends BaseIndexer
             new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
 
-        $event = new CriteriaPreparedEvent($this, $criteria, $context);
+        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext->getContext());
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }

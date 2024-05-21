@@ -126,14 +126,15 @@ class ValueUtil
      * Applies the default format for elio search with two decimal chars
      *
      * @param float|null $price
+     * @param int $decimals
      * @return string
      */
-    public static function formatPrice(?float $price) : string
+    public static function formatPrice(?float $price, int $decimals = 2) : string
     {
         if ($price === null) {
             return '';
         }
 
-        return number_format($price, 2, '.', '');
+        return number_format($price, $decimals, '.', '');
     }
 }

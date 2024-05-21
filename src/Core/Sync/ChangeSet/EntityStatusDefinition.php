@@ -35,12 +35,15 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
  * Class EntityStatusDefinition
@@ -82,10 +85,13 @@ class EntityStatusDefinition extends EntityDefinition
             (new StringField('entity_type', 'entityType'))->addFlags(new ApiAware(), new Required()),
             (new BlobField('entity_id', 'entityId'))->addFlags(new ApiAware(), new Required()),
             (new StringField('identifier', 'identifier'))->addFlags(new ApiAware(), new Required()),
+            (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
             (new StringField('data_type', 'dataType'))->addFlags(new Required()),
             (new StringField('state', 'state'))->addFlags(new Required()),
             (new StringField('hash', 'hash'))->addFlags(new Required()),
             (new DateTimeField('deleted_at', 'deletedAt'))->addFlags(new ApiAware()),
+
+            new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class, 'id', false),
         ]);
     }
 }

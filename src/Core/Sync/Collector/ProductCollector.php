@@ -39,6 +39,7 @@ use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Visibilities;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
@@ -134,7 +135,7 @@ class ProductCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
-     * @param string $salesChannelId
+     * @param SalesChannelContext $context
      * @return Criteria
      */
     protected function prepareCriteria(Criteria $criteria, SalesChannelContext $context): Criteria
@@ -251,15 +252,15 @@ class ProductCollector implements DataCollectorInterface
                 $visibility = $entity->getVisibilities()?->first()?->getVisibility();
                 switch ($visibility) {
                     case ProductVisibilityDefinition::VISIBILITY_SEARCH:
-                        $dataType->setVisibility('search');
+                        $dataType->setVisibility(Visibilities::VISIBILITY_SEARCH);
                         break;
 
                     case ProductVisibilityDefinition::VISIBILITY_ALL:
-                        $dataType->setVisibility('all');
+                        $dataType->setVisibility(Visibilities::VISIBILITY_ALL);
                         break;
 
                     default:
-                        $dataType->setVisibility('none');
+                        $dataType->setVisibility(Visibilities::VISIBILITY_NONE);
                         break;
                 }
                 $dataType->setVariant(new Variant());
