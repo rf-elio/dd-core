@@ -49,11 +49,13 @@ class SyncContext
      * @param ProfileInterface $profileDefinition
      * @param SyncProfileEntity $syncProfile
      * @param SalesChannelContextCollection $contexts
+     * @param array $options
      */
     public function __construct(
         protected readonly ProfileInterface $profileDefinition,
         protected readonly SyncProfileEntity $syncProfile,
-        protected readonly SalesChannelContextCollection $contexts
+        protected readonly SalesChannelContextCollection $contexts,
+        protected readonly array $options
     ) {}
 
     public function getProfileDefinition(): ProfileInterface
@@ -72,5 +74,10 @@ class SyncContext
     public function getSalesChannelContexts(): SalesChannelContextCollection
     {
         return $this->contexts;
+    }
+
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 }

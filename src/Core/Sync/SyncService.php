@@ -82,13 +82,14 @@ class SyncService
      * Syncs data for profile
      *
      * @param SyncProfileEntity $syncProfile
+     * @param array $options
      * @return void
      * @throws Exception
      */
-    public function sync(SyncProfileEntity $syncProfile): void
+    public function sync(SyncProfileEntity $syncProfile, array $options = []): void
     {
         $context = Context::createDefaultContext();
-        $syncContext = $this->createSyncContext($syncProfile);
+        $syncContext = $this->createSyncContext($syncProfile, $options);
         $input = $this->inputService->getInput($syncContext);
         $outputStream = $this->outputService->createOutputStream($syncContext);
 
@@ -136,7 +137,7 @@ class SyncService
         $this->syncStatusService->checkSyncProfileExecutionStatus($execution, $outputStream, $syncContext, $context);
     }
 
-    public function createSyncContext(SyncProfileEntity $syncProfile): SyncContext
+    public function createSyncContext(SyncProfileEntity $syncProfile, array $options = []): SyncContext
     {
         $salesChannel = $syncProfile->getSalesChannel();
         if (!$salesChannel || !$salesChannel->getDomains()) {
@@ -168,7 +169,7 @@ class SyncService
         }
 
         $profileDefinition = $this->getProfileDefinition($syncProfile);
-        return new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts);
+        return new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts, $options);
     }
 
     public function getSalesChannelContexts(Context $context): SalesChannelContextCollection

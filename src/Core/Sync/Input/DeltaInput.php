@@ -81,7 +81,8 @@ class DeltaInput extends BaseInput
         $contexts = $syncContext->getSalesChannelContexts();
         $changeSet = $this->changeSetService->getChangeSet(
             $syncProfile,
-            $syncContext->getSalesChannelContexts()->getFirst()->getContext()
+            $syncContext->getSalesChannelContexts()->getFirst()->getContext(),
+            $syncContext->getOptions()['full-sync'] ?? false
         );
 
         $this->logger->info('DeltaInput: ChangeSet count', [

@@ -70,21 +70,22 @@ class ChangeSetService
      *
      * @param SyncProfileEntity $syncProfile
      * @param Context $context
+     * @param bool $fullSync
      * @return ChangeSet
      */
-    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context): ChangeSet
+    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context, bool $fullSync): ChangeSet
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('dataType', $syncProfile->getDataType()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $syncProfile->getSalesChannel()?->getId()));
-        if ($syncProfile->getLastGenerationFinishedAt()) {
+        if (!$fullSync && $syncProfile->getLastGenerationStartedAt()) {
             $criteria->addFilter(new OrFilter([
                 new RangeFilter('createdAt', [
-                    RangeFilter::GTE => $syncProfile->getLastGenerationFinishedAt()
+                    RangeFilter::GTE => $syncProfile->getLastGenerationStartedAt()
                         ->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]),
                 new RangeFilter('updatedAt', [
-                    RangeFilter::GTE => $syncProfile->getLastGenerationFinishedAt()
+                    RangeFilter::GTE => $syncProfile->getLastGenerationStartedAt()
                         ->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]),
             ]));
@@ -95,18 +96,20 @@ class ChangeSetService
         while ($entityStatuses = $iterator->fetch()) {
             /** @var EntityStatusEntity $entityStatus */
             foreach ($entityStatuses as $entityStatus) {
-                switch ($entityStatus->getState()) {
-                    case EntityStatusEntity::STATE_CREATED:
-                        $changeSet->addCreated($entityStatus);
-                        break;
+                if ($entityStatus->getState() === EntityStatusEntity::STATE_DELETED) {
+                    $changeSet->addDeleted($entityStatus);
+                    continue;
+                }
 
-                    case EntityStatusEntity::STATE_UPDATED:
-                        $changeSet->addUpdated($entityStatus);
-                        break;
+                if (!$syncProfile->getLastGenerationStartedAt()) {
+                    $changeSet->addCreated($entityStatus);
+                    continue;
+                }
 
-                    case EntityStatusEntity::STATE_DELETED:
-                        $changeSet->addDeleted($entityStatus);
-                        break;
+                if ($entityStatus->getCreatedAt() > $syncProfile->getLastGenerationStartedAt()) {
+                    $changeSet->addCreated($entityStatus);
+                } else {
+                    $changeSet->addUpdated($entityStatus);
                 }
             }
         }
