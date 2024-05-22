@@ -89,9 +89,6 @@ class SyncDataCommand extends Command
                     return Command::SUCCESS;
                 }
 
-                if ($fullSync) {
-                    $syncProfileConfiguration->setLastGenerationFinishedAt(null);
-                }
                 $this->syncService->sync($syncProfileConfiguration, $input->getOptions());
                 return Command::SUCCESS;
             }
@@ -109,9 +106,6 @@ class SyncDataCommand extends Command
 
             /** @var SyncProfileEntity $syncProfileConfiguration */
             foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
-                if ($fullSync) {
-                    $syncProfileConfiguration->setLastGenerationFinishedAt(null);
-                }
                 $this->syncService->sync($syncProfileConfiguration);
             }
         } catch (Exception $e) {

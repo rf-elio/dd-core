@@ -220,9 +220,24 @@
                                                                variant="primary"
                                                                size="small"
                                                                :disabled="isGenerating"
-                                                               @click="onGenerate">
+                                                               @click="onGenerate({ 'full-sync': false })">
                                                         {{ isGenerating?$tc('elio-data-discovery-sync-profile.detail.buttonGenerateInProgress'):$tc('elio-data-discovery-sync-profile.detail.buttonGenerate') }}
                                                     </sw-button>
+                                                    <sw-button class="elio-data-discovery-sync-profile-button-generate-full"
+                                                               variant="primary"
+                                                               size="small"
+                                                               :disabled="isGenerating"
+                                                               @click="onGenerateModalConfirm">
+                                                        {{ isGenerating?$tc('elio-data-discovery-sync-profile.detail.buttonGenerateInProgress'):$tc('elio-data-discovery-sync-profile.detail.buttonGenerateFull') }}
+                                                    </sw-button>
+                                                    <sw-confirm-modal v-if="isGenerateModalVisible"
+                                                                      class="elio-data-discovery-sync-profile.detail.modal-confirm-generate-full"
+                                                                      :title="$tc('elio-data-discovery-sync-profile.detail.modalConfirmTitle')"
+                                                                      :text="$tc('elio-data-discovery-sync-profile.detail.modalConfirmText')"
+                                                                      @confirm="onGenerate({ 'full-sync': true })"
+                                                                      @close="onGenerateModalCancel"
+                                                                      @cancel="onGenerateModalCancel">
+                                                    </sw-confirm-modal>
                                                 </dd>
                                             </dl>
                                         {% endblock %}
@@ -240,6 +255,12 @@
                                                             v-model="commandForce"
                                                             type="switch"
                                                             :label="$tc('elio-data-discovery-sync-profile.detail.labelExportCommandForce')">
+                                                    </sw-field>
+                                                    <sw-field
+                                                            v-model="commandFullSync"
+                                                            type="switch"
+                                                            :label="$tc('elio-data-discovery-sync-profile.detail.labelExportCommandFullSync')">
+
                                                     </sw-field>
                                                 </dd>
                                             </dl>

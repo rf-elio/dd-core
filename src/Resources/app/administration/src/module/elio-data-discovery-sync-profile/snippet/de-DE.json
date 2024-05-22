@@ -29,6 +29,7 @@
       "baseCategoryLabel": "Hauptkategorie",
       "labelExportCommand": "Sync Command",
       "labelExportCommandForce": "Force",
+      "labelExportCommandFullSync": "Full Sync",
       "labelDetails": "Details",
       "labelLastGenerationStarted": "Letzter Sync gestartet am",
       "labelLastGenerationFinished": "Letzter Sync abgeschlossen am",
@@ -62,8 +63,11 @@
       "download": "Download",
       "buttonGenerate": "Sync ausführen",
       "buttonGenerateInProgress": "In Bearbeitung",
+      "buttonGenerateFull": "Vollständigen Sync ausführen",
       "messageGeneratingError": "Sync konnte nicht ausgeführt werden: \"{error}\"",
-      "messageGeneratingSuccess": "Sync erfolgreich"
+      "messageGeneratingSuccess": "Sync erfolgreich",
+      "modalConfirmTitle": "Vollständigen Sync bestätigen",
+      "modalConfirmText": "Achtung! Ein Ausführen des vollständigen Sync wird in der Administration nicht empfohlen. Nutzen Sie stattdessen den Sync Command in der Konsole (aktivieren Sie \"Full Sync\"). Möchten Sie trotzdem einen vollständigen Sync ausführen?"
     },
     "list": {
       "buttonCreate": "Sync erstellen",
