@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync;
 
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
@@ -87,7 +88,6 @@ class SyncStatusService
             ]
         ], $context);
 
-        $this->setStartDate($syncProfile, $context);
         return $this->getSyncProfileExecutionById($syncProfileExecutionId, $context);
     }
 
@@ -119,15 +119,16 @@ class SyncStatusService
      * Changes generation started date for profile
      *
      * @param SyncProfileEntity $syncProfile
+     * @param DateTimeInterface $startDate
      * @param Context $context
      * @return void
      */
-    private function setStartDate(SyncProfileEntity $syncProfile, Context $context): void
+    private function setStartDate(SyncProfileEntity $syncProfile, DateTimeInterface $startDate, Context $context): void
     {
         $this->syncProfileRepository->update([
             [
                 'id' => $syncProfile->getId(),
-                'lastGenerationStartedAt' => new DateTimeImmutable(),
+                'lastGenerationStartedAt' => $startDate,
             ]
         ], $context);
     }
@@ -194,6 +195,7 @@ class SyncStatusService
         $this->eventDispatcher->dispatch(new SyncGeneratedEvent(
             $syncContext->getSyncProfile(), $syncContext->getSalesChannelContexts()
         ));
+        $this->setStartDate($syncContext->getSyncProfile(), $syncProfileExecutionEntity->getCreatedAt(), $context);
         $this->setFinishDate($syncContext->getSyncProfile(), $context);
     }
 

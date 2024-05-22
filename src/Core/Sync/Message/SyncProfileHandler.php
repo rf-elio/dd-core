@@ -59,7 +59,7 @@ class SyncProfileHandler
      */
     public function __invoke(SyncProfileMessage $message): void
     {
-        $this->syncService->sync($message->getSyncProfile());
+        $this->syncService->sync($message->getSyncProfile(), $message->getOptions());
     }
 
     /**

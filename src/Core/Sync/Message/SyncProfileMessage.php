@@ -47,10 +47,12 @@ class SyncProfileMessage
 {
     /**
      * @param SyncProfileEntity $syncProfile
+     * @param array $options
      * @param Context $context
      */
     public function __construct(
         private SyncProfileEntity $syncProfile,
+        private array $options,
         private Context $context
     ) {}
 
@@ -84,5 +86,22 @@ class SyncProfileMessage
     public function setSyncProfile(SyncProfileEntity $syncProfile): void
     {
         $this->syncProfile = $syncProfile;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     * @return void
+     */
+    public function setOptions(array $options): void
+    {
+        $this->options = $options;
     }
 }

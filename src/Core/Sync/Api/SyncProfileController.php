@@ -40,6 +40,7 @@ use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -176,13 +177,13 @@ class SyncProfileController extends AbstractController
     /**
      * Generates the export in background
      *
-     * @Route("/api/_action/elio-data-discovery/export/generate/{id}", name="api.action.elio-data-discovery.export.generate", methods={"GET"})
+     * @Route("/api/_action/elio-data-discovery/export/generate/{id}", name="api.action.elio-data-discovery.export.generate", methods={"POST"})
      */
-    public function generate(string $id, Context $context): Response
+    public function generate(string $id, RequestDataBag $data, Context $context): Response
     {
         $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);
         $startedDate = new \DateTime();
-        $this->messageBus->dispatch((new Envelope(new SyncProfileMessage($syncProfile, $context)))->with(new DelayStamp(1000)));
+        $this->messageBus->dispatch((new Envelope(new SyncProfileMessage($syncProfile, $data->all(), $context)))->with(new DelayStamp(1000)));
         return new JsonResponse(['id' => $id, 'status' => 'starting', 'started' => $startedDate]);
     }
 

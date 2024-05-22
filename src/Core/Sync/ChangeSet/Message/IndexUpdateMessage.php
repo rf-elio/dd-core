@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
@@ -48,13 +48,13 @@ class IndexUpdateMessage
 {
     public function __construct(
         protected readonly string  $indexerIdentifier,
-        protected readonly Context $context,
+        protected readonly SalesChannelContext $context,
         protected readonly string  $entityStatusCollectionSerialized
     )
     {
     }
 
-    public static function create(string $indexerIdentifier, Context $context, EntityStatusCollection $entityStatusCollection): self
+    public static function create(string $indexerIdentifier, SalesChannelContext $context, EntityStatusCollection $entityStatusCollection): self
     {
         return new self(
             $indexerIdentifier,
@@ -63,7 +63,7 @@ class IndexUpdateMessage
         );
     }
 
-    public function getContext(): Context
+    public function getSalesChannelContext(): SalesChannelContext
     {
         return $this->context;
     }

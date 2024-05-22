@@ -37,6 +37,7 @@ use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\AsyncIndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
+use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -47,6 +48,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ChangeSetService
@@ -59,7 +61,8 @@ class ChangeSetService
         private readonly EntityRepository $entityStatusRepository,
         private readonly MessageBusInterface $messageBus,
         private readonly iterable $indexers,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly SyncService $syncService
     ) {}
 
     /**
@@ -67,20 +70,22 @@ class ChangeSetService
      *
      * @param SyncProfileEntity $syncProfile
      * @param Context $context
+     * @param bool $fullSync
      * @return ChangeSet
      */
-    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context): ChangeSet
+    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context, bool $fullSync): ChangeSet
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('dataType', $syncProfile->getDataType()));
-        if ($syncProfile->getLastGenerationFinishedAt()) {
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $syncProfile->getSalesChannel()?->getId()));
+        if (!$fullSync && $syncProfile->getLastGenerationStartedAt()) {
             $criteria->addFilter(new OrFilter([
                 new RangeFilter('createdAt', [
-                    RangeFilter::GTE => $syncProfile->getLastGenerationFinishedAt()
+                    RangeFilter::GTE => $syncProfile->getLastGenerationStartedAt()
                         ->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]),
                 new RangeFilter('updatedAt', [
-                    RangeFilter::GTE => $syncProfile->getLastGenerationFinishedAt()
+                    RangeFilter::GTE => $syncProfile->getLastGenerationStartedAt()
                         ->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]),
             ]));
@@ -91,18 +96,20 @@ class ChangeSetService
         while ($entityStatuses = $iterator->fetch()) {
             /** @var EntityStatusEntity $entityStatus */
             foreach ($entityStatuses as $entityStatus) {
-                switch ($entityStatus->getState()) {
-                    case EntityStatusEntity::STATE_CREATED:
-                        $changeSet->addCreated($entityStatus);
-                        break;
+                if ($entityStatus->getState() === EntityStatusEntity::STATE_DELETED) {
+                    $changeSet->addDeleted($entityStatus);
+                    continue;
+                }
 
-                    case EntityStatusEntity::STATE_UPDATED:
-                        $changeSet->addUpdated($entityStatus);
-                        break;
+                if (!$syncProfile->getLastGenerationStartedAt()) {
+                    $changeSet->addCreated($entityStatus);
+                    continue;
+                }
 
-                    case EntityStatusEntity::STATE_DELETED:
-                        $changeSet->addDeleted($entityStatus);
-                        break;
+                if ($entityStatus->getCreatedAt() > $syncProfile->getLastGenerationStartedAt()) {
+                    $changeSet->addCreated($entityStatus);
+                } else {
+                    $changeSet->addUpdated($entityStatus);
                 }
             }
         }
@@ -123,34 +130,38 @@ class ChangeSetService
         /** @var EntityStatusCollection $currentEntityStatusCollection */
         $currentEntityStatusCollection = $entitiesStatus->getEntities();
 
+        $salesChannelContexts = $this->syncService->getSalesChannelContexts($context);
+
         $this->logger->info('Changeset: Indexing started');
 
-        /** @var IndexerInterface $indexer */
-        foreach ($this->indexers as $indexer) {
-            $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
-                'indexer' => $indexer->getIdentifier()
-            ]);
-            if ($isAsync) {
-                $message = AsyncIndexUpdateMessage::create(
-                    $indexer->getIdentifier(),
-                    $context,
-                    $currentEntityStatusCollection
-                );
-            } else {
-                $message = IndexUpdateMessage::create(
-                    $indexer->getIdentifier(),
-                    $context,
-                    $currentEntityStatusCollection
-                );
+        foreach ($salesChannelContexts as $salesChannelContext) {
+            /** @var IndexerInterface $indexer */
+            foreach ($this->indexers as $indexer) {
+                $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
+                    'indexer' => $indexer->getIdentifier()
+                ]);
+                if ($isAsync) {
+                    $message = AsyncIndexUpdateMessage::create(
+                        $indexer->getIdentifier(),
+                        $salesChannelContext,
+                        $currentEntityStatusCollection
+                    );
+                } else {
+                    $message = IndexUpdateMessage::create(
+                        $indexer->getIdentifier(),
+                        $salesChannelContext,
+                        $currentEntityStatusCollection
+                    );
+                }
+                $this->messageBus->dispatch($message);
             }
-            $this->messageBus->dispatch($message);
         }
     }
 
     public function index(
         string $indexerIdentifier,
         EntityStatusCollection $entityStatusCollection,
-        Context $context
+        SalesChannelContext $context
     ): void
     {
         /** @var IndexerInterface $indexer */
@@ -163,7 +174,7 @@ class ChangeSetService
                 'indexer' => $indexerIdentifier
             ]);
             $entityStatuses = $indexer->index($entityStatusCollection, $context);
-            $this->persistEntityStatusCollection($entityStatuses, $context);
+            $this->persistEntityStatusCollection($entityStatuses, $context->getContext());
             $this->logger->info('Changeset: Indexer done', [
                 'indexer' => $indexerIdentifier,
                 'changes' => $entityStatuses->count()
@@ -215,6 +226,7 @@ class ChangeSetService
                 'entityType' => $entityStatus->getEntityType(),
                 'entityId' => Uuid::fromHexToBytes($entityStatus->getEntityId() ?? ''),
                 'identifier' => $entityStatus->getIdentifier(),
+                'salesChannelId' => $entityStatus->getSalesChannelId(),
                 'dataType' => $entityStatus->getDataType(),
                 'state' => $entityStatus->getState(),
                 'hash' => $entityStatus->getHash(),
