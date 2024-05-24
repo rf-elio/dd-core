@@ -51,6 +51,16 @@
                             {{ item.name|replace(searchMatchPairs)|raw }}
                         </div>
                     {% endblock %}
+
+                    {% block layout_search_suggest_result_price %}
+                        {% if item.getEntityType == 'ProductEntity' %}
+                            {% set price = item.entity.price.last.gross %}
+                            <div class="col-auto search-suggest-product-price">
+                                {{ price|currency }}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+
                 </div>
             </a>
         {% endblock %}
