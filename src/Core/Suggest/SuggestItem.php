@@ -32,6 +32,8 @@
 
 namespace Elio\ElioDataDiscovery\Core\Suggest;
 
+use Elio\ElioDataDiscovery\Core\Util\StripClassPathUtil;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -64,7 +66,7 @@ class SuggestItem
     protected array $attributes = [];
 
     /**
-     * @var string
+     * @var string|null
      */
     protected ?string $imgUrl = null;
 
@@ -82,6 +84,11 @@ class SuggestItem
      * @var string
      */
     protected string $url = '';
+
+    /**
+     * @var Entity|null
+     */
+    protected ?Entity $entity = null;
 
     /**
      * SuggestItem constructor.
@@ -228,5 +235,26 @@ class SuggestItem
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return Entity|null
+     */
+    public function getEntity(): ?Entity
+    {
+        return $this->entity;
+    }
+
+    /**
+     * @param Entity $entity
+     */
+    public function setEntity(Entity $entity): void
+    {
+        $this->entity = $entity;
+    }
+
+    public function getEntityType(): string
+    {
+        return $this->getEntity() ? StripClassPathUtil::stripClassPath(get_class($this->getEntity())) : '';
     }
 }
