@@ -132,7 +132,7 @@ class ChangeSetService
         /** @var SalesChannelContext $salesChannelContext */
         foreach ($salesChannelContexts as $salesChannelContext) {
             $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('sales_channel_id', $salesChannelContext->getSalesChannelId()));
+            $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelContext->getSalesChannelId()));
             $entitiesStatus = $this->entityStatusRepository->search($criteria, $context);
             /** @var EntityStatusCollection $currentEntityStatusCollection */
             $currentEntityStatusCollection = $entitiesStatus->getEntities();
