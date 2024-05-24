@@ -33,8 +33,8 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class CriteriaPreparedEvent extends Event
@@ -42,7 +42,7 @@ class CriteriaPreparedEvent extends Event
     public function __construct(
         private readonly IndexerInterface $indexer,
         private Criteria $criteria,
-        private readonly Context $context
+        private readonly SalesChannelContext $context
     ) {}
 
     /**
@@ -62,9 +62,9 @@ class CriteriaPreparedEvent extends Event
     }
 
     /**
-     * @return Context
+     * @return SalesChannelContext
      */
-    public function getContext(): Context
+    public function getContext(): SalesChannelContext
     {
         return $this->context;
     }

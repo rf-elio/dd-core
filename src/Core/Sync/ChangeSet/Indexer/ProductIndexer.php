@@ -104,7 +104,7 @@ class ProductIndexer extends BaseIndexer
 
         $this->handleAvailableStock($criteria, $salesChannelContext);
 
-        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext->getContext());
+        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }

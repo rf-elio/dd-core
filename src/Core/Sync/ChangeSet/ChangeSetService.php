@@ -126,15 +126,17 @@ class ChangeSetService
      */
     public function startIndexers(Context $context, bool $isAsync = false): void
     {
-        $entitiesStatus = $this->entityStatusRepository->search(new Criteria(), $context);
-        /** @var EntityStatusCollection $currentEntityStatusCollection */
-        $currentEntityStatusCollection = $entitiesStatus->getEntities();
-
         $salesChannelContexts = $this->syncService->getSalesChannelContexts($context);
-
         $this->logger->info('Changeset: Indexing started');
 
+        /** @var SalesChannelContext $salesChannelContext */
         foreach ($salesChannelContexts as $salesChannelContext) {
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsFilter('sales_channel_id', $salesChannelContext->getSalesChannelId()));
+            $entitiesStatus = $this->entityStatusRepository->search($criteria, $context);
+            /** @var EntityStatusCollection $currentEntityStatusCollection */
+            $currentEntityStatusCollection = $entitiesStatus->getEntities();
+
             /** @var IndexerInterface $indexer */
             foreach ($this->indexers as $indexer) {
                 $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [

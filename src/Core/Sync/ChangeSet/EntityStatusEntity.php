@@ -137,11 +137,11 @@ class EntityStatusEntity extends Entity
 
     public function getSalesChannelId(): ?string
     {
-        return $this->salesChannelId ?? '';
+        return $this->salesChannelId;
     }
 
     public function setSalesChannelId(?string $salesChannelId): void
     {
-        $this->salesChannelId = $salesChannelId ?? '';
+        $this->salesChannelId = $salesChannelId;
     }
 }
