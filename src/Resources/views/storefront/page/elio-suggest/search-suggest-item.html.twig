@@ -53,10 +53,14 @@
                     {% endblock %}
 
                     {% block layout_search_suggest_result_price %}
-                        {% if item.getEntityType == 'ProductEntity' %}
-                            {% set price = item.entity.price.last.gross %}
+                        {% if item.getEntityType == 'SalesChannelProductEntity' %}
+                            {% set price = item.entity.calculatedPrice %}
+
+                            {% if item.entity.calculatedPrices|length == 1 %}
+                                {% set price = item.entity.calculatedPrices.first %}
+                            {% endif %}
                             <div class="col-auto search-suggest-product-price">
-                                {{ price|currency }}
+                                {{ price.unitPrice|currency }}{{ "general.star"|trans|sw_sanitize }}
                             </div>
                         {% endif %}
                     {% endblock %}

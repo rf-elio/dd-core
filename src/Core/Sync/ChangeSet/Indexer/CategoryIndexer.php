@@ -70,7 +70,7 @@ class CategoryIndexer extends BaseIndexer
     /**
      * Gets criteria
      *
-     * @param Context $context
+     * @param SalesChannelContext $salesChannelContext
      * @return Criteria
      */
     protected function getCriteria(SalesChannelContext $salesChannelContext): Criteria
@@ -87,7 +87,7 @@ class CategoryIndexer extends BaseIndexer
             new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
 
-        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext->getContext());
+        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }
