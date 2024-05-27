@@ -44,8 +44,16 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * @author elio GmbH <support@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class AsyncIndexUpdateMessage extends IndexUpdateMessage implements AsyncMessageInterface
+class AsyncIndexUpdateMessage implements AsyncMessageInterface
 {
+    public function __construct(
+        protected readonly string  $indexerIdentifier,
+        protected readonly SalesChannelContext $context,
+        protected readonly string  $entityStatusCollectionSerialized
+    )
+    {
+    }
+
     public static function create(string $indexerIdentifier, SalesChannelContext $context, EntityStatusCollection $entityStatusCollection): self
     {
         return new self(
@@ -53,5 +61,26 @@ class AsyncIndexUpdateMessage extends IndexUpdateMessage implements AsyncMessage
             $context,
             base64_encode(serialize($entityStatusCollection))
         );
+    }
+
+    public function getSalesChannelContext(): SalesChannelContext
+    {
+        return $this->context;
+    }
+
+    #[Ignore]
+    public function getEntityStatusCollection(): EntityStatusCollection
+    {
+        return unserialize(base64_decode($this->entityStatusCollectionSerialized));
+    }
+
+    public function getIndexerIdentifier(): string
+    {
+        return $this->indexerIdentifier;
+    }
+
+    public function getEntityStatusCollectionSerialized(): string
+    {
+        return $this->entityStatusCollectionSerialized;
     }
 }

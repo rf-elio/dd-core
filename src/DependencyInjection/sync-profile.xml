@@ -180,11 +180,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
             <tag name="messenger.message_handler"/>
         </service>
-        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\StartIndexHandler">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
-            <tag name="messenger.message_handler"/>
-        </service>
-        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateHandler">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\AsyncIndexUpdateHandler">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService"/>
             <tag name="messenger.message_handler"/>
         </service>

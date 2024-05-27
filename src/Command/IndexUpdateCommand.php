@@ -74,7 +74,7 @@ class IndexUpdateCommand extends Command
         $context = Context::createDefaultContext();
 
         try {
-            $this->changeSetService->startIndexers($context);
+            $this->changeSetService->startIndexing($context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),

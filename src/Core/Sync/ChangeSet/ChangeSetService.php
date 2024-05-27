@@ -124,13 +124,16 @@ class ChangeSetService
      * @param bool $isAsync
      * @return void
      */
-    public function startIndexers(Context $context, bool $isAsync = false): void
+    public function startIndexing(Context $context, bool $isAsync = false): void
     {
-        $salesChannelContexts = $this->syncService->getSalesChannelContexts($context);
         $this->logger->info('Changeset: Indexing started');
+        $salesChannelContexts = $this->syncService->getSalesChannelContexts($context);
 
-        /** @var SalesChannelContext $salesChannelContext */
         foreach ($salesChannelContexts as $salesChannelContext) {
+            $this->logger->info(sprintf(
+                'Changeset: Indexing sales channel %s',
+                $salesChannelContext->getSalesChannelId())
+            );
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelContext->getSalesChannelId()));
             $entitiesStatus = $this->entityStatusRepository->search($criteria, $context);
@@ -142,20 +145,21 @@ class ChangeSetService
                 $this->logger->info('Changeset: Dispatch IndexUpdateMessage', [
                     'indexer' => $indexer->getIdentifier()
                 ]);
-                if ($isAsync) {
+
+                if (!$isAsync) {
+                    $this->index(
+                        $indexer->getIdentifier(),
+                        $currentEntityStatusCollection,
+                        $salesChannelContext
+                    );
+                } else {
                     $message = AsyncIndexUpdateMessage::create(
                         $indexer->getIdentifier(),
                         $salesChannelContext,
                         $currentEntityStatusCollection
                     );
-                } else {
-                    $message = IndexUpdateMessage::create(
-                        $indexer->getIdentifier(),
-                        $salesChannelContext,
-                        $currentEntityStatusCollection
-                    );
+                    $this->messageBus->dispatch($message);
                 }
-                $this->messageBus->dispatch($message);
             }
         }
     }

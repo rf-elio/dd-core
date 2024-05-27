@@ -95,11 +95,11 @@ abstract class BaseIndexer implements IndexerInterface
      */
     public function index(EntityStatusCollection $currentEntityStatusCollection, SalesChannelContext $context): EntityStatusCollection
     {
-        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
         $criteria = $this->getCriteria($context);
         $criteria->setOffset(0);
         $criteria->setLimit(50);
         $iterator = new SalesChannelRepositoryIterator($this->repository, $context, $criteria);
+        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
         $newEntityStatusCollection = new EntityStatusCollection();
 
         while ($entities = $iterator->fetch()) {

@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\SalesChannelNotFoundException;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\SyncProfileNotFoundException;
 use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
 use Elio\ElioDataDiscovery\Core\Sync\Output\Message\AsyncOutputHandler;
@@ -172,21 +173,32 @@ class SyncService
         return new SyncContext($profileDefinition, $syncProfile, $salesChannelContexts, $options);
     }
 
-    public function getSalesChannelContexts(Context $context): SalesChannelContextCollection
+    /**
+     * @param Context $context
+     * @return SalesChannelContext[]
+     */
+    public function getSalesChannelContexts(Context $context): array
     {
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannel');
         $criteria->addAssociation('languages');
-
         $syncProfiles = $this->syncProfileRepository->search($criteria, $context);
 
-        $salesChannelContexts = new SalesChannelContextCollection();
+        $salesChannelContexts = [];
         /** @var SyncProfileEntity $syncProfile */
         foreach ($syncProfiles as $syncProfile) {
-            $salesChannelContexts->add($this->createSalesChannelContext(
-                $syncProfile->getSalesChannel(),
+            $salesChannel = $syncProfile->getSalesChannel();
+            if (!$salesChannel) {
+                throw new SalesChannelNotFoundException(sprintf(
+                    'Sales channel for sync profile %s not found',
+                    $syncProfile->getId()
+                ));
+            }
+
+            $salesChannelContexts[$salesChannel->getId()] = $this->createSalesChannelContext(
+                $salesChannel,
                 $syncProfile->getLanguages()?->first()
-            ));
+            );
         }
 
         return $salesChannelContexts;

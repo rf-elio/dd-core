@@ -54,10 +54,6 @@ class SalesChannelContextCollection extends ArrayIterator
         parent::__construct($salesChannelContexts);
     }
 
-    /**
-     * @param SalesChannelContext $salesChannelContext
-     * @return void
-     */
     public function add(SalesChannelContext $salesChannelContext): void
     {
         $this->offsetSet($salesChannelContext->getLanguageId(), $salesChannelContext);
