@@ -32,6 +32,8 @@
 
 namespace Elio\ElioDataDiscovery\Storefront\TwigExtension;
 
+use Elio\ElioDataDiscovery\Configuration\Configuration;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -55,7 +57,8 @@ class ConfigLanguageBased extends AbstractExtension
 
     public function __construct(
         private readonly TemplateConfigAccessor $config,
-        private readonly EntityRepository $languageRepository
+        private readonly EntityRepository $languageRepository,
+        private readonly ElioDataDiscoveryConfigService $configService
     ) {}
 
     public function getName(): string
@@ -67,6 +70,7 @@ class ConfigLanguageBased extends AbstractExtension
     {
         return [
             new TwigFunction('config_by_lang', $this->configByLanguage(...), ['needs_context' => true]),
+            new TwigFunction('data_discovery_config', $this->dataDiscoveryConfig(...), ['needs_context' => true]),
         ];
     }
 
@@ -95,6 +99,15 @@ class ConfigLanguageBased extends AbstractExtension
         }
 
         return $config;
+    }
+
+    /**
+     * @param array $context
+     * @return Configuration
+     */
+    public function dataDiscoveryConfig(array $context): Configuration
+    {
+        return $this->configService->get($this->getSalesChannelId($context), $this->getLanguageId($context));
     }
 
     /**

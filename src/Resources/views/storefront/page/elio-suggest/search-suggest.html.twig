@@ -1,61 +1,19 @@
 {% block elio_data_discovery_suggest %}
     <div class="search-suggest e-search-suggest js-search-result">
-        {% block elio_data_discovery_suggest_container %}
-            <div class="search-suggest-container">
-                <div class="d-flex flex-md-row flex-wrap">
-                    {% if not response.hasVisibleItems %}
-                        <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
-                            <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
-                        </ul>
-                    {% else %}
-                        {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
-                            label: 'above product listing', container: resultCollection
-                        } %}
-                        {% for group in response.visibleGroups %}
-                            <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
-                                <div class="elio-suggest-block-header">
-                                    {{ group.label }}
-                                </div>
+        {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-container.html.twig" with {
+            response,
+            acceptedTypes: data_discovery_config().getSuggestAcceptedTypes,
+            resultCollection,
+            searchTerm,
+            addJsResult: true,
+        } %}
 
-                                {% for item in group.items %}
-                                    {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-item.html.twig" with  {
-                                        group,
-                                        item,
-                                        suggestion
-                                    } %}
-                                {% endfor %}
-                            </ul>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-
-                {% if response.hasVisibleItems %}
-                    {% block layout_search_suggest_result_total_result %}
-                        <div class="js-result search-suggest-total">
-                            <div class="row align-items-center no-gutters">
-                                {% block layout_search_suggest_result_total_link %}
-                                    <div class="col">
-                                        <a href="{{ path('frontend.search.page') }}?search={{ searchTerm|url_encode }}"
-                                           title="{{ "header.searchAllResults"|trans|striptags }}"
-                                           class="btn search-suggest-total-link">
-                                            {% sw_icon 'arrow-head-right' style { 'size': 'sm' } %}
-                                            {{ "header.searchAllResults"|trans|sw_sanitize }}
-                                        </a>
-                                    </div>
-                                {% endblock %}
-
-                                {% block layout_search_suggest_result_total_count %}
-                                    <div class="col-auto search-suggest-total-count">
-                                        {{ "header.searchResults"|trans({
-                                            '%count%': response.countVisible,
-                                        })|sw_sanitize }}
-                                    </div>
-                                {% endblock %}
-                            </div>
-                        </div>
-                    {% endblock %}
-                {% endif %}
-            </div>
-        {% endblock %}
+        {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-container.html.twig" with {
+            response,
+            acceptedTypes: data_discovery_config().getSuggestAcceptedTypesMobile,
+            resultCollection,
+            searchTerm,
+            addJsResult: false
+        } %}
     </div>
 {% endblock %}

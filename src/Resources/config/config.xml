@@ -59,6 +59,15 @@
         </input-field>
 
         <input-field type="text">
+            <name>suggestAcceptedTypesMobile</name>
+            <label>Suggest accepted types in order on mobile</label>
+            <label lang="de-DE">Akzeptierte Typen der Reihenfolge auf Mobilgeräten vorschlagen</label>
+            <placeholder>searchTerm|category|productName</placeholder>
+            <helpText>Accepted types for suggest result on mobile: searchTerm|category|productName</helpText>
+            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis auf Mobilgeräten vorschlagen: searchTerm|category|productName</helpText>
+        </input-field>
+
+        <input-field type="text">
             <name>suggestAutocompleteType</name>
             <label>Autocomplete type</label>
             <label lang="de-DE">Autovervollständigungs-Typ</label>

@@ -21,6 +21,7 @@
             <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

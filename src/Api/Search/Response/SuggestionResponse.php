@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Api\Search\Response;
 
 use Elio\ElioDataDiscovery\Api\Response\Response;
 use Elio\ElioDataDiscovery\Core\Suggest\SuggestGroup;
+use Elio\ElioDataDiscovery\Core\Suggest\SuggestGroupCollection;
 
 /**
  * Class SuggestionResponse
@@ -46,50 +47,60 @@ use Elio\ElioDataDiscovery\Core\Suggest\SuggestGroup;
 class SuggestionResponse extends Response
 {
     /**
-     * @var SuggestGroup[]
+     * @var SuggestGroupCollection
      */
-    protected array $groups = [];
+    protected SuggestGroupCollection $groups;
 
     /**
-     * @param SuggestGroup[] $groups
+     * @param SuggestGroupCollection $groups
      */
-    public function setGroups(array $groups): void
+    public function setGroups(SuggestGroupCollection $groups): void
     {
         $this->groups = $groups;
     }
 
     /**
-     * @return SuggestGroup[]
+     * @return SuggestGroupCollection
      */
-    public function getGroups(): array
+    public function getGroups(): SuggestGroupCollection
     {
         return $this->groups;
     }
 
     /**
-     * @return SuggestGroup[]
+     * @return SuggestGroupCollection
      */
-    public function getVisibleGroups(): array
+    public function getVisibleGroups(): SuggestGroupCollection
     {
-        $visibleGroups = [];
+        $visibleGroups = new SuggestGroupCollection();
 
+        /** @var SuggestGroup $group */
         foreach ($this->groups as $group) {
             if($group->isVisible() && $group->hasItems()) {
-                $visibleGroups[] = $group;
+                $visibleGroups->add($group);
             }
         }
 
         return $visibleGroups;
     }
 
+    /**
+     * @param array $acceptedTypes
+     * @return SuggestGroupCollection
+     */
+    public function getVisibleGroupsSorted(array $acceptedTypes): SuggestGroupCollection
+    {
+        $this->groups->sortGroups($acceptedTypes);
+        return $this->getVisibleGroups();
+    }
 
     /**
      * @param string $identifier
      * @return SuggestGroup
      */
-    public function getGroup(string $identifier) : SuggestGroup
+    public function getGroup(string $identifier): SuggestGroup
     {
-        return $this->groups[$identifier];
+        return $this->groups->get($identifier);
     }
 
     /**
@@ -98,7 +109,7 @@ class SuggestionResponse extends Response
      */
     public function hasGroup(string $identifier) : bool
     {
-        return isset($this->groups[$identifier]);
+        return $this->groups->has($identifier);
     }
 
     /**
@@ -120,16 +131,19 @@ class SuggestionResponse extends Response
     /**
      * @return int
      */
-    public function count() : int
+    public function count(): int
     {
-        return array_sum(array_map(static fn(SuggestGroup $group) => $group->count(), $this->getGroups()));
+        return array_sum(array_map(static fn(SuggestGroup $group) => $group->count(), iterator_to_array($this->groups)));
     }
 
     /**
      * @return int
      */
-    public function countVisible() : int
+    public function countVisible(): int
     {
-        return array_sum(array_map(static fn(SuggestGroup $group) => $group->count(), $this->getVisibleGroups()));
+        return array_sum(array_map(
+            static fn(SuggestGroup $group) => $group->count(),
+            iterator_to_array($this->getVisibleGroups())
+        ));
     }
 }
