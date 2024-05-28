@@ -37,6 +37,8 @@ use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollectio
 use Elio\ElioDataDiscovery\Api\Search\Response\SuggestionResponse;
 use Elio\ElioDataDiscovery\Api\Search\SuggestApi;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\Search\AbstractProductSearchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\SearchController;
@@ -59,25 +61,30 @@ use Throwable;
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class SuggestController extends SearchController
 {
+    use ElioDataDiscoveryLogTrait;
+
     /**
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SuggestApi $suggestApi
      * @param SearchPageLoader $searchPageLoader
      * @param SuggestPageLoader $suggestPageLoader
      * @param AbstractProductSearchRoute $productSearchRoute
+     * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SuggestApi $suggestApi,
         SearchPageLoader $searchPageLoader,
         SuggestPageLoader $suggestPageLoader,
-        AbstractProductSearchRoute $productSearchRoute
+        AbstractProductSearchRoute $productSearchRoute,
+        LoggerInterface $logger
     ) {
         parent::__construct(
             $searchPageLoader,
             $suggestPageLoader,
             $productSearchRoute
         );
+        $this->logger = $logger;
     }
 
     /**
@@ -95,10 +102,10 @@ class SuggestController extends SearchController
         if (!$config->isActive() || !$config->isSuggestUseElioDataDiscovery()) {
             return parent::suggest($context, $request);
         }
+        $searchTerm = $request->get('search') ?? '*';
 
         try {
             $suggestRequest = new SuggestRequest('');
-            $searchTerm = $request->get('search') ?? '*';
             $suggestRequest->setQuery($searchTerm);
             $resultCollection = $this->suggestApi->suggest($suggestRequest, $context);
 
@@ -124,7 +131,11 @@ class SuggestController extends SearchController
                     'searchTerm' => $searchTerm
                 ]
             );
-        } catch (Throwable) {
+        } catch (Throwable $ex) {
+            $this->searchError($ex->getMessage(), $this, [
+                'exception' => $ex,
+                'searchTerm' => $searchTerm
+            ]);
             return parent::suggest($context, $request);
         }
     }
