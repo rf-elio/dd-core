@@ -54,14 +54,37 @@
 
                     {% block layout_search_suggest_result_price %}
                         {% if item.getEntityType == 'SalesChannelProductEntity' %}
-                            {% set price = item.entity.calculatedPrice %}
+                            {% block layout_search_suggest_result_price_product %}
+                                <div class="col-auto search-suggest-product-price">
+                                    {% set product = item.entity %}
+                                    {% set price = product.calculatedPrice %}
+                                    {% if product.calculatedPrices.count > 0 %}
+                                        {% set price = product.calculatedPrices.last %}
+                                    {% endif %}
 
-                            {% if item.entity.calculatedPrices|length == 1 %}
-                                {% set price = item.entity.calculatedPrices.first %}
-                            {% endif %}
-                            <div class="col-auto search-suggest-product-price">
-                                {{ price.unitPrice|currency }}{{ "general.star"|trans|sw_sanitize }}
-                            </div>
+                                    {% if product.variantListingConfig.displayParent and product.parentId === null %}
+                                        {% set displayFromVariants = price.unitPrice !== product.calculatedCheapestPrice.unitPrice %}
+                                        {% set price = product.calculatedCheapestPrice %}
+                                    {% endif %}
+
+                                    {% set referencePrice = price.referencePrice %}
+
+                                    {% if product.calculatedPrices.count > 1 or displayFromVariants %}
+                                        {{ "listing.listingTextFrom"|trans|sw_sanitize }}
+                                    {% endif %}
+                                    <span class="search-suggest-product-price">
+                                        {{ price.unitPrice|currency }}{{ "general.star"|trans|sw_sanitize }}
+                                    </span>
+
+                                    {% if price.referencePrice is not null %}
+                                        <br><small class="search-suggest-product-reference-price">({{ price.referencePrice.price|currency }}{{ "general.star"|trans|sw_sanitize }} / {{ price.referencePrice.referenceUnit }}&nbsp;{{ price.referencePrice.unitName }})</small>
+                                    {% endif %}
+
+                                    {% if price.regulationPrice.price is not null %}
+                                        <small class="search-suggest-product-list-price">{{ "general.listPricePreviously"|trans({'%price%': price.regulationPrice.price|currency }) }}{{ "general.star"|trans|sw_sanitize }}</small>
+                                    {% endif %}
+                                </div>
+                            {% endblock %}
                         {% endif %}
                     {% endblock %}
 
