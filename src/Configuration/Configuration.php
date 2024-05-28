@@ -324,6 +324,9 @@ class Configuration extends Struct
      */
     public function getSuggestAcceptedTypesMobile(): array
     {
+        if (empty($this->suggestAcceptedTypesMobile)) {
+            return $this->getSuggestAcceptedTypes();
+        }
         return $this->suggestAcceptedTypesMobile;
     }
 
