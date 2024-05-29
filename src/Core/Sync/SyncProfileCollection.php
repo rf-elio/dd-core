@@ -64,6 +64,16 @@ class SyncProfileCollection extends EntityCollection
         return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() === null)->count() > 0;
     }
 
+    /**
+     * Checks if there are any sync profiles that we have an execution for.
+     *
+     * @return bool
+     */
+    public function hasExecutedSyncProfiles(): bool
+    {
+        return $this->filter(fn(SyncProfileEntity $syncProfile) => $syncProfile->getLastGenerationFinishedAt() !== null)->count() > 0;
+    }
+
     protected function getExpectedClass(): string
     {
         return SyncProfileEntity::class;

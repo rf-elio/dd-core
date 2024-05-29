@@ -80,21 +80,19 @@ class IndexCleanupCommand extends Command
         $context = Context::createDefaultContext();
         /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
-
-        if ($syncProfiles->count() <= 0 || $syncProfiles->hasNotExecutedSyncProfiles()) {
-            $output->writeln('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>');
-            return Command::FAILURE;
-        }
-
+        $salesChannelIds = array_keys($this->syncService->getSalesChannelContexts($context));
         $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
         $sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile();
 
-        $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
-            ->modify('-' . $daysBeforeCleanup . 'day');
+        $cleanupDate = null;
+        if ($syncProfiles->count() > 0 && $syncProfiles->hasExecutedSyncProfiles()) {
+            $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
+                ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
+                ->modify('-' . $daysBeforeCleanup . 'day');
+        }
 
         try {
-            $this->changeSetService->cleanup($cleanupDate, $context);
+            $this->changeSetService->cleanup($cleanupDate, $salesChannelIds, $context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
