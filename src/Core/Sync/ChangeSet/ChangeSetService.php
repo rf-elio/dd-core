@@ -44,7 +44,10 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -191,17 +194,29 @@ class ChangeSetService
     /**
      * Cleanup deleted entities status that older than provided date
      *
-     * @param DateTimeImmutable $date
+     * @param DateTimeImmutable|null $date
+     * @param array $salesChannelIds
      * @param Context $context
      * @return void
      */
-    public function cleanup(DateTimeImmutable $date, Context $context): void
+    public function cleanup(?DateTimeImmutable $date, array $salesChannelIds, Context $context): void
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('state', EntityStatusEntity::STATE_DELETED));
-        $criteria->addFilter(new RangeFilter('deletedAt', [
-            RangeFilter::LTE => $date->format(Defaults::STORAGE_DATE_TIME_FORMAT)
-        ]));
+        $deleteConditions = [];
+        if ($date) {
+            $deleteConditions[] = new AndFilter([
+                new EqualsFilter('state', EntityStatusEntity::STATE_DELETED),
+                new RangeFilter('deletedAt', [
+                    RangeFilter::LTE => $date->format(Defaults::STORAGE_DATE_TIME_FORMAT)
+                ])
+            ]);
+        }
+        if (!empty($salesChannelIds)) {
+            $deleteConditions[] = new NotFilter('AND', [
+                new EqualsAnyFilter('salesChannelId', $salesChannelIds),
+            ]);
+        }
+        $criteria->addFilter(new OrFilter($deleteConditions));
 
         $ids = $this->entityStatusRepository->searchIds($criteria, $context)->getIds();
 
@@ -210,7 +225,9 @@ class ChangeSetService
             $removedData[] = ['id' => $id];
         }
 
-        $this->entityStatusRepository->delete($removedData, $context);
+        foreach(array_chunk($removedData, 100) as $deleteChunk) {
+            $this->entityStatusRepository->delete($deleteChunk, $context);
+        }
     }
 
     /**
