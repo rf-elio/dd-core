@@ -41,6 +41,7 @@ use Elio\ElioDataDiscovery\Core\Sync\Event\SyncGeneratedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\SyncProfileExecutionNotActiveException;
 use Elio\ElioDataDiscovery\Core\Sync\Output\OutputStream;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -65,6 +66,7 @@ class SyncStatusService
         private readonly EntityRepository $syncProfileExecutionRepository,
         private readonly Connection $connection,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -116,24 +118,6 @@ class SyncStatusService
     }
 
     /**
-     * Changes generation started date for profile
-     *
-     * @param SyncProfileEntity $syncProfile
-     * @param DateTimeInterface $startDate
-     * @param Context $context
-     * @return void
-     */
-    private function setStartDate(SyncProfileEntity $syncProfile, DateTimeInterface $startDate, Context $context): void
-    {
-        $this->syncProfileRepository->update([
-            [
-                'id' => $syncProfile->getId(),
-                'lastGenerationStartedAt' => $startDate,
-            ]
-        ], $context);
-    }
-
-    /**
      * Sets total count of data chunks for sync profile execution record
      *
      * @param SyncProfileExecutionEntity $syncProfileExecutionEntity
@@ -175,6 +159,9 @@ class SyncStatusService
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function checkSyncProfileExecutionStatus(
         SyncProfileExecutionEntity $syncProfileExecutionEntity,
         OutputStream $outputStream,
@@ -188,15 +175,42 @@ class SyncStatusService
 
         // sync not completed yet
         if ($totalCount === null || $totalCount !== $processedCount) {
+            $this->logger->debug('SyncStatus: Sync incomplete', [
+                'id' => $syncProfileExecutionEntity->getSyncProfileId(),
+                'total' => $totalCount,
+                'processed' => $processedCount,
+            ]);
             return;
         }
 
+        $this->logger->info('SyncStatus: Sync complete', [
+            'id' => $syncProfileExecutionEntity->getSyncProfileId()
+        ]);
         $outputStream->close();
         $this->eventDispatcher->dispatch(new SyncGeneratedEvent(
             $syncContext->getSyncProfile(), $syncContext->getSalesChannelContexts()
         ));
         $this->setStartDate($syncContext->getSyncProfile(), $syncProfileExecutionEntity->getCreatedAt(), $context);
         $this->setFinishDate($syncContext->getSyncProfile(), $context);
+    }
+
+
+    /**
+     * Changes generation started date for profile
+     *
+     * @param SyncProfileEntity $syncProfile
+     * @param DateTimeInterface $startDate
+     * @param Context $context
+     * @return void
+     */
+    private function setStartDate(SyncProfileEntity $syncProfile, DateTimeInterface $startDate, Context $context): void
+    {
+        $this->syncProfileRepository->update([
+            [
+                'id' => $syncProfile->getId(),
+                'lastGenerationStartedAt' => $startDate,
+            ]
+        ], $context);
     }
 
     /**

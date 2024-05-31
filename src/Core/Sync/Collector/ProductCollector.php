@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
@@ -156,9 +157,7 @@ class ProductCollector implements DataCollectorInterface
 
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
-
         $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_SEARCH));
-
         $this->handleAvailableStock($criteria, $context);
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
@@ -171,6 +170,7 @@ class ProductCollector implements DataCollectorInterface
      * @param array $data
      * @param SalesChannelContext $context
      * @return EntityCollection<SalesChannelProductEntity>
+     * @throws Exception
      */
     protected function loadParentProducts(array $data, SalesChannelContext $context): EntityCollection
     {

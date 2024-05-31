@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 /**
  * Class SyncProfileMessage
@@ -43,7 +44,7 @@ use Shopware\Core\Framework\Context;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class SyncProfileMessage
+class SyncProfileMessage implements AsyncMessageInterface
 {
     /**
      * @param SyncProfileEntity $syncProfile
