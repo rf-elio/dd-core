@@ -49,6 +49,13 @@
                     propertyName: parameterName,
                     elioDataDiscoveryTree: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree
                 } %}
+            {% elseif style == 'RATING' %}
+                {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-rating.html.twig' with {
+                    sidebar: sidebar,
+                    name: elioDataDiscoveryAggregation.technicalName,
+                    displayName: parameterName,
+                    pluginSelector: 'elio-data-discovery-filter-rating',
+                } %}
             {% endif %}
         {% endif %}
     {% endfor %}

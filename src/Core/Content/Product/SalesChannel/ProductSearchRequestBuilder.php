@@ -169,7 +169,7 @@ class ProductSearchRequestBuilder
                          'type' => 'range'
                      ]);
                  }
-             }elseif (str_contains($key, 'tree')){
+             } elseif (str_contains($key, 'tree')){
                  $filterValues = explode('|', (string) $filterValues);
                  $filters = [];
                  foreach ($filterValues as $filterValue) {
@@ -181,6 +181,16 @@ class ProductSearchRequestBuilder
                  }
                  foreach ($filters as $filtername => $filter){
                      $searchRequest->addFilter($filtername, $filter);
+                 }
+             } elseif (str_contains($key, 'rating')) {
+                 $filterValues = explode('|', (string) $filterValues);
+                 foreach ($filterValues as $filterValue) {
+                     [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
+                     $searchRequest->addFilter($name, [
+                         'from' => empty($min) ? null : $min,
+                         'till' => empty($max) ? null : $max,
+                         'type' => 'rating'
+                     ]);
                  }
              }
          }
