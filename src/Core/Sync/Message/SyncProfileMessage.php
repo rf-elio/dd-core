@@ -47,15 +47,16 @@ use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 class SyncProfileMessage implements AsyncMessageInterface
 {
     /**
-     * @param SyncProfileEntity $syncProfile
+     * @param string $syncProfileId
      * @param array $options
      * @param Context $context
      */
     public function __construct(
-        private SyncProfileEntity $syncProfile,
-        private array $options,
-        private Context $context
-    ) {}
+        private readonly string $syncProfileId,
+        private readonly array $options,
+        private readonly Context $context
+    ) {
+    }
 
     /**
      * @return Context
@@ -66,30 +67,6 @@ class SyncProfileMessage implements AsyncMessageInterface
     }
 
     /**
-     * @param Context $context
-     */
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
-    /**
-     * @return SyncProfileEntity
-     */
-    public function getSyncProfile(): SyncProfileEntity
-    {
-        return $this->syncProfile;
-    }
-
-    /**
-     * @param SyncProfileEntity $syncProfile
-     */
-    public function setSyncProfile(SyncProfileEntity $syncProfile): void
-    {
-        $this->syncProfile = $syncProfile;
-    }
-
-    /**
      * @return array
      */
     public function getOptions(): array
@@ -97,12 +74,8 @@ class SyncProfileMessage implements AsyncMessageInterface
         return $this->options;
     }
 
-    /**
-     * @param array $options
-     * @return void
-     */
-    public function setOptions(array $options): void
+    public function getSyncProfileId(): string
     {
-        $this->options = $options;
+        return $this->syncProfileId;
     }
 }

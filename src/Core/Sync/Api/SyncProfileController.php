@@ -183,7 +183,7 @@ class SyncProfileController extends AbstractController
     {
         $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);
         $startedDate = new \DateTime();
-        $this->messageBus->dispatch((new Envelope(new SyncProfileMessage($syncProfile, $data->all(), $context)))->with(new DelayStamp(1000)));
+        $this->messageBus->dispatch(new SyncProfileMessage($syncProfile->getId(), $data->all(), $context));
         return new JsonResponse(['id' => $id, 'status' => 'starting', 'started' => $startedDate]);
     }
 
