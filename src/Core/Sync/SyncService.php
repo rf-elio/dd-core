@@ -116,6 +116,14 @@ class SyncService
         $outputStream->init();
         $outputStream->open();
 
+        $this->logger->info('Sync: Read starting', [
+            'id' => $syncProfile->getId(),
+            'name' => $syncProfile->getName(),
+            'stats' => [
+                'asyncWrite' => $asyncWrite ? 'true' : 'false',
+            ]
+        ]);
+
         $totalCount = 0;
         foreach ($input->read($syncContext) as $dataCollection) {
             $totalCount++;
@@ -130,6 +138,15 @@ class SyncService
                 $outputStream->write($dataCollection);
             }
         }
+
+        $this->logger->info('Sync: Read complete', [
+            'id' => $syncProfile->getId(),
+            'name' => $syncProfile->getName(),
+            'stats' => [
+                'totalCount' => $totalCount,
+                'asyncWrite' => $asyncWrite ? 'true' : 'false',
+            ]
+        ]);
 
         $this->syncStatusService->setTotalCount($execution, $totalCount, $context);
         if (!$asyncWrite || $totalCount <= 0) {

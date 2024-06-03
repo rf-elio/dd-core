@@ -53,7 +53,7 @@ abstract class BaseInput implements InputInterface
      * Gets profile collectors
      *
      * @param string $dataType
-     * @param string $entityType
+     * @param string|null $entityType
      * @return DataCollectorInterface[]
      */
     protected function getCollectors(string $dataType, ?string $entityType = null): array
