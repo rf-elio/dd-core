@@ -15,7 +15,12 @@ export default class ElioDataDiscoveryFilterRatingPlugin extends FilterRatingSel
         this.currentRating = activeRadio.value;
         this._updateCount();
 
-        values[this.options.elioDataDiscoveryFilterName] = [this.currentRating ? this.options.name + '~' + this.currentRating.toString() + '~' + this.options.maxPoints : ''];
+        if (!this.currentRating) {
+            return values;
+        }
+
+        values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this.currentRating.toString() + '~' + this.options.maxPoints];
+        values[this.options.name] = this.currentRating.toString()
 
         return values;
     }
