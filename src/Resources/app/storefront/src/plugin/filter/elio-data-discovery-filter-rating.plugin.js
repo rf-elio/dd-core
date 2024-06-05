@@ -20,7 +20,7 @@ export default class ElioDataDiscoveryFilterRatingPlugin extends FilterRatingSel
         }
 
         values[this.options.elioDataDiscoveryFilterName] = [this.options.name + '~' + this.currentRating.toString() + '~' + this.options.maxPoints];
-        values[this.options.name] = this.currentRating.toString()
+        values[this.options.name] = this.currentRating.toString();
 
         return values;
     }
