@@ -28,7 +28,7 @@
                 <div id="rulerTabFilters"
                      :class="['ruler-tab-filter-list', 'ruler-tab-filter-list--main', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="all"
                 >
                     <div class="filter"
@@ -68,7 +68,7 @@
                 <div id="rulerTabFiltersAllowed"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="allow"
                 >
                     <div class="filter"
@@ -108,7 +108,7 @@
                 <div id="rulerTabFiltersBlocked"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     ondragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="block"
                 >
                     <div class="filter"
