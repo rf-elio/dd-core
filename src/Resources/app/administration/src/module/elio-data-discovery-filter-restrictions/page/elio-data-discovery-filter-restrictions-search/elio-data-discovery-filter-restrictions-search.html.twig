@@ -5,9 +5,11 @@
                                      @change-sales-channel-id="onSalesChannelChanged">
             </sw-sales-channel-switch>
         </div>
-        <elio-data-discovery-filter-restriction-ruler :isCategory="false"
-                              :layer="type"
-                              rulerHeader="elio-data-discovery.restrictions.filter.tabs.search"
-                              ref="ruler"></elio-data-discovery-filter-restriction-ruler>
+        <elio-data-discovery-restriction-ruler :isCategory="false"
+                                               :layer="type"
+                                               rulerHeader="elio-data-discovery.restrictions.filter.tabs.search"
+                                               rulerType="filter"
+                                               ref="ruler"
+        ></elio-data-discovery-restriction-ruler>
     </sw-meteor-card>
 {% endblock %}

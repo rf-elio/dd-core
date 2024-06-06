@@ -38,14 +38,14 @@
                     {% block elio_data_discovery_sorting_restrictions_customfilters_grid_columns_actions_detail %}
                     <sw-context-menu-item
                             :routerLink="{ name: 'elio.data.discovery.sorting.restrictions.customFiltersDetail', params: { id: item.id } }">
-                        {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.contextMenuView') }}
+                        {{ $tc('elio-data-discovery.restrictions.filter.customFilters.contextMenuView') }}
                     </sw-context-menu-item>
                     {% endblock %}
 
                     {% block elio_data_discovery_sorting_restrictions_customfilters_grid_columns_actions_delete %}
                         <sw-context-menu-item variant="danger"
                                               @click="onDelete(item.id)">
-                            {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.contextMenuDelete') }}
+                            {{ $tc('elio-data-discovery.restrictions.filter.customFilters.contextMenuDelete') }}
                         </sw-context-menu-item>
                     {% endblock %}
                 </template>
@@ -58,16 +58,16 @@
                                   :title="$tc('global.default.warning')"
                                   @modal-close="onCloseDeleteModal">
                             <p>
-                                {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.textDeleteConfirm', 0, { label: item.translated.label }) }}
+                                {{ $tc('elio-data-discovery.restrictions.filter.customFilters.textDeleteConfirm', 0, { label: item.translated.label }) }}
                             </p>
 
                             <template slot="modal-footer">
                                 <sw-button @click="onCloseDeleteModal" size="small">
-                                    {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.buttonCancel') }}
+                                    {{ $tc('elio-data-discovery.restrictions.filter.customFilters.buttonCancel') }}
                                 </sw-button>
 
                                 <sw-button @click="onConfirmDelete(item.id)" variant="danger" size="small">
-                                    {{ $tc('elio-data-discovery.restrictions.sorting.customFilters.buttonDelete') }}
+                                    {{ $tc('elio-data-discovery.restrictions.filter.customFilters.buttonDelete') }}
                                 </sw-button>
                             </template>
                         </sw-modal>

@@ -1,5 +1,5 @@
-{% block elio_data_discovery_sorting_restrictions_ruler %}
-    <div class="elio-data-discovery-sorting-restrictions-ruler">
+{% block elio_data_discovery_restrictions_ruler %}
+    <div class="elio-data-discovery-filter-restrictions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
         <sw-field
                 v-model="languageId"
@@ -11,24 +11,24 @@
 
         <h1>{{ $tc(rulerHeader) }}</h1>
 
-        <div v-if="isInheritable" class="elio-data-discovery-sorting-restrictions-ruler-inheritance-block">
+        <div v-if="isInheritable" class="elio-data-discovery-filter-restrictions-ruler-inheritance-block">
             <sw-inheritance-switch
-                    class="sw-inherit-wrapper__inheritance-icon elio-data-discovery-sorting-restrictions-ruler-inheritance"
+                    class="sw-inherit-wrapper__inheritance-icon elio-data-discovery-filter-restrictions-ruler-inheritance"
                     :isInherited="isInherited"
                     @inheritance-restore="restoreInheritance"
                     @inheritance-remove="removeInheritance">
             </sw-inheritance-switch>
-            <p>{{ $tc('elio-data-discovery.restrictions.sorting.ruler.inheritance') }}</p>
+            <p>{{ $tc('elio-data-discovery.restrictions.filter.ruler.inheritance') }}</p>
         </div>
         <div class="ruler">
             <div class="ruler-tab">
                 <h3 class="ruler-tab-header">
-                    {{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.available.header') }}
+                    {{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.available.header') }}
                 </h3>
                 <div id="rulerTabFilters"
                      :class="['ruler-tab-filter-list', 'ruler-tab-filter-list--main', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     @dragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="all"
                 >
                     <div class="filter"
@@ -41,9 +41,9 @@
                 </div>
             </div>
             <div class="ruler-tab">
-                <h3 class="ruler-tab-header">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.allowed.header') }}</h3>
+                <h3 class="ruler-tab-header">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.allowed.header') }}</h3>
                 <div class="ruler-tab-permissions">
-                    <p class="ruler-tab-permissions-header">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.permissions') }}:</p>
+                    <p class="ruler-tab-permissions-header">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.permissions') }}:</p>
                     <div class="ruler-tab-permission-inputgroup">
                         <input type="radio"
                                id="allowAll"
@@ -52,7 +52,7 @@
                                :checked="allowAllChecked"
                                @change="onAllowAllClicked"
                                value="allowAll">
-                        <label for="allowAll">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.allowed.permissions.allowAll') }}</label>
+                        <label for="allowAll">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.allowed.permissions.allowAll') }}</label>
                     </div>
                     <div class="ruler-tab-permission-inputgroup">
                         <input type="radio"
@@ -62,13 +62,13 @@
                                :checked="!allowAllChecked"
                                @change="onAllowSelectedClicked"
                                value="allowOnly">
-                        <label for="allowOnly">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.allowed.permissions.allowOnlySelected') }}</label>
+                        <label for="allowOnly">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.allowed.permissions.allowOnlySelected') }}</label>
                     </div>
                 </div>
                 <div id="rulerTabFiltersAllowed"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     @dragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="allow"
                 >
                     <div class="filter"
@@ -81,9 +81,9 @@
                 </div>
             </div>
             <div class="ruler-tab">
-                <h3 class="ruler-tab-header">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.blocked.header') }}</h3>
+                <h3 class="ruler-tab-header">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.blocked.header') }}</h3>
                 <div class="ruler-tab-permissions">
-                    <p class="ruler-tab-permissions-header">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.permissions') }}:</p>
+                    <p class="ruler-tab-permissions-header">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.permissions') }}:</p>
                     <div class="ruler-tab-permission-inputgroup">
                         <input type="radio"
                                id="blockAll"
@@ -92,7 +92,7 @@
                                :checked="blockAllChecked"
                                @change="onBlockAllClicked"
                                value="blockAll">
-                        <label for="blockAll">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.blocked.permissions.blockAll') }}</label>
+                        <label for="blockAll">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.blocked.permissions.blockAll') }}</label>
                     </div>
                     <div class="ruler-tab-permission-inputgroup">
                         <input type="radio"
@@ -102,13 +102,13 @@
                                :checked="!blockAllChecked"
                                @change="onBlockSelectedClicked"
                                value="blockOnly">
-                        <label for="blockOnly">{{ $tc('elio-data-discovery.restrictions.sorting.ruler.tabs.blocked.permissions.blockOnlySelected') }}</label>
+                        <label for="blockOnly">{{ $tc('elio-data-discovery.restrictions.filter.ruler.tabs.blocked.permissions.blockOnlySelected') }}</label>
                     </div>
                 </div>
                 <div id="rulerTabFiltersBlocked"
                      :class="['ruler-tab-filter-list', {'ruler-tab-filter-list--inactive': isInherited}]"
                      @drop="onDrop"
-                     @dragover="event.preventDefault()"
+                     @dragover.prevent
                      data-filter-column="block"
                 >
                     <div class="filter"

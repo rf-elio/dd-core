@@ -6,10 +6,6 @@ import './page/elio-data-discovery-filter-restrictions-customfilters';
 import './page/elio-data-discovery-filter-restrictions-customfilters-detail';
 import './page/elio-data-discovery-filter-restrictions-customfilters-create';
 
-(async function initDependencies() {
-    await import(/* webpackMode: 'eager' */ './component/elio-data-discovery-filter-restrictions-ruler');
-})();
-
 Shopware.Module.register('elio-data-discovery-filter-restrictions', {
     type: 'plugin',
     name: 'ElioDataDiscoveryFilterRestrictions',

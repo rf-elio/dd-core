@@ -8,10 +8,12 @@
 
         <sw-card :title="$tc('elio-data-discovery.restrictions.filter.tabs.global')"
                  :isLoading="isLoading">
-            <elio-data-discovery-filter-restriction-ruler :isCategory="true"
-                                  :categoryId="category.id"
-                                  :layer="type"
-                                  ref="ruler"></elio-data-discovery-filter-restriction-ruler>
+            <elio-data-discovery-restriction-ruler :isCategory="true"
+                                                   :categoryId="category.id"
+                                                   :layer="type"
+                                                   rulerType="filter"
+                                                   ref="ruler"
+            ></elio-data-discovery-restriction-ruler>
         </sw-card>
     </div>
 {% endblock %}

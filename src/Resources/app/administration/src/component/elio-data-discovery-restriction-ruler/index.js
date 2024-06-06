@@ -1,9 +1,9 @@
-import template from './elio-data-discovery-sorting-restriction-ruler.html.twig';
-import './elio-data-discovery-sorting-restriction-ruller.scss';
+import template from './elio-data-discovery-restriction-ruler.html.twig';
+import './elio-data-discovery-restriction-ruler.scss';
 
 const {Criteria} = Shopware.Data;
 
-Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
+Shopware.Component.register('elio-data-discovery-restriction-ruler', {
     template: template,
 
     inject: [
@@ -39,6 +39,13 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
                 return '';
             }
         },
+        rulerType: {
+            type: String,
+            required: false,
+            default() {
+                return 'filter';
+            }
+        }
     },
 
     computed: {
@@ -47,9 +54,6 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
         },
         filterRestrictionRepository() {
             return this.repositoryFactory.create('elio_data_discovery_filter_restrictions');
-        },
-        filterRestrictionFilterRepository() {
-            return this.repositoryFactory.create('elio_data_discovery_filter_restrictions_filters');
         },
         languageRepository() {
             return this.repositoryFactory.create('language');
@@ -128,7 +132,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
             this.isDisplayingLeavePageWarning = false;
 
             this.$nextTick(() => {
-                this.$router.push({ name: destination.name, params: destination.params });
+                this.$router.push({name: destination.name, params: destination.params});
             });
         },
 
@@ -149,7 +153,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
         },
 
         onDrop(dragData) {
-            if(this.isInherited) {
+            if (this.isInherited) {
                 return;
             }
             if (dragData.target.classList.contains("ruler-tab-filter-list") || dragData.target.classList.contains("filter")) {
@@ -176,7 +180,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
         },
 
         onAllowAllClicked() {
-            if(this.allowListRestrictionId !== '') {
+            if (this.allowListRestrictionId !== '') {
                 this.isModified = true;
                 this.allowAllChecked = true;
                 this.blockAllChecked = false;
@@ -184,14 +188,14 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
         },
 
         onAllowSelectedClicked() {
-            if(this.allowListRestrictionId !== '') {
+            if (this.allowListRestrictionId !== '') {
                 this.isModified = true;
                 this.allowAllChecked = false;
             }
         },
 
         onBlockAllClicked() {
-            if(this.blockListRestrictionId !== '') {
+            if (this.blockListRestrictionId !== '') {
                 this.isModified = true;
                 this.blockAllChecked = true;
                 this.allowAllChecked = false;
@@ -199,7 +203,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
         },
 
         onBlockSelectedClicked() {
-            if(this.blockListRestrictionId !== '') {
+            if (this.blockListRestrictionId !== '') {
                 this.isModified = true;
                 this.blockAllChecked = false;
             }
@@ -207,7 +211,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
 
         onCreated() {
             const that = this;
-            if(this.salesChannelId == null) {
+            if (this.salesChannelId == null) {
                 this.isInherited = false;
             }
             this.languageRepository.search(new Criteria, Shopware.Context.api).then((languages) => {
@@ -234,35 +238,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
 
             this.isLoading = true;
             try {
-                var criteria = new Criteria();
-                criteria.addAssociation('filters')
-                if (this.isCategory && this.categoryId != null) {
-                    criteria.addFilter(
-                        Criteria.multi(
-                            'AND',
-                            [
-                                Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', true),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.categoryId', this.categoryId),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer),
-                            ]
-                        )
-                    );
-                } else {
-                    criteria.addFilter(
-                        Criteria.multi(
-                            'AND',
-                            [
-                                Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', false),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
-                                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId)
-                            ]
-                        )
-                    );
-                }
-
+                var criteria = this.getFilterRestrictionLoadCriteria();
                 var isAllowColumnPresent = false;
                 var isBlockColumnPresent = false;
                 this.movedFiltersIds = [];
@@ -294,54 +270,10 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
 
                         // Creating filterRestrictionsEntities if there is no-one into elio_data_discovery_filter_restrictions
                         if (!isAllowColumnPresent) {
-                            var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
-
-                            filterRestriction.isCategory = this.isCategory;
-                            if (!this.isCategory) {
-                                filterRestriction.layer = this.layer;
-                            } else {
-                                filterRestriction.layer = this.layer;
-                                filterRestriction.categoryId = this.categoryId;
-                            }
-                            filterRestriction.isAllowed = true;
-                            filterRestriction.isAllChecked = true;
-                            filterRestriction.salesChannelId = operator.salesChannelId;
-                            filterRestriction.languageId = operator.languageId;
-                            filterRestriction.isInherited = operator.salesChannelId != null;
-                            operator.isInherited = operator.salesChannelId != null;
-
-                            this.filterRestrictionRepository.save(filterRestriction, Shopware.Context.api)
-                                .then((response) => {
-                                    var id = JSON.parse(response.config.data).id;
-                                    if (id) {
-                                        operator.allowListRestrictionId = id;
-                                    }
-                                });
+                            this.createFilterRestriction(false);
                         }
                         if (!isBlockColumnPresent) {
-                            filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
-
-                            filterRestriction.isCategory = this.isCategory;
-                            if (!this.isCategory) {
-                                filterRestriction.layer = this.layer;
-                            } else {
-                                filterRestriction.layer = this.layer;
-                                filterRestriction.categoryId = this.categoryId;
-                            }
-                            filterRestriction.isAllowed = false;
-                            filterRestriction.isAllChecked = false;
-                            filterRestriction.salesChannelId = operator.salesChannelId;
-                            filterRestriction.languageId = operator.languageId;
-                            filterRestriction.isInherited = operator.salesChannelId != null;
-                            operator.isInherited = operator.salesChannelId != null;
-
-                            this.filterRestrictionRepository.save(filterRestriction, Shopware.Context.api)
-                                .then((response) => {
-                                    var id = JSON.parse(response.config.data).id;
-                                    if (id) {
-                                        operator.blockListRestrictionId = id;
-                                    }
-                                });
+                            this.createFilterRestriction(true);
                         }
                     });
 
@@ -349,14 +281,14 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
                 this.isLoading = false;
             } catch {
                 this.isLoading = false;
-                this.$router.push({name: 'elio.data.discovery.sorting.restrictions.index.global'});
+                this.$router.push({name: 'elio.data.discovery.' + this.rulerType + '.restrictions.index.global'});
             }
         },
 
         async buildFilters() {
             var criteria = new Criteria();
-            criteria.addFilter(Criteria.equals('type', 'sorting'));
             criteria.setLimit(this.limitForCriteria); /* upddate it */
+            criteria.addFilter(Criteria.equals('type', this.rulerType))
             if (this.movedFiltersIds.length > 0) {
                 criteria.addFilter(Criteria.not(
                     'AND',
@@ -379,9 +311,7 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
             this.isModified = false;
             this.isLoading = true;
             var operator = this;
-            var entities = [];
 
-            // Removing old links from elio_data_discovery_filter_restrictions_filters table
             var criteria = new Criteria();
             criteria.addAssociation('filters');
             criteria.addFilter(
@@ -395,50 +325,87 @@ Shopware.Component.register('elio-data-discovery-sorting-restriction-ruler', {
             );
 
             await this.filterRestrictionRepository.search(criteria, Shopware.Context.api)
-                .then( (filterRestrictions) => {
-                    filterRestrictions.forEach(function(filterRestriction) {
-
+                .then((filterRestrictions) => {
+                    filterRestrictions.forEach(function (filterRestriction) {
                         filterRestriction.isAllChecked = (filterRestriction.isAllowed) ? operator.allowAllChecked : operator.blockAllChecked;
                         filterRestriction.isInherited = operator.isInherited;
-
-                        var filterIds = [];
-                        filterRestriction.filters.forEach(
-                            function(filter) {
-                                filterIds.push(filter.id);
-                            }
-                        );
-                        filterIds.forEach(
-                            function(filterId) {
-                                filterRestriction.filters.remove(filterId);
-                            }
-                        );
-                        operator.filterRestrictionRepository.save(filterRestriction);
+                        operator.syncFiltersToFilterRestriction(filterRestriction);
                     });
                 });
+            this.isLoading = false;
+        },
 
-            // Collecting all filters to save them
-            if (this.allowListRestrictionId) {
-                this.allowList.forEach(function (filter) {
-                    var entity = operator.filterRestrictionFilterRepository.create(Shopware.Context.api);
-                    entity.filterRestrictionId = operator.allowListRestrictionId;
-                    entity.filterId = filter.id;
-                    entities.push(entity);
-                });
-            }
-            if (this.allowListRestrictionId) {
-                this.blockList.forEach(function (filter) {
-                    var entity = operator.filterRestrictionFilterRepository.create(Shopware.Context.api);
-                    entity.filterRestrictionId = operator.blockListRestrictionId;
-                    entity.filterId = filter.id;
-                    entities.push(entity);
-                });
-            }
+        syncFiltersToFilterRestriction(filterRestriction) {
+            // remove all
+            var filtersIds = [];
+            filterRestriction.filters.forEach(filter => {
+                filtersIds.push(filter.id);
+            });
+            filtersIds.forEach(id => {
+                filterRestriction.filters.remove(id);
+            });
 
-            // Saving new links into elio_data_discovery_filter_restrictions_filters table
-            await this.filterRestrictionFilterRepository.sync(entities, Shopware.Context.api, false)
-                .finally(() => {
-                    this.isLoading = false;
+            // add from list
+            (filterRestriction.isAllowed ? this.allowList : this.blockList).forEach(filter => {
+                filterRestriction.filters.add(filter);
+            });
+
+            // save
+            this.filterRestrictionRepository.save(filterRestriction);
+        },
+
+        createFilterRestriction(isForBlock = false) {
+            var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
+
+            filterRestriction.isCategory = this.isCategory;
+            if (!this.isCategory) {
+                filterRestriction.layer = this.layer;
+            } else {
+                filterRestriction.layer = this.layer;
+                filterRestriction.categoryId = this.categoryId;
+            }
+            filterRestriction.isAllowed = !isForBlock;
+            filterRestriction.isAllChecked = !isForBlock;
+            filterRestriction.salesChannelId = this.salesChannelId;
+            filterRestriction.languageId = this.languageId;
+            filterRestriction.isInherited = this.salesChannelId != null;
+            this.isInherited = this.salesChannelId != null;
+
+            this.filterRestrictionRepository
+                .save(filterRestriction, Shopware.Context.api)
+                .then((response) => {
+                    var id = JSON.parse(response.config.data).id;
+                    if (id) {
+                        if (!isForBlock) {
+                            this.allowListRestrictionId = id;
+                        } else {
+                            this.blockListRestrictionId = id;
+                        }
+                    }
                 });
-        }
+        },
+
+        getFilterRestrictionLoadCriteria() {
+            var criteria = new Criteria();
+            criteria.addAssociation('filters')
+            var criteriaConditions = [
+                Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
+                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId),
+                Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer)
+            ];
+            if (this.isCategory && this.categoryId != null) {
+                criteriaConditions.push(Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', true));
+                criteriaConditions.push(Criteria.equals('elio_data_discovery_filter_restrictions.categoryId', this.categoryId));
+            } else {
+                criteriaConditions.push(Criteria.equals('elio_data_discovery_filter_restrictions.isCategory', false));
+            }
+            criteria.addFilter(
+                Criteria.multi(
+                    'AND',
+                    criteriaConditions
+                )
+            );
+            return criteria;
+        },
     }
 });

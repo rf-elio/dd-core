@@ -6,12 +6,14 @@
             </sw-sales-channel-switch>
         </div>
 
-        <sw-card :title="$tc('elio-data-discovery.restrictions.sorting.tabs.global')"
+        <sw-card :title="$tc('elio-data-discovery.restrictions.filter.tabs.global')"
                  :isLoading="isLoading">
-            <elio-data-discovery-sorting-restriction-ruler :isCategory="true"
-                                  :categoryId="category.id"
-                                  :layer="type"
-                                  ref="ruler"></elio-data-discovery-sorting-restriction-ruler>
+            <elio-data-discovery-restriction-ruler :isCategory="true"
+                                                   :categoryId="category.id"
+                                                   :layer="type"
+                                                   rulerType="sorting"
+                                                   ref="ruler"
+            ></elio-data-discovery-restriction-ruler>
         </sw-card>
     </div>
 {% endblock %}
