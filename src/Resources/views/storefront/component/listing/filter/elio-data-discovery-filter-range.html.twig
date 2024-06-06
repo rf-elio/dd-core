@@ -1,34 +1,27 @@
 {% sw_extends '@Storefront/storefront/component/listing/filter/filter-range.html.twig' %}
-
+{# this file is mostry a copy of shopware's range filder, modifications diverging from original are marked with start
+and end, everything else is a 1 to 1 copy #}
 {% block component_filter_range %}
-    {% set filterRangeOptions = {
-        name: name,
-        minKey: minKey,
-        maxKey: maxKey,
-        inputMinValue: price.min,
-        inputMaxValue: price.max,
-        currencySymbol: currencySymbol,
-        rangeUnit: rangeUnit,
-        snippets: {
-            filterRangeActiveMinLabel: filterRangeActiveMinLabel,
-            filterRangeActiveMaxLabel: filterRangeActiveMaxLabel,
-            filterRangeErrorMessage: filterRangeErrorMessage
-        }
-    } %}
-    <div class="filter-range filter-panel-item{% if not sidebar %} dropdown{% endif %}"
-         data-elio-data-discovery-filter-range="true"
-         data-elio-data-discovery-filter-range-options='{{ filterRangeOptions|json_encode }}'>
+    {# e: mod start #}
+    {% set filterItemId = 'filter-elioDataDiscoveryRange' ~ name|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':''}) %}
+    {# e: mod end #}
+
+    <div class="filter-range filter-panel-item{% if sidebar %} d-grid{% else %} dropdown{% endif %}"
+         {# e: mod start #}
+         data-{{ pluginSelector }}="true"
+         data-{{ pluginSelector }}-options='{{ filterRangeOptions|json_encode }}'>
+         {# e: mod end #}
 
         {% block component_filter_range_toggle %}
-            <button class="filter-panel-item-toggle btn{% if sidebar %} btn-block{% endif %}"
+            <button class="filter-panel-item-toggle btn"
                     aria-expanded="false"
                     {% if sidebar %}
-                data-toggle="collapse"
-                data-target="#{{ filterItemId }}"
+                data-bs-toggle="collapse"
+                data-bs-target="#{{ filterItemId }}"
             {% else %}
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown"
                 data-boundary="viewport"
-                data-offset="0,8"
+                data-bs-offset="0,8"
                 aria-haspopup="true"
                     {% endif %}>
 
@@ -59,16 +52,14 @@
                                 {% block component_filter_range_min_input %}
                                     <input class="form-control min-input"
                                            type="number"
-                                           name="min-price"
-                                           step="0.01"
-                                           value="{{ price.min }}"
-                                           min="{{ price.min }}"
-                                           max="{{ price.max }}">
+                                           name="{{ minKey }}"
+                                           min="{{ minInputValue }}"
+                                           max="{{ maxInputValue }}">
                                 {% endblock %}
 
                                 {% block component_filter_range_min_unit %}
-                                    <span class="filter-range-currency-symbol">
-                                        {{ rangeUnit }}
+                                    <span class="filter-range-unit">
+                                            {{ unit }}
                                     </span>
                                 {% endblock %}
                             </label>
@@ -90,16 +81,14 @@
                                 {% block component_filter_range_max_input %}
                                     <input class="form-control max-input"
                                            type="number"
-                                           name="max-price"
-                                           step="0.01"
-                                           value="{{ price.max }}"
-                                           min="{{ price.min }}"
-                                           max="{{ price.max }}">
+                                           name="{{ maxKey }}"
+                                           min="{{ minInputValue }}"
+                                           max="{{ maxInputValue }}">
                                 {% endblock %}
 
                                 {% block component_filter_range_max_unit %}
-                                    <span class="filter-range-currency-symbol">
-                                        {{ rangeUnit }}
+                                    <span class="filter-range-unit">
+                                        {{ unit }}
                                     </span>
                                 {% endblock %}
                             </label>

@@ -99,7 +99,7 @@ class IndexController extends AbstractController
     public function indexUpdate(Context $context): Response
     {
         try {
-            $this->changeSetService->startIndexers($context);
+            $this->changeSetService->startIndexing($context, true);
         } catch (Exception $e) {
             return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

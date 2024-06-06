@@ -36,12 +36,12 @@ use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusEntity;
 use JsonException;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class BaseIndexer
@@ -56,16 +56,16 @@ abstract class BaseIndexer implements IndexerInterface
     public function __construct(
         private readonly string $dataType,
         private readonly string $entityType,
-        private readonly EntityRepository $repository
+        private readonly SalesChannelRepository $repository
     ) {}
 
     /**
      * Gets criteria
      *
-     * @param Context $context
+     * @param SalesChannelContext $salesChannelContext
      * @return Criteria
      */
-    abstract protected function getCriteria(Context $context): Criteria;
+    abstract protected function getCriteria(SalesChannelContext $salesChannelContext): Criteria;
 
     /**
      * Extracts the entity identifier (e.g. product number)
@@ -89,15 +89,17 @@ abstract class BaseIndexer implements IndexerInterface
      * Indexing entity states
      *
      * @param EntityStatusCollection $currentEntityStatusCollection
-     * @param Context $context
+     * @param SalesChannelContext $context
      * @return EntityStatusCollection
      * @throws JsonException
      */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection
+    public function index(EntityStatusCollection $currentEntityStatusCollection, SalesChannelContext $context): EntityStatusCollection
     {
-        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
         $criteria = $this->getCriteria($context);
-        $iterator = new RepositoryIterator($this->repository, $context, $criteria);
+        $criteria->setOffset(0);
+        $criteria->setLimit(50);
+        $iterator = new SalesChannelRepositoryIterator($this->repository, $context, $criteria);
+        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
         $newEntityStatusCollection = new EntityStatusCollection();
 
         while ($entities = $iterator->fetch()) {
@@ -109,6 +111,7 @@ abstract class BaseIndexer implements IndexerInterface
                 $changed = $this->prepareEntityStatusEntity(
                     $entityStatus,
                     $entity,
+                    $context,
                 );
 
                 if ($changed) {
@@ -145,18 +148,24 @@ abstract class BaseIndexer implements IndexerInterface
     /**
      * @param EntityStatusEntity $entityStatus
      * @param Struct $entity
+     * @param SalesChannelContext $context
      * @return bool
      * @throws JsonException
      */
     protected function prepareEntityStatusEntity(
         EntityStatusEntity $entityStatus,
-        Struct $entity
+        Struct $entity,
+        SalesChannelContext $context
     ): bool {
         $changed = false;
         $hash = $this->hash($entity);
 
         if (!$entityStatus->hasId()) {
             $entityStatus->setId(Uuid::randomHex());
+            $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
+            $changed = true;
+        } elseif ($entityStatus->getDeletedAt() !== null) {
+            $entityStatus->setDeletedAt(null);
             $entityStatus->setState(EntityStatusEntity::STATE_CREATED);
             $changed = true;
         } elseif ($entityStatus->getHash() !== $hash) {
@@ -169,6 +178,7 @@ abstract class BaseIndexer implements IndexerInterface
             $entityStatus->setEntityId($entity->getId());
         }
         $entityStatus->setIdentifier($this->getEntityIdentifier($entity));
+        $entityStatus->setSalesChannelId($context->getSalesChannelId());
         $entityStatus->setDataType($this->dataType);
         $entityStatus->setHash($hash);
         return $changed;

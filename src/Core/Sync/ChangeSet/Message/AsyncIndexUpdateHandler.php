@@ -33,26 +33,35 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-/**
- * Class IndexMessage
- * @package Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message
- * @category  Shopware
- * @author    elio GmbH <support@elio-systems.com>
- * @author    Ralf Frommherz <rf@elio-systems.com>
- * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
- */
-class StartIndexMessage implements AsyncMessageInterface
+#[AsMessageHandler]
+class AsyncIndexUpdateHandler
 {
     public function __construct(
-        protected readonly Context $context
-    ) {
+        private readonly ChangeSetService $changeSetService
+    ) {}
+
+    /**
+     * @param AsyncIndexUpdateMessage $message
+     */
+    public function __invoke(AsyncIndexUpdateMessage $message): void
+    {
+        $this->changeSetService->index(
+            $message->getIndexerIdentifier(),
+            $message->getEntityStatusCollection(),
+            $message->getSalesChannelContext()
+        );
     }
 
-    public function getContext(): Context
+    /**
+     * @return iterable<string>
+     */
+    public static function getHandledMessages(): iterable
     {
-        return $this->context;
+        return [
+            AsyncIndexUpdateMessage::class
+        ];
     }
 }

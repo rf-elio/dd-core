@@ -33,12 +33,14 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\DataCollectedEvent;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Visibilities;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioDataDiscovery\Core\Sync\Output\SeoRoute;
 use Elio\ElioDataDiscovery\Core\Sync\SalesChannelContextCollection;
@@ -49,7 +51,10 @@ use Generator;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -59,6 +64,7 @@ use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -82,6 +88,8 @@ class ProductCollector implements DataCollectorInterface
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        private readonly SystemConfigService $systemConfigService,
         private readonly Connection $connection
     ) {}
 
@@ -113,7 +121,7 @@ class ProductCollector implements DataCollectorInterface
         $categories = $this->loadCategories($contexts);
         $criteria = $criteria ? clone $criteria : new Criteria();
         $context = $contexts->getFirst();
-        $this->prepareCriteria($criteria, $context->getSalesChannelId());
+        $this->prepareCriteria($criteria, $context);
         $config = $this->configService->getByContext($context);
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
         foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
@@ -128,11 +136,13 @@ class ProductCollector implements DataCollectorInterface
      * Adds default filter and associations to criteria
      *
      * @param Criteria $criteria
-     * @param string $salesChannelId
+     * @param SalesChannelContext $context
      * @return Criteria
      */
-    protected function prepareCriteria(Criteria $criteria, string $salesChannelId): Criteria
+    protected function prepareCriteria(Criteria $criteria, SalesChannelContext $context): Criteria
     {
+        $salesChannelId = $context->getSalesChannelId();
+
         $criteria->addAssociation('manufacturer.media');
         $criteria->addAssociation('visibilities');
         $criteria->addAssociation('media');
@@ -147,6 +157,8 @@ class ProductCollector implements DataCollectorInterface
 
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
+        $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_SEARCH));
+        $this->handleAvailableStock($criteria, $context);
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
@@ -158,6 +170,7 @@ class ProductCollector implements DataCollectorInterface
      * @param array $data
      * @param SalesChannelContext $context
      * @return EntityCollection<SalesChannelProductEntity>
+     * @throws Exception
      */
     protected function loadParentProducts(array $data, SalesChannelContext $context): EntityCollection
     {
@@ -236,6 +249,20 @@ class ProductCollector implements DataCollectorInterface
                 }
 
                 $dataType = ProductDataType::createFrom($entity);
+                $visibility = $entity->getVisibilities()?->first()?->getVisibility();
+                switch ($visibility) {
+                    case ProductVisibilityDefinition::VISIBILITY_SEARCH:
+                        $dataType->setVisibility(Visibilities::VISIBILITY_SEARCH);
+                        break;
+
+                    case ProductVisibilityDefinition::VISIBILITY_ALL:
+                        $dataType->setVisibility(Visibilities::VISIBILITY_ALL);
+                        break;
+
+                    default:
+                        $dataType->setVisibility(Visibilities::VISIBILITY_NONE);
+                        break;
+                }
                 $dataType->setVariant(new Variant());
                 $dataType->addExtension(SeoRoute::class, new SeoRoute(
                     ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
@@ -325,5 +352,19 @@ class ProductCollector implements DataCollectorInterface
             $flatCategoryCollection->add($categoryEntity);
             $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
         }
+    }
+
+    private function handleAvailableStock(Criteria $criteria, SalesChannelContext $context): void
+    {
+        $salesChannelId = $context->getSalesChannel()->getId();
+
+        $hide = $this->systemConfigService->get('core.listing.hideCloseoutProductsWhenOutOfStock', $salesChannelId);
+
+        if (!$hide) {
+            return;
+        }
+
+        $closeoutFilter = $this->productCloseoutFilterFactory->create($context);
+        $criteria->addFilter($closeoutFilter);
     }
 }

@@ -81,18 +81,22 @@ class DeltaInput extends BaseInput
         $contexts = $syncContext->getSalesChannelContexts();
         $changeSet = $this->changeSetService->getChangeSet(
             $syncProfile,
-            $syncContext->getSalesChannelContexts()->getFirst()->getContext()
+            $syncContext->getSalesChannelContexts()->getFirst()->getContext(),
+            $syncContext->getOptions()['full-sync'] ?? false
         );
 
         $this->logger->info('DeltaInput: ChangeSet count', [
+            'syncProfileId' => $syncContext->getSyncProfile()->getId(),
             'created' => $changeSet->countCreated(),
             'updated' => $changeSet->countUpdated(),
             'deleted' => $changeSet->countDeleted(),
         ]);
 
         if ($changeSet->isEmpty()) {
-            $this->logger->info(sprintf('DeltaInput: No entries sync entries found for profile %s',
-                $syncContext->getProfileDefinition()->getName()));
+            $this->logger->info(sprintf(
+                'DeltaInput: No entries sync entries found for profile %s',
+                $syncContext->getProfileDefinition()->getName())
+            );
             return;
         }
 
@@ -120,6 +124,9 @@ class DeltaInput extends BaseInput
             }
             yield $deltaDataCollection;
         }
+        $this->logger->info('DeltaInput: ChangeSet delete processed', [
+            'syncProfileId' => $syncContext->getSyncProfile()->getId()
+        ]);
 
         foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
@@ -130,6 +137,9 @@ class DeltaInput extends BaseInput
                 }
             }
         }
+        $this->logger->info('DeltaInput: ChangeSet created processed', [
+            'syncProfileId' => $syncContext->getSyncProfile()->getId()
+        ]);
 
         foreach ($changeSet->getUpdated() as $entityType => $changeSetEntityCollection) {
             $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
@@ -140,6 +150,9 @@ class DeltaInput extends BaseInput
                 }
             }
         }
+        $this->logger->info('DeltaInput: ChangeSet update processed', [
+            'syncProfileId' => $syncContext->getSyncProfile()->getId()
+        ]);
     }
 
     protected function mapEntityStatusBaseFields(

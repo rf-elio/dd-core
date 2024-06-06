@@ -4,37 +4,14 @@
     <div class="e-elio-data-discovery-listing-properties"
          data-total="{{ page.listing.total }}"
     ></div>
-
-    <div class="cms-element-sidebar-filter row">
-
-        {% block e_mobile_filter_button %}
-            <div class="col-12">
-                <button class="btn header-actions-btn filter-panel-wrapper-toggle"
-                    type="button"
-                    data-offcanvas-filter="true"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    aria-label="{{ "general.menuLink"|trans }}"
-                >
-                    {% block element_product_listing_filter_button_icon %}
-                        {% sw_icon 'sliders-horizontal' %}
-                    {% endblock %}
-                    {{ "listing.filterTitleText"|trans }}
-                </button>
-            </div>
-        {% endblock %}
-
+    <div>
         {% block e_filter_panel_wrapper %}
-            <div id="filter-panel-wrapper"
-                 class="filter-panel-wrapper col-lg-4 col-xl-3"
-                 data-offcanvas-filter-content="true">
-                {% block e_filter_panel %}
-                    {% sw_include '@Storefront/storefront/component/listing/filter-panel.html.twig' with {
-                        listing: page.listing,
-                        sidebar: true
-                    } %}
-                {% endblock %}
-            </div>
+            {% block e_filter_panel %}
+                {% sw_include '@Storefront/storefront/element/cms-element-sidebar-filter.html.twig' with {
+                    listing: page.listing,
+                    sidebar: false
+                } %}
+            {% endblock %}
         {% endblock %}
 
         {% block e_listing_wrapper %}
@@ -48,21 +25,18 @@
                 {% endif %}
             {% endif %}
 
-            <div class="e-search-result-wrapper col-lg-8 col-xl-9">
-                {% block e_listing %}
-                    {% sw_include '@Storefront/storefront/component/product/listing.html.twig' with {
-                        searchResult: page.listing,
-                        dataUrl: url('widgets.search.pagelet.v2'),
-                        filterUrl: url('widgets.search.filter'),
-                        params: { search: page.searchTerm },
-                        sidebar: 1,
-                        boxLayout: 'standard',
-                        displayMode: '',
-                        listingColumns: 'col-sm-6 col-lg-6 col-xl-4',
-                        topProductsContentGroup: topProductsGroup
-                    } %}
-                {% endblock %}
-            </div>
+            {% block e_listing %}
+                {% sw_include '@Storefront/storefront/component/product/listing.html.twig' with {
+                    searchResult: page.listing,
+                    dataUrl: url('widgets.search.pagelet.v2'),
+                    filterUrl: url('widgets.search.filter'),
+                    params: { search: page.searchTerm },
+                    sidebar: 0,
+                    boxLayout: 'minimal',
+                    displayMode: '',
+                    topProductsContentGroup: topProductsGroup
+                } %}
+            {% endblock %}
         {% endblock %}
     </div>
 {% endblock %}

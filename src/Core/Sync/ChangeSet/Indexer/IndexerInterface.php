@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 interface IndexerInterface
 {
@@ -43,12 +43,13 @@ interface IndexerInterface
      * @return string
      */
     public function getIdentifier(): string;
+
     /**
      * Indexing data
      *
      * @param EntityStatusCollection $currentEntityStatusCollection
-     * @param Context $context
+     * @param SalesChannelContext $context
      * @return EntityStatusCollection
      */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, Context $context): EntityStatusCollection;
+    public function index(EntityStatusCollection $currentEntityStatusCollection, SalesChannelContext $context): EntityStatusCollection;
 }

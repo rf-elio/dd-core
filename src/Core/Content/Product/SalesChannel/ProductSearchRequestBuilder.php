@@ -159,14 +159,17 @@ class ProductSearchRequestBuilder
                      [$name, $value] = DefaultFacetExtension::parseKey($filterValue);
                      $searchRequest->addFilter($name, $value);
                  }
-             } elseif (str_contains($key, 'slider')) {
+             } elseif (str_contains($key, 'range')) {
                  $filterValues = explode('|', (string) $filterValues);
                  foreach ($filterValues as $filterValue) {
                      [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
-                     $value = json_encode([(float)$min, (float)$max]) ?: '';
-                     $searchRequest->addFilter($name, $value);
+                     $searchRequest->addFilter($name, [
+                         'from' => empty($min) ? null : $min,
+                         'till' => empty($max) ? null : $max,
+                         'type' => 'range'
+                     ]);
                  }
-             }elseif (str_contains($key, 'tree')){
+             } elseif (str_contains($key, 'tree')){
                  $filterValues = explode('|', (string) $filterValues);
                  $filters = [];
                  foreach ($filterValues as $filterValue) {
@@ -178,6 +181,16 @@ class ProductSearchRequestBuilder
                  }
                  foreach ($filters as $filtername => $filter){
                      $searchRequest->addFilter($filtername, $filter);
+                 }
+             } elseif (str_contains($key, 'rating')) {
+                 $filterValues = explode('|', (string) $filterValues);
+                 foreach ($filterValues as $filterValue) {
+                     [$name, $min, $max] = DefaultFacetExtension::parseKey($filterValue);
+                     $searchRequest->addFilter($name, [
+                         'from' => empty($min) ? null : $min,
+                         'till' => empty($max) ? null : $max,
+                         'type' => 'rating'
+                     ]);
                  }
              }
          }

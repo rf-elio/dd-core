@@ -74,6 +74,7 @@ class Configuration extends Struct
      * @param int $restrictionsCacheTime
      * @param array $suggestTypeLabels
      * @param array $suggestAcceptedTypes
+     * @param array $suggestAcceptedTypesMobile
      * @param bool $productRankingActive
      * @param int $productRankingMaxOrderAge
      * @param array $productRankingOrderStates
@@ -113,6 +114,7 @@ class Configuration extends Struct
         private readonly int $restrictionsCacheTime,
         private readonly array $suggestTypeLabels,
         private readonly array $suggestAcceptedTypes,
+        private readonly array $suggestAcceptedTypesMobile,
         private readonly bool $productRankingActive,
         private readonly int $productRankingMaxOrderAge,
         private readonly array $productRankingOrderStates,
@@ -315,6 +317,17 @@ class Configuration extends Struct
     public function getSuggestAcceptedTypes(): array
     {
         return $this->suggestAcceptedTypes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSuggestAcceptedTypesMobile(): array
+    {
+        if (empty($this->suggestAcceptedTypesMobile)) {
+            return $this->getSuggestAcceptedTypes();
+        }
+        return $this->suggestAcceptedTypesMobile;
     }
 
     /**

@@ -88,10 +88,11 @@ export default class SyncProfileService {
         return `${url}${this.apiEndpoint}`;
     }
 
-    generate(exportId) {
-        return this.httpClient.get(
+    generate(exportId, options) {
+        return this.httpClient.post(
             `/_action/elio-data-discovery/export/generate/${exportId}`,
-            {headers: this.getBasicHeaders()}
+            options,
+            { headers: this.getBasicHeaders() },
         ).then((response) => {
             return response.data;
         });

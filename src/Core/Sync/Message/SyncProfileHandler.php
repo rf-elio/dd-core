@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Message;
 
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Exception;
+use Shopware\Core\Framework\Context;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -59,7 +60,10 @@ class SyncProfileHandler
      */
     public function __invoke(SyncProfileMessage $message): void
     {
-        $this->syncService->sync($message->getSyncProfile());
+        $syncProfile = $this->syncService->getSyncProfileEntity(
+            $message->getSyncProfileId(), Context::createDefaultContext()
+        );
+        $this->syncService->sync($syncProfile, $message->getOptions());
     }
 
     /**

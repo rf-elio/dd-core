@@ -63,6 +63,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             isContent: false,
             elio_data_discovery_sync_profile_config: {},
             commandForce: false,
+            commandFullSync: false,
             status: {
                 finished: false,
                 location: ''
@@ -75,7 +76,8 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             currentLanguageId: null,
             languageId: null,
             languageCriteria: new Criteria,
-            isExtensionsActive: true
+            isExtensionsActive: true,
+            isGenerateModalVisible: false
         };
     },
 
@@ -113,7 +115,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
                 return '...';
             }
 
-            return 'bin/console elio-data-discovery:profiles:sync ' + (this.commandForce ? '-f ' : '') + this.elio_data_discovery_sync_profile.id;
+            return 'bin/console elio-data-discovery:profiles:sync ' + (this.commandForce ? '-f ' : '') + (this.commandFullSync ? '-F ' : '') + this.elio_data_discovery_sync_profile.id;
         },
         getDownloadUrl() {
             return this.elioDataDiscoverySyncProfile.getDownloadUrl(
@@ -434,9 +436,16 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
         },
 
         /**
-         * On click on generate button
+         * Opens a confirmation modal to execute the full sync
          */
-        onGenerate() {
+        onGenerateModalConfirm() {
+            this.isGenerateModalVisible = true;
+        },
+
+        /**
+         * On click on Execute sync or Execute full sync button
+         */
+        onGenerate(options) {
             const that = this;
             this.updateTimer = setTimeout(function requestStatus() {
                 that._updateStatus();
@@ -453,8 +462,9 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
                 }
             }, that.updateInterval || 3000);
 
+            this.isGenerateModalVisible = false;
             this.isGenerating = true;
-            this.elioDataDiscoverySyncProfile.generate(this.exportId).then((responce) => {
+            this.elioDataDiscoverySyncProfile.generate(this.exportId, options).then((responce) => {
                 that.elio_data_discovery_sync_profile.lastGenerationStartedAt = Date.now();
             }).catch((exception) => {
                 that.createNotificationError({
@@ -464,6 +474,10 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
                 });
                 that.isGenerating = false;
             });
+        },
+
+        onGenerateModalCancel() {
+            this.isGenerateModalVisible = false;
         },
 
         /**

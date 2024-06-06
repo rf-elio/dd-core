@@ -29,6 +29,7 @@
       "baseCategoryLabel": "Base category",
       "labelExportCommand": "Sync Command",
       "labelExportCommandForce": "Force",
+      "labelExportCommandFullSync": "Full Sync",
       "labelDetails": "Details",
       "labelLastGenerationStarted": "Last Generation Started",
       "labelLastGenerationFinished": "Last Generation Finished",
@@ -62,8 +63,11 @@
       "download": "Download",
       "buttonGenerate": "Execute sync",
       "buttonGenerateInProgress": "Generating",
+      "buttonGenerateFull": "Execute full sync",
       "messageGeneratingError": "Sync isn't generated cause of errors: \"{error}\"",
-      "messageGeneratingSuccess": "Sync generated successfully"
+      "messageGeneratingSuccess": "Sync generated successfully",
+      "modalConfirmTitle": "Confirm full sync",
+      "modalConfirmText": "Caution! It is not recommended to execute a full sync in the administration. Use the sync command in the console instead (toggle \"Full Sync\"). Do you want to proceed with executing a full sync?"
     },
     "list": {
       "buttonCreate": "Create Sync",

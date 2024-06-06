@@ -37,15 +37,19 @@ use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * Class ProductIndexer
@@ -61,8 +65,10 @@ class ProductIndexer extends BaseIndexer
     public const ENTITY_TYPE = ProductDefinition::ENTITY_NAME;
 
     public function __construct(
-        EntityRepository $productRepository,
-        private readonly EventDispatcherInterface $eventDispatcher
+        SalesChannelRepository $productRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
     ){
         parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $productRepository);
     }
@@ -70,10 +76,10 @@ class ProductIndexer extends BaseIndexer
     /**
      * Gets criteria
      *
-     * @param Context $context
+     * @param SalesChannelContext $salesChannelContext
      * @return Criteria
      */
-    protected function getCriteria(Context $context): Criteria
+    protected function getCriteria(SalesChannelContext $salesChannelContext): Criteria
     {
         $criteria = new Criteria();
         $criteria->addFilter(new OrFilter([
@@ -92,7 +98,12 @@ class ProductIndexer extends BaseIndexer
         $criteria->addAssociation('tags');
         $criteria->addAssociation('elioDataDiscoveryProductSortingTree');
 
-        $event = new CriteriaPreparedEvent($this, $criteria, $context);
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
+        $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_SEARCH));
+
+        $this->handleAvailableStock($criteria, $salesChannelContext);
+
+        $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);
         return $event->getCriteria();
     }
@@ -103,5 +114,19 @@ class ProductIndexer extends BaseIndexer
             throw new InvalidTypeException($entity, ProductEntity::class);
         }
         return $entity->getProductNumber();
+    }
+
+    private function handleAvailableStock(Criteria $criteria, SalesChannelContext $context): void
+    {
+        $salesChannelId = $context->getSalesChannel()->getId();
+
+        $hide = $this->systemConfigService->get('core.listing.hideCloseoutProductsWhenOutOfStock', $salesChannelId);
+
+        if (!$hide) {
+            return;
+        }
+
+        $closeoutFilter = $this->productCloseoutFilterFactory->create($context);
+        $criteria->addFilter($closeoutFilter);
     }
 }

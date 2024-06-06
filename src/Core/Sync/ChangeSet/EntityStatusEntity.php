@@ -54,6 +54,7 @@ class EntityStatusEntity extends Entity
     protected ?string $entityType = null;
     protected ?string $entityId = null;
     protected ?string $identifier = null;
+    protected ?string $salesChannelId = null;
     protected ?string $dataType = null;
     protected ?string $state = null;
     protected ?string $hash = null;
@@ -132,5 +133,15 @@ class EntityStatusEntity extends Entity
     public function setEntityType(?string $entityType): void
     {
         $this->entityType = $entityType;
+    }
+
+    public function getSalesChannelId(): ?string
+    {
+        return $this->salesChannelId;
+    }
+
+    public function setSalesChannelId(?string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
     }
 }

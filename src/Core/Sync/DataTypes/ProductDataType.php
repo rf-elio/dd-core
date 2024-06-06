@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
+use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Visibilities;
 use Shopware\Core\Content\Product\ProductEntity;
 
 /**
@@ -51,6 +52,7 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
 
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
+    private ?Visibilities $visibility = null;
 
     public function setVariant(Variant $variant): void
     {
@@ -73,5 +75,15 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     public function setThumbnailUrl(?string $thumbnailUrl): void
     {
         $this->thumbnailUrl = $thumbnailUrl;
+    }
+
+    public function getVisibility(): ?Visibilities
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(?Visibilities $visibility): void
+    {
+        $this->visibility = $visibility;
     }
 }

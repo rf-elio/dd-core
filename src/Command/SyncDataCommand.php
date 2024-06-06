@@ -64,7 +64,8 @@ class SyncDataCommand extends Command
     {
         $this->setName('elio-data-discovery:profiles:sync')
             ->addArgument('syncProfileId', InputArgument::OPTIONAL, 'Id of the sync profile that should be generated')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignores the schedule')
+            ->addOption('full-sync', 'F', InputOption::VALUE_NONE, 'Executed a full sync of all data');
     }
 
     /**
@@ -78,16 +79,17 @@ class SyncDataCommand extends Command
         $context = Context::createDefaultContext();
         $exportId = $input->getArgument('syncProfileId');
         $force = $input->getOption('force');
+        $fullSync = $input->getOption('full-sync');
 
         try {
             if($exportId) {
                 $syncProfileConfiguration = $this->syncService->getSyncProfileConfiguration($exportId, $context);
-                if (!$force && !$this->syncService->isSyncProfileDue($syncProfileConfiguration)) {
+                if (!$force && !$fullSync && !$this->syncService->isSyncProfileDue($syncProfileConfiguration)) {
                     $output->writeln('<info>Sync profile is not due</info>');
                     return Command::SUCCESS;
                 }
 
-                $this->syncService->sync($syncProfileConfiguration);
+                $this->syncService->sync($syncProfileConfiguration, $input->getOptions());
                 return Command::SUCCESS;
             }
 

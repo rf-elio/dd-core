@@ -31,7 +31,10 @@ export default class ElioDataDiscoveryFilterTreeSelectPlugin extends FilterPrope
     }
 
     _registerEvents() {
-        const checkboxes = DomAccess.querySelectorAll(this.el, this.options.checkboxSelector);
+        const checkboxes = DomAccess.querySelectorAll(this.el, this.options.checkboxSelector, false);
+        if (!checkboxes) {
+            return;
+        }
 
         Iterator.iterate(checkboxes, (checkbox) => {
             checkbox.addEventListener('change', this._onChangeFilter.bind(this, checkbox));

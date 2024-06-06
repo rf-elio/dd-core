@@ -30,38 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
+namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\ChangeSetService;
-use Exception;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
-#[AsMessageHandler]
-class StartIndexHandler
+/**
+ * Class SalesChannelNotFoundException
+ * @package Elio\ElioDataDiscovery\Core\Sync\Exception
+ * @category  Shopware
+ * @author    elio GmbH <support@elio-systems.com>
+ * @author    Ralf Frommherz <rf@elio-systems.com>
+ * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
+ */
+class SalesChannelNotFoundException extends ElioDataDiscoveryException {}
 {
-    public function __construct(
-        private readonly ChangeSetService $changeSetService
-    ) {}
 
-    /**
-     * Starts the sync
-     *
-     * @param StartIndexMessage $message
-     * @throws Exception
-     */
-    public function __invoke(StartIndexMessage $message): void
-    {
-        $this->changeSetService->startIndexers($message->getContext());
-    }
-
-    /**
-     * @return iterable<string>
-     */
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            StartIndexMessage::class
-        ];
-    }
 }

@@ -16,12 +16,6 @@
 
     {% block page_search %}
         <div class="cms-page search-page e-search-page">
-            {% block e_elio_data_discovery_page_search_feedback_text_above_search_result %}
-                {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
-                    label: 'above product listing', container: page.listing
-                } %}
-            {% endblock %}
-
             {% set contentListingResponse = page.listing.getExtension('Elio\\ElioDataDiscovery\\Api\\Search\\Response\\ContentListingResponse') %}
             {% if contentListingResponse is null or contentListingResponse.empty %}
                 {% block page_search_headline %}
