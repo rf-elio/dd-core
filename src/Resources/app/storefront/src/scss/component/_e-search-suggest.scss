@@ -54,12 +54,18 @@
 		.search-suggest-container {
 			width: 40rem;
 		}
+		.search-suggest-product {
+			min-width: 12.5rem;
+		}
 	}
 }
 @include media-breakpoint-up(lg) {
 	.e-search-suggest {
 		.search-suggest-container {
 			width: 55rem;
+		}
+		.search-suggest-product {
+			min-width: 20rem;
 		}
 	}
 }
