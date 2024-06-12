@@ -1,6 +1,6 @@
 {% block elio_data_discovery_suggest_container %}
-    <div class="search-suggest-container {% if addJsResult %}d-none d-lg-block d-xl-block{% else %}d-xl-none d-lg-none{% endif %}">
-        <div class="d-flex flex-md-row flex-wrap">
+    <div class="search-suggest-container {{ suggestStyle }} {% if addJsResult %}d-none d-lg-block d-xl-block{% else %}d-xl-none d-lg-none{% endif %}">
+        <div class="d-flex {% if suggestStyle == 'search-suggest-container-column' %}flex-md-column{% else %}flex-md-row{% endif%} flex-wrap">
             {% if not response.hasVisibleItems %}
                 <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
                     <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>

@@ -67,6 +67,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
      * @param SystemConfigService $systemConfigService
      * @param EventDispatcherInterface $eventDispatcher
      * @param EntityRepository $languageRepository
+     * @param FeatureService $featureService
      */
     public function __construct(
         private readonly SystemConfigService $systemConfigService,
@@ -157,6 +158,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations', $languagePrefix) ?? false),
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailSimilar', $languagePrefix) ?? false),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestContainerStyle', $languagePrefix) ?? 'search-suggest-container-column',
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);
