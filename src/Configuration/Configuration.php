@@ -85,6 +85,7 @@ class Configuration extends Struct
      * @param bool $useProductDetailRecommendations
      * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
+     * @param string $suggestContainerStyle
      */
     public function __construct(
         private readonly bool $active,
@@ -125,6 +126,7 @@ class Configuration extends Struct
         private readonly bool $useProductDetailRecommendations,
         private readonly bool $useProductDetailSimilar,
         private readonly array $recommendationExcludedProducts,
+        private readonly string $suggestContainerStyle,
     ) {}
 
     /**
@@ -408,5 +410,10 @@ class Configuration extends Struct
     public function getProductDetailSliderLimit(): int
     {
         return $this->productDetailSliderLimit;
+    }
+
+    public function getSuggestContainerStyle(): string
+    {
+        return $this->suggestContainerStyle;
     }
 }

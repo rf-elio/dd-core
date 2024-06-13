@@ -128,7 +128,8 @@ class SuggestController extends SearchController
                 [
                     'response' => $suggestionResponse,
                     'resultCollection' => $resultCollection,
-                    'searchTerm' => $searchTerm
+                    'searchTerm' => $searchTerm,
+                    'suggestStyle' => $config->getSuggestContainerStyle()
                 ]
             );
         } catch (Throwable $ex) {

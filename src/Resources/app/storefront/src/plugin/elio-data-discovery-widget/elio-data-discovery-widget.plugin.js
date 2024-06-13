@@ -75,7 +75,39 @@ export default class ElioDataDiscoveryWidgetPlugin extends SearchWidgetPlugin {
                     console.warn('The search terms column is not configured in administration');
                 }
             }
+            this._modifyBounds(document.querySelector('.search-suggest-container'));
             this.$emitter.publish('afterSuggest', { firstElement });
         });
+    }
+
+    _modifyBounds(element){
+        if(!element){
+            return false;
+        }
+        if(!this.el.parentNode.classList.contains(this.suggestOpenClass)){
+            this.el.parentNode.classList.add(this.suggestOpenClass);
+        }
+        //element is suggest result
+        element.style.transform = '';
+        let elmRects = element.getBoundingClientRect();
+        let searchRects = this.el.getBoundingClientRect();
+        let docRects = document.documentElement.getBoundingClientRect();
+        let offBound = 0;
+        let halfWidth = Math.round(((elmRects.width/2)) - (searchRects.width/2));
+
+        if(elmRects.width > searchRects.width){
+            if (elmRects.left + elmRects.width + halfWidth > docRects.width) {
+                //off bounds right side
+                let topRight = elmRects.left + elmRects.width;
+                let overhead = Math.round(topRight - docRects.width);
+                offBound = -1 * (overhead + 10);
+            } else if (elmRects.left - halfWidth < 0) {
+                //get offbounds left side
+                offBound = halfWidth - 10;
+            }
+            if (offBound) {
+                element.style.transform = 'translateX(calc(-50% + ' + (offBound) +'px))';
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@
             resultCollection,
             searchTerm,
             addJsResult: true,
+            suggestStyle
         } %}
 
         {% sw_include "@Storefront/storefront/page/elio-suggest/search-suggest-container.html.twig" with {
@@ -13,7 +14,8 @@
             acceptedTypes: data_discovery_config().getSuggestAcceptedTypesMobile,
             resultCollection,
             searchTerm,
-            addJsResult: false
+            addJsResult: false,
+            suggestStyle
         } %}
     </div>
 {% endblock %}
