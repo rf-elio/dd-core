@@ -67,14 +67,13 @@
 		.search-suggest-container-standard {
 			width: 40rem;
 			.search-suggest-product {
-				width: 18rem;
+				min-width: 18rem;
 			}
 		}
 		.search-suggest-container-wide {
-			width: 100vw;
-			padding-left: 4rem;
+			width: 70vw;
 			.search-suggest-product {
-				width: 19rem;
+				min-width: 22.85rem;
 			}
 		}
 	}
@@ -84,14 +83,13 @@
 		.search-suggest-container-standard {
 			width: 55rem;
 			.search-suggest-product {
-				width: 25rem;
+				min-width: 25rem;
 			}
 		}
 		.search-suggest-container-wide {
-			width: 100vw;
-			padding-left: 2rem;
+			width: 70vw;
 			.search-suggest-product {
-				width: 29rem;
+				min-width: 22.85rem;
 			}
 		}
 	}

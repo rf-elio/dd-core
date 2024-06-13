@@ -119,7 +119,7 @@
                     <name lang="de-DE">Breit</name>
                 </option>
             </options>
-            <defaultValue>search-suggest-container-column</defaultValue>
+            <defaultValue>search-suggest-container-standard</defaultValue>
             <label>Style of suggest container</label>
             <label lang="de-DE">Stil der Suggest-Box</label>
             <helpText>Determines the style of the suggest container.</helpText>
