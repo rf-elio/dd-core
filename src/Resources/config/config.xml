@@ -103,11 +103,11 @@
         <input-field type="single-select">
             <name>suggestContainerStyle</name>
             <options>
-                <option>
+                <!--<option>
                     <id>search-suggest-container-column</id>
                     <name>Column</name>
                     <name lang="de-DE">Untereinander</name>
-                </option>
+                </option>-->
                 <option>
                     <id>search-suggest-container-standard</id>
                     <name>Standard</name>

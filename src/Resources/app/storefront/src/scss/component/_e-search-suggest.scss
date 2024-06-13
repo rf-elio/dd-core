@@ -46,18 +46,18 @@
 @include media-breakpoint-up(sm) {
 	.e-search-suggest {
 		.search-suggest-container-column {
-			width: 100%;
+			width: 40rem;
 		}
 		.search-suggest-container-standard {
 			width: 25rem;
 			.search-suggest-product {
-				width: 22.85rem;
+				min-width: 22.85rem;
 			}
 		}
 		.search-suggest-container-wide {
-			width: 100vw;
+			width: 70vw;
 			.search-suggest-product {
-				width: 30rem;
+				min-width: 22.85rem;
 			}
 		}
 	}
