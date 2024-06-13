@@ -55,7 +55,7 @@
 			}
 		}
 		.search-suggest-container-wide {
-			width: 35rem;
+			width: 100vw;
 			.search-suggest-product {
 				width: 30rem;
 			}
@@ -64,9 +64,6 @@
 }
 @include media-breakpoint-up(md) {
 	.e-search-suggest {
-		.search-suggest-container-column {
-			width: 100%;
-		}
 		.search-suggest-container-standard {
 			width: 40rem;
 			.search-suggest-product {
@@ -74,7 +71,8 @@
 			}
 		}
 		.search-suggest-container-wide {
-			width: 43rem;
+			width: 100vw;
+			padding-left: 4rem;
 			.search-suggest-product {
 				width: 19rem;
 			}
@@ -83,9 +81,6 @@
 }
 @include media-breakpoint-up(lg) {
 	.e-search-suggest {
-		.search-suggest-container-column {
-			width: 100%;
-		}
 		.search-suggest-container-standard {
 			width: 55rem;
 			.search-suggest-product {
@@ -93,7 +88,8 @@
 			}
 		}
 		.search-suggest-container-wide {
-			width: 62rem;
+			width: 100vw;
+			padding-left: 2rem;
 			.search-suggest-product {
 				width: 29rem;
 			}
