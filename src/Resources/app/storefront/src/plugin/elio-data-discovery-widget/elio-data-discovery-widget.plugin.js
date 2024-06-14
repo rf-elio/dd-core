@@ -106,7 +106,8 @@ export default class ElioDataDiscoveryWidgetPlugin extends SearchWidgetPlugin {
                 offBound = halfWidth - 10;
             }
             if (offBound) {
-                element.style.transform = 'translateX(calc(-50% + ' + (offBound) +'px))';
+                //element.style.transform = 'translateX(calc(-50% + ' + (offBound) +'px))';
+                element.style.transform = 'translateX(calc(-50%))';
             }
         }
     }
