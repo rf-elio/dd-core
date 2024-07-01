@@ -65,11 +65,11 @@ class LandingPageCollector implements DataCollectorInterface
     use TranslatorAware;
 
     public const TYPE = ContentDataType::class;
-    public const CHUNK_SIZE = 500;
 
     public function __construct(
         private readonly SalesChannelRepository   $landingPageRepository,
-        private readonly EventDispatcherInterface $dispatcher
+        private readonly EventDispatcherInterface $dispatcher,
+        private readonly int $chunkSize
     )
     {
     }
@@ -103,7 +103,7 @@ class LandingPageCollector implements DataCollectorInterface
         $context = $contexts->getFirst();
         $this->prepareCriteria($criteria, $context->getSalesChannelId());
         $landingPageIds = $this->landingPageRepository->searchIds($criteria, $context)->getIds();
-        foreach (array_chunk($landingPageIds, self::CHUNK_SIZE) as $chunk) {
+        foreach (array_chunk($landingPageIds, $this->chunkSize) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->landingPageRepository);
             yield $this->mapCollectedData($data);

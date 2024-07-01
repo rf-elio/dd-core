@@ -66,12 +66,12 @@ class CategoryCollector implements DataCollectorInterface
     use TranslatorAware;
 
     public const TYPE = ContentDataType::class;
-    public const CHUNK_SIZE = 500;
     private array $customFields = [];
 
     public function __construct(
         private readonly SalesChannelRepository   $categoryRepository,
-        private readonly EventDispatcherInterface $dispatcher
+        private readonly EventDispatcherInterface $dispatcher,
+        private readonly int $chunkSize
     )
     {
     }
@@ -110,7 +110,7 @@ class CategoryCollector implements DataCollectorInterface
         $this->prepareCriteria($criteria);
         $context = $contexts->getFirst();
         $categoryIds = $this->categoryRepository->searchIds($criteria, $context)->getIds();
-        foreach (array_chunk($categoryIds, self::CHUNK_SIZE) as $chunk) {
+        foreach (array_chunk($categoryIds, $this->chunkSize) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->categoryRepository);
             yield $this->mapCollectedData($data);

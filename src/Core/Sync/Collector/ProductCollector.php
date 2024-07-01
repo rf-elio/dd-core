@@ -81,7 +81,6 @@ class ProductCollector implements DataCollectorInterface
     use TranslatorAware;
 
     public const TYPE = ProductDataType::class;
-    public const CHUNK_SIZE = 50;
 
     public function __construct(
         private readonly SalesChannelRepository $productRepository,
@@ -90,7 +89,8 @@ class ProductCollector implements DataCollectorInterface
         private readonly ElioDataDiscoveryConfigService $configService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
         private readonly SystemConfigService $systemConfigService,
-        private readonly Connection $connection
+        private readonly Connection $connection,
+        private readonly int $chunkSize
     ) {}
 
     /**
@@ -124,7 +124,7 @@ class ProductCollector implements DataCollectorInterface
         $this->prepareCriteria($criteria, $context);
         $config = $this->configService->getByContext($context);
         $productIds = $this->productRepository->searchIds($criteria, $context)->getIds();
-        foreach (array_chunk($productIds, self::CHUNK_SIZE) as $chunk) {
+        foreach (array_chunk($productIds, $this->chunkSize) as $chunk) {
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
             $parentProducts = $this->loadParentProducts($data, $context);
