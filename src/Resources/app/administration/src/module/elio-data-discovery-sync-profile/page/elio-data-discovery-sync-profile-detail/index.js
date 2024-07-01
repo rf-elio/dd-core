@@ -165,7 +165,8 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             const criteria = new Criteria();
             criteria.addAssociation('salesChannel');
             criteria.addAssociation('languages');
-            this.syncProfileRepository.get(this.exportId, Shopware.Context.api, criteria).then((currenExport) => {
+            let exportId = (this.elio_data_discovery_sync_profile && this.exportId === null) ? this.elio_data_discovery_sync_profile.id : this.exportId;
+            this.syncProfileRepository.get(exportId, Shopware.Context.api, criteria).then((currenExport) => {
                 if (currenExport == null) {
                     that.$router.push({name: 'elio.data.discovery.sync.profile.list'});
                 }

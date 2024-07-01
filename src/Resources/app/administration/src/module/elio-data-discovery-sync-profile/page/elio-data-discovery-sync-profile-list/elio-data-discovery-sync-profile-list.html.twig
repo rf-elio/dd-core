@@ -9,7 +9,7 @@
             </sw-button>
         </template>
 
-        <template slot="content">
+        <template #content>
             <div>
                 {% block elio_data_discovery_sync_profile_list_grid %}
                     <sw-entity-listing
@@ -55,7 +55,7 @@
                         {% endblock %}
 
                         {% block elio_data_discovery_sync_profile_list_grid_columns_actions %}
-                            <template slot="actions" slot-scope="{ item }">
+                            <template #actions="{ item }">
                                 {% block elio_data_discovery_sync_profile_list_grid_columns_actions_detail %}
                                     <sw-context-menu-item
                                             :routerLink="{ name: 'elio.data.discovery.sync.profile.detail', params: { id: item.id } }">
@@ -73,7 +73,7 @@
                         {% endblock %}
 
                         {% block elio_data_discovery_sync_profile_list_grid_action_modals %}
-                            <template slot="action-modals" slot-scope="{ item }">
+                            <template #action-modals="{ item }">
                                 <sw-modal v-if="showDeleteModal === item.id"
                                           variant="small"
                                           :title="$tc('global.default.warning')"
@@ -81,7 +81,7 @@
                                     <p>
                                         {{ $tc('elio-data-discovery-sync-profile.list.textDeleteConfirm', 0, { name: item.name }) }}
                                     </p>
-                                    <template slot="modal-footer">
+                                    <template #modal-footer>
                                         <sw-button @click="onCloseDeleteModal" size="small">
                                             {{ $tc('elio-data-discovery-sync-profile.list.buttonCancel') }}
                                         </sw-button>

@@ -10,7 +10,7 @@ import './module/sw-category-detail-override/index';
 import './module/sw-category-view-override/index';
 import './view/sw-category-detail-filter-ruler/index';
 import './view/sw-category-detail-sorting-ruler/index';
-import './view/sw-category-detail-positions-ruler/index';
+import './view/sw-category-detail-positions-table/index';
 import './module/sw-cms/blocks/commerce/edd-advisor-campaign';
 import './module/sw-cms/elements/advisor-campaign';
 import deDE from './snippet/de-DE.json';
@@ -46,9 +46,9 @@ Shopware.Module.register('sw-category-tab-ruler', {
                 }
             });
             currentRoute.children.push({
-                name: 'sw.category.detail.positions.ruler',
-                path: 'positions-ruler',
-                component: 'elio-category-detail-positions-ruler',
+                name: 'sw.category.detail.positions.table',
+                path: 'positions-table',
+                component: 'elio-category-detail-positions-table',
                 meta: {
                     parentPath: 'sw.category.index',
                     privilege: 'category.viewer'

@@ -1,11 +1,10 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import HttpClient from 'src/service/http-client.service';
 import TrackingUtil from './../../utility/tracking.util'
 
 /**
  * This plugin submits the saved trackings
  */
-export default class TrackingWorkerPlugin extends Plugin {
+export default class TrackingWorkerPlugin extends window.PluginBaseClass {
     init() {
         const me = this;
         me._client = new HttpClient();

@@ -63,8 +63,6 @@ class AdvisorCampaignController extends StorefrontController
     }
 
     /**
-     * @Route("/widgets/edd/campaign/advisor", name="frontend.e-dd.campaign.advisor", methods={"POST", "GET"}, defaults={"csrf_protected"=false, "XmlHttpRequest"=true})
-     *
      * @param Request $request
      * @param SalesChannelContext $context
      *

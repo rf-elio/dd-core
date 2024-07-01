@@ -14,12 +14,14 @@
     </sw-tabs-item>
     <sw-tabs-item
             v-show="isPage"
-            :route="{ name: 'sw.category.detail.positions.ruler', params: { id: $route.params.id } }"
+            :route="{ name: 'sw.category.detail.positions.table', params: { id: $route.params.id } }"
             :title="$tc('elio-data-discovery.sort-positions.tabs.category')">
         {{ $tc('elio-data-discovery.sort-positions.tabs.category') }}
     </sw-tabs-item>
 {% endblock %}
 
 {% block sw_category_view_content %}
-    <router-view :isLoading="isLoading" ref="routerView"></router-view>
+    <router-view v-slot="{ Component }">
+        <component :isLoading="isLoading" :is="Component" ref="routerView"></component>
+    </router-view>
 {% endblock %}

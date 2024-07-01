@@ -1,4 +1,3 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 import Debouncer from 'src/helper/debouncer.helper';
 
@@ -8,7 +7,7 @@ import Debouncer from 'src/helper/debouncer.helper';
  */
 const ARROW_NAVIGATION_ACTIVE_CLASS = 'is-active';
 
-export default class ElioSuggestAutocompletePlugin extends Plugin {
+export default class ElioSuggestAutocompletePlugin extends window.PluginBaseClass {
     init() {
         try {
             this._inputField = DomAccess.querySelector(this.el, 'input[type="search"]');

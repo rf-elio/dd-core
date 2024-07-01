@@ -27,14 +27,14 @@
                     :disableDataFetching="true"
                     ref="filterList">
 
-                <template slot="column-label" slot-scope="{ item }">
+                <template #column-label="{ item }">
                     <router-link :to="{ name: 'elio.data.discovery.sorting.restrictions.customFiltersDetail', params: { id: item.id } }">
                         {{ item.translated.label }}
                     </router-link>
                 </template>
 
                 {% block elio_data_discovery_sorting_restrictions_customfilters_grid_columns_actions %}
-                <template slot="actions" slot-scope="{ item }">
+                <template #actions="{ item }">
                     {% block elio_data_discovery_sorting_restrictions_customfilters_grid_columns_actions_detail %}
                     <sw-context-menu-item
                             :routerLink="{ name: 'elio.data.discovery.sorting.restrictions.customFiltersDetail', params: { id: item.id } }">
@@ -52,7 +52,7 @@
                 {% endblock %}
 
                 {% block elio_data_discovery_sorting_restrictions_customfilters_grid_action_modals %}
-                    <template slot="action-modals" slot-scope="{ item }">
+                    <template #action-modals="{ item }">
                         <sw-modal v-if="showDeleteModal === item.id"
                                   variant="small"
                                   :title="$tc('global.default.warning')"
@@ -61,7 +61,7 @@
                                 {{ $tc('elio-data-discovery.restrictions.filter.customFilters.textDeleteConfirm', 0, { label: item.translated.label }) }}
                             </p>
 
-                            <template slot="modal-footer">
+                            <template #modal-footer>
                                 <sw-button @click="onCloseDeleteModal" size="small">
                                     {{ $tc('elio-data-discovery.restrictions.filter.customFilters.buttonCancel') }}
                                 </sw-button>

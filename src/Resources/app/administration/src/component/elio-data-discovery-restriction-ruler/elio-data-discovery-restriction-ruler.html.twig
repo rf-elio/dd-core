@@ -1,13 +1,12 @@
 {% block elio_data_discovery_restrictions_ruler %}
     <div class="elio-data-discovery-filter-restrictions-ruler">
         <sw-loader v-if="isLoading"></sw-loader>
-        <sw-field
-                v-model="languageId"
-                type="select"
+        <sw-select-field
+                v-model:value="languageId"
                 required
                 :options="languageIdsList"
                 :label="$tc('elio-data-discovery-sync-profile.detail.labelLanguage')">
-        </sw-field>
+        </sw-select-field>
 
         <h1>{{ $tc(rulerHeader) }}</h1>
 

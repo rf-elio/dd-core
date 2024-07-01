@@ -1,6 +1,4 @@
-import Plugin from 'src/plugin-system/plugin.class';
-
-export default class ElioDataDiscoveryTrackerPlugin extends Plugin {
+export default class ElioDataDiscoveryTrackerPlugin extends window.PluginBaseClass {
     static options = {
         maxHistoryLength: 10,
         localStorageKey: 'elio-data-discovery-search-history'

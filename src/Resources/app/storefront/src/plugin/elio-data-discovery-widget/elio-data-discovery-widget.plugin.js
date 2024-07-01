@@ -1,4 +1,4 @@
-import SearchWidgetPlugin from 'src/plugin/header/search-widget.plugin.js';
+import SearchWidgetPlugin from 'src/plugin/header/search-widget.plugin';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import DomAccess from 'src/helper/dom-access.helper';
 import deepmerge from 'deepmerge';

@@ -15,7 +15,7 @@
         <div class="header-search e-header-search">
             <form action="{{ path('frontend.search.page') }}"
                   method="get"
-                  data-search-form="true"
+                  data-search-widget="true"
                   data-url="{{ path('frontend.search.suggest') }}?search="
                   data-search-widget-options='{{ searchOptions|json_encode }}'
                   {% if showSearchHistory %}data-elio-data-discovery-history-options='{{ searchHistoryOptions|json_encode }}'{% endif %}

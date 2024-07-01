@@ -87,8 +87,9 @@ Shopware.Component.register('elio-data-discovery-filter-restrictions-customfilte
 
         loadEntityData() {
             this.isLoading = true;
+            let customFilterId = (this.filter && this.customFilterId === null) ? this.filter.id : this.customFilterId;
 
-            this.filterRepository.get(this.customFilterId, Shopware.Context.api, this.defaultCriteria)
+            this.filterRepository.get(customFilterId, Shopware.Context.api, this.defaultCriteria)
                 .then((currentFilter) => {
                     this.filter = currentFilter;
                     this.isLoading = false;

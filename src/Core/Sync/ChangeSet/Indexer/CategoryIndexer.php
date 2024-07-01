@@ -86,6 +86,10 @@ class CategoryIndexer extends BaseIndexer
             new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, false),
             new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE, null)
         ]));
+        $criteria->addFilter(new OrFilter([
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, false),
+            new EqualsFilter('customFields.' . ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE, null)
+        ]));
 
         $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);

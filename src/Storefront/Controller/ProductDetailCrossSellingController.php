@@ -41,14 +41,17 @@ class ProductDetailCrossSellingController extends StorefrontController
     }
 
     /**
-     * @Route("/widgets/elio-data-discovery/product-cross-selling/{productId}", name="widgets.e-elio-data-discovery.product-cross-selling.detail", methods={"GET"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
-     *
      * @param string $productId
      * @param Request $request
      * @param SalesChannelContext $context
      *
      * @return Response
      */
+    #[Route('/widgets/elio-data-discovery/product-cross-selling/{productId}',
+        name: 'widgets.e-elio-data-discovery.product-cross-selling.detail',
+        defaults: ['csrf_protected' => false, 'XmlHttpRequest' => true],
+        methods: ['GET']
+    )]
     public function index(string $productId, Request $request, SalesChannelContext $context): Response
     {
         /** @var ProductCrossSellingRouteResponse $productCrossSellingResponse */

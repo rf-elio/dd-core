@@ -1,13 +1,11 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import HttpClient from 'src/service/http-client.service';
 import ObserverUtil from '../../utility/observer.util';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
-import PluginManager from 'src/plugin-system/plugin.manager';
 
 /**
  * This plugin uses the template extension on detail pages to load product sliders provided by elioDataDiscovery dynamically.
  */
-export default class ElioProductDetailCrossSellingPlugin extends Plugin {
+export default class ElioProductDetailCrossSellingPlugin extends window.PluginBaseClass {
     static options = {
         urlAttribute: 'data-e-elio-data-discovery-product-detail-cross-selling-url',
         url: null,
@@ -36,7 +34,7 @@ export default class ElioProductDetailCrossSellingPlugin extends Plugin {
                 const crossSellingSlider = this.el.querySelector(this.options.productDetailCrossSellingSelector);
                 if (crossSellingSlider) {
                     crossSellingSlider.innerHTML = response;
-                    PluginManager.initializePlugin('ProductSlider', '[data-product-slider]');
+                    window.PluginManager.initializePlugin('ProductSlider', '[data-product-slider]');
                 }
             } catch (e) {
                 console.error(e)

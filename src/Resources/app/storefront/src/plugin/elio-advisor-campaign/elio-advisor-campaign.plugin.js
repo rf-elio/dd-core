@@ -1,4 +1,3 @@
-import Plugin from 'src/plugin-system/plugin.class'
 import DomAccess from 'src/helper/dom-access.helper'
 import FilterBasePlugin from 'src/plugin/listing/filter-base.plugin'
 import ElementReplaceHelper from 'src/helper/element-replace.helper'
@@ -9,10 +8,10 @@ import deepmerge from 'deepmerge'
  * - Lazy loading support
  * - Campaign interaction
  */
-export default class ElioAdvisorCampaignPlugin extends Plugin {
+export default class ElioAdvisorCampaignPlugin extends window.PluginBaseClass {
     static options = deepmerge(FilterBasePlugin.options, {
         advisorSelector: '#e-dd-advisor-campaign-',
-        advisorIdAttribute: 'data-elio-data-siscovery-advisor-campaign-id',
+        advisorIdAttribute: 'data-elio-data-discovery-advisor-campaign-id',
         answerSelector: '.e-dd-advisor-campaign-answer',
         answerPathAttribute: 'data-e-dd-advisor-campaign-answer-path',
         listingSelector: '.cms-element-product-listing'

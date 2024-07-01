@@ -78,10 +78,12 @@ class SyncProfileController extends AbstractController
     ) {}
 
     /**
-     * @Route("/api/_action/elio-data-discovery/sync-profile/profiles", name="api.action.elio-data-discovery.sync-profile.profiles", methods={"GET"})
-     *
      * @return JsonResponse
      */
+    #[Route('/api/_action/elio-data-discovery/sync-profile/profiles',
+        name: 'api.action.elio-data-discovery.sync-profile.profiles',
+        methods: ['GET']
+    )]
     public function profiles(): JsonResponse
     {
         $profiles = [];
@@ -107,9 +109,12 @@ class SyncProfileController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/elio-data-discovery/export/status/{id}", name="api.action.elio-data-discovery.export.status", methods={"GET"})
      * @throws FilesystemException
      */
+    #[Route('/api/_action/elio-data-discovery/export/status/{id}',
+        name: 'api.action.elio-data-discovery.export.status',
+        methods: ['GET']
+    )]
     public function status(string $id, Context $context): JsonResponse
     {
         try {
@@ -129,10 +134,14 @@ class SyncProfileController extends AbstractController
     /**
      * Provides the generated file.
      *
-     * @Route("/api/_action/elio-data-discovery/export/download/{id}/{humanReadableIdentifier}", name="api.action.elio-data-discovery.export.download", defaults={"auth_required"=false}, methods={"GET"})
      * @throws FileNotFoundException
      * @throws FilesystemException
      */
+    #[Route('/api/_action/elio-data-discovery/export/download/{id}/{humanReadableIdentifier}',
+        name: 'api.action.elio-data-discovery.export.download',
+        defaults: ['auth_required' => false],
+        methods: ['GET']
+    )]
     public function download(Request $request, string $id, Context $context): Response
     {
         $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);
@@ -176,9 +185,11 @@ class SyncProfileController extends AbstractController
 
     /**
      * Generates the export in background
-     *
-     * @Route("/api/_action/elio-data-discovery/export/generate/{id}", name="api.action.elio-data-discovery.export.generate", methods={"POST"})
      */
+    #[Route('/api/_action/elio-data-discovery/export/generate/{id}',
+        name: 'api.action.elio-data-discovery.export.generate',
+        methods: ['POST']
+    )]
     public function generate(string $id, RequestDataBag $data, Context $context): Response
     {
         $syncProfile = $this->syncService->getSyncProfileConfiguration($id, $context);

@@ -81,13 +81,11 @@ class ProductDetailTrackingController extends StorefrontController
         private RequestStack $requestStack
     ) {}
 
-    /**
-     * @Route("/widgets/elio-data-discovery/productDetailTrack", name="widgets.elio-data-discovery.tracking.product-detail", methods={"POST"}, defaults={"XmlHttpRequest"=true,"csrf_protected"=false})
-     *
-     * @param RequestDataBag $dataBag
-     * @param SalesChannelContext $salesChannelContext
-     * @return Response
-     */
+    #[Route('/widgets/elio-data-discovery/productDetailTrack',
+        name: 'widgets.elio-data-discovery.tracking.product-detail',
+        defaults: ['csrf_protected' => false, 'XmlHttpRequest' => true],
+        methods: ['POST']
+    )]
     public function trackProductDetail(RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): Response
     {
         $config = $this->configService->getByContext($salesChannelContext);

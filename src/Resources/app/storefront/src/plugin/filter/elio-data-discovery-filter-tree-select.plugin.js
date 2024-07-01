@@ -2,7 +2,6 @@ import FilterPropertySelectPlugin from 'src/plugin/listing/filter-property-selec
 import DomAccess from 'src/helper/dom-access.helper';
 import Iterator from 'src/helper/iterator.helper';
 import deepmerge from 'deepmerge';
-import PluginManagerSingleton from 'src/plugin-system/plugin.manager';
 
 export default class ElioDataDiscoveryFilterTreeSelectPlugin extends FilterPropertySelectPlugin {
 
@@ -45,7 +44,7 @@ export default class ElioDataDiscoveryFilterTreeSelectPlugin extends FilterPrope
         const selector = '.filter-panel-item-dropdown';
         this.el.querySelector(selector).innerHTML = newFilter.querySelector(selector).innerHTML;
         // Delete plugin instance on element so the new instance will be created
-        PluginManagerSingleton.getPluginInstancesFromElement(this.el).delete(this._pluginName);
+        window.PluginManager.getPluginInstancesFromElement(this.el).delete(this._pluginName);
     }
 
     afterContentChange() {

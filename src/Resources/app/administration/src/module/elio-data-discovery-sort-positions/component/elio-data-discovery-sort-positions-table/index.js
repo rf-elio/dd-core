@@ -1,10 +1,10 @@
-import template from './elio-data-discovery-sort-positions-ruler.html.twig';
-import './elio-data-discovery-sort-positions-ruler.scss';
+import template from './elio-data-discovery-sort-positions-table.html.twig';
+import './elio-data-discovery-sort-positions-table.scss';
 
 const {Criteria} = Shopware.Data;
 const {Mixin} = Shopware;
 
-Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
+Shopware.Component.register('elio-data-discovery-sort-positions-table', {
     template: template,
 
     inject: [
@@ -17,20 +17,6 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
             required: true,
             default() {
                 return false;
-            }
-        },
-        layer: {
-            type: String,
-            required: false,
-            default() {
-                return 'global';
-            }
-        },
-        rulerHeader: {
-            type: String,
-            required: false,
-            default() {
-                return '';
             }
         },
         categoryId: {
@@ -87,6 +73,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
             category: null,
             products: null,
             productsTree: null,
+            categoryHasChildren: false,
         }
     },
 
@@ -128,6 +115,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
                 .get(this.categoryId, Shopware.Context.api)
                 .then(result => {
                     this.category = result;
+                    this.categoryHasChildren = (result.childCount > 0);
                 })
         },
         loadProducts() {
@@ -158,7 +146,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
                 });
         },
         sortDuplicatePositions(event, item) {
-            var operator = this;
+            let operator = this;
             const productIndexOld = this.products.findIndex(product => product.productId === item.productId);
 
             this.products.sort((a, b) => {
@@ -189,7 +177,7 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
                 }
             }
 
-            var ind = [];
+            let ind = [];
             this.products.forEach((product) => {
                 let currentPositionNumber = product.position;
                 while (ind[currentPositionNumber] === 1) {
@@ -210,11 +198,11 @@ Shopware.Component.register('elio-data-discovery-sort-positions-ruler', {
         async saveAll() {
             this.isModified = false;
             this.isLoading = true;
-            var operator = this;
-            var entities = [];
+            let operator = this;
+            let entities = [];
 
             await this.products.forEach(function (product) {
-                var entity = operator.productSortingRepository.create(Shopware.Context.api);
+                let entity = operator.productSortingRepository.create(Shopware.Context.api);
                 entity.id = product.id;
                 entity.productId = product.productId;
                 entity.categoryId = product.categoryId;

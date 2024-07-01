@@ -1,7 +1,6 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import TrackingUtil from './../../utility/tracking.util'
 
-export default class TrackingPlugin extends Plugin {
+export default class TrackingPlugin extends window.PluginBaseClass {
     static options = {
         elioDataDiscoveryListingBoxSelector: '.elio-data-discovery-listing-box',
         productNumberPathAttribute: 'data-elio-data-discovery-product-number',

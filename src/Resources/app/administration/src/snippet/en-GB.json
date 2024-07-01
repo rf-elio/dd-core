@@ -45,6 +45,7 @@
                 },
                 "ruler": {
                     "inheritance": "Inherited from all-saleschannel settings",
+                    "allLanguages": "All languages",
                     "tabs": {
                         "permissions": "Permissions",
                         "available": {

@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 /**
  * Class AsyncIndexUpdateMessage
@@ -47,9 +48,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 class AsyncIndexUpdateMessage implements AsyncMessageInterface
 {
     public function __construct(
-        protected readonly string  $indexerIdentifier,
-        protected readonly SalesChannelContext $context,
-        protected readonly string  $entityStatusCollectionSerialized
+        protected readonly string $indexerIdentifier,
+        protected readonly string $salesChannelContextSerialized,
+        protected readonly string $entityStatusCollectionSerialized
     )
     {
     }
@@ -58,14 +59,15 @@ class AsyncIndexUpdateMessage implements AsyncMessageInterface
     {
         return new self(
             $indexerIdentifier,
-            $context,
+            base64_encode(serialize($context)),
             base64_encode(serialize($entityStatusCollection))
         );
     }
 
+    #[Ignore]
     public function getSalesChannelContext(): SalesChannelContext
     {
-        return $this->context;
+        return unserialize(base64_decode($this->salesChannelContextSerialized));
     }
 
     #[Ignore]
@@ -77,6 +79,11 @@ class AsyncIndexUpdateMessage implements AsyncMessageInterface
     public function getIndexerIdentifier(): string
     {
         return $this->indexerIdentifier;
+    }
+
+    public function getSalesChannelContextSerialized(): string
+    {
+        return $this->salesChannelContextSerialized;
     }
 
     public function getEntityStatusCollectionSerialized(): string

@@ -74,10 +74,10 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
             blockAllChecked: false,
             limitForCriteria: 500,
             salesChannelId: null,
-            languageId: null,
+            languageId: '-',
             languageIdsList: [{
-                id: null,
-                name: 'All languages'
+                id: '-',
+                name: this.$tc('elio-data-discovery.restrictions.filter.ruler.allLanguages')
             }],
             isModified: false,
             isDisplayingLeavePageWarning: false,
@@ -94,11 +94,11 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
 
     watch: {
         salesChannelId() {
-            this.isInheritable = this.salesChannelId != null || this.languageId != null;
+            this.isInheritable = this.salesChannelId != null || (this.languageId != null && this.languageId !== '-');
             this.loadFilters();
         },
         languageId() {
-            this.isInheritable = this.salesChannelId != null || this.languageId != null;
+            this.isInheritable = this.salesChannelId != null || (this.languageId != null && this.languageId !== '-');
             this.loadFilters();
         }
     },
@@ -160,15 +160,15 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
                 dragData.preventDefault();
                 this.isModified = true;
 
-                var realTarget = dragData.target;
+                let realTarget = dragData.target;
                 if (dragData.target.classList.contains("filter")) {
                     realTarget = dragData.target.closest('.ruler-tab-filter-list');
                 }
 
-                var operator = this;
-                var draggedId = this.currentDragItem.getAttribute("data-filter-id");
-                var targetColumnType = realTarget.getAttribute("data-filter-column");
-                var fromColumnType = this.currentDragItem.parentNode.getAttribute("data-filter-column");
+                const operator = this;
+                let draggedId = this.currentDragItem.getAttribute("data-filter-id");
+                let targetColumnType = realTarget.getAttribute("data-filter-column");
+                let fromColumnType = this.currentDragItem.parentNode.getAttribute("data-filter-column");
 
                 this[fromColumnType + 'List'].forEach(function (item, i, arr) {
                     if (item.id === draggedId) {
@@ -238,11 +238,11 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
 
             this.isLoading = true;
             try {
-                var criteria = this.getFilterRestrictionLoadCriteria();
-                var isAllowColumnPresent = false;
-                var isBlockColumnPresent = false;
+                const criteria = this.getFilterRestrictionLoadCriteria();
+                let isAllowColumnPresent = false;
+                let isBlockColumnPresent = false;
                 this.movedFiltersIds = [];
-                var operator = this;
+                const operator = this;
                 await this.filterRestrictionRepository
                     .search(criteria, Shopware.Context.api)
                     .then(filterRestrictions => {
@@ -286,7 +286,7 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
         },
 
         async buildFilters() {
-            var criteria = new Criteria();
+            const criteria = new Criteria();
             criteria.setLimit(this.limitForCriteria); /* upddate it */
             criteria.addFilter(Criteria.equals('type', this.rulerType))
             if (this.movedFiltersIds.length > 0) {
@@ -297,7 +297,7 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
                     ]
                 ));
             }
-            var operator = this;
+            const operator = this;
             await this.filterRepository
                 .search(criteria, Shopware.Context.api)
                 .then((filters) => {
@@ -310,9 +310,9 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
         async saveAll() {
             this.isModified = false;
             this.isLoading = true;
-            var operator = this;
+            const operator = this;
 
-            var criteria = new Criteria();
+            const criteria = new Criteria();
             criteria.addAssociation('filters');
             criteria.addFilter(
                 Criteria.multi(
@@ -337,7 +337,7 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
 
         syncFiltersToFilterRestriction(filterRestriction) {
             // remove all
-            var filtersIds = [];
+            let filtersIds = [];
             filterRestriction.filters.forEach(filter => {
                 filtersIds.push(filter.id);
             });
@@ -355,7 +355,8 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
         },
 
         createFilterRestriction(isForBlock = false) {
-            var filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
+            let filterRestriction = this.filterRestrictionRepository.create(Shopware.Context.api);
+            const languageId = this.languageId === '-' ? null : this.languageId;
 
             filterRestriction.isCategory = this.isCategory;
             if (!this.isCategory) {
@@ -367,14 +368,14 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
             filterRestriction.isAllowed = !isForBlock;
             filterRestriction.isAllChecked = !isForBlock;
             filterRestriction.salesChannelId = this.salesChannelId;
-            filterRestriction.languageId = this.languageId;
+            filterRestriction.languageId = languageId;
             filterRestriction.isInherited = this.salesChannelId != null;
             this.isInherited = this.salesChannelId != null;
 
             this.filterRestrictionRepository
                 .save(filterRestriction, Shopware.Context.api)
                 .then((response) => {
-                    var id = JSON.parse(response.config.data).id;
+                    let id = JSON.parse(response.config.data).id;
                     if (id) {
                         if (!isForBlock) {
                             this.allowListRestrictionId = id;
@@ -386,11 +387,12 @@ Shopware.Component.register('elio-data-discovery-restriction-ruler', {
         },
 
         getFilterRestrictionLoadCriteria() {
-            var criteria = new Criteria();
+            const criteria = new Criteria();
             criteria.addAssociation('filters')
-            var criteriaConditions = [
+            const languageId = this.languageId === '-' ? null : this.languageId;
+            let criteriaConditions = [
                 Criteria.equals('elio_data_discovery_filter_restrictions.salesChannelId', this.salesChannelId),
-                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', this.languageId),
+                Criteria.equals('elio_data_discovery_filter_restrictions.languageId', languageId),
                 Criteria.equals('elio_data_discovery_filter_restrictions.layer', this.layer)
             ];
             if (this.isCategory && this.categoryId != null) {

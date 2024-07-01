@@ -1,10 +1,10 @@
-import template from './sw-category-detail-positions-ruler.html.twig';
+import template from './sw-category-detail-positions-table.html.twig';
 
 const { Component, Mixin } = Shopware;
 const { mapState, mapGetters } = Component.getComponentHelper();
 const { Criteria } = Shopware.Data;
 
-Shopware.Component.register('elio-category-detail-positions-ruler', {
+Shopware.Component.register('elio-category-detail-positions-table', {
     template: template,
 
     props: {

@@ -115,9 +115,9 @@ class FilterService implements FilterInterface
 
         if ($config->isRestrictionsOverridingTopToDown()) {
             return $this->filterRestrictionsOverridingTopToDown($items, $restrictionType, $config, $request, $context);
-        } else {
-            return $this->filterRestrictionsOverridingDownToTop($items, $restrictionType, $config, $request, $context);
         }
+
+        return $this->filterRestrictionsOverridingDownToTop($items, $restrictionType, $config, $request, $context);
     }
 
     /**

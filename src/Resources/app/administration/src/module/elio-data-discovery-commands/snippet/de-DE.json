@@ -32,7 +32,7 @@
             "header": "SyncDataCommand",
             "description": "Synchronisiert Produkte und Inhalte mit der Search-Engine.",
             "button": "Sync Data",
-            "command": "./bin/console elio-data-discovery:profiles:sync [-f] <syncProfileId>"
+            "command": "./bin/console elio-data-discovery:profiles:sync [-f] [-F] <syncProfileId>"
         },
         "categoryInheritanceUpdate": {
             "header": "CategoryInheritanceUpdateCommand",

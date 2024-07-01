@@ -29,12 +29,15 @@ class LoggingController extends AbstractController
     ) {}
 
     /**
-     * @Route("/api/_action/elio-data-discovery/logging/{index}", name="api.action.elio-data-discovery.logging.index", methods={"GET"})
      * @param Request $request
      * @param int $index
      *
      * @return JsonResponse
      */
+    #[Route('/api/_action/elio-data-discovery/logging/{index}',
+        name: 'api.action.elio-data-discovery.logging.index',
+        methods: ['GET']
+    )]
     public function index(Request $request, int $index = 0): JsonResponse
     {
         $offset = (int)$request->get('offset', 0);
@@ -60,11 +63,14 @@ class LoggingController extends AbstractController
     }
 
     /**
-     * @Route("/api/_action/elio-data-discovery/logging/{index}", name="api.action.elio-data-discovery.logging.delete", methods={"DELETE"})
      * @param int $index
      *
      * @return JsonResponse
      */
+    #[Route('/api/_action/elio-data-discovery/logging/{index}',
+        name: 'api.action.elio-data-discovery.logging.delete',
+        methods: ['DELETE']
+    )]
     public function delete(int $index): JsonResponse
     {
         try {

@@ -1,5 +1,5 @@
-{% block elio_data_discovery_sort_positions_ruler %}
-    <div class="elio-data-discovery-sort-positions-ruler">
+{% block elio_data_discovery_sort_positions_table %}
+    <div class="elio-data-discovery-sort-positions-table">
         <sw-loader v-if="isLoading"></sw-loader>
         <sw-button-group class="elio-data-discovery-sort-positions-buttons">
             <sw-button size="small"
@@ -8,19 +8,21 @@
             <sw-help-text class="elio-data-discovery-sort-positions-recalculate-sort-help-text"
                           :text="$tc('elio-data-discovery.sort-positions.info.help.recalculate-sort')"
             ></sw-help-text>
-            <sw-button v-if="category.childCount == 0"
-                       size="small"
-                       @click="syncProducts"
-                       >
-                {{ $tc('elio-data-discovery.sort-positions.base.syncProducts') }}
-            </sw-button>
-            <sw-help-text class="elio-data-discovery-sort-positions-sync-products-help-text"
-                          v-if="category.childCount == 0"
-                          :text="$tc('elio-data-discovery.sort-positions.info.help.sync-products')"
-            ></sw-help-text>
+            <div class="elio-data-discovery-sort-positions-sync-products-button"
+                 v-if="!categoryHasChildren"
+            >
+                <sw-button size="small"
+                           @click="syncProducts"
+                           >
+                    {{ $tc('elio-data-discovery.sort-positions.base.syncProducts') }}
+                </sw-button>
+                <sw-help-text class="elio-data-discovery-sort-positions-sync-products-help-text"
+                              :text="$tc('elio-data-discovery.sort-positions.info.help.sync-products')"
+                ></sw-help-text>
+            </div>
         </sw-button-group><br><br>
         <div class="elio-data-discovery-sort-positions-products-tree"
-             v-if="category.childCount > 0"
+             v-if="categoryHasChildren"
         >
             <sw-card>
                 {{ $tc('elio-data-discovery.sort-positions.info.tree') }}
@@ -52,12 +54,12 @@
             >
                 <template #column-position="{ item }">
                     <sw-number-field
-                        v-model="item.position"
+                        v-model:value="item.position"
                         number-type="int"
                         size="small"
                         placeholder=0
                         :min="1"
-                        @change="sortDuplicatePositions($event, item)"
+                        @update:value="sortDuplicatePositions($event, item)"
                     />
                 </template>
             </sw-data-grid>

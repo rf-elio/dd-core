@@ -72,23 +72,20 @@ class IndexController extends AbstractController
         $context = Context::createDefaultContext();
         /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
-
-        if (
-            $syncProfiles->count() <= 0
-            || $syncProfiles->hasNotExecutedSyncProfiles()
-            || !($sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile())
-        ) {
-            return new Response('<error>Cannot cleanup. A sync profile must exist and it must be executed before performing a cleanup.</error>',
-                Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $salesChannelIds = array_keys($this->syncService->getSalesChannelContexts($context));
 
         $daysBeforeCleanup = (int)($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
-        $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
-            ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
-            ->modify('-' . $daysBeforeCleanup . 'day');
+        $sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile();
+
+        $cleanupDate = null;
+        if ($syncProfiles->count() > 0 && $syncProfiles->hasExecutedSyncProfiles()) {
+            $cleanupDate = (new DateTimeImmutable($sortedProfile->getLastGenerationFinishedAt()
+                ->format(Defaults::STORAGE_DATE_TIME_FORMAT)))
+                ->modify('-' . $daysBeforeCleanup . 'day');
+        }
 
         try {
-            $this->changeSetService->cleanup($cleanupDate, $context);
+            $this->changeSetService->cleanup($cleanupDate, $salesChannelIds, $context);
         } catch (Exception $e) {
             return new Response('<error>' . $e->getMessage() . '</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

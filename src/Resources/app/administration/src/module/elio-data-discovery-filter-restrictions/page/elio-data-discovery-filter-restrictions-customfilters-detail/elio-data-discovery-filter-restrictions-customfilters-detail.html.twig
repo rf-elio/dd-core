@@ -2,7 +2,7 @@
     <sw-page class="sw-property-detail">
 
         {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_header %}
-            <template slot="smart-bar-header">
+            <template #smart-bar-header>
                 {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_header_title %}
                     <h2>{{ placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline')) }}</h2>
                 {% endblock %}
@@ -10,7 +10,7 @@
         {% endblock %}
 
         {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_actions %}
-            <template slot="smart-bar-actions">
+            <template #smart-bar-actions>
                 {% block elio_data_discovery_filter_restrictions_customfilters_detail_smart_bar_actions_cancel %}
                     <sw-button class="sw-property-detail__back-action"
                                :disabled="isLoading"
@@ -35,7 +35,7 @@
         {% endblock %}
 
         {% block elio_data_discovery_filter_restrictions_customfilters_detail_language_switch %}
-            <template slot="language-switch">
+            <template #language-switch>
                 <sw-language-switch @on-change="onChangeLanguage"
                                     :saveChangesFunction="saveOnLanguageChange"
                                     :abortChangeFunction="abortOnLanguageChange">
@@ -44,34 +44,34 @@
         {% endblock %}
 
         {% block elio_data_discovery_filter_restrictions_customfilters_detail_content %}
-            <sw-card-view slot="content">
-                {% block elio_data_discovery_filter_restrictions_customfilters_detail_content_language_info %}
-                    <sw-language-info
-                            :entityDescription="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline'))">
-                    </sw-language-info>
-                {% endblock %}
+            <template #content>
+                <sw-card-view>
+                    {% block elio_data_discovery_filter_restrictions_customfilters_detail_content_language_info %}
+                        <sw-language-info
+                                :entityDescription="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.detail.textHeadline'))">
+                        </sw-language-info>
+                    {% endblock %}
 
-                <sw-card positionIdentifier="1" v-if="filter" :title="$tc('elio-data-discovery.restrictions.filter.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
-                    {% block elio_data_discovery_filter_restrictions_customfilters_detail_technical_name %}
-                        <sw-field
-                                v-model="filter.technicalName"
-                                type="text"
-                                required
-                                :error="filterTechnicalNameError"
-                                :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelTechnicalName')"
-                                :placeholder="placeholder(filter, 'technicalName', $tc('elio-data-discovery.restrictions.filter.filters.placeholderTechnicalName'))"/>
-                    {% endblock %}
-                    {% block elio_data_discovery_filter_restrictions_customfilters_detail_base_name %}
-                        <sw-field
-                                v-model="filter.label"
-                                type="text"
-                                required
-                                :error="filterLabelError"
-                                :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelName')"
-                                :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.placeholderLabel'))"/>
-                    {% endblock %}
-                </sw-card>
-            </sw-card-view>
+                    <sw-card positionIdentifier="1" v-if="filter" :title="$tc('elio-data-discovery.restrictions.filter.filters.detail.cardTitleGroupInfo')" :isLoading="isLoading">
+                        {% block elio_data_discovery_filter_restrictions_customfilters_detail_technical_name %}
+                            <sw-text-field
+                                    v-model:value="filter.technicalName"
+                                    required
+                                    :error="filterTechnicalNameError"
+                                    :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelTechnicalName')"
+                                    :placeholder="placeholder(filter, 'technicalName', $tc('elio-data-discovery.restrictions.filter.filters.placeholderTechnicalName'))"/>
+                        {% endblock %}
+                        {% block elio_data_discovery_filter_restrictions_customfilters_detail_base_name %}
+                            <sw-text-field
+                                    v-model:value="filter.label"
+                                    required
+                                    :error="filterLabelError"
+                                    :label="$tc('elio-data-discovery.restrictions.filter.filters.detail.labelName')"
+                                    :placeholder="placeholder(filter, 'label', $tc('elio-data-discovery.restrictions.filter.filters.placeholderLabel'))"/>
+                        {% endblock %}
+                    </sw-card>
+                </sw-card-view>
+            </template>
         {% endblock %}
     </sw-page>
 {% endblock %}

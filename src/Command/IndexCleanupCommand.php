@@ -81,7 +81,7 @@ class IndexCleanupCommand extends Command
         /** @var SyncProfileCollection $syncProfiles */
         $syncProfiles = $this->syncService->getSyncProfileConfigurations($context)->getEntities();
         $salesChannelIds = array_keys($this->syncService->getSalesChannelContexts($context));
-        $daysBeforeCleanup = intval($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
+        $daysBeforeCleanup = (int)($this->configService->get('entityStatusMaxCleanupAgeInDays') ?? 14);
         $sortedProfile = $syncProfiles->getLeastRecentlyFinishedSyncProfile();
 
         $cleanupDate = null;

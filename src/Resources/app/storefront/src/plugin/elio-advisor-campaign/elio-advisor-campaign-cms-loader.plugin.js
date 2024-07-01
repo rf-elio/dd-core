@@ -1,4 +1,3 @@
-import Plugin from 'src/plugin-system/plugin.class';
 import ObserverUtil from '../../utility/observer.util';
 import HttpClient from 'src/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
@@ -9,7 +8,7 @@ import ElioAdvisorCampaignPlugin from "./elio-advisor-campaign.plugin";
  * - Lazy loading support
  * - Campaign interaction
  */
-export default class ElioAdvisorCampaignCmsLoaderPlugin extends Plugin {
+export default class ElioAdvisorCampaignCmsLoaderPlugin extends window.PluginBaseClass {
     static options = {
         urlAttribute: 'data-elio-data-siscovery-advisor-campaign-url',
         parameterNameAttribute: 'data-elio-data-siscovery-advisor-campaign-parameter-name',
@@ -47,7 +46,7 @@ export default class ElioAdvisorCampaignCmsLoaderPlugin extends Plugin {
         ElementLoadingIndicatorUtil.create(this.el);
         this._client.post(this._url, JSON.stringify(this._request_params), response => {
             this._campaignContainer.innerHTML = response
-            PluginManager.initializePlugins();
+            window.PluginManager.initializePlugins();
             ElementLoadingIndicatorUtil.remove(this.el)
         })
     }
