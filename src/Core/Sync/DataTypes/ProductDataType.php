@@ -53,6 +53,7 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
     private ?Visibilities $visibility = null;
+    private ?int $ratingCount = null;
 
     public function setVariant(Variant $variant): void
     {
@@ -85,5 +86,15 @@ class ProductDataType extends ProductEntity implements DataTypeInterface
     public function setVisibility(?Visibilities $visibility): void
     {
         $this->visibility = $visibility;
+    }
+
+    public function getRatingCount(): ?int
+    {
+        return $this->ratingCount;
+    }
+
+    public function setRatingCount(?int $ratingCount): void
+    {
+        $this->ratingCount = $ratingCount;
     }
 }

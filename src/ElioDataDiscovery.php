@@ -86,6 +86,7 @@ class ElioDataDiscovery extends Plugin
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_count';
     public const CUSTOM_FIELD_RANKING_PRODUCT_ORDER_AMOUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_ranking_product_order_amount';
     public const CUSTOM_FIELD_DISPLAY_PRODUCT_BY_DEFAULT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_display_product_by_default';
+    public const CUSTOM_FIELD_PRODUCT_RATING_COUNT = self::CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT . '_' . 'elio_data_discovery_product_rating_count';
     public const DEFAULT_FILTERS = ['CategoryPath', 'Manufacturer', 'Price', 'Stock'];
 
     public function executeComposerCommands(): bool
@@ -275,6 +276,15 @@ class ElioDataDiscovery extends Plugin
                             'en-GB' => 'Displayed product/variant in search result / navigation',
                             'de-DE' => 'Produkt/Variante im Suchergebnis / Navigation zeigen',
                         ]
+                    ],
+                    self::CUSTOM_FIELD_PRODUCT_RATING_COUNT => [
+                        'type' => 'int',
+                        'componentName' => 'sw-field',
+                        'label' => [
+                            'en-GB' => 'Number of published reviews',
+                            'de-DE' => 'Anzahl der veröffentlichten Bewertungen'
+                        ],
+                        'disabled' => true
                     ]
                 ],
                 'relations' => [ProductDefinition::ENTITY_NAME]

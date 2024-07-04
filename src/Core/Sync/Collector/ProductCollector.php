@@ -263,6 +263,7 @@ class ProductCollector implements DataCollectorInterface
                         $dataType->setVisibility(Visibilities::VISIBILITY_NONE);
                         break;
                 }
+                $dataType->setRatingCount($entity->getCustomFieldsValue(ElioDataDiscovery::CUSTOM_FIELD_PRODUCT_RATING_COUNT));
                 $dataType->setVariant(new Variant());
                 $dataType->addExtension(SeoRoute::class, new SeoRoute(
                     ProductPageSeoUrlRoute::ROUTE_NAME, $dataType->getId(), ['productId' => $dataType->getId()]
