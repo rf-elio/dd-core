@@ -42,8 +42,10 @@ use Shopware\Core\Framework\Struct\Struct;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class ApiRequest extends Struct
+class ApiRequest extends Struct implements RequestLoggingInterface
 {
+    use MetaDataTrait;
+
     /**
      * @return array
      */

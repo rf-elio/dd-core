@@ -49,6 +49,7 @@ class Configuration extends Struct
      * Configuration constructor.
      * @param bool $active
      * @param bool $loggingDebugActive
+     * @param bool $loggingSearchRequestActive
      * @param array<string> $loggingDebugIpFilter
      * @param bool $searchUseElioDataDiscovery
      * @param bool $trackRequireConsent
@@ -68,6 +69,9 @@ class Configuration extends Struct
      * @param array<string> $botProtectionIpFilter
      * @param bool $searchUseContentChannel
      * @param bool $suggestUseElioDataDiscovery
+     * @param bool $searchRedirectToProductDetail
+     * @param string $searchRedirectProductRegex
+     * @param int $searchRedirectCacheExpiresAfter
      * @param bool $suggestToggleHighlight
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
@@ -90,6 +94,7 @@ class Configuration extends Struct
     public function __construct(
         private readonly bool $active,
         protected bool $loggingDebugActive,
+        protected bool $loggingSearchRequestActive,
         private readonly array $loggingDebugIpFilter,
         private readonly bool $searchUseElioDataDiscovery,
         private readonly bool $trackRequireConsent,
@@ -109,6 +114,9 @@ class Configuration extends Struct
         private readonly array $botProtectionIpFilter,
         private readonly bool $searchUseContentChannel,
         private readonly bool $suggestUseElioDataDiscovery,
+        private readonly bool $searchRedirectToProductDetail,
+        private readonly string $searchRedirectProductRegex,
+        private readonly int $searchRedirectCacheExpiresAfter,
         private readonly bool $suggestToggleHighlight,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
@@ -415,5 +423,28 @@ class Configuration extends Struct
     public function getSuggestContainerStyle(): string
     {
         return $this->suggestContainerStyle;
+    }
+
+    public function isLoggingSearchRequestActive(): bool
+    {
+        return $this->loggingSearchRequestActive;
+    }
+
+    public function isSearchRedirectToProductDetail(string $searchTerm): bool
+    {
+        if (!preg_match($this->getSearchRedirectProductRegex(), $searchTerm)) {
+            return false;
+        }
+        return $this->searchRedirectToProductDetail;
+    }
+
+    public function getSearchRedirectProductRegex(): string
+    {
+        return $this->searchRedirectProductRegex;
+    }
+
+    public function getSearchRedirectCacheExpiresAfter(): int
+    {
+        return $this->searchRedirectCacheExpiresAfter;
     }
 }

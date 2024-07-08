@@ -36,6 +36,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\CriteriaPreparedEvent;
@@ -78,6 +79,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class ProductCollector implements DataCollectorInterface
 {
+    use AvailableStockAware;
     use TranslatorAware;
 
     public const TYPE = ProductDataType::class;
@@ -158,7 +160,7 @@ class ProductCollector implements DataCollectorInterface
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addFilter(new EqualsFilter('product.visibilities.salesChannelId', $salesChannelId));
         $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_SEARCH));
-        $this->handleAvailableStock($criteria, $context);
+        $this->handleAvailableStock($criteria, $context, $this->systemConfigService, $this->productCloseoutFilterFactory);
 
         $event = new CriteriaPreparedEvent(self::TYPE, $criteria);
         $this->dispatcher->dispatch($event);
@@ -353,19 +355,5 @@ class ProductCollector implements DataCollectorInterface
             $flatCategoryCollection->add($categoryEntity);
             $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
         }
-    }
-
-    private function handleAvailableStock(Criteria $criteria, SalesChannelContext $context): void
-    {
-        $salesChannelId = $context->getSalesChannel()->getId();
-
-        $hide = $this->systemConfigService->get('core.listing.hideCloseoutProductsWhenOutOfStock', $salesChannelId);
-
-        if (!$hide) {
-            return;
-        }
-
-        $closeoutFilter = $this->productCloseoutFilterFactory->create($context);
-        $criteria->addFilter($closeoutFilter);
     }
 }

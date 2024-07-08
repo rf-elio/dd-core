@@ -36,7 +36,7 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\SearchApi;
+use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
@@ -73,21 +73,21 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
      * @param AbstractProductListingRoute $decorated
      * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param ElioDataDiscoveryConfigServiceInterface $configService
-     * @param SearchApi $searchApi
+     * @param SearchApiInterface $searchApi
      * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param EntityRepository $categoryRepository
      * @param CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
      * @param LoggerInterface $logger
      */
     public function __construct(
-        private AbstractProductListingRoute      $decorated,
-        private ProductSearchRequestBuilder      $searchRequestBuilder,
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private SearchApi                        $searchApi,
-        private ProductListingResultTransformerInterface  $productListingResultTransformer,
-        private EntityRepository        $categoryRepository,
-        private CategoryBreadcrumbBuilder        $categoryBreadcrumbBuilder,
-        LoggerInterface                  $logger
+        private readonly AbstractProductListingRoute              $decorated,
+        private readonly ProductSearchRequestBuilder              $searchRequestBuilder,
+        private readonly ElioDataDiscoveryConfigServiceInterface  $configService,
+        private readonly SearchApiInterface                       $searchApi,
+        private readonly ProductListingResultTransformerInterface $productListingResultTransformer,
+        private readonly EntityRepository                         $categoryRepository,
+        private readonly CategoryBreadcrumbBuilder                $categoryBreadcrumbBuilder,
+        LoggerInterface                                           $logger
     )
     {
         $this->logger = $logger;

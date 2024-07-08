@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel;
 
 
+use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
@@ -96,10 +97,16 @@ class ProductSearchRequestBuilder
         $this->addFilters($payload, $searchRequest);
         $this->addCustomParameters($searchRequest, $config);
         $this->addAdditionalRequestParameters($payload, $searchRequest);
+        $this->addMetaData($request, $searchRequest);
 
         $event = new ProductSearchRequestBuildedEvent($searchRequest, $payload);
         $this->eventDispatcher->dispatch($event);
         return $event->getSearchRequest();
+    }
+
+    protected function addMetaData(Request $request, ApiRequest $searchRequest): void
+    {
+        $searchRequest->setMetaDataFromRequest($request);
     }
 
     /**

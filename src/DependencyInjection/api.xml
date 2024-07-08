@@ -8,6 +8,24 @@
         <service id="Elio\ElioDataDiscovery\Api\Search\SearchApi">
             <argument type="service" id="elio.data-discovery.core.logging.debug"/>
         </service>
+        <service id="Elio\ElioDataDiscovery\Api\Search\CachedSearchApi"
+                 decorates="Elio\ElioDataDiscovery\Api\Search\SearchApi" decoration-priority="-5000">
+            <argument type="service" id="Symfony\Contracts\Cache\CacheInterface"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\CachedSearchApi.inner" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+        </service>
+        <service id="Elio\ElioDataDiscovery\Api\Search\ProductRedirectSearchApi"
+                 decorates="Elio\ElioDataDiscovery\Api\Search\SearchApi" decoration-priority="-4000">
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\ProductRedirectSearchApi.inner" />
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />
+            <argument type="service" id="router" />
+            <argument type="service" id="elio.data-discovery.core.logging.search_request"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
+        </service>
         <service id="Elio\ElioDataDiscovery\Api\Search\SuggestApi"/>
         <service id="Elio\ElioDataDiscovery\Api\Tracking\TrackingApi">
             <argument type="service" id="elio.data-discovery.core.logging.debug" />

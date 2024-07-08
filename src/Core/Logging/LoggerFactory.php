@@ -71,15 +71,28 @@ class LoggerFactory
      * @param string $filePrefix
      * @param int|null $fileRotationCount
      * @param bool $useLogFilter
+     * @param bool $useJsonFormatter
      * @param Level $loggerLevel
      * @return LoggerInterface
      */
-    public function createRotating(string $filePrefix, ?int $fileRotationCount = null, bool $useLogFilter = false, Level $loggerLevel = Level::Debug): LoggerInterface
+    public function createRotating(
+        string $filePrefix,
+        ?int $fileRotationCount = null,
+        bool $useLogFilter = false,
+        bool $useJsonFormatter = true,
+        Level $loggerLevel = Level::Debug
+    ): LoggerInterface
     {
         $filepath = sprintf($this->rotatingFilePathPattern, $filePrefix);
 
         $result = new Logger($filePrefix);
         $handler = new RotatingFileHandler($filepath, $fileRotationCount ?? $this->defaultFileRotationCount, $loggerLevel);
+
+        if ($useJsonFormatter) {
+            $formatter = new JsonFormatter();
+            $formatter->setJsonPrettyPrint(true);
+            $handler->setFormatter($formatter);
+        }
 
         $formatter = new JsonFormatter();
         $formatter->setJsonPrettyPrint(true);

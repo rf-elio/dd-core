@@ -3,6 +3,7 @@
 namespace Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel;
 
 
+use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
@@ -47,6 +48,7 @@ class ContentSearchRequestBuilder
             $searchRequest->setQuery($request->get('search'));
         }
         $this->addCustomParameters($searchRequest, $config);
+        $this->addMetaData($request, $searchRequest);
 
         return $searchRequest;
     }
@@ -60,5 +62,10 @@ class ContentSearchRequestBuilder
     protected function addCustomParameters(SearchRequest $searchRequest, Configuration $config) : void
     {
         $searchRequest->setAdditionalRequestParameters($config->getAdditionalRequestParameters());
+    }
+
+    protected function addMetaData(Request $request, ApiRequest $searchRequest): void
+    {
+        $searchRequest->setMetaDataFromRequest($request);
     }
 }

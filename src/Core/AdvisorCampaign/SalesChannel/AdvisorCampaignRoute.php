@@ -32,12 +32,11 @@
 
 namespace Elio\ElioDataDiscovery\Core\AdvisorCampaign\SalesChannel;
 
+use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
-use Elio\ElioDataDiscovery\Api\Search\SearchApi;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformer;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder;
-use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -63,13 +62,13 @@ class AdvisorCampaignRoute extends AbstractAdvisorCampaignRoute
 {
     /**
      * @param ElioDataDiscoveryConfigServiceInterface $configService
-     * @param SearchApi $searchApi
+     * @param SearchApiInterface $searchApi
      * @param ProductSearchRequestBuilder $searchRequestBuilder
      * @param ProductListingResultTransformer $productListingResultTransformer
      */
     public function __construct(
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
-        private readonly SearchApi $searchApi,
+        private readonly SearchApiInterface $searchApi,
         private readonly ProductSearchRequestBuilder $searchRequestBuilder,
         private readonly ProductListingResultTransformer $productListingResultTransformer
     ) {
