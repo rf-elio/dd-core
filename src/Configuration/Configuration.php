@@ -432,6 +432,9 @@ class Configuration extends Struct
 
     public function isSearchRedirectToProductDetail(string $searchTerm): bool
     {
+        if (empty($this->getSearchRedirectProductRegex())) {
+            return false;
+        }
         if (!preg_match($this->getSearchRedirectProductRegex(), $searchTerm)) {
             return false;
         }

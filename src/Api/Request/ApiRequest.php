@@ -32,6 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Api\Request;
 
+use Elio\ElioDataDiscovery\Core\Logging\RequestLoggingInterface;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
