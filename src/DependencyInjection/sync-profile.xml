@@ -182,14 +182,8 @@
             <argument type="service" id="category.repository"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Command\RatingCountUpdateAllCommand">
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\RatingCountService"/>
-            <argument type="service" id="elio.data-discovery.core.logging.default"/>
-            <tag name="console.command"/>
-        </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\RatingCountService">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="product_review.repository"/>
         </service>
 
         <!-- message handler -->

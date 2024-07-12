@@ -4,42 +4,16 @@ namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Content\Product\Aggregate\ProductReview\ProductReviewEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RatingCountService
 {
     public function __construct(
-        private readonly Connection $connection,
-        private readonly EntityRepository $productReviewRepository
+        private readonly Connection $connection
     ) {}
-
-    public function getProductsFromReviews(Context $context, array $ids = []): array
-    {
-        $criteria = new Criteria();
-        if (!empty($ids)) {
-            $criteria->addFilter(new EqualsAnyFilter('id', $ids));
-        }
-        $criteria->addAssociation('product');
-        $reviews = $this->productReviewRepository->search($criteria, $context)->getEntities();
-
-        $productIds = [];
-        /** @var ProductReviewEntity $review */
-        foreach ($reviews as $review) {
-            $productIds[] = $review->getProductId();
-            if ($review->getProduct()?->getParentId()) {
-                $productIds[] = $review->getProduct()?->getParentId();
-            }
-        }
-
-        return array_unique($productIds);
-    }
 
     public function updateProductRatingCounts(Context $context, array $productIds): void
     {
@@ -88,11 +62,5 @@ class RatingCountService
                 'now' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)
             ]);
         }
-    }
-
-    public function updateAllProductRatingCounts(Context $context): void
-    {
-        $productIds = $this->getProductsFromReviews($context);
-        $this->updateProductRatingCounts($context, $productIds);
     }
 }
