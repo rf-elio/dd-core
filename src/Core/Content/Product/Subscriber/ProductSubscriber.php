@@ -35,11 +35,8 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\Subscriber;
 
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
 use Elio\ElioDataDiscovery\Core\Sync\RatingCountService;
+use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
 use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
-use Shopware\Core\Content\Product\ProductEvents;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -61,8 +58,7 @@ class ProductSubscriber implements EventSubscriberInterface
     {
         return [
             ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview',
-            ProductEvents::PRODUCT_REVIEW_WRITTEN_EVENT => 'onProductReviewWritten',
-            ProductEvents::PRODUCT_REVIEW_DELETED_EVENT => 'onProductReviewDeleted'
+            ProductIndexerEvent::class => 'onProductIndexer'
         ];
     }
 
@@ -81,22 +77,10 @@ class ProductSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onProductReviewWritten(EntityWrittenEvent $event): void
+    public function onProductIndexer(ProductIndexerEvent $event): void
     {
-        $reviewIds = [];
-        foreach ($event->getWriteResults() as $result) {
-            $reviewIds[] = $result->getPrimaryKey();
+        if (!in_array('product.rating-average', $event->getSkip(), true)) {
+            $this->ratingCountService->updateProductRatingCounts($event->getContext(), $event->getIds());
         }
-        $productIds = $this->ratingCountService->getProductsFromReviews($event->getContext(), $reviewIds);
-        $this->ratingCountService->updateProductRatingCounts($event->getContext(), $productIds);
-    }
-
-    public function onProductReviewDeleted(EntityDeletedEvent $event): void
-    {
-        $productIds = [];
-        foreach ($event->getWriteResults() as $result) {
-            $productIds[] = Uuid::fromBytesToHex($result->getChangeSet()?->getBefore('product_id'));
-        }
-        $this->ratingCountService->updateProductRatingCounts($event->getContext(), $productIds);
     }
 }
