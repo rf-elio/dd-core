@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\Subscriber;
 
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
 use Elio\ElioDataDiscovery\Core\Sync\RatingCountService;
+use Shopware\Core\Content\Product\DataAbstractionLayer\ProductIndexer;
 use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
 use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -79,7 +80,7 @@ class ProductSubscriber implements EventSubscriberInterface
 
     public function onProductIndexer(ProductIndexerEvent $event): void
     {
-        if (!in_array('product.rating-average', $event->getSkip(), true)) {
+        if (!in_array(ProductIndexer::RATING_AVERAGE_UPDATER, $event->getSkip(), true)) {
             $this->ratingCountService->updateProductRatingCounts($event->getContext(), $event->getIds());
         }
     }
