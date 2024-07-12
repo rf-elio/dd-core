@@ -7,7 +7,6 @@ use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheValueCompressor;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -40,17 +39,13 @@ class CachedSearchApi implements SearchApiInterface
      */
     public function search(ProductSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
-        // check if cache active
-//        if (EnvironmentHelper::getVariable(
-//            'SHOPWARE_HTTP_CACHE_ENABLED', getenv('SHOPWARE_HTTP_CACHE_ENABLED')) === "0"
-//        ) {
-//            return $this->searchApi->search($searchRequest, $context);
-//        }
         $config = $this->configService->getByContext($context);
         $searchTerm = $searchRequest->getQuery();
         $searchFilter = $searchRequest->getFilter();
-        $key = $this->generateKey($searchTerm, $searchFilter, $context);
-        $expiresAfter = $config->getSearchRedirectCacheExpiresAfter();
+        $searchSorting = $searchRequest->getSort();
+        $searchAdditionalParameters = $searchRequest->getAdditionalRequestParameters();
+        $key = $this->generateKey($searchTerm, $searchFilter, $searchSorting, $searchAdditionalParameters, $context);
+        $expiresAfter = $config->getSearchCacheExpiresAfter();
 
         $compressedResponse = $this->cache->get($key, function (ItemInterface $item) use ($key, $searchRequest, $searchTerm, $context, $expiresAfter) {
             $response = $this->searchApi->search($searchRequest, $context);
@@ -87,18 +82,30 @@ class CachedSearchApi implements SearchApiInterface
     /**
      * @param string $searchTerm
      * @param array $searchFilter
+     * @param array|null $searchSorting
+     * @param array|null $searchAdditionalParameters
      * @param SalesChannelContext $context
      * @return string|null
      */
-    private function generateKey(string $searchTerm, array $searchFilter, SalesChannelContext $context): ?string
+    private function generateKey(
+        string $searchTerm,
+        array $searchFilter,
+        ?array $searchSorting,
+        ?array $searchAdditionalParameters,
+        SalesChannelContext $context
+    ): ?string
     {
         $filter = !empty($searchFilter) ? md5(json_encode($searchFilter)) : '*';
+        $sort = !empty($searchSorting) ? md5(json_encode($searchSorting)) : '*';
+        $parameters = !empty($searchAdditionalParameters) ? md5(json_encode($searchAdditionalParameters)) : '*';
 
         return self::CACHE_HEAD_NAME . '-'
             . $context->getSalesChannelId() . '-'
             . $context->getLanguageId() . '-'
             . md5($searchTerm) . '-'
-            . $filter
+            . $filter . '-'
+            . $sort . '-'
+            . $parameters
             ;
     }
 }

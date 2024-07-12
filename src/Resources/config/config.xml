@@ -103,11 +103,6 @@
         <input-field type="single-select">
             <name>suggestContainerStyle</name>
             <options>
-                <!--<option>
-                    <id>search-suggest-container-column</id>
-                    <name>Column</name>
-                    <name lang="de-DE">Untereinander</name>
-                </option>-->
                 <option>
                     <id>search-suggest-container-standard</id>
                     <name>Standard</name>
@@ -315,6 +310,13 @@
             <helpText>User agents separated by pipes(|) </helpText>
             <helpText lang="de-DE">Durch Pipes getrennte Benutzeragenten(|)</helpText>
         </component>
+
+        <input-field type="bool">
+            <name>allowRequestLoggingForTracking</name>
+            <label>Enable request logging for tracking</label>
+            <label lang="de-DE">Aktiviert Request Logging für Tracking</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Ranking</title>
@@ -376,8 +378,13 @@
             <helpText>The Regex should be as precise as possible to make sure that it finds the relevant product.</helpText>
             <helpText lang="de-DE">Der Ausdruck sollte so präzise wie möglich sein, um das relevante Produkt zu finden.</helpText>
         </input-field>
+    </card>
+
+    <card>
+        <title>Search caching</title>
+        <title lang="de-DE">Caching der Suche</title>
         <input-field type="int">
-            <name>searchRedirectCacheExpiresAfter</name>
+            <name>searchCacheExpiresAfter</name>
             <label>Cache expires after (Sec)</label>
             <label lang="de-DE">Cache Dauer (Sek)</label>
             <defaultValue>10</defaultValue>

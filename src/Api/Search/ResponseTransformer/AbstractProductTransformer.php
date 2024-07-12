@@ -74,6 +74,7 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
      * @param SalesChannelContext $context
      * @return ProductListingResponse
      */
+    //TODO: Rename function
     public function parentTransform(array $productNumbers, array $mainNumbers, ResponseCollection $responseCollection, SalesChannelContext $context): ProductListingResponse
     {
         $productNumberSort = array_flip($productNumbers);

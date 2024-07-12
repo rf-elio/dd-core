@@ -12,13 +12,14 @@ use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
-use Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
 use Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -37,10 +38,10 @@ class ProductRedirectSearchApi implements SearchApiInterface
      * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
      * @param RouterInterface $router
      * @param LoggerInterface $logger
-     * @param RequestLoggingService $requestLoggingService
      * @param SalesChannelRepository $productRepository
      * @param SystemConfigService $systemConfigService
      * @param AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+     * @param EntityRepository $salesChannelDomainRepository
      */
     public function __construct(
         private readonly ElioDataDiscoveryConfigService $configService,
@@ -48,10 +49,10 @@ class ProductRedirectSearchApi implements SearchApiInterface
         private readonly SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
         private readonly RouterInterface $router,
         LoggerInterface $logger,
-        private readonly RequestLoggingService $requestLoggingService,
         private readonly SalesChannelRepository $productRepository,
         private readonly SystemConfigService $systemConfigService,
-        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        private readonly EntityRepository $salesChannelDomainRepository
     )
     {
         $this->logger = $logger;
@@ -75,7 +76,8 @@ class ProductRedirectSearchApi implements SearchApiInterface
                 $searchTerm, $context, $this->systemConfigService, $this->productCloseoutFilterFactory
             )
         ) {
-            $url = $context?->getSalesChannel()?->getDomains()?->first()?->getUrl();
+            $url = $this->getDomainById($context->getDomainId(), $context)->getUrl();
+
             if (!$url) {
                 return $this->searchApi->search($searchRequest, $context);
             }
@@ -92,9 +94,6 @@ class ProductRedirectSearchApi implements SearchApiInterface
             return $responseCollection;
         }
 
-        if ($config->isLoggingSearchRequestActive()) {
-            $this->requestLoggingService->logRequest($searchRequest, $context);
-        }
         return $this->searchApi->search($searchRequest, $context);
     }
 
@@ -134,12 +133,24 @@ class ProductRedirectSearchApi implements SearchApiInterface
         string $searchTerm,
         SalesChannelContext $context,
         SystemConfigService $systemConfigService,
-        ProductCloseoutFilterFactory $productCloseoutFilterFactory
+        AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
     ): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('productNumber', $searchTerm));
         $this->handleAvailableStock($criteria, $context, $systemConfigService, $productCloseoutFilterFactory);
         return $this->productRepository->searchIds($criteria, $context)->firstId();
+    }
+
+    /**
+     * @param string $domainId
+     * @param SalesChannelContext $context
+     * @return SalesChannelDomainEntity
+     */
+    private function getDomainById(string $domainId, SalesChannelContext $context): SalesChannelDomainEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('id', $domainId));
+        return $this->salesChannelDomainRepository->search($criteria, $context->getContext())->getEntities()->first();
     }
 }

@@ -65,5 +65,8 @@ class TrackingApi
      * Handles the tracking requests
      * @throws ClientApiException
      */
-    public function track(TrackingRequest $request, string $salesChannelId) : void {}
+    public function track(TrackingRequest $request, string $salesChannelId) : void
+    {
+        //TODO: Implement request logging
+    }
 }

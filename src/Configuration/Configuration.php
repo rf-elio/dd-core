@@ -58,6 +58,7 @@ class Configuration extends Struct
      * @param bool $trackLogin
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
+     * @param bool $allowRequestLoggingForTracking
      * @param bool $listingUseElioDataDiscovery
      * @param bool $productDetailPageCampaignsActive
      * @param string[] $additionalRequestParameters
@@ -71,7 +72,7 @@ class Configuration extends Struct
      * @param bool $suggestUseElioDataDiscovery
      * @param bool $searchRedirectToProductDetail
      * @param string $searchRedirectProductRegex
-     * @param int $searchRedirectCacheExpiresAfter
+     * @param int $searchCacheExpiresAfter
      * @param bool $suggestToggleHighlight
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
@@ -103,6 +104,7 @@ class Configuration extends Struct
         private readonly bool $trackLogin,
         private readonly bool $trackProductView,
         private readonly array $disallowTrackingForUserAgents,
+        private readonly bool $allowRequestLoggingForTracking,
         private readonly bool $listingUseElioDataDiscovery,
         private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
@@ -116,7 +118,7 @@ class Configuration extends Struct
         private readonly bool $suggestUseElioDataDiscovery,
         private readonly bool $searchRedirectToProductDetail,
         private readonly string $searchRedirectProductRegex,
-        private readonly int $searchRedirectCacheExpiresAfter,
+        private readonly int $searchCacheExpiresAfter,
         private readonly bool $suggestToggleHighlight,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
@@ -239,6 +241,14 @@ class Configuration extends Struct
     public function getDisallowTrackingForUserAgents(): array
     {
         return $this->disallowTrackingForUserAgents;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllowRequestLoggingForTracking(): bool
+    {
+        return $this->allowRequestLoggingForTracking;
     }
 
     /**
@@ -446,8 +456,8 @@ class Configuration extends Struct
         return $this->searchRedirectProductRegex;
     }
 
-    public function getSearchRedirectCacheExpiresAfter(): int
+    public function getSearchCacheExpiresAfter(): int
     {
-        return $this->searchRedirectCacheExpiresAfter;
+        return $this->searchCacheExpiresAfter;
     }
 }

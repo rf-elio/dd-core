@@ -142,19 +142,6 @@ trait ElioDataDiscoveryLogTrait
     }
 
     /**
-     * Creates search request log messages
-     *
-     * @param string $message
-     * @param object $sender
-     * @param array $context
-     */
-    protected function searchRequestLog(string $message, object $sender, array $context) : void {
-        $context = $this->prepareSearchRequestLog($context);
-        $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($sender);
-        $this->logger->info($message, $context);
-    }
-
-    /**
      * Prepares the context to extract as much information as possible
      *
      * @param array $context
@@ -185,31 +172,6 @@ trait ElioDataDiscoveryLogTrait
             elseif (is_object($item)) {
                 $context[$key] = [
                     'type' => $item::class,
-                    'values' => $item
-                ];
-            }
-        }
-
-        $context[LoggingServiceInterface::LOG_ENTRY_ID] = Uuid::randomHex();
-        return $context;
-    }
-
-    /**
-     * Prepares the context to extract as much information as possible
-     *
-     * @param array $context
-     * @return array
-     */
-    protected function prepareSearchRequestLog(array $context) : array
-    {
-        foreach ($context as $key => $item) {
-            if ($item instanceof RequestLoggingInterface) {
-                $context[$key] = [
-                    'remote_address' => $item->getRemoteAddress(),
-                    'search_time' => new DateTime('now'),
-                    'request_uri' => $item->getRequestUri(),
-                    'user_agent' => $item->getHttpUserAgent(),
-                    'type' => get_class($item),
                     'values' => $item
                 ];
             }
