@@ -130,7 +130,7 @@ class ProductDetailTrackingController extends StorefrontController
         $this->eventDispatcher->dispatch($requestCreatedEvent);
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),
-            $salesChannelContext->getSalesChannelId()
+            $salesChannelContext
         ));
         return new SuccessResponse();
     }

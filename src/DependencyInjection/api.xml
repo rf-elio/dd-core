@@ -20,7 +20,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\ProductRedirectSearchApi.inner" />
             <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" />
             <argument type="service" id="router" />
-            <argument type="service" id="elio.data-discovery.core.logging.search_request"/>
+            <argument type="service" id="elio.data-discovery.core.logging.request"/>
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
@@ -29,6 +29,8 @@
         <service id="Elio\ElioDataDiscovery\Api\Search\SuggestApi"/>
         <service id="Elio\ElioDataDiscovery\Api\Tracking\TrackingApi">
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi">

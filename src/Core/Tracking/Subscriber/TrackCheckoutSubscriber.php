@@ -165,6 +165,6 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->bus->dispatch(new TrackingMessage($request, $salesChannelId));
+        $this->bus->dispatch(new TrackingMessage($request, $salesChannelContext));
     }
 }

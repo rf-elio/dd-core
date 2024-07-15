@@ -32,6 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Core\Tracking\Subscriber;
 
+use Elio\ElioDataDiscovery\Api\Request\MetaDataTrait;
 use Elio\ElioDataDiscovery\Api\Tracking\Request\CartTrackingRequest;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
@@ -64,6 +65,7 @@ class TrackCartSubscriber implements EventSubscriberInterface
 {
     private array $changedQuantities = [];
     use TrackingSessionTrait;
+    use MetaDataTrait;
 
     /**
      * TrackCartSubscriber constructor.
@@ -75,12 +77,12 @@ class TrackCartSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        private MessageBusInterface $bus,
-        private EventDispatcherInterface $eventDispatcher,
-        private RequestStack $requestStack,
-        private EntityRepository $productRepository
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly TrackingAllowedCheckerInterface         $trackingAllowedChecker,
+        private readonly MessageBusInterface                     $bus,
+        private readonly EventDispatcherInterface                $eventDispatcher,
+        private readonly RequestStack                            $requestStack,
+        private readonly EntityRepository                        $productRepository
     ) {}
 
     /**
@@ -218,6 +220,8 @@ class TrackCartSubscriber implements EventSubscriberInterface
             );
         }
 
+        $request->setMetaDataFromRequest($this->requestStack->getMainRequest());
+
         $requestCreatedEvent = new CartTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
         $request = $requestCreatedEvent->getRequest();
@@ -226,6 +230,6 @@ class TrackCartSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->bus->dispatch(new TrackingMessage($request, $salesChannelContext->getSalesChannelId()));
+        $this->bus->dispatch(new TrackingMessage($request, $salesChannelContext));
     }
 }

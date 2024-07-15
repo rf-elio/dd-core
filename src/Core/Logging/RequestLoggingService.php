@@ -21,13 +21,18 @@ class RequestLoggingService
     /**
      * @param RequestLoggingInterface $requestLoggingInterface
      * @param SalesChannelContext $salesChannelContext
+     * @param string $type
      * @return void
      */
-    public function logRequest(RequestLoggingInterface $requestLoggingInterface, SalesChannelContext $salesChannelContext): void
+    public function logRequest(
+        RequestLoggingInterface $requestLoggingInterface,
+        SalesChannelContext $salesChannelContext,
+        string $type
+    ): void
     {
         $context = $this->prepareSearchRequestLog([$requestLoggingInterface, $salesChannelContext]);
         $context[LoggingServiceInterface::LOG_ENTRY_SENDER] = get_class($this);
-        $this->logger->info('search', $context);
+        $this->logger->info($type, $context);
     }
 
     /**

@@ -32,11 +32,10 @@
 
 namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -58,30 +57,27 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
      * AbstractProductTransformer constructor.
      *
      * @param ProductListingLoader $listingLoader
-     * @param Connection $connection
      */
     public function __construct(
-        private readonly ProductListingLoader $listingLoader,
-        private readonly Connection           $connection
+        private readonly ProductListingLoader $listingLoader
     )
     {
     }
 
     /**
-     * @param array $productNumbers
      * @param array $mainNumbers
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
      * @return ProductListingResponse
      */
-    //TODO: Rename function
-    public function parentTransform(array $productNumbers, array $mainNumbers, ResponseCollection $responseCollection, SalesChannelContext $context): ProductListingResponse
+    public function loadProductsForListing(array $mainNumbers, ResponseCollection $responseCollection, SalesChannelContext $context): ProductListingResponse
     {
-        $productNumberSort = array_flip($productNumbers);
+        $productNumberSort = array_flip($mainNumbers);
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
+        $criteria->addFilter(new EqualsAnyFilter('productNumber', $mainNumbers));
         $criteria->addAssociation('manufacturer');
+        $criteria->addExtension(DisableVariantGroupingInListingLoaderStruct::class, new DisableVariantGroupingInListingLoaderStruct());
 
         /** @var ProductCollection $products */
         $products = $this->listingLoader->load($criteria, $context)->getEntities();
@@ -104,38 +100,5 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
         return $listing;
-    }
-
-    /**
-     * Extracts the main and variant product numbers and ids in the right order from the numbers of the search result
-     *
-     * @param array<int, string> $mainNumbers
-     *
-     * @return array<string, array<string, string>>
-     * @throws Exception
-     */
-    protected function extractMainAndVariantProducts(array $mainNumbers): array
-    {
-        /** @var array<string, array<string, string>> return */
-        return $this->connection->fetchAllAssociativeIndexed(
-            '# ff product-transformer::extract-product-numbers
-            SELECT
-                IFNULL(child.product_number, parent.product_number) as number,
-                LOWER(HEX(IFNULL(child.id, parent.id))) as id,
-                parent.product_number as parentNumber,
-                LOWER(HEX(parent.id)) as parentId,
-                LOWER(HEX(child.id)) as childId
-            FROM product as parent
-                LEFT JOIN product as child
-                    ON parent.id = child.parent_id
-                    AND parent.version_id = child.version_id
-            WHERE parent.product_number in (:numbers)
-            ORDER BY FIELD(parent.product_number, :numbers), child.product_number
-            ',
-            [
-                'numbers' => $mainNumbers
-            ],
-            ['numbers' => Connection::PARAM_STR_ARRAY]
-        );
     }
 }

@@ -33,11 +33,9 @@
 namespace Elio\ElioDataDiscovery\Core\Content\Product\Subscriber;
 
 
-use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
 use Elio\ElioDataDiscovery\Core\Sync\RatingCountService;
 use Shopware\Core\Content\Product\DataAbstractionLayer\ProductIndexer;
 use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
-use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -58,24 +56,8 @@ class ProductSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview',
             ProductIndexerEvent::class => 'onProductIndexer'
         ];
-    }
-
-    public function onProductListingResolvePreview(ProductListingResolvePreviewEvent $event): void
-    {
-        $mainVariantMapping = $event->getContext()->getExtension(MainVariantMappingExtension::KEY);
-        if (!$mainVariantMapping instanceof MainVariantMappingExtension) {
-            return;
-        }
-        $mainVariantMapping = $mainVariantMapping->getMapping();
-
-        foreach ($event->getMapping() as $id => $mappedId) {
-            if (array_key_exists($id, $mainVariantMapping)) {
-                $event->replace($id, $mainVariantMapping[$id]);
-            }
-        }
     }
 
     public function onProductIndexer(ProductIndexerEvent $event): void

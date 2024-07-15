@@ -84,7 +84,6 @@ class TrackLoginSubscriber implements EventSubscriberInterface
     public function trackLogin(CustomerLoginEvent $event): void
     {
         $customer = $event->getCustomer();
-        $salesChannelId = $event->getSalesChannelId();
         $salesChannelContext = $event->getSalesChannelContext();
         $config = $this->configService->getByContext($event->getSalesChannelContext());
 
@@ -104,7 +103,7 @@ class TrackLoginSubscriber implements EventSubscriberInterface
 
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),
-            $salesChannelId
+            $salesChannelContext
         ));
     }
 

@@ -9,7 +9,7 @@
             <argument>%kernel.logs_dir%</argument>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService">
-            <argument type="service" id="elio.data-discovery.core.logging.search_request" />
+            <argument type="service" id="elio.data-discovery.core.logging.request" />
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Logging\LogFilterContext"/>
 
@@ -50,9 +50,9 @@
             <argument type="string">10</argument>
             <argument type="string">1</argument>
         </service>
-        <service id="elio.data-discovery.core.logging.search_request" class="Monolog\Logger">
+        <service id="elio.data-discovery.core.logging.request" class="Monolog\Logger">
             <factory service="Elio\ElioDataDiscovery\Core\Logging\LoggerFactory" method="createRotating" />
-            <argument type="string">elio_data_discovery_search_request</argument>
+            <argument type="string">elio_data_discovery_request</argument>
             <argument type="string">10</argument>
             <argument type="string">0</argument>
             <argument>false</argument>
