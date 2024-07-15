@@ -64,11 +64,11 @@ class TrackLoginSubscriber implements EventSubscriberInterface
      * @param RequestStack $requestStack
      */
     public function __construct(
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        private MessageBusInterface $bus,
-        private EventDispatcherInterface $eventDispatcher,
-        private RequestStack $requestStack
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly TrackingAllowedCheckerInterface         $trackingAllowedChecker,
+        private readonly MessageBusInterface                     $bus,
+        private readonly EventDispatcherInterface                $eventDispatcher,
+        private readonly RequestStack                            $requestStack
     ) {}
 
     public static function getSubscribedEvents() : array
@@ -100,6 +100,8 @@ class TrackLoginSubscriber implements EventSubscriberInterface
         $request->addEvent($this->getTrackingSessionId($this->requestStack), $customer->getId());
         $requestCreatedEvent = new LoginTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
+
+        $request->setMetaDataFromRequest($this->requestStack->getMainRequest());
 
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),

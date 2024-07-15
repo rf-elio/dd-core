@@ -32,7 +32,6 @@
 
 namespace Elio\ElioDataDiscovery\Core\Tracking\Subscriber;
 
-use Elio\ElioDataDiscovery\Api\Request\MetaDataTrait;
 use Elio\ElioDataDiscovery\Api\Tracking\Request\CartTrackingRequest;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Tracking\AllowedChecker\TrackingAllowedCheckerInterface;
@@ -65,7 +64,6 @@ class TrackCartSubscriber implements EventSubscriberInterface
 {
     private array $changedQuantities = [];
     use TrackingSessionTrait;
-    use MetaDataTrait;
 
     /**
      * TrackCartSubscriber constructor.
