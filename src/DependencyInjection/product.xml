@@ -68,6 +68,7 @@
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\Subscriber\ProductSubscriber">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\RatingCountService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

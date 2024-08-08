@@ -34,6 +34,9 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\Subscriber;
 
 
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\MainVariantMappingExtension;
+use Elio\ElioDataDiscovery\Core\Sync\RatingCountService;
+use Shopware\Core\Content\Product\DataAbstractionLayer\ProductIndexer;
+use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
 use Shopware\Core\Content\Product\Events\ProductListingResolvePreviewEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -48,10 +51,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ProductSubscriber implements EventSubscriberInterface
 {
+    public function __construct(
+        private readonly RatingCountService $ratingCountService
+    ) {}
+
     public static function getSubscribedEvents(): array
     {
         return [
-            ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview'
+            ProductListingResolvePreviewEvent::class => 'onProductListingResolvePreview',
+            ProductIndexerEvent::class => 'onProductIndexer'
         ];
     }
 
@@ -67,6 +75,13 @@ class ProductSubscriber implements EventSubscriberInterface
             if (array_key_exists($id, $mainVariantMapping)) {
                 $event->replace($id, $mainVariantMapping[$id]);
             }
+        }
+    }
+
+    public function onProductIndexer(ProductIndexerEvent $event): void
+    {
+        if (!in_array(ProductIndexer::RATING_AVERAGE_UPDATER, $event->getSkip(), true)) {
+            $this->ratingCountService->updateProductRatingCounts($event->getContext(), $event->getIds());
         }
     }
 }

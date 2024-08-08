@@ -3,6 +3,10 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="elio_data_discovery.sync.collector.chuck_size">50</parameter>
+    </parameters>
+
     <services>
         <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition">
             <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile"/>
@@ -34,16 +38,19 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\CategoryCollector">
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\LandingPageCollector">
             <argument type="service" id="sales_channel.landing_page.repository"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
 
@@ -171,9 +178,12 @@
             <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <tag name="console.command"/>
         </service>
-
         <service id="Elio\ElioDataDiscovery\Core\Sync\CategoryInheritanceService">
             <argument type="service" id="category.repository"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Sync\RatingCountService">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <!-- message handler -->
