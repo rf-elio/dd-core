@@ -87,8 +87,6 @@ class Configuration extends Struct
      * @param int $entityStatusMaxCleanupAgeInDays
      * @param bool $allowStreamIdSearch
      * @param int $productDetailSliderLimit
-     * @param bool $useProductDetailRecommendations
-     * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
      * @param string $suggestContainerStyle
      */
@@ -133,8 +131,6 @@ class Configuration extends Struct
         private readonly int $entityStatusMaxCleanupAgeInDays,
         private readonly bool $allowStreamIdSearch,
         private readonly int $productDetailSliderLimit,
-        private readonly bool $useProductDetailRecommendations,
-        private readonly bool $useProductDetailSimilar,
         private readonly array $recommendationExcludedProducts,
         private readonly string $suggestContainerStyle,
     ) {}
@@ -408,16 +404,6 @@ class Configuration extends Struct
     public function isSuggestToggleHighlight(): bool
     {
         return $this->suggestToggleHighlight;
-    }
-
-    public function isUseProductDetailRecommendations(): bool
-    {
-        return $this->useProductDetailRecommendations;
-    }
-
-    public function isUseProductDetailSimilar(): bool
-    {
-        return $this->useProductDetailSimilar;
     }
 
     public function getRecommendationExcludedProducts(): array

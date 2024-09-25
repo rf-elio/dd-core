@@ -90,17 +90,4 @@ class RecommendationApi
         $this->searchDebug('RecommendationApi::getRecommendations', $this, [$request, $context]);
         return new ResponseCollection();
     }
-
-    /**
-     * @param SimilarRequest $request
-     * @param SalesChannelContext $context
-     *
-     * @return ResponseCollection
-     * @throws Throwable
-     */
-    public function getSimilar(SimilarRequest $request, SalesChannelContext $context): ResponseCollection
-    {
-        $this->searchDebug('RecommendationApi::getSimilar', $this, [$request, $context]);
-        return new ResponseCollection();
-    }
 }

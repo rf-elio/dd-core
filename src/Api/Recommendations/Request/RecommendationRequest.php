@@ -10,6 +10,7 @@ class RecommendationRequest extends ChannelRequest
      * @var string[]
      */
     private array $productIds;
+    private string $recommendationType;
     private int $limit;
     private ?string $sessionId = null;
 
@@ -54,5 +55,21 @@ class RecommendationRequest extends ChannelRequest
     public function setProductIds(array $productIds): void
     {
         $this->productIds = $productIds;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRecommendationType(): string
+    {
+        return $this->recommendationType;
+    }
+
+    /**
+     * @param string $recommendationType
+     */
+    public function setRecommendationType(string $recommendationType): void
+    {
+        $this->recommendationType = $recommendationType;
     }
 }

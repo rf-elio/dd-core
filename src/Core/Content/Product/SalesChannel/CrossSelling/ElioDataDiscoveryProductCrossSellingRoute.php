@@ -2,10 +2,17 @@
 
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling;
 
+use Elio\ElioBatteryIncludedSearchExtension\Configuration\BatteryIncludedConfiguration;
+use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi;
+use Elio\ElioDataDiscovery\Api\Recommendations\Request\RecommendationRequest;
+use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler;
 use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\SimilarBundleHandlerHandler;
 use Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleServiceInterface;
+use Elio\ElioDataDiscovery\Core\Util\Excluder;
 use Shopware\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -17,6 +24,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -39,7 +47,8 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly ProductBundleServiceInterface $productBundleService,
         private readonly TranslatorInterface $translator,
-        private readonly EntityRepository $productRepository
+        private readonly EntityRepository $productRepository,
+        private readonly RecommendationApi $recommendationApi,
     )
     {
     }
@@ -65,6 +74,9 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
     public function load(string $productId, Request $request, SalesChannelContext $context, Criteria $criteria): ProductCrossSellingRouteResponse
     {
         $config = $this->configService->getByContext($context);
+
+        /** @var BatteryIncludedConfiguration $batteryIncludedConfig */
+        $batteryIncludedConfig = $config->getExtension('batteryIncluded');
         $productCrossSellingResponse = $this->getDecorated()->load($productId, $request, $context, $criteria);
 
         if (!$config->isActive() || !$request->isXmlHttpRequest()) {
@@ -80,29 +92,44 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
 
         $crossSellingCriteria = new Criteria();
         $crossSellingCriteria->setLimit($config->getProductDetailSliderLimit());
-        if ($config->isUseProductDetailRecommendations()) {
-            $request->request->set('productIds', [$productId]);
-            $request->request->set('productNumber', $productNumber);
-            $products = $this->productBundleService->getProducts(
-                RecommendedBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
-            );
-            $crossSellingElementCollection->add($this->createCrossSellingElement(
-                'elioDataDiscovery.cross-selling.recommendations',
-                $products
-            ));
+        $recommendationTypes = ["together", "also", "related"];
+        $disabledRecommendationTypes = explode(',', $batteryIncludedConfig->getDisabledRecommendationTypes());
+        $request->request->set('productIds', [$productId]);
+        $request->request->set('productNumber', $productNumber);
+        $recommendations = $this->getProducts($request, $crossSellingCriteria, $config, $context);
+        foreach ($recommendationTypes as $recommendationType) {
+            if (!in_array($recommendationType, $disabledRecommendationTypes)) {
+                $crossSellingElementCollection->add($this->createCrossSellingElement(
+                    'elioDataDiscovery.cross-selling.' . $recommendationType, $recommendations[$recommendationType]
+                ));
+            }
         }
 
-        if ($config->isUseProductDetailSimilar()) {
-            $request->request->set('productId', $productId);
-            $request->request->set('productNumber', $productNumber);
-            $products = $this->productBundleService->getProducts(
-                SimilarBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
-            );
-            $crossSellingElementCollection->add($this->createCrossSellingElement(
-                'elioDataDiscovery.cross-selling.similar',
-                $products
-            ));
-        }
+        dd($productCrossSellingResponse);
+
+//        if ($config->isUseProductDetailRecommendations()) {
+//            $request->request->set('productIds', [$productId]);
+//            $request->request->set('productNumber', $productNumber);
+//            $products = $this->productBundleService->getProducts(
+//                RecommendedBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
+//            );
+//            $crossSellingElementCollection->add($this->createCrossSellingElement(
+//                'elioDataDiscovery.cross-selling.recommendations',
+//                $products
+//            ));
+//        }
+//
+//        if ($config->isUseProductDetailSimilar()) {
+//            $request->request->set('productId', $productId);
+//            $request->request->set('productNumber', $productNumber);
+//            $products = $this->productBundleService->getProducts(
+//                SimilarBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
+//            );
+//            $crossSellingElementCollection->add($this->createCrossSellingElement(
+//                'elioDataDiscovery.cross-selling.similar',
+//                $products
+//            ));
+//        }
 
         return $productCrossSellingResponse;
     }
@@ -129,5 +156,33 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         $crossSellingElement->setProducts($products);
         $crossSellingElement->setCrossSelling($crossSelling);
         return $crossSellingElement;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function getProducts(
+        Request $request,
+        Criteria $criteria,
+        Configuration $config,
+        SalesChannelContext $salesChannelContext
+    ): array
+    {
+        $products = [];
+        $recommendationRequest = new RecommendationRequest('');
+        $recommendationRequest->setProductIds($request->get('productIds'));
+        $recommendationRequest->setSessionId($salesChannelContext->getToken());
+        $recommendationRequest->setLimit($criteria->getLimit() ?? 0);
+
+        $resultCollection = $this->recommendationApi->getRecommendations($recommendationRequest, $salesChannelContext);
+        /** @var RecommendationResponse $result */
+        foreach ($resultCollection as $result) {
+            $productListing = $result->getProductListing();
+            if (!$productListing) {
+                return new ProductCollection();
+            }
+            $products[$result->getRecommendationType()] = Excluder::exclude($productListing->getProducts(), $config);
+        }
+        return $products;
     }
 }
