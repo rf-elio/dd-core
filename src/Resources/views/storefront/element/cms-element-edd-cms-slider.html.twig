@@ -1,0 +1,15 @@
+{% block element_e_dd_cms_slider %}
+    {% set config = element.fieldConfig.elements %}
+    {% set products = element.data.products.elements %}
+
+    <div class="e-dd-cms-slider-lazy"
+         data-elio-data-siscovery-cms-slider-parameter-name="{{ config.cmsSliderParameterName.value|escape }}"
+         data-elio-data-siscovery-cms-slider-parameter-value="{{ config.cmsSliderParameterValue.value|escape }}"
+    >
+        {% sw_include "@Storefront/storefront/element/cms-element-product-slider.html.twig" with {
+            element: element
+        } %}
+
+{#        <div class="e-dd-cms-slider-lazy-container"></div>#}
+    </div>
+{% endblock %}

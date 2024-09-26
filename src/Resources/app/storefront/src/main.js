@@ -13,3 +13,4 @@ PluginManager.register('ElioAdvisorCampaignPlugin', () => import('./plugin/elio-
 PluginManager.register('ElioAdvisorCampaignCmsLoaderPlugin', () => import('./plugin/elio-advisor-campaign/elio-advisor-campaign-cms-loader.plugin'), '.e-dd-advisor-campaign-lazy');
 PluginManager.register('ElioProductDetailCrossSellingPlugin', () => import('./plugin/elio-product-detail-cross-selling/elio-product-detail-cross-selling.plugin'), '[data-e-elio-data-discovery-product-detail-cross-selling-url]');
 PluginManager.register('ElioDataDiscoveryFilterRating', () => import('./plugin/filter/elio-data-discovery-filter-rating.plugin'), '[data-elio-data-discovery-filter-rating');
+PluginManager.register('ElioDataDiscoveryCmsSlider', () => import('./plugin/elio-cms-slider/elio-cms-slider.plugin'), 'e-dd-cms-slider');

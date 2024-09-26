@@ -1,0 +1,22 @@
+{% block sw_cms_el_config_edd_cms_slider %}
+    <div class="sw-cms-el-config-edd-cms-slider">
+        <sw-text-field
+            :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterName')"
+            v-model:value="element.config.cmsSliderParameterName.value"
+            required
+        >
+        </sw-text-field>
+        <sw-text-field
+            :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterValue')"
+            v-model:value="element.config.cmsSliderParameterValue.value"
+            required
+        >
+        </sw-text-field>
+        <sw-text-field
+                :label="$tc('sw-cms.elements.cmsSlider.config.elMinWidth')"
+                v-model:value="element.config.elMinWidth.value"
+                required
+        >
+        </sw-text-field>
+    </div>
+{% endblock %}

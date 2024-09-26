@@ -3,22 +3,19 @@
         <component is="elio-data-discovery-feature-status" feature="advisor" />
         <sw-text-field
             :label="$tc('sw-cms.elements.advisorCampaign.config.campaignParameterName')"
-            v-model="element.config.campaignParameterName.value"
-            @element-update="onElementUpdate"
+            v-model:value="element.config.campaignParameterName.value"
             required
         >
         </sw-text-field>
         <sw-text-field
             :label="$tc('sw-cms.elements.advisorCampaign.config.campaignParameterValue')"
-            v-model="element.config.campaignParameterValue.value"
-            @element-update="onElementUpdate"
+            v-model:value="element.config.campaignParameterValue.value"
             required
         >
         </sw-text-field>
         <sw-text-field
             :label="$tc('sw-cms.elements.advisorCampaign.config.productsTitle')"
-            v-model="element.config.productsTitle.value"
-            @element-update="onElementUpdate"
+            v-model:value="element.config.productsTitle.value"
         >
         </sw-text-field>
     </div>

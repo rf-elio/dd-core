@@ -13,6 +13,8 @@ import './view/sw-category-detail-sorting-ruler/index';
 import './view/sw-category-detail-positions-table/index';
 import './module/sw-cms/blocks/commerce/edd-advisor-campaign';
 import './module/sw-cms/elements/advisor-campaign';
+import './module/sw-cms/blocks/commerce/edd-cms-slider';
+import './module/sw-cms/elements/cms-slider';
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 
