@@ -4,7 +4,6 @@ namespace Elio\ElioDataDiscovery\Api\Recommendations\Response;
 
 use Elio\ElioDataDiscovery\Api\Response\Response;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Shopware\Core\Content\Product\ProductCollection;
 
 class RecommendationResponse extends Response
 {

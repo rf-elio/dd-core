@@ -8,7 +8,6 @@ use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
 use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\AbstractProductTransformer;
 use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
 use Elio\ElioDataDiscovery\Swagger\ModelInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -62,6 +61,7 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
         }
 
         $productNumbersPerType = ProductNumberExtractor::extractProductNumbers($model);
+        //TODO: Remove test data
         $productNumbersPerType["together"] = ["SW10001", "SW10002"];
         foreach ($productNumbersPerType as $type => $productNumbers) {
             $productNumberSort = array_flip($productNumbers);
@@ -71,7 +71,6 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
             /** @var ProductCollection $products */
             $products = $this->listingLoader->load($criteria, $context)->getEntities();
 
-            // sorts the product collection based on the original ff result order
             $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
                 $aPosition = $productNumberSort[$a->getProductNumber()];
                 $bPosition = $productNumberSort[$b->getProductNumber()];
@@ -91,16 +90,5 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
             $response->setProductListing($listing);
             $responseCollection->add($response);
         }
-
-//        $response = $responseCollection->get(RecommendationResponse::class) ?? new RecommendationResponse();
-//        $responseCollection->set(RecommendationResponse::class, $response);
-//        $response->setProducts($products);
-//        $listing = $responseCollection->get(ProductListingResponse::class) ?? new ProductListingResponse();
-//        $responseCollection->set(ProductListingResponse::class, $listing);
-//        $listing->setCurrentPage(0);
-//        $listing->setHitsPerPage($products->count());
-//        $listing->setPageCount(1);
-//        $listing->setProducts($products);
-        //dd($responseCollection);
     }
 }

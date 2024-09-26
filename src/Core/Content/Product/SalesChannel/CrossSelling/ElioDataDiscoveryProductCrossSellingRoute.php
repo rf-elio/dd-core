@@ -6,12 +6,8 @@ use Elio\ElioBatteryIncludedSearchExtension\Configuration\BatteryIncludedConfigu
 use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi;
 use Elio\ElioDataDiscovery\Api\Recommendations\Request\RecommendationRequest;
 use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
-use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
-use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\RecommendedBundleHandlerHandler;
-use Elio\ElioDataDiscovery\Core\ProductBundle\Handler\SimilarBundleHandlerHandler;
-use Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleServiceInterface;
 use Elio\ElioDataDiscovery\Core\Util\Excluder;
 use Shopware\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -24,7 +20,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -38,14 +33,13 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
     /**
      * @param AbstractProductCrossSellingRoute $crossSellingRoute
      * @param ElioDataDiscoveryConfigServiceInterface $configService
-     * @param ProductBundleServiceInterface $productBundleService
      * @param TranslatorInterface $translator
      * @param EntityRepository $productRepository
+     * @param RecommendationApi $recommendationApi
      */
     public function __construct(
         private readonly AbstractProductCrossSellingRoute $crossSellingRoute,
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
-        private readonly ProductBundleServiceInterface $productBundleService,
         private readonly TranslatorInterface $translator,
         private readonly EntityRepository $productRepository,
         private readonly RecommendationApi $recommendationApi,
@@ -105,32 +99,6 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
             }
         }
 
-        dd($productCrossSellingResponse);
-
-//        if ($config->isUseProductDetailRecommendations()) {
-//            $request->request->set('productIds', [$productId]);
-//            $request->request->set('productNumber', $productNumber);
-//            $products = $this->productBundleService->getProducts(
-//                RecommendedBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
-//            );
-//            $crossSellingElementCollection->add($this->createCrossSellingElement(
-//                'elioDataDiscovery.cross-selling.recommendations',
-//                $products
-//            ));
-//        }
-//
-//        if ($config->isUseProductDetailSimilar()) {
-//            $request->request->set('productId', $productId);
-//            $request->request->set('productNumber', $productNumber);
-//            $products = $this->productBundleService->getProducts(
-//                SimilarBundleHandlerHandler::TYPE, $request, $crossSellingCriteria, $context
-//            );
-//            $crossSellingElementCollection->add($this->createCrossSellingElement(
-//                'elioDataDiscovery.cross-selling.similar',
-//                $products
-//            ));
-//        }
-
         return $productCrossSellingResponse;
     }
 
@@ -179,7 +147,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         foreach ($resultCollection as $result) {
             $productListing = $result->getProductListing();
             if (!$productListing) {
-                return new ProductCollection();
+                $products[$result->getRecommendationType()] = new ProductCollection();
             }
             $products[$result->getRecommendationType()] = Excluder::exclude($productListing->getProducts(), $config);
         }

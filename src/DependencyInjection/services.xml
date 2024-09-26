@@ -10,7 +10,6 @@
         <import resource="bot-protection.xml"/>
         <import resource="api.xml"/>
         <import resource="product.xml"/>
-        <import resource="product-bundle.xml"/>
         <import resource="ranking.xml"/>
         <import resource="tracking.xml"/>
         <import resource="sort.xml"/>

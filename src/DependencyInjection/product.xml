@@ -47,7 +47,6 @@
         >
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService" />
             <argument type="service" id="translator"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi"/>
