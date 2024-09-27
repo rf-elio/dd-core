@@ -61,8 +61,6 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
         }
 
         $productNumbersPerType = ProductNumberExtractor::extractProductNumbers($model);
-        //TODO: Remove test data
-        $productNumbersPerType["together"] = ["SW10001", "SW10002"];
         foreach ($productNumbersPerType as $type => $productNumbers) {
             $productNumberSort = array_flip($productNumbers);
 

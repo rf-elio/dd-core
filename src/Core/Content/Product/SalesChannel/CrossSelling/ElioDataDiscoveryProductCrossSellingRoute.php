@@ -86,15 +86,14 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
 
         $crossSellingCriteria = new Criteria();
         $crossSellingCriteria->setLimit($config->getProductDetailSliderLimit());
-        $recommendationTypes = ["together", "also", "related"];
         $disabledRecommendationTypes = explode(',', $batteryIncludedConfig->getDisabledRecommendationTypes());
         $request->request->set('productIds', [$productId]);
         $request->request->set('productNumber', $productNumber);
         $recommendations = $this->getProducts($request, $crossSellingCriteria, $config, $context);
-        foreach ($recommendationTypes as $recommendationType) {
-            if (!in_array($recommendationType, $disabledRecommendationTypes)) {
+        foreach ($recommendations as $recommendationType => $recommendation) {
+            if (!in_array($recommendationType, $disabledRecommendationTypes, true)) {
                 $crossSellingElementCollection->add($this->createCrossSellingElement(
-                    'elioDataDiscovery.cross-selling.' . $recommendationType, $recommendations[$recommendationType]
+                    'elioDataDiscovery.cross-selling.' . $recommendationType, $recommendation
                 ));
             }
         }
@@ -138,7 +137,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
     {
         $products = [];
         $recommendationRequest = new RecommendationRequest('');
-        $recommendationRequest->setProductIds($request->get('productIds'));
+        $recommendationRequest->setProductNumber($request->get('productNumber'));
         $recommendationRequest->setSessionId($salesChannelContext->getToken());
         $recommendationRequest->setLimit($criteria->getLimit() ?? 0);
 

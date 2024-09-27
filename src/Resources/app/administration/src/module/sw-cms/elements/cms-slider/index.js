@@ -19,6 +19,26 @@ Shopware.Service('cmsService').registerCmsElement({
             value: '',
             required: true
         },
+        displayMode: {
+            source: 'static',
+            value: 'standard',
+        },
+        boxLayout: {
+            source: 'static',
+            value: 'standard',
+        },
+        navigation: {
+            source: 'static',
+            value: true,
+        },
+        rotate: {
+            source: 'static',
+            value: false,
+        },
+        border: {
+            source: 'static',
+            value: false,
+        },
         elMinWidth: {
             source: 'static',
             value: '200px'

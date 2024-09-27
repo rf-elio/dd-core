@@ -109,6 +109,9 @@
             "commerce": {
                 "advisorCampaign": {
                     "label": "Advisor campaign"
+                },
+                "cmsSlider": {
+                    "label": "CMS Slider"
                 }
             }
         },
@@ -125,6 +128,14 @@
                     "firstAnswer": "First answer",
                     "secondAnswer": "Second answer",
                     "thirdAnswer": "Third answer"
+                }
+            },
+            "cmsSlider": {
+                "label": "CMS Slider",
+                "config": {
+                    "cmsSliderParameterName": "CMS Slider Parameter: Name",
+                    "cmsSliderParameterValue": "CMS Slider Parameter: Value",
+                    "elMinWidth": "Minimum Width"
                 }
             }
         }
