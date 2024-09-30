@@ -61,13 +61,31 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
         }
 
         $productNumbersPerType = ProductNumberExtractor::extractProductNumbers($model);
+        $allProductNumbers = array_merge(...array_values($productNumbersPerType));
+        $productNumbersToTypeMap = [];
         foreach ($productNumbersPerType as $type => $productNumbers) {
-            $productNumberSort = array_flip($productNumbers);
+            foreach ($productNumbers as $productNumber) {
+                $productNumbersToTypeMap[$productNumber] = $type;
+            }
+        }
 
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsAnyFilter('productNumber', $productNumbers));
-            /** @var ProductCollection $products */
-            $products = $this->listingLoader->load($criteria, $context)->getEntities();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
+        /** @var ProductCollection $products */
+        $allProducts = $this->listingLoader->load($criteria, $context)->getEntities();
+
+        $productsGroupedByType = [];
+        foreach ($allProducts as $product) {
+            $type = $productNumbersToTypeMap[$product->getProductNumber()];
+            if (!isset($productsGroupedByType[$type])) {
+                $productsGroupedByType[$type] = new ProductCollection();
+            }
+            $productsGroupedByType[$type]->add($product);
+        }
+
+        foreach ($productsGroupedByType as $type => $products) {
+            $productNumbers = $productNumbersPerType[$type];
+            $productNumberSort = array_flip($productNumbers);
 
             $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {
                 $aPosition = $productNumberSort[$a->getProductNumber()];
@@ -78,6 +96,7 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
                 }
                 return ($aPosition < $bPosition) ? -1 : 1;
             });
+
             $response = $responseCollection->get(RecommendationResponse::class) ?? new RecommendationResponse();
             $listing = new ProductListingResponse();
             $listing->setCurrentPage(0);

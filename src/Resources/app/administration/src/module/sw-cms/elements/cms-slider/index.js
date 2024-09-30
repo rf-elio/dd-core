@@ -11,7 +11,7 @@ Shopware.Service('cmsService').registerCmsElement({
     defaultConfig: {
         cmsSliderParameterName: {
             source: 'static',
-            value: 'cmsSliderId',
+            value: 'Slider Name',
             required: true
         },
         cmsSliderParameterValue: {
@@ -41,7 +41,7 @@ Shopware.Service('cmsService').registerCmsElement({
         },
         elMinWidth: {
             source: 'static',
-            value: '200px'
+            value: '250px'
         }
     }
 })
