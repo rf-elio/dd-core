@@ -13,9 +13,63 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
         this.createdComponent();
     },
 
+    data() {
+        return {
+            isLoading: false,
+            presetList: [],
+            selectedPreset: null,
+        }
+    },
+
+    computed: {
+        dropdownOptions() {
+            console.log(this.presetList)
+            return this.presetList.map(preset => ({
+                label: preset.name,
+                value: preset.id,
+            }));
+        }
+    },
+
     methods: {
         createdComponent() {
             this.initElementConfig('edd-cms-slider');
+
+            this.isLoading = true;
+            const httpClient = Shopware.Service('syncService').httpClient;
+            const url = '/_action/elio-data-discovery/configuration/preset';
+            const basicHeaders = {
+                Authorization: `Bearer ${Shopware.Context.api.authToken.access}`,
+                'Content-Type': 'application/json',
+            };
+
+            httpClient
+                .get(url, {
+                    headers: basicHeaders
+                })
+                .then((response) => {
+                    console.log(response.data)
+                    this.presetList = response.data;
+                })
+                .catch(() => {
+                    this.presetList = [];
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+
+        updateConfig() {
+            const selectedPreset = this.presetList.find(
+                preset => preset.id === this.selectedPreset
+            );
+
+            if (selectedPreset) {
+                this.element.config.cmsSliderParameterName.value = selectedPreset.name;
+                this.element.config.cmsSliderParameterValue.value = selectedPreset.value;
+            }
+
+            this.onElementUpdate(this.element);
         },
 
         onElementUpdate(element) {
