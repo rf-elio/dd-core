@@ -23,11 +23,11 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
 
     computed: {
         dropdownOptions() {
-            console.log(this.presetList)
-            return this.presetList.map(preset => ({
-                label: preset.name,
-                value: preset.id,
-            }));
+            return this.presetList
+                .map(preset => ({
+                    label: preset.name,
+                    value: preset.id,
+                }));
         }
     },
 
@@ -48,7 +48,6 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
                     headers: basicHeaders
                 })
                 .then((response) => {
-                    console.log(response.data)
                     this.presetList = response.data;
                 })
                 .catch(() => {
@@ -65,7 +64,6 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
             );
 
             if (selectedPreset) {
-                this.element.config.cmsSliderParameterName.value = selectedPreset.name;
                 this.element.config.cmsSliderParameterValue.value = selectedPreset.value;
             }
 
