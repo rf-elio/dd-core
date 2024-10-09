@@ -6,14 +6,12 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class ConfigurationResponseCollection extends Struct
 {
-    public const KEY = "ConfigurationResponseCollection";
-
     /**
      * @var ConfigurationResponse[]
      */
     protected array $configurationResponses = [];
 
-    public function getConfigurationResponse(string $type): ?ConfigurationResponse
+    public function getConfigurationResponseByType(string $type): ?ConfigurationResponse
     {
         return $this->configurationResponses[$type] ?? null;
     }
