@@ -170,6 +170,15 @@
             <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
             <entity>product</entity>
         </component>
+
+        <input-field type="text">
+            <name>disabledRecommendationTypes</name>
+            <label>Disabled Recommendation Types</label>
+            <label lang="de-DE">Deaktivierte Empfehlungstypen</label>
+            <helpText>Types of recommendations that are disabled in the detail page: "together", "also", "related".</helpText>
+            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "toegther", "also", "related"</helpText>
+            <placeholder>together,also,related</placeholder>
+        </input-field>
     </card>
     <card>
         <title>Product detail page configuration</title>

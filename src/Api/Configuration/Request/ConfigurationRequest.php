@@ -7,9 +7,9 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 class ConfigurationRequest extends ChannelRequest
 {
     private string $type;
-    private string $searchTerm;
-    private int $limit;
-    private int $offset;
+    private ?string $searchTerm;
+    private ?int $limit;
+    private ?int $offset;
 
     /**
      * @return string
@@ -28,49 +28,49 @@ class ConfigurationRequest extends ChannelRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSearchTerm(): string
+    public function getSearchTerm(): ?string
     {
         return $this->searchTerm;
     }
 
     /**
-     * @param string $searchTerm
+     * @param string|null $searchTerm
      */
-    public function setSearchTerm(string $searchTerm): void
+    public function setSearchTerm(?string $searchTerm): void
     {
         $this->searchTerm = $searchTerm;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLimit(): int
+    public function getLimit(): ?int
     {
         return $this->limit;
     }
 
     /**
-     * @param int $limit
+     * @param int|null $limit
      */
-    public function setLimit(int $limit): void
+    public function setLimit(?int $limit): void
     {
         $this->limit = $limit;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getOffset(): int
+    public function getOffset(): ?int
     {
         return $this->offset;
     }
 
     /**
-     * @param int $offset
+     * @param int|null $offset
      */
-    public function setOffset(int $offset): void
+    public function setOffset(?int $offset): void
     {
         $this->offset = $offset;
     }

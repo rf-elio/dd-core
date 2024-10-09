@@ -133,6 +133,7 @@ class Configuration extends Struct
         private readonly int $productDetailSliderLimit,
         private readonly array $recommendationExcludedProducts,
         private readonly string $suggestContainerStyle,
+        private readonly string $disabledRecommendationTypes,
     ) {}
 
     /**
@@ -445,5 +446,10 @@ class Configuration extends Struct
     public function getSearchCacheExpiresAfter(): int
     {
         return $this->searchCacheExpiresAfter;
+    }
+
+    public function getDisabledRecommendationTypes(): string
+    {
+        return $this->disabledRecommendationTypes;
     }
 }

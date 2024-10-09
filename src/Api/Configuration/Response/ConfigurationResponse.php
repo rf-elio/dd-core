@@ -4,23 +4,17 @@ namespace Elio\ElioDataDiscovery\Api\Configuration\Response;
 
 use Elio\ElioDataDiscovery\Api\Response\Response;
 
-class ConfigurationResponse extends Response
+abstract class ConfigurationResponse extends Response
 {
-    protected array $presets;
+    protected string $type = '';
 
-    /**
-     * @return array
-     */
-    public function getPresets(): array
+    public function getType(): string
     {
-        return $this->presets;
+        return $this->type;
     }
 
-    /**
-     * @param array $presets
-     */
-    public function setPresets(array $presets): void
+    public function setType(string $type): void
     {
-        $this->presets = $presets;
+        $this->type = $type;
     }
 }

@@ -25,7 +25,7 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
         dropdownOptions() {
             return this.presetList
                 .map(preset => ({
-                    label: preset.name,
+                    label: this.escapeHTML(preset.name),
                     value: preset.id,
                 }));
         }
@@ -48,7 +48,7 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
                     headers: basicHeaders
                 })
                 .then((response) => {
-                    this.presetList = response.data;
+                    this.presetList = response.data.presets;
                 })
                 .catch(() => {
                     this.presetList = [];
@@ -72,6 +72,15 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
 
         onElementUpdate(element) {
             this.$emit('element-update', element);
+        },
+
+        escapeHTML(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
     }
 })

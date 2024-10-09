@@ -2,7 +2,9 @@
 
 namespace Elio\ElioDataDiscovery\Api\Configuration\Response;
 
-class ConfigurationResponseCollection
+use Shopware\Core\Framework\Struct\Struct;
+
+class ConfigurationResponseCollection extends Struct
 {
     public const KEY = "ConfigurationResponseCollection";
 
@@ -11,13 +13,18 @@ class ConfigurationResponseCollection
      */
     protected array $configurationResponses = [];
 
+    public function getConfigurationResponse(string $type): ?ConfigurationResponse
+    {
+        return $this->configurationResponses[$type] ?? null;
+    }
+
     public function getConfigurationResponses(): array
     {
         return $this->configurationResponses;
     }
 
-    public function addConfigurationResponses(ConfigurationResponse $configurationResponses): void
+    public function addConfigurationResponse(ConfigurationResponse $configurationResponse): void
     {
-        $this->configurationResponses[] = $configurationResponses;
+        $this->configurationResponses[$configurationResponse->getType()] = $configurationResponse;
     }
 }

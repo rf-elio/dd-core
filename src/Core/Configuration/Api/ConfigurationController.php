@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioDataDiscovery\Core\Configuration;
+namespace Elio\ElioDataDiscovery\Core\Configuration\Api;
 
 use Elio\ElioDataDiscovery\Api\Configuration\ConfigurationAdapter;
 use Elio\ElioDataDiscovery\Api\Configuration\Request\ConfigurationRequest;
@@ -24,15 +24,18 @@ class ConfigurationController extends AbstractController
     ) {}
 
     #[Route(path: '/api/_action/elio-data-discovery/configuration/{type}', name: 'api.custom.elio_data_discovery.configuration.get', methods: ['GET'])]
-    public function getConfiguration(string $type): Response
+    public function getConfiguration(string $type, ?string $searchTerm, ?int $offset, ?int $limit, Context $context): Response
     {
         /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search(new Criteria(), Context::createDefaultContext())->first();
+        $salesChannel = $this->salesChannelRepository->search(new Criteria(), $context)->first();
         $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId());
 
         $configurationRequest = new ConfigurationRequest('');
         $configurationRequest->setType($type);
-        $response = $this->configurationAdapter->getPresets($configurationRequest, $salesChannelContext);
-        return new JsonResponse($response->getPresets());
+        $configurationRequest->setSearchTerm($searchTerm);
+        $configurationRequest->setOffset($offset);
+        $configurationRequest->setLimit($limit);
+        $response = $this->configurationAdapter->getConfig($configurationRequest, $salesChannelContext);
+        return new JsonResponse($response->getConfigurationResponse($type));
     }
 }
