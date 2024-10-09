@@ -33,7 +33,11 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi">
+        <service id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter">
+            <argument type="service" id="elio.data-discovery.core.logging.debug" />
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Api\Configuration\ConfigurationAdapter">
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
@@ -42,11 +46,6 @@
             <argument type="tagged" tag="elio-data-discovery.api.transformer.response"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="elio.data-discovery.core.logging.default"/>
-        </service>
-
-        <service id="Elio\ElioDataDiscovery\Api\Transform\RecommendationProductTransformer">
-            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader" />
-            <tag name="elio-data-discovery.api.transformer.response"/>
         </service>
     </services>
 </container>

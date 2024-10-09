@@ -36,7 +36,7 @@
         >
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter" />
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
@@ -49,7 +49,7 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="translator"/>
             <argument type="service" id="product.repository"/>
-            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter"/>
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"

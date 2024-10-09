@@ -6,11 +6,6 @@ use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 
-/**
- * Class Excluder
- *
- * @package Elio\ElioDataDiscovery\Core\ProductBundle
- */
 class Excluder
 {
     /**
@@ -19,7 +14,7 @@ class Excluder
      *
      * @return ProductCollection
      */
-    public static function exclude(ProductCollection $collection, Configuration $config): ProductCollection
+    public static function excludeProductsFromRecommendations(ProductCollection $collection, Configuration $config): ProductCollection
     {
         if (empty($config->getRecommendationExcludedProducts())) {
             return $collection;

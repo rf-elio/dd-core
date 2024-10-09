@@ -1,15 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Elio\ElioDataDiscovery\Api\Transform;
+namespace Elio\ElioDataDiscovery\Api\Recommendations\ResponseTransformer;
 
-use Elio\ElioBatteryIncludedApiClient\Model\RecommendationResultCollection;
-use Elio\ElioBatteryIncludedSearchExtension\Api\Recommendations\Util\ProductNumberExtractor;
 use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
-use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
-use Elio\ElioDataDiscovery\Swagger\ModelInterface;
+use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -17,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class RecommendationProductTransformer implements ResponseTransformerInterface
+abstract class AbstractRecommendationProductTransformer implements ResponseTransformerInterface
 {
     private ProductListingLoader $listingLoader;
 
@@ -32,40 +28,21 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
     }
 
     /**
-     * @param ModelInterface $model
-     * @param ApiRequest $request
-     * @param SalesChannelContext $context
-     *
-     * @return bool
-     */
-    public function supports(ModelInterface $model, ApiRequest $request, SalesChannelContext $context): bool
-    {
-        return $model instanceof RecommendationResultCollection;
-    }
-
-    /**
-     * @param ModelInterface $model
+     * @param array $productNumbersPerType
      * @param ResponseCollection $responseCollection
      * @param SalesChannelContext $context
-     * @param ApiRequest $request
      */
-    public function transform(
-        ModelInterface      $model,
+    public function loadProductsForTypes(
+        array $productNumbersPerType,
         ResponseCollection  $responseCollection,
         SalesChannelContext $context,
-        ApiRequest          $request
     ): void
     {
-        if (!$model instanceof RecommendationResultCollection) {
-            throw new InvalidTypeException($model, RecommendationResultCollection::class);
-        }
-
-        $productNumbersPerType = ProductNumberExtractor::extractProductNumbers($model);
         $allProductNumbers = array_merge(...array_values($productNumbersPerType));
         $productNumbersToTypeMap = [];
         foreach ($productNumbersPerType as $type => $productNumbers) {
             foreach ($productNumbers as $productNumber) {
-                $productNumbersToTypeMap[$productNumber] = $type;
+                $productNumbersToTypeMap[$productNumber][] = $type;
             }
         }
 
@@ -76,11 +53,13 @@ class RecommendationProductTransformer implements ResponseTransformerInterface
 
         $productsGroupedByType = [];
         foreach ($allProducts as $product) {
-            $type = $productNumbersToTypeMap[$product->getProductNumber()];
-            if (!isset($productsGroupedByType[$type])) {
-                $productsGroupedByType[$type] = new ProductCollection();
+            $types = $productNumbersToTypeMap[$product->getProductNumber()];
+            foreach ($types as $type) {
+                if (!isset($productsGroupedByType[$type])) {
+                    $productsGroupedByType[$type] = new ProductCollection();
+                }
+                $productsGroupedByType[$type]->add($product);
             }
-            $productsGroupedByType[$type]->add($product);
         }
 
         foreach ($productsGroupedByType as $type => $products) {

@@ -6,6 +6,7 @@
     <imports>
         <import resource="advisor-campaign.xml"/>
         <import resource="configuration.xml"/>
+        <import resource="configuration-adapter.xml"/>
         <import resource="consent.xml"/>
         <import resource="cms-slider.xml"/>
         <import resource="bot-protection.xml"/>

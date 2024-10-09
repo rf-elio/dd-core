@@ -34,7 +34,6 @@ namespace Elio\ElioDataDiscovery\Api\Recommendations;
 
 use Elio\ElioDataDiscovery\Api\Recommendations\Request\DetailPageRequest;
 use Elio\ElioDataDiscovery\Api\Recommendations\Request\RecommendationRequest;
-use Elio\ElioDataDiscovery\Api\Recommendations\Request\SimilarRequest;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -50,7 +49,7 @@ use Throwable;
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2021, elio GmbH (https://www.elio-systems.com)
  */
-class RecommendationApi
+class RecommendationAdapter
 {
     use ElioDataDiscoveryLogTrait;
 

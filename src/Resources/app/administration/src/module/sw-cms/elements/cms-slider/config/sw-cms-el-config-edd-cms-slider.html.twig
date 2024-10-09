@@ -1,22 +1,25 @@
 {% block sw_cms_el_config_edd_cms_slider %}
     <div class="sw-cms-el-config-edd-cms-slider">
-        <sw-text-field
+        <mt-text-field
             :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterName')"
-            v-model:value="element.config.cmsSliderParameterName.value"
+            v-model="element.config.cmsSliderParameterName.value"
             required
         >
-        </sw-text-field>
-        <sw-text-field
-            :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterValue')"
-            v-model:value="element.config.cmsSliderParameterValue.value"
-            required
-        >
-        </sw-text-field>
-        <sw-text-field
-                :label="$tc('sw-cms.elements.cmsSlider.config.elMinWidth')"
-                v-model:value="element.config.elMinWidth.value"
+        </mt-text-field>
+        <mt-select
+                v-if="!isLoading"
+                :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterValue')"
+                v-model="element.config.cmsSliderParameterValue.value"
+                :options="dropdownOptions"
+                @update:modelValue="updateConfig"
                 required
         >
-        </sw-text-field>
+        </mt-select>
+        <mt-text-field
+                :label="$tc('sw-cms.elements.cmsSlider.config.elMinWidth')"
+                v-model="element.config.elMinWidth.value"
+                required
+        >
+        </mt-text-field>
     </div>
 {% endblock %}
