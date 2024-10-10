@@ -41,7 +41,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
- * Class RecordsApi
+ * Class RecommendationAdapter
  *
  * @package Elio\ElioDataDiscovery\Api\Recommendations
  * @category  Shopware
