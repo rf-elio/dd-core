@@ -161,27 +161,24 @@
 
         <component name="elio-data-discovery-feature-status">
             <name>productRecommendation</name>
-            <feature>product-recommendation</feature>
+            <feature>product.recommendation</feature>
         </component>
 
-        <input-field type="bool">
-            <name>useProductDetailRecommendations</name>
-            <label>Display the product recommendation slider on product detail pages</label>
-            <label lang="de-DE">Produktempfehlungen-Slider auf Produkt-Detailseiten anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="bool">
-            <name>useProductDetailSimilar</name>
-            <label>Display the similar slider on product detail pages</label>
-            <label lang="de-DE">Ähnlich-slider auf Produkt-Detailseiten anzeigen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
         <component name="sw-entity-multi-id-select">
             <name>recommendationExcludedProducts</name>
             <label>exclude selected products from recommendations</label>
             <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
             <entity>product</entity>
         </component>
+
+        <input-field type="text">
+            <name>disabledRecommendationTypes</name>
+            <label>Disabled Recommendation Types</label>
+            <label lang="de-DE">Deaktivierte Empfehlungstypen</label>
+            <helpText>Types of recommendations that are disabled in the detail page: "together", "also", "related".</helpText>
+            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "toegther", "also", "related"</helpText>
+            <placeholder>together,also,related</placeholder>
+        </input-field>
     </card>
     <card>
         <title>Product detail page configuration</title>

@@ -32,7 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail;
 
-use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi;
+use Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter;
 use Elio\ElioDataDiscovery\Api\Recommendations\Request\DetailPageRequest;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
@@ -61,14 +61,14 @@ class ElioDataDiscoveryProductDetailRoute extends AbstractProductDetailRoute
      *
      * @param AbstractProductDetailRoute $decorated
      * @param ElioDataDiscoveryConfigServiceInterface $configService
-     * @param RecommendationApi $recordsApi
+     * @param RecommendationAdapter $recordsApi
      * @param LoggerInterface $logger
      */
     public function __construct(
-        private readonly AbstractProductDetailRoute       $decorated,
+        private readonly AbstractProductDetailRoute              $decorated,
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
-        private readonly RecommendationApi                $recordsApi,
-        LoggerInterface                                   $logger
+        private readonly RecommendationAdapter                   $recordsApi,
+        LoggerInterface                                          $logger
     )
     {
         $this->logger = $logger;

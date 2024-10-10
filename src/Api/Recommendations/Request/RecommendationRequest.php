@@ -6,10 +6,7 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 
 class RecommendationRequest extends ChannelRequest
 {
-    /**
-     * @var string[]
-     */
-    private array $productIds;
+    private string $productNumber;
     private int $limit;
     private ?string $sessionId = null;
 
@@ -41,18 +38,18 @@ class RecommendationRequest extends ChannelRequest
     }
 
     /**
-     * @return string[]
+     * @return string
      */
-    public function getProductIds(): array
+    public function getProductNumber(): string
     {
-        return $this->productIds;
+        return $this->productNumber;
     }
 
     /**
-     * @param string[] $productIds
+     * @param string $productNumber
      */
-    public function setProductIds(array $productIds): void
+    public function setProductNumber(string $productNumber): void
     {
-        $this->productIds = $productIds;
+        $this->productNumber = $productNumber;
     }
 }

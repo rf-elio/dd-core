@@ -1,0 +1,9 @@
+{% sw_extends '@Storefront/storefront/element/cms-element-product-slider.html.twig' %}
+
+{% block element_product_slider_title %}
+    {% if sliderConfig.cmsSliderParameterName.value %}
+        <div class="cms-element-title">
+            <p class="cms-element-title-paragraph">{{ sliderConfig.cmsSliderParameterName.value|escape }}</p>
+        </div>
+    {% endif %}
+{% endblock %}
