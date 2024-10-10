@@ -59,6 +59,18 @@ class ProductListingResponse extends Response
     protected ?AggregationResultCollection $aggregations = null;
 
     /**
+     * @return ProductListingResponse
+     */
+    public static function createEmpty(): ProductListingResponse
+    {
+        $productListingResponse = new static();
+        $productListingResponse->setProducts(new ProductCollection());
+        $productListingResponse->setAggregations(new AggregationResultCollection());
+        $productListingResponse->setAvailableSortings(new ProductSortingCollection());
+        return $productListingResponse;
+    }
+
+    /**
      * @return int
      */
     public function getCurrentPage(): int

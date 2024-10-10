@@ -64,7 +64,7 @@ class TrackingMessageHandler
     {
         $this->trackingApi->track(
             $message->getRequest(),
-            $message->getSalesChannelId()
+            $message->getSalesChannelContext()
         );
     }
 

@@ -3,6 +3,7 @@
 namespace Elio\ElioDataDiscovery\Core\Logging;
 
 
+use DateTime;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;

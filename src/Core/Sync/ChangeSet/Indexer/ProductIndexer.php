@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
@@ -61,6 +62,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class ProductIndexer extends BaseIndexer
 {
+    use AvailableStockAware;
+
     public const DATA_TYPE = ProductDataType::class;
     public const ENTITY_TYPE = ProductDefinition::ENTITY_NAME;
 
@@ -101,7 +104,7 @@ class ProductIndexer extends BaseIndexer
         $salesChannelId = $salesChannelContext->getSalesChannelId();
         $criteria->addFilter(new ProductAvailableFilter($salesChannelId, ProductVisibilityDefinition::VISIBILITY_SEARCH));
 
-        $this->handleAvailableStock($criteria, $salesChannelContext);
+        $this->handleAvailableStock($criteria, $salesChannelContext, $this->systemConfigService, $this->productCloseoutFilterFactory);
 
         $event = new CriteriaPreparedEvent($this, $criteria, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);
@@ -114,19 +117,5 @@ class ProductIndexer extends BaseIndexer
             throw new InvalidTypeException($entity, ProductEntity::class);
         }
         return $entity->getProductNumber();
-    }
-
-    private function handleAvailableStock(Criteria $criteria, SalesChannelContext $context): void
-    {
-        $salesChannelId = $context->getSalesChannel()->getId();
-
-        $hide = $this->systemConfigService->get('core.listing.hideCloseoutProductsWhenOutOfStock', $salesChannelId);
-
-        if (!$hide) {
-            return;
-        }
-
-        $closeoutFilter = $this->productCloseoutFilterFactory->create($context);
-        $criteria->addFilter($closeoutFilter);
     }
 }

@@ -34,6 +34,7 @@ namespace Elio\ElioDataDiscovery\Core\Tracking\Message;
 
 
 use Elio\ElioDataDiscovery\Api\Tracking\Request\TrackingRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class TrackingMessage
@@ -48,11 +49,11 @@ class TrackingMessage
     /**
      * TrackingMessage constructor.
      * @param TrackingRequest $request
-     * @param string $salesChannelId
+     * @param SalesChannelContext $salesChannelContext
      */
     public function __construct(
         private readonly TrackingRequest $request,
-        private readonly string $salesChannelId
+        private readonly SalesChannelContext $salesChannelContext
     ) {}
 
     /**
@@ -64,10 +65,10 @@ class TrackingMessage
     }
 
     /**
-     * @return string
+     * @return SalesChannelContext
      */
-    public function getSalesChannelId(): string
+    public function getSalesChannelContext(): SalesChannelContext
     {
-        return $this->salesChannelId;
+        return $this->salesChannelContext;
     }
 }

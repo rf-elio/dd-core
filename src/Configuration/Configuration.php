@@ -49,6 +49,7 @@ class Configuration extends Struct
      * Configuration constructor.
      * @param bool $active
      * @param bool $loggingDebugActive
+     * @param bool $loggingSearchRequestActive
      * @param array<string> $loggingDebugIpFilter
      * @param bool $searchUseElioDataDiscovery
      * @param bool $trackRequireConsent
@@ -57,6 +58,7 @@ class Configuration extends Struct
      * @param bool $trackLogin
      * @param bool $trackProductView
      * @param array $disallowTrackingForUserAgents
+     * @param bool $allowRequestLoggingForTracking
      * @param bool $listingUseElioDataDiscovery
      * @param bool $productDetailPageCampaignsActive
      * @param string[] $additionalRequestParameters
@@ -68,6 +70,9 @@ class Configuration extends Struct
      * @param array<string> $botProtectionIpFilter
      * @param bool $searchUseContentChannel
      * @param bool $suggestUseElioDataDiscovery
+     * @param bool $searchRedirectToProductDetail
+     * @param string $searchRedirectProductRegex
+     * @param int $searchCacheExpiresAfter
      * @param bool $suggestToggleHighlight
      * @param bool $restrictionsParentCategories
      * @param bool $restrictionsOverridingTopToDown
@@ -82,14 +87,13 @@ class Configuration extends Struct
      * @param int $entityStatusMaxCleanupAgeInDays
      * @param bool $allowStreamIdSearch
      * @param int $productDetailSliderLimit
-     * @param bool $useProductDetailRecommendations
-     * @param bool $useProductDetailSimilar
      * @param array $recommendationExcludedProducts
      * @param string $suggestContainerStyle
      */
     public function __construct(
         private readonly bool $active,
         protected bool $loggingDebugActive,
+        protected bool $loggingSearchRequestActive,
         private readonly array $loggingDebugIpFilter,
         private readonly bool $searchUseElioDataDiscovery,
         private readonly bool $trackRequireConsent,
@@ -98,6 +102,7 @@ class Configuration extends Struct
         private readonly bool $trackLogin,
         private readonly bool $trackProductView,
         private readonly array $disallowTrackingForUserAgents,
+        private readonly bool $allowRequestLoggingForTracking,
         private readonly bool $listingUseElioDataDiscovery,
         private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
@@ -109,6 +114,9 @@ class Configuration extends Struct
         private readonly array $botProtectionIpFilter,
         private readonly bool $searchUseContentChannel,
         private readonly bool $suggestUseElioDataDiscovery,
+        private readonly bool $searchRedirectToProductDetail,
+        private readonly string $searchRedirectProductRegex,
+        private readonly int $searchCacheExpiresAfter,
         private readonly bool $suggestToggleHighlight,
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
@@ -123,10 +131,9 @@ class Configuration extends Struct
         private readonly int $entityStatusMaxCleanupAgeInDays,
         private readonly bool $allowStreamIdSearch,
         private readonly int $productDetailSliderLimit,
-        private readonly bool $useProductDetailRecommendations,
-        private readonly bool $useProductDetailSimilar,
         private readonly array $recommendationExcludedProducts,
         private readonly string $suggestContainerStyle,
+        private readonly string $disabledRecommendationTypes,
     ) {}
 
     /**
@@ -231,6 +238,14 @@ class Configuration extends Struct
     public function getDisallowTrackingForUserAgents(): array
     {
         return $this->disallowTrackingForUserAgents;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllowRequestLoggingForTracking(): bool
+    {
+        return $this->allowRequestLoggingForTracking;
     }
 
     /**
@@ -392,16 +407,6 @@ class Configuration extends Struct
         return $this->suggestToggleHighlight;
     }
 
-    public function isUseProductDetailRecommendations(): bool
-    {
-        return $this->useProductDetailRecommendations;
-    }
-
-    public function isUseProductDetailSimilar(): bool
-    {
-        return $this->useProductDetailSimilar;
-    }
-
     public function getRecommendationExcludedProducts(): array
     {
         return $this->recommendationExcludedProducts;
@@ -415,5 +420,36 @@ class Configuration extends Struct
     public function getSuggestContainerStyle(): string
     {
         return $this->suggestContainerStyle;
+    }
+
+    public function isLoggingSearchRequestActive(): bool
+    {
+        return $this->loggingSearchRequestActive;
+    }
+
+    public function isSearchRedirectToProductDetail(string $searchTerm): bool
+    {
+        if (empty($this->getSearchRedirectProductRegex())) {
+            return false;
+        }
+        if (!preg_match($this->getSearchRedirectProductRegex(), $searchTerm)) {
+            return false;
+        }
+        return $this->searchRedirectToProductDetail;
+    }
+
+    public function getSearchRedirectProductRegex(): string
+    {
+        return $this->searchRedirectProductRegex;
+    }
+
+    public function getSearchCacheExpiresAfter(): int
+    {
+        return $this->searchCacheExpiresAfter;
+    }
+
+    public function getDisabledRecommendationTypes(): string
+    {
+        return $this->disabledRecommendationTypes;
     }
 }

@@ -75,13 +75,13 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
      * @param EntityRepository $productRepository
      */
     public function __construct(
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        private MessageBusInterface $bus,
-        private EventDispatcherInterface $eventDispatcher,
-        private AbstractSalesChannelContextFactory $salesChannelContextFactory,
-        private RequestStack $requestStack,
-        private EntityRepository $productRepository
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly TrackingAllowedCheckerInterface         $trackingAllowedChecker,
+        private readonly MessageBusInterface                     $bus,
+        private readonly EventDispatcherInterface                $eventDispatcher,
+        private readonly AbstractSalesChannelContextFactory      $salesChannelContextFactory,
+        private readonly RequestStack                            $requestStack,
+        private readonly EntityRepository                        $productRepository
     ) {}
 
     /**
@@ -157,6 +157,8 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
             );
         }
 
+        $request->setMetaDataFromRequest($this->requestStack->getMainRequest());
+
         $checkoutTrackingRequestCreatedEvent = new CheckoutTrackingRequestCreatedEvent($event, $request);
         $this->eventDispatcher->dispatch($checkoutTrackingRequestCreatedEvent);
         $request = $checkoutTrackingRequestCreatedEvent->getRequest();
@@ -165,6 +167,6 @@ class TrackCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->bus->dispatch(new TrackingMessage($request, $salesChannelId));
+        $this->bus->dispatch(new TrackingMessage($request, $salesChannelContext));
     }
 }

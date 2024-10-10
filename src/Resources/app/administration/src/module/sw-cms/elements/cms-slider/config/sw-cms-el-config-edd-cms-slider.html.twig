@@ -1,0 +1,26 @@
+{% block sw_cms_el_config_edd_cms_slider %}
+    <component is="elio-data-discovery-feature-status" feature="product.recommendation" />
+    <div class="sw-cms-el-config-edd-cms-slider">
+        <mt-text-field
+            :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterName')"
+            v-model="element.config.cmsSliderParameterName.value"
+            required
+        >
+        </mt-text-field>
+        <mt-select
+                v-if="!isLoading"
+                :label="$tc('sw-cms.elements.cmsSlider.config.cmsSliderParameterValue')"
+                v-model="element.config.cmsSliderParameterValue.value"
+                :options="dropdownOptions"
+                @update:modelValue="updateConfig"
+                required
+        >
+        </mt-select>
+        <mt-text-field
+                :label="$tc('sw-cms.elements.cmsSlider.config.elMinWidth')"
+                v-model="element.config.elMinWidth.value"
+                required
+        >
+        </mt-text-field>
+    </div>
+{% endblock %}

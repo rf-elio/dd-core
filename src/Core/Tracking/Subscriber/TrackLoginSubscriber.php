@@ -64,11 +64,11 @@ class TrackLoginSubscriber implements EventSubscriberInterface
      * @param RequestStack $requestStack
      */
     public function __construct(
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        private MessageBusInterface $bus,
-        private EventDispatcherInterface $eventDispatcher,
-        private RequestStack $requestStack
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly TrackingAllowedCheckerInterface         $trackingAllowedChecker,
+        private readonly MessageBusInterface                     $bus,
+        private readonly EventDispatcherInterface                $eventDispatcher,
+        private readonly RequestStack                            $requestStack
     ) {}
 
     public static function getSubscribedEvents() : array
@@ -84,7 +84,6 @@ class TrackLoginSubscriber implements EventSubscriberInterface
     public function trackLogin(CustomerLoginEvent $event): void
     {
         $customer = $event->getCustomer();
-        $salesChannelId = $event->getSalesChannelId();
         $salesChannelContext = $event->getSalesChannelContext();
         $config = $this->configService->getByContext($event->getSalesChannelContext());
 
@@ -102,9 +101,11 @@ class TrackLoginSubscriber implements EventSubscriberInterface
         $requestCreatedEvent = new LoginTrackingRequestCreatedEvent($request);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
 
+        $request->setMetaDataFromRequest($this->requestStack->getMainRequest());
+
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),
-            $salesChannelId
+            $salesChannelContext
         ));
     }
 

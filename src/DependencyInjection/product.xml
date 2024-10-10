@@ -36,7 +36,7 @@
         >
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Detail\ElioDataDiscoveryProductDetailRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter" />
             <argument type="service" id="elio.data-discovery.core.logging.debug" />
         </service>
 
@@ -47,9 +47,10 @@
         >
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\CrossSelling\ElioDataDiscoveryProductCrossSellingRoute.inner" />
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
-            <argument type="service" id="Elio\ElioDataDiscovery\Core\ProductBundle\ProductBundleService" />
             <argument type="service" id="translator"/>
             <argument type="service" id="product.repository"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter"/>
+            <argument type="service" id="elio.data-discovery.core.logging.default" />
         </service>
 
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ElioDataDiscoveryProductListingRoute"
@@ -70,6 +71,19 @@
         <service id="Elio\ElioDataDiscovery\Core\Content\Product\Subscriber\ProductSubscriber">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\RatingCountService"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ProductListingLoaderDecorator"
+                 decorates="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader"
+                 decoration-priority="-3000"
+                 public="true"
+        >
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing\ProductListingLoaderDecorator.inner"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
         </service>
     </services>
 </container>

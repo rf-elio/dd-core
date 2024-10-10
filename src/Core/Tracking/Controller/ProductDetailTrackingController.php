@@ -73,12 +73,12 @@ class ProductDetailTrackingController extends StorefrontController
      * @param RequestStack $requestStack
      */
     public function __construct(
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private TrackingAllowedCheckerInterface $trackingAllowedChecker,
-        private MessageBusInterface $bus,
-        private EventDispatcherInterface $eventDispatcher,
-        private EntityRepository $productRepository,
-        private RequestStack $requestStack
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        private readonly TrackingAllowedCheckerInterface         $trackingAllowedChecker,
+        private readonly MessageBusInterface                     $bus,
+        private readonly EventDispatcherInterface                $eventDispatcher,
+        private readonly EntityRepository                        $productRepository,
+        private readonly RequestStack                            $requestStack
     ) {}
 
     #[Route('/widgets/elio-data-discovery/productDetailTrack',
@@ -126,11 +126,13 @@ class ProductDetailTrackingController extends StorefrontController
             $customerId
         );
 
+        $trackingRequest->setMetaDataFromRequest($this->requestStack->getMainRequest());
+
         $requestCreatedEvent = new ProductDetailTrackingRequestCreatedEvent($trackingRequest);
         $this->eventDispatcher->dispatch($requestCreatedEvent);
         $this->bus->dispatch(new TrackingMessage(
             $requestCreatedEvent->getRequest(),
-            $salesChannelContext->getSalesChannelId()
+            $salesChannelContext
         ));
         return new SuccessResponse();
     }

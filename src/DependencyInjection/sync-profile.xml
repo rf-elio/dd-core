@@ -4,7 +4,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="elio_data_discovery.sync.collector.chuck_size">50</parameter>
+        <parameter key="elio_data_discovery.sync.collector.chunk_size">50</parameter>
     </parameters>
 
     <services>
@@ -38,19 +38,19 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chunk_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\CategoryCollector">
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="event_dispatcher"/>
-            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chunk_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\Collector\LandingPageCollector">
             <argument type="service" id="sales_channel.landing_page.repository"/>
             <argument type="service" id="event_dispatcher"/>
-            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chuck_size%</argument>
+            <argument key="$chunkSize">%elio_data_discovery.sync.collector.chunk_size%</argument>
             <tag name="elio-data-discovery.sync.collector"/>
         </service>
 

@@ -1,0 +1,65 @@
+{% block sw_cms_el_edd_cms_slider %}
+    <div class="sw-cms-el-edd-cms-slider">
+        {% block sw_cms_element_edd_cms_slider_title %}
+            <div class="sw-cms-el-edd-cms-slider__title">
+                {{ element.config.cmsSliderParameterName.value }}
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_element_edd_cms_slider_content %}
+            <div class="sw-cms-el-edd-cms-slider__content">
+                {% block sw_cms_element_edd_cms_slider_arrow_left %}
+                    <div class="sw-cms-el-edd-cms-slider__navigation">
+                        <sw-icon
+                                class="sw-cms-el-edd-cms-slider__navigation-button"
+                                name="regular-chevron-left"
+                                size="24"
+                        />
+                    </div>
+                {% endblock %}
+
+                {% block sw_cms_element_edd_cms_slider_product_holder %}
+                    <div
+                            ref="productHolder"
+                            class="sw-cms-el-edd-cms-slider__product-holder"
+                            :style="sliderBoxMinWidth"
+                    >
+                        <template v-if="!element.data || !element.data.products">
+                            {% block sw_cms_element_cms_slider_demo_data %}
+                                <sw-cms-el-product-box
+                                        v-for="index in sliderBoxLimit"
+                                        :key="index"
+                                        :element="demoProductElement"
+                                />
+                            {% endblock %}
+                        </template>
+
+                        <template v-else>
+                            {% block sw_cms_element_edd_cms_slider_products %}
+                                <template
+                                        v-for="(product, index) in element.data.products"
+                                        :key="index"
+                                >
+                                    <sw-cms-el-product-box
+                                            v-if="index < sliderBoxLimit"
+                                            :element="getProductEl(product)"
+                                    />
+                                </template>
+                            {% endblock %}
+                        </template>
+                    </div>
+                {% endblock %}
+
+                {% block sw_cms_element_edd_cms_slider_arrow_right %}
+                    <div class="sw-cms-el-edd-cms-slider__navigation">
+                        <sw-icon
+                                class="sw-cms-el-edd-cms-slider__navigation-button"
+                                name="regular-chevron-right"
+                                size="24"
+                        />
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

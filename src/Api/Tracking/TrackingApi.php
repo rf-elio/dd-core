@@ -34,9 +34,11 @@ namespace Elio\ElioDataDiscovery\Api\Tracking;
 
 
 use Elio\ElioDataDiscovery\Api\Tracking\Request\TrackingRequest;
-use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService;
 use Psr\Log\LoggerInterface;
 use Elio\ElioDataDiscovery\Swagger\ClientApiException;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Class TrackingApi
@@ -48,22 +50,29 @@ use Elio\ElioDataDiscovery\Swagger\ClientApiException;
  */
 class TrackingApi
 {
-    use ElioDataDiscoveryLogTrait;
-
     /**
      * SearchApi constructor.
      * @param LoggerInterface $logger
+     * @param RequestLoggingService $requestLoggingService
+     * @param ElioDataDiscoveryConfigService $configService
      */
     public function __construct(
-        LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly RequestLoggingService $requestLoggingService,
+        private readonly ElioDataDiscoveryConfigService $configService
     )
     {
-        $this->logger = $logger;
     }
 
     /**
      * Handles the tracking requests
      * @throws ClientApiException
      */
-    public function track(TrackingRequest $request, string $salesChannelId) : void {}
+    public function track(TrackingRequest $request, SalesChannelContext $salesChannelContext) : void
+    {
+        $config = $this->configService->getByContext($salesChannelContext);
+        if ($config->isAllowRequestLoggingForTracking()) {
+            $this->requestLoggingService->logRequest($request, $salesChannelContext, 'tracking');
+        }
+    }
 }

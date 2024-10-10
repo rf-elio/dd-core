@@ -32,9 +32,10 @@
 
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Search;
 
+use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ContentListingResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\SearchApi;
+use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Content\SalesChannel\ContentSearchRequestBuilder;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductListingResultTransformerInterface;
@@ -66,18 +67,18 @@ class ElioDataDiscoveryRoute extends AbstractProductSearchRoute
      * @param ProductSearchRequestBuilder $productSearchRequestBuilder
      * @param ContentSearchRequestBuilder $contentSearchRequestBuilder
      * @param ElioDataDiscoveryConfigServiceInterface $configService
-     * @param SearchApi $searchApi
+     * @param SearchApiInterface $searchApi
      * @param ProductListingResultTransformerInterface $productListingResultTransformer
      * @param LoggerInterface $logger
      */
     public function __construct(
-        private AbstractProductSearchRoute       $decorated,
-        private ProductSearchRequestBuilder      $productSearchRequestBuilder,
-        private ContentSearchRequestBuilder      $contentSearchRequestBuilder,
-        private ElioDataDiscoveryConfigServiceInterface $configService,
-        private SearchApi                        $searchApi,
-        private ProductListingResultTransformerInterface  $productListingResultTransformer,
-        LoggerInterface                  $logger
+        private readonly AbstractProductSearchRoute               $decorated,
+        private readonly ProductSearchRequestBuilder              $productSearchRequestBuilder,
+        private readonly ContentSearchRequestBuilder              $contentSearchRequestBuilder,
+        private readonly ElioDataDiscoveryConfigServiceInterface  $configService,
+        private readonly SearchApiInterface                       $searchApi,
+        private readonly ProductListingResultTransformerInterface $productListingResultTransformer,
+        LoggerInterface                                           $logger
     )
     {
         $this->logger = $logger;
@@ -117,7 +118,7 @@ class ElioDataDiscoveryRoute extends AbstractProductSearchRoute
             $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
 
             try {
-                if ($config->isSearchUseContentChannel()) {
+                if ($config->isSearchUseContentChannel() && !$resultCollection->has(CampaignRedirectionResponse::class)) {
                     $contentSearchRequest = $this->contentSearchRequestBuilder->build($request, $context);
                     $contentSearchRequest->setQuery($request->get('search'));
                     $resultCollection = $this->searchApi->searchContent($contentSearchRequest, $context);

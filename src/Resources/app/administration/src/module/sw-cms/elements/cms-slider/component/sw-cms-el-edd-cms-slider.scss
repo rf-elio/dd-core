@@ -1,0 +1,22 @@
+.sw-cms-el-edd-cms-slider {
+  padding: 10px;
+  width: 100%;
+
+  .sw-cms-el-edd-cms-slider__content {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    gap: 0 8px;
+
+    .sw-cms-el-edd-cms-slider__navigation {
+      align-self: center;
+      justify-self: center;
+    }
+
+    .sw-cms-el-edd-cms-slider__product-holder {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 0 32px;
+    }
+  }
+}

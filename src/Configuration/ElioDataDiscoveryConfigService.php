@@ -122,6 +122,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
         $configuration = new Configuration(
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'active', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingDebugActive', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'loggingSearchRequestActive', $languagePrefix) ?? false,
             ConfigParserUtil::prepareValueList($config, 'loggingDebugIpFilter', $languagePrefix),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseElioDataDiscovery', $languagePrefix) ?? false,
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackRequireConsent', $languagePrefix))),
@@ -130,6 +131,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackLogin', $languagePrefix))),
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING,!empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'trackProductView', $languagePrefix))),
             ConfigParserUtil::prepareValueList($config, 'disallowTrackingForUserAgents', $languagePrefix),
+            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_TRACKING, !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'allowRequestLoggingForTracking', $languagePrefix) ?? false)),
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioDataDiscovery', $languagePrefix)),
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_ADVISOR,ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false),
             $correctedAdditionalRequestParameters,
@@ -141,6 +143,9 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::prepareValueList($config, 'botProtectionIpFilter', $languagePrefix),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchUseContentChannel', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestUseElioDataDiscovery', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchRedirectToProductDetail', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchRedirectProductRegex', $languagePrefix) ?? '',
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'searchCacheExpiresAfter', $languagePrefix) ?? 10,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleHighlight', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
@@ -155,10 +160,9 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'allowStreamIdSearch', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24,
-            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailRecommendations', $languagePrefix) ?? false),
-            $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useProductDetailSimilar', $languagePrefix) ?? false),
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestContainerStyle', $languagePrefix) ?? 'search-suggest-container-column',
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix) ?? '',
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);

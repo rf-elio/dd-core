@@ -1,15 +1,21 @@
 {% block elio_data_discovery_suggest_container %}
+    {% set label = 'above product listing' %}
+    {% set feedbackCollection = [] %}
+    {% if resultCollection.hasExtension('CampaignFeedbackResponseCollection') %}
+        {% set feedbackCollection = resultCollection.getExtension('CampaignFeedbackResponseCollection').getByLabel(label) %}
+    {% endif %}
+
     <div class="search-suggest-container {{ suggestStyle }} {% if addJsResult %}d-none d-lg-block d-xl-block{% else %}d-xl-none d-lg-none{% endif %}">
         <div class="d-flex {% if suggestStyle == 'search-suggest-container-column' %}flex-md-column{% else %}flex-md-row{% endif%} flex-wrap">
-            {% if not response.hasVisibleItems %}
+            {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
+                label: label, container: resultCollection
+            } %}
+
+            {% if not response.hasVisibleItems and feedbackCollection|length == 0 %}
                 <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ type }}">
                     <div class="empty">{{ 'listing.emptyResultMessage'|trans|sw_sanitize }}</div>
                 </ul>
             {% else %}
-                {% sw_include '@ElioDataDiscovery/storefront/component/elio-data-discovery/campaign/elio-data-discovery-campaign-feedback.html.twig' with {
-                    label: 'above product listing', container: resultCollection
-                } %}
-
                 {% for group in response.getVisibleGroupsSorted(acceptedTypes) %}
                     <ul class="col-12 col-md e-search-suggest-container elio-suggest-block-{{ group.type }}">
                         <div class="elio-suggest-block-header">
