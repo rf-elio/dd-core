@@ -7,6 +7,8 @@
         <service id="Elio\ElioDataDiscovery\Core\CmsSlider\SliderCmsElementDataResolver">
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\ProductSearchRequestBuilder" />
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SearchApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
+            <argument type="service" id="elio.data-discovery.core.logging.default" />
             <tag name="shopware.cms.data_resolver"/>
         </service>
     </services>

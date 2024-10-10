@@ -161,7 +161,7 @@
 
         <component name="elio-data-discovery-feature-status">
             <name>productRecommendation</name>
-            <feature>product-recommendation</feature>
+            <feature>product.recommendation</feature>
         </component>
 
         <component name="sw-entity-multi-id-select">

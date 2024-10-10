@@ -38,18 +38,18 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
         SalesChannelContext $context,
     ): void
     {
-        $allProductNumbers = array_merge(...array_values($productNumbersPerType));
+        $allProductNumbers = array_unique(array_merge(...array_values($productNumbersPerType)));
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
+        /** @var ProductCollection $products */
+        $allProducts = $this->listingLoader->load($criteria, $context)->getEntities();
+
         $productNumbersToTypeMap = [];
         foreach ($productNumbersPerType as $type => $productNumbers) {
             foreach ($productNumbers as $productNumber) {
                 $productNumbersToTypeMap[$productNumber][] = $type;
             }
         }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
-        /** @var ProductCollection $products */
-        $allProducts = $this->listingLoader->load($criteria, $context)->getEntities();
 
         $productsGroupedByType = [];
         foreach ($allProducts as $product) {
