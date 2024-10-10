@@ -111,7 +111,7 @@
                     "label": "Advisor campaign"
                 },
                 "cmsSlider": {
-                    "label": "CMS Slider"
+                    "label": "Preset CMS Slider"
                 }
             }
         },
@@ -131,10 +131,10 @@
                 }
             },
             "cmsSlider": {
-                "label": "CMS Slider",
+                "label": "Preset CMS Slider",
                 "config": {
-                    "cmsSliderParameterName": "CMS Slider Parameter: Name",
-                    "cmsSliderParameterValue": "CMS Slider Parameter: Value",
+                    "cmsSliderParameterName": "Preset CMS Slider Parameter: Name",
+                    "cmsSliderParameterValue": "Preset CMS Slider Parameter: Value",
                     "elMinWidth": "Minimum Width"
                 }
             }

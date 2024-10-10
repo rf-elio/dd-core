@@ -111,7 +111,7 @@
                     "label": "Berater Kampagne"
                 },
                 "cmsSlider": {
-                    "label": "CMS Slider"
+                    "label": "Preset CMS Slider"
                 }
             }
         },
@@ -131,10 +131,10 @@
                 }
             },
             "cmsSlider": {
-                "label": "CMS Slider",
+                "label": "Preset CMS Slider",
                 "config": {
-                    "cmsSliderParameterName": "CMS Slider Parameter: Name",
-                    "cmsSliderParameterValue": "CMS Slider Parameter: Wert",
+                    "cmsSliderParameterName": "Preset CMS Slider Parameter: Name",
+                    "cmsSliderParameterValue": "Preset CMS Slider Parameter: Wert",
                     "elMinWidth": "Minimale Breite"
                 }
             }

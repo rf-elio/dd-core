@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/block/cms-block-cross-selling.html.twig' %}
 {% block block_cross_selling_inner %}
     {% set recommendationTypes = ["together", "also", "related"] %}
-    {% set disabledRecommendationTypes = config('ElioBatteryIncludedSearchExtension.config.disabledRecommendationTypes')|split(',') %}
+    {% set disabledRecommendationTypes = config('ElioDataDiscovery.config.disabledRecommendationTypes')|split(',') %}
     {% set crossSellings = [] %}
     {% for type in recommendationTypes %}
         {% if type not in disabledRecommendationTypes %}
