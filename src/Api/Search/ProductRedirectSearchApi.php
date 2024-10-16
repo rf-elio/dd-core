@@ -70,24 +70,25 @@ class ProductRedirectSearchApi implements SearchApiInterface
         $config = $this->configService->getByContext($context);
         $searchTerm = $searchRequest->getQuery();
 
-        if ($config->isActive()
+        if (
+            $config->isActive()
             && $config->isSearchRedirectToProductDetail($searchTerm)
             && null !== $productId = $this->getProductIdByProductNumber(
                 $searchTerm, $context, $this->systemConfigService, $this->productCloseoutFilterFactory
             )
         ) {
             $url = $this->getDomainById($context->getDomainId(), $context)->getUrl();
-
             if (!$url) {
                 return $this->searchApi->search($searchRequest, $context);
             }
+
 
             $route = $this->seoUrlPlaceholderHandler->generate(ProductPageSeoUrlRoute::ROUTE_NAME, ['productId' => $productId]);
             $route = $this->seoUrlPlaceholderHandler->replace($route, $url, $context);
             $responseCollection = new ResponseCollection();
             $responseCollection->set(ProductListingResponse::class, ProductListingResponse::createEmpty());
             $responseCollection->set(CampaignRedirectionResponse::class, new CampaignRedirectionResponse(
-                "",
+                '',
                 $route
             ));
 
@@ -149,6 +150,10 @@ class ProductRedirectSearchApi implements SearchApiInterface
      */
     private function getDomainById(string $domainId, SalesChannelContext $context): SalesChannelDomainEntity
     {
+        if ($context->getSalesChannel()->getDomains()?->has($domainId)) {
+            return $context->getSalesChannel()->getDomains()?->get($domainId);
+        }
+
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $domainId));
         return $this->salesChannelDomainRepository->search($criteria, $context->getContext())->getEntities()->first();

@@ -47,7 +47,7 @@ class CachedSearchApi implements SearchApiInterface
         $key = $this->generateKey($searchTerm, $searchFilter, $searchSorting, $searchAdditionalParameters, $context);
         $expiresAfter = $config->getSearchCacheExpiresAfter();
 
-        $compressedResponse = $this->cache->get($key, function (ItemInterface $item) use ($key, $searchRequest, $searchTerm, $context, $expiresAfter) {
+        $compressedResponse = $this->cache->get($key, function (ItemInterface $item) use ($searchRequest, $context, $expiresAfter) {
             $response = $this->searchApi->search($searchRequest, $context);
             $item->expiresAfter($expiresAfter);
             return CacheValueCompressor::compress($response);
