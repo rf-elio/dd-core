@@ -45,6 +45,7 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 class SuggestRequest extends ChannelRequest
 {
     protected string $query = '*';
+    protected ?string $type;
 
     /**
      * @return string
@@ -61,4 +62,22 @@ class SuggestRequest extends ChannelRequest
     {
         $this->query = $query;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+
 }

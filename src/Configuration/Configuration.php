@@ -89,6 +89,8 @@ class Configuration extends Struct
      * @param int $productDetailSliderLimit
      * @param array $recommendationExcludedProducts
      * @param string $suggestContainerStyle
+     * @param string $disabledRecommendationTypes
+     * @param bool $suggestToggleProductType
      */
     public function __construct(
         private readonly bool $active,
@@ -134,6 +136,7 @@ class Configuration extends Struct
         private readonly array $recommendationExcludedProducts,
         private readonly string $suggestContainerStyle,
         private readonly string $disabledRecommendationTypes,
+        private readonly bool $suggestToggleProductType,
     ) {}
 
     /**
@@ -451,5 +454,10 @@ class Configuration extends Struct
     public function getDisabledRecommendationTypes(): string
     {
         return $this->disabledRecommendationTypes;
+    }
+
+    public function isSuggestToggleProductType(): bool
+    {
+        return $this->suggestToggleProductType;
     }
 }
