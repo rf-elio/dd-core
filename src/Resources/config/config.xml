@@ -74,7 +74,7 @@
             <placeholder>searchTerm</placeholder>
             <defaultValue>searchTerm</defaultValue>
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
-            <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzahlter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
+            <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzhalter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
 
         <input-field type="bool">
@@ -89,13 +89,13 @@
             <label>Thumbnail Size</label>
             <label lang="de-DE">Thumbnail Größe</label>
             <defaultValue>200</defaultValue>
-            <helpText>The size of thumbnail for image that will be send to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
-            <helpText lang="de-DE">Die Größe der Thumbnail, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. In den Kategorie-Listing werden normale Bilder verwendet.</helpText>
+            <helpText>The size of thumbnail for image that will be sent to the search backend when indexing. This is relevant only for search suggest, normal images will be used in category listings.</helpText>
+            <helpText lang="de-DE">Die Größe der Thumbnail, die bei der Indizierung an das Such-Backend gesendet wird. Dies ist nur für Suchvorschläge relevant. Im Kategorie-Listing werden normale Bilder verwendet.</helpText>
         </input-field>
 
         <input-field type="bool">
             <name>suggestToggleHighlight</name>
-            <label>Toggle hightlighting in suggest</label>
+            <label>Toggle highlighting in suggest</label>
             <label lang="de-DE">Hervorhebung in den Vorschlägen umschalten</label>
             <defaultValue>true</defaultValue>
         </input-field>
@@ -119,6 +119,15 @@
             <label lang="de-DE">Stil der Suggest-Box</label>
             <helpText>Determines the style of the suggest container.</helpText>
             <helpText lang="de-DE">Bestimmt den Stil der Suggest-Box.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>suggestToggleProductType</name>
+            <label>Toggle product type in suggest request</label>
+            <label lang="de-DE">Product type im Suchvorschlag-Request umschalten</label>
+            <helpText>Note that this can potentially interfere with the content search!</helpText>
+            <helpText lang="de-DE">Beachten Sie, dass dies die Content-Suche beeinflussen kann!</helpText>
+            <defaultValue>true</defaultValue>
         </input-field>
     </card>
     <card>
@@ -176,7 +185,7 @@
             <label>Disabled Recommendation Types</label>
             <label lang="de-DE">Deaktivierte Empfehlungstypen</label>
             <helpText>Types of recommendations that are disabled in the detail page: "together", "also", "related".</helpText>
-            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "toegther", "also", "related"</helpText>
+            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "together", "also", "related"</helpText>
             <placeholder>together,also,related</placeholder>
         </input-field>
     </card>
@@ -213,7 +222,7 @@
             <label>Restriction rules overriding from top to down</label>
             <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
             <defaultValue>true</defaultValue>
-            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise down to top (low levels allow top levels blocking).</helpText>
+            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise, down to top (low levels allow top levels blocking).</helpText>
         </input-field>
 
         <input-field type="int">
@@ -295,7 +304,7 @@
         <input-field type="bool">
             <name>trackProductView</name>
             <label>Tracks the view of a product (detail page)</label>
-            <label lang="de-DE">Seitenaurufe für Produktdetailseiten tracken</label>
+            <label lang="de-DE">Seitenaufrufe für Produktdetailseiten tracken</label>
             <defaultValue>true</defaultValue>
         </input-field>
 

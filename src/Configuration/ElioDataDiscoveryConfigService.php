@@ -163,6 +163,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestContainerStyle', $languagePrefix) ?? 'search-suggest-container-column',
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix) ?? '',
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleProductType', $languagePrefix) ?? false,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);
