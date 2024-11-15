@@ -45,53 +45,6 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class Configuration extends Struct
 {
-    /**
-     * Configuration constructor.
-     * @param bool $active
-     * @param bool $loggingDebugActive
-     * @param bool $loggingSearchRequestActive
-     * @param array<string> $loggingDebugIpFilter
-     * @param bool $searchUseElioDataDiscovery
-     * @param bool $trackRequireConsent
-     * @param bool $trackCart
-     * @param bool $trackCheckout
-     * @param bool $trackLogin
-     * @param bool $trackProductView
-     * @param array $disallowTrackingForUserAgents
-     * @param bool $allowRequestLoggingForTracking
-     * @param bool $listingUseElioDataDiscovery
-     * @param bool $productDetailPageCampaignsActive
-     * @param string[] $additionalRequestParameters
-     * @param int $suggestThumbnailSize
-     * @param bool $botProtectionActive
-     * @param bool $botProtectionUseBadBotList
-     * @param array<string> $botProtectionSearchTermFilter
-     * @param array<string> $botProtectionUserAgentFilter
-     * @param array<string> $botProtectionIpFilter
-     * @param bool $searchUseContentChannel
-     * @param bool $suggestUseElioDataDiscovery
-     * @param bool $searchRedirectToProductDetail
-     * @param string $searchRedirectProductRegex
-     * @param int $searchCacheExpiresAfter
-     * @param bool $suggestToggleHighlight
-     * @param bool $restrictionsParentCategories
-     * @param bool $restrictionsOverridingTopToDown
-     * @param int $restrictionsCacheTime
-     * @param array $suggestTypeLabels
-     * @param array $suggestAcceptedTypes
-     * @param array $suggestAcceptedTypesMobile
-     * @param bool $productRankingActive
-     * @param int $productRankingMaxOrderAge
-     * @param array $productRankingOrderStates
-     * @param array $productRankingOrderDeliveryStates
-     * @param int $entityStatusMaxCleanupAgeInDays
-     * @param bool $allowStreamIdSearch
-     * @param int $productDetailSliderLimit
-     * @param array $recommendationExcludedProducts
-     * @param string $suggestContainerStyle
-     * @param string $disabledRecommendationTypes
-     * @param bool $suggestToggleProductType
-     */
     public function __construct(
         private readonly bool $active,
         protected bool $loggingDebugActive,
@@ -137,6 +90,7 @@ class Configuration extends Struct
         private readonly string $suggestContainerStyle,
         private readonly string $disabledRecommendationTypes,
         private readonly bool $suggestToggleProductType,
+        private readonly string $listingExclusionExpression,
     ) {}
 
     /**
@@ -459,5 +413,10 @@ class Configuration extends Struct
     public function isSuggestToggleProductType(): bool
     {
         return $this->suggestToggleProductType;
+    }
+
+    public function getListingExclusionExpression(): string
+    {
+        return $this->listingExclusionExpression;
     }
 }

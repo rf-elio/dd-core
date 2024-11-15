@@ -73,7 +73,7 @@ class CategoryInheritanceUpdateCommand extends Command
     {
         $context = Context::createDefaultContext();
         try {
-            $this->categoryInheritanceService->updateExcludeInheritance($context);
+            $this->categoryInheritanceService->update($context);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'trace' => $e->getTraceAsString(),

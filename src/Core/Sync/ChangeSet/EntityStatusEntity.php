@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
  * Class EntityStatusEntity
@@ -55,6 +56,7 @@ class EntityStatusEntity extends Entity
     protected ?string $entityId = null;
     protected ?string $identifier = null;
     protected ?string $salesChannelId = null;
+    protected ?SalesChannelEntity $salesChannel = null;
     protected ?string $dataType = null;
     protected ?string $state = null;
     protected ?string $hash = null;
@@ -143,5 +145,15 @@ class EntityStatusEntity extends Entity
     public function setSalesChannelId(?string $salesChannelId): void
     {
         $this->salesChannelId = $salesChannelId;
+    }
+
+    public function getSalesChannel(): ?SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
+    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
     }
 }

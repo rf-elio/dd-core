@@ -35,9 +35,9 @@ namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 use DateTimeInterface;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCustomFieldsTrait;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\Tag\TagCollection;
 
 /**
@@ -48,7 +48,7 @@ use Shopware\Core\System\Tag\TagCollection;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class ContentDataType extends Struct implements DataTypeInterface
+class ContentDataType extends Entity implements DataTypeInterface
 {
     use EntityCustomFieldsTrait;
     use EntityIdTrait;
@@ -64,7 +64,6 @@ class ContentDataType extends Struct implements DataTypeInterface
     private ?SeoUrlCollection $seoUrls = null;
     private ?string $keywords = null;
     private ?MediaEntity $media = null;
-    private ?DateTimeInterface $createdAt = null;
     private ?array $breadcrumb = null;
     private ?TagCollection $tags = null;
 
@@ -136,16 +135,6 @@ class ContentDataType extends Struct implements DataTypeInterface
     public function setMedia(?MediaEntity $media): void
     {
         $this->media = $media;
-    }
-
-    public function getCreatedAt(): ?DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $dateTime): void
-    {
-        $this->createdAt = $dateTime;
     }
 
     public function getSeoUrls(): ?SeoUrlCollection

@@ -58,7 +58,7 @@ class CategoryInheritanceController extends AbstractController
     public function categoryExclusion(): Response
     {
         try {
-            $this->categoryInheritanceService->updateExcludeInheritance(Context::createDefaultContext());
+            $this->categoryInheritanceService->update(Context::createDefaultContext());
         } catch (Exception $e) {
             return new Response('<error>'. $e->getMessage() .'</error>', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

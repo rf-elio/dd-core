@@ -28,6 +28,12 @@
             <label lang="de-DE">Inhalte aus dem Inhalts-Channel auf der Suchergebnisseite anzeigen</label>
             <defaultValue>true</defaultValue>
         </input-field>
+        <input-field type="int">
+            <name>searchCacheExpiresAfter</name>
+            <label>Cache expires after (Sec)</label>
+            <label lang="de-DE">Cache Dauer (Sek)</label>
+            <defaultValue>10</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Suggest configuration</title>
@@ -44,7 +50,8 @@
             <name>suggestTypeLabels</name>
             <label>Labels for Suggest types</label>
             <label lang="de-DE">Label für die Suggest-Typen</label>
-            <placeholder>type:Label|productName:Product</placeholder>
+            <placeholder>type:Label|product:Product</placeholder>
+            <placeholder lang="de-DE">type:Label|product:Produkt</placeholder>
             <helpText>Labels for suggest type labels: type:Label|product:Product</helpText>
             <helpText lang="de-DE">Label für Suggest-Typ Label: typ:Label|product:Produkt</helpText>
         </input-field>
@@ -53,18 +60,18 @@
             <name>suggestAcceptedTypes</name>
             <label>Suggest accepted types in order</label>
             <label lang="de-DE">Akzeptierte Typen in der Reihenfolge vorschlagen</label>
-            <placeholder>searchTerm|category|productName</placeholder>
-            <helpText>Accepted types for suggest result: searchTerm|category|productName</helpText>
-            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis vorschlagen: searchTerm|category|productName</helpText>
+            <placeholder>product|query-completion</placeholder>
+            <helpText>Accepted types for suggest result: product|query-completion</helpText>
+            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis vorschlagen: product|query-completion</helpText>
         </input-field>
 
         <input-field type="text">
             <name>suggestAcceptedTypesMobile</name>
             <label>Suggest accepted types in order on mobile</label>
             <label lang="de-DE">Akzeptierte Typen der Reihenfolge auf Mobilgeräten vorschlagen</label>
-            <placeholder>searchTerm|category|productName</placeholder>
-            <helpText>Accepted types for suggest result on mobile: searchTerm|category|productName</helpText>
-            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis auf Mobilgeräten vorschlagen: searchTerm|category|productName</helpText>
+            <placeholder>product|query-completion</placeholder>
+            <helpText>Accepted types for suggest result on mobile: product|query-completion</helpText>
+            <helpText lang="de-DE">Akzeptierte Typen für das Ergebnis auf Mobilgeräten vorschlagen: product|query-completion</helpText>
         </input-field>
 
         <input-field type="text">
@@ -151,89 +158,13 @@
         </input-field>
 
         <input-field type="bool">
-            <name>useCategoryFilterLists</name>
-            <label>Apply lists of blocked and allowed filter lists in categories</label>
-            <label lang="de-DE">Filterlisten für erlaubte und geblockte Filtereigenschaften an Kategorien benutzen</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-
-        <input-field type="bool">
             <name>allowStreamIdSearch</name>
             <label>Allow the use of product stream IDs in the API search</label>
             <label lang="de-DE">Nutzung vom Stream IDs in der API-Suche erlauben</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>
-    <card>
-        <title>Recommendations</title>
-        <title lang="de-DE">Recommendations</title>
 
-        <component name="elio-data-discovery-feature-status">
-            <name>productRecommendation</name>
-            <feature>product.recommendation</feature>
-        </component>
-
-        <component name="sw-entity-multi-id-select">
-            <name>recommendationExcludedProducts</name>
-            <label>exclude selected products from recommendations</label>
-            <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
-            <entity>product</entity>
-        </component>
-
-        <input-field type="text">
-            <name>disabledRecommendationTypes</name>
-            <label>Disabled Recommendation Types</label>
-            <label lang="de-DE">Deaktivierte Empfehlungstypen</label>
-            <helpText>Types of recommendations that are disabled in the detail page: "together", "also", "related".</helpText>
-            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "together", "also", "related"</helpText>
-            <placeholder>together,also,related</placeholder>
-        </input-field>
-    </card>
-    <card>
-        <title>Product detail page configuration</title>
-        <title lang="de-DE">Produkt-Detailseite-Einstellungen</title>
-
-        <component name="elio-data-discovery-feature-status">
-            <name>advisor</name>
-            <feature>advisor</feature>
-        </component>
-
-        <input-field type="bool">
-            <name>productDetailPageCampaignsActive</name>
-            <label>Product detail campaigns active</label>
-            <label lang="de-DE">Produkt-Detailseiten Kampagnen aktiv</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-    </card>
-    <card>
-        <title>Filter Restrictions</title>
-        <title lang="de-DE">Filter Restrictions</title>
-
-        <input-field type="bool">
-            <name>restrictionsParentCategories</name>
-            <label>Parent Categories giving impacts</label>
-            <label lang="de-DE">Übergeordnete Kategorien, die Auswirkungen haben</label>
-            <defaultValue>true</defaultValue>
-            <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
-        </input-field>
-
-        <input-field type="bool">
-            <name>restrictionsOverridingTopToDown</name>
-            <label>Restriction rules overriding from top to down</label>
-            <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
-            <defaultValue>true</defaultValue>
-            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise, down to top (low levels allow top levels blocking).</helpText>
-        </input-field>
-
-        <input-field type="int">
-            <name>restrictionsCacheTime</name>
-            <label>Restrictions cacheable time</label>
-            <label lang="de-DE">Restrictions cacheable time</label>
-            <defaultValue>60</defaultValue>
-            <helpText>Number in minutes</helpText>
-            <helpText lang="de-DE">Number in minutes</helpText>
-        </input-field>
-    </card>
     <card>
         <title>Sorting Positions</title>
         <title lang="de-DE">Sorting Positions</title>
@@ -264,6 +195,101 @@
             <helpText lang="de-DE">Neue Produkte werden an den Anfang oder das Ende der Tabelle einsortiert.</helpText>
         </input-field>
     </card>
+
+    <card>
+        <title>Product detail page configuration</title>
+        <title lang="de-DE">Produkt-Detailseite-Einstellungen</title>
+
+        <component name="elio-data-discovery-feature-status">
+            <name>advisor</name>
+            <feature>advisor</feature>
+        </component>
+
+        <input-field type="bool">
+            <name>productDetailPageCampaignsActive</name>
+            <label>Product detail campaigns active</label>
+            <label lang="de-DE">Produkt-Detailseiten Kampagnen aktiv</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Redirect to product detail page</title>
+        <title lang="de-DE">Direkte Weiterleitung zur Produktdetailseite</title>
+
+        <input-field type="bool">
+            <name>searchRedirectToProductDetail</name>
+            <label>Redirect to article detail page if only one product was found</label>
+            <label lang="de-DE">Weiterleiten zur Produktdetailseite, wenn nur ein Produkt gefunden wurde</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="text">
+            <name>searchRedirectProductRegex</name>
+            <label>Article number search regex expression</label>
+            <label lang="de-DE">Regulärer Ausdruck zur Produktnummer-Suche</label>
+            <defaultValue>/[A-Za-z0-9-]+/</defaultValue>
+            <placeholder>/[A-Za-z0-9-]+/</placeholder>
+            <helpText>The Regex should be as precise as possible to make sure that it finds the relevant product.</helpText>
+            <helpText lang="de-DE">Der Ausdruck sollte so präzise wie möglich sein, um das relevante Produkt zu finden.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Recommendations</title>
+        <title lang="de-DE">Recommendations</title>
+
+        <component name="elio-data-discovery-feature-status">
+            <name>productRecommendation</name>
+            <feature>product.recommendation</feature>
+        </component>
+
+        <component name="sw-entity-multi-id-select">
+            <name>recommendationExcludedProducts</name>
+            <label>exclude selected products from recommendations</label>
+            <label lang="de-DE">Ausgewählte Produkte nicht als Recommendation anzeigen</label>
+            <entity>product</entity>
+        </component>
+
+        <input-field type="text">
+            <name>disabledRecommendationTypes</name>
+            <label>Disabled Recommendation Types</label>
+            <label lang="de-DE">Deaktivierte Empfehlungstypen</label>
+            <helpText>Types of recommendations that are disabled in the detail page: "together", "also", "related".</helpText>
+            <helpText lang="de-DE">Typen von Empfehlungen, die in der Detailseite deaktiviert sind: "together", "also", "related"</helpText>
+            <placeholder>together,also,related</placeholder>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Filter Restrictions</title>
+        <title lang="de-DE">Filter Restrictions</title>
+
+        <input-field type="bool">
+            <name>restrictionsParentCategories</name>
+            <label>Parent Categories giving impacts</label>
+            <label lang="de-DE">Übergeordnete Kategorien, die Auswirkungen haben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Parent Categories has impact on filter restrictions. They will be added to tree of rules overrides</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>restrictionsOverridingTopToDown</name>
+            <label>Restriction rules overriding from top to down</label>
+            <label lang="de-DE">Restriktionsregeln, die von oben nach unten überschreiben</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Restriction rules overriding from top to down (top levels block lower levels allowing). Otherwise, down to top (low levels allow top levels blocking).</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>restrictionsCacheTime</name>
+            <label>Restrictions cacheable time</label>
+            <label lang="de-DE">Restrictions cacheable time</label>
+            <defaultValue>60</defaultValue>
+            <helpText>Number in minutes</helpText>
+            <helpText lang="de-DE">Number in minutes</helpText>
+        </input-field>
+    </card>
+
     <card>
         <title>Tracking</title>
         <title lang="de-DE">Tracking</title>
@@ -366,38 +392,6 @@
     </card>
 
     <card>
-        <title>Redirect to product detail page</title>
-        <title lang="de-DE">Direkte Weiterleitung zur Produktdetailseite</title>
-
-        <input-field type="bool">
-            <name>searchRedirectToProductDetail</name>
-            <label>Redirect to article detail page if only one product was found</label>
-            <label lang="de-DE">Weiterleiten zur Produktdetailseite, wenn nur ein Produkt gefunden wurde</label>
-            <defaultValue>true</defaultValue>
-        </input-field>
-        <input-field type="text">
-            <name>searchRedirectProductRegex</name>
-            <label>Article number search regex expression</label>
-            <label lang="de-DE">Regulärer Ausdruck zur Produktnummer-Suche</label>
-            <defaultValue>/[A-Za-z0-9-]+/</defaultValue>
-            <placeholder>/[A-Za-z0-9-]+/</placeholder>
-            <helpText>The Regex should be as precise as possible to make sure that it finds the relevant product.</helpText>
-            <helpText lang="de-DE">Der Ausdruck sollte so präzise wie möglich sein, um das relevante Produkt zu finden.</helpText>
-        </input-field>
-    </card>
-
-    <card>
-        <title>Search caching</title>
-        <title lang="de-DE">Caching der Suche</title>
-        <input-field type="int">
-            <name>searchCacheExpiresAfter</name>
-            <label>Cache expires after (Sec)</label>
-            <label lang="de-DE">Cache Dauer (Sek)</label>
-            <defaultValue>10</defaultValue>
-        </input-field>
-    </card>
-
-    <card>
         <title>Bot-Protection</title>
         <title lang="de-DE">Bot-Protection</title>
 
@@ -444,6 +438,19 @@
             <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </component>
     </card>
+
+    <card>
+        <title>Cleanup</title>
+        <title lang="de-DE">Cleanup</title>
+
+        <input-field type="int">
+            <name>entityStatusMaxCleanupAgeInDays</name>
+            <label>Max entity sync index age in days</label>
+            <label lang="de-DE">Maximales Alter des Sync Entity Indexes in Tagen</label>
+            <defaultValue>14</defaultValue>
+        </input-field>
+    </card>
+
     <card>
         <title>Advanced</title>
         <title lang="de-DE">Advanced</title>
@@ -461,6 +468,14 @@
             <helpText>url encoded query parameters(name=value&amp;otherName=otherValue)</helpText>
             <helpText lang="de-DE">Werte als URL-kodierte Parameter(name=value&amp;otherName=otherValue)</helpText>
         </component>
+
+        <input-field type="text">
+            <name>listingExclusionExpression</name>
+            <label>Data Discovery listing exclusion expression (Third-Party-Plugins)</label>
+            <label lang="de-DE">Ausdruck zum Ausschluss des Data Discovery Listing (Drittanbieter-Plugins)</label>
+            <helpText>The expression in this field is checked by the plugin. If the evaluation is true, the Data Discovery listing will not be used on the respective page. This can be used for compatibility with third-party-plugins. Consult a developer before setting this!</helpText>
+            <helpText lang="de-DE">Der Ausdruck in diesem Feld wird vom Plugin überprüft. Wenn die Auswertung wahr ist, wird das Data Discovery Listing auf der entsprechenden Seite nicht genutzt. Dies kann für die Kompatibilität von Drittanbieter-Plugins benutzt werden. Beraten Sie sich vor Setzen des Feldes mit einem Entwickler!</helpText>
+        </input-field>
     </card>
 
     <card>
@@ -492,17 +507,5 @@
             <helpText>Ip addresses separated by pipes(|) </helpText>
             <helpText lang="de-DE">IP-Adressen jeweils durch Pipes(|) getrennt</helpText>
         </component>
-    </card>
-
-    <card>
-        <title>Cleanup</title>
-        <title lang="de-DE">Cleanup</title>
-
-        <input-field type="int">
-            <name>entityStatusMaxCleanupAgeInDays</name>
-            <label>Max entity sync index age in days</label>
-            <label lang="de-DE">Maximales Alter des Sync Entity Indexes in Tagen</label>
-            <defaultValue>14</defaultValue>
-        </input-field>
     </card>
 </config>

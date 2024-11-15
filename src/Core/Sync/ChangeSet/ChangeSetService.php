@@ -52,6 +52,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ChangeSetService
@@ -126,6 +127,7 @@ class ChangeSetService
      * @param Context $context
      * @param bool $isAsync
      * @return void
+     * @throws ExceptionInterface
      */
     public function startIndexing(Context $context, bool $isAsync = false): void
     {

@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\DataTypes;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Visibilities;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 /**
  * Class ProductType
@@ -44,7 +45,7 @@ use Shopware\Core\Content\Product\ProductEntity;
  * @author Danil Lukov <dl@elio-systems.com>
  * @copyright Copyright (c) 2023, elio GmbH (https://www.elio-systems.com)
  */
-class ProductDataType extends ProductEntity implements DataTypeInterface
+class ProductDataType extends SalesChannelProductEntity implements DataTypeInterface
 {
     use IdentifierAware;
     use TranslationAware;

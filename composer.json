@@ -1,7 +1,7 @@
 {
     "name": "elio/data-discovery-core",
     "description": "Data Discovery Core",
-    "version": "6.0.4",
+    "version": "6.6.0",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
     "authors": [
@@ -36,8 +36,9 @@
     ],
     "require": {
         "php": ">= 8.1",
-        "shopware/core": "~6.6.0.0|~6.6.1.0|~6.6.2.0|~6.6.3.0",
-        "dragonmantank/cron-expression": "^3.1"
+        "shopware/core": "^6.6.4",
+        "dragonmantank/cron-expression": "^3.1",
+        "symfony/expression-language": "^7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

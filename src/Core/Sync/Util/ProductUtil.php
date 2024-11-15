@@ -114,6 +114,7 @@ class ProductUtil
                 return false;
             }
 
+            /** @var ArrayStruct $childDisplayGroups */
             $childDisplayGroups = $parentProduct->getExtension(self::DISPLAY_GROUP_EXTENSION_NAME) ?? new ArrayStruct([]);
             $displayGroups = [];
             foreach ($childDisplayGroups as $childProductId => $childDisplayGroup) {
