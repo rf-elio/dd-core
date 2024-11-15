@@ -52,6 +52,11 @@ class SuggestionResponse extends Response
     protected SuggestGroupCollection $groups;
 
     /**
+     * @var int
+     */
+    protected int $found;
+
+    /**
      * @param SuggestGroupCollection $groups
      */
     public function setGroups(SuggestGroupCollection $groups): void
@@ -65,6 +70,23 @@ class SuggestionResponse extends Response
     public function getGroups(): SuggestGroupCollection
     {
         return $this->groups;
+    }
+
+    /**
+     * @param int $found
+     * @return void
+     */
+    public function setFound(int $found): void
+    {
+        $this->found = $found;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFound(): int
+    {
+        return $this->found;
     }
 
     /**

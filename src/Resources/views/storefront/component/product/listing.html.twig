@@ -1,6 +1,7 @@
 {% sw_extends '@Storefront/storefront/component/product/listing.html.twig' %}
 
-{% if cmsPage %}
+{# we only set the sidebar-filter id into the params if it is not empty, since it will otherwise cause an error when changing pages in the listing #}
+{% if cmsPage and cmsPage.firstElementOfType('sidebar-filter').id is not empty %}
     {% set slots = [
         cmsPage.firstElementOfType('product-listing').id,
         cmsPage.firstElementOfType('sidebar-filter').id

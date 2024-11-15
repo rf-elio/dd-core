@@ -36,7 +36,6 @@ class ProductRedirectSearchApi implements SearchApiInterface
      * @param ElioDataDiscoveryConfigService $configService
      * @param SearchApiInterface $searchApi
      * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
-     * @param RouterInterface $router
      * @param LoggerInterface $logger
      * @param SalesChannelRepository $productRepository
      * @param SystemConfigService $systemConfigService
@@ -47,7 +46,6 @@ class ProductRedirectSearchApi implements SearchApiInterface
         private readonly ElioDataDiscoveryConfigService $configService,
         private readonly SearchApiInterface $searchApi,
         private readonly SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
-        private readonly RouterInterface $router,
         LoggerInterface $logger,
         private readonly SalesChannelRepository $productRepository,
         private readonly SystemConfigService $systemConfigService,

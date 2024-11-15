@@ -42,7 +42,9 @@ class ProductSortingEntity extends Entity
     use EntityIdTrait;
 
     protected ?string $productId = null;
+    protected ?string $productVersionId = null;
     protected ?string $categoryId = null;
+    protected ?string $categoryVersionId = null;
     protected ?ProductEntity $product = null;
     protected ?CategoryEntity $category = null;
     protected ?int $position = null;
@@ -95,5 +97,25 @@ class ProductSortingEntity extends Entity
     public function setPosition(int $position): void
     {
         $this->position = $position;
+    }
+
+    public function getProductVersionId(): ?string
+    {
+        return $this->productVersionId;
+    }
+
+    public function setProductVersionId(?string $productVersionId): void
+    {
+        $this->productVersionId = $productVersionId;
+    }
+
+    public function getCategoryVersionId(): ?string
+    {
+        return $this->categoryVersionId;
+    }
+
+    public function setCategoryVersionId(?string $categoryVersionId): void
+    {
+        $this->categoryVersionId = $categoryVersionId;
     }
 }

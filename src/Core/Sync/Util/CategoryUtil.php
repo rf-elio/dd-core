@@ -65,7 +65,7 @@ class CategoryUtil
      * @param ArrayObject<mixed> $customFields
      * @param array $inheritedCustomFields
      */
-    public static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
+    private static function buildCustomFieldInheritanceByNodes(array $nodes, ArrayObject $customFields, array $inheritedCustomFields = []): void
     {
         foreach ($nodes as $node) {
             /** @var CategoryEntity $category */
@@ -77,6 +77,7 @@ class CategoryUtil
             $mergedCategoryCustomFields = array_replace($inheritedCustomFields, $categoryCustomFields);
 
             // apply the category type for child categories to child categories that don't have an own type
+            // CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT: update
             if(
                 (
                     !isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT]) ||
@@ -86,6 +87,18 @@ class CategoryUtil
                 !empty($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
             ) {
                 $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT] = $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED];
+            }
+
+            // CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT: cleanup
+            if (
+                isset($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT]) &&
+                !empty($categoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT]) &&
+                (
+                    !isset($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED]) ||
+                    empty($inheritedCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED])
+                )
+            ) {
+                $mergedCategoryCustomFields[ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT] = '';
             }
 
             // CUSTOM_FIELD_CONTENT_EXPORT_EXCLUDE: will not be inherited (should only exclude this category, but not the children)
@@ -119,6 +132,21 @@ class CategoryUtil
     }
 
     /**
+     * Creates a tree for the given categories
+     * @param EntityCollection $categories
+     * @return RandomAddTree
+     */
+    private static function createCategoryTree(EntityCollection $categories): RandomAddTree
+    {
+        $tree = new RandomAddTree();
+        /** @var CategoryEntity $category */
+        foreach ($categories as $category) {
+            $tree->add($category->getId(), $category->getParentId(), $category);
+        }
+        return $tree;
+    }
+
+    /**
      * Creates a tree by all categories. The tree will be looped over to generate the custom field inheritance
      *
      * @param SalesChannelRepository $categoryRepository
@@ -133,43 +161,12 @@ class CategoryUtil
 
     public static function buildCustomFieldInheritanceForCategories(EntityCollection $categories): array
     {
+        $tree = self::createCategoryTree($categories);
         $customFields = new ArrayObject();
-        $tree = new RandomAddTree();
-
-        /** @var CategoryEntity $category */
-        foreach ($categories as $category) {
-            $tree->add($category->getId(), $category->getParentId(), $category);
-        }
-
         self::buildCustomFieldInheritanceByNodes($tree->create(), $customFields);
-        return ['tree' => $tree, 'customFields' => $customFields->getArrayCopy()];
-    }
-
-    /**
-     * @param SalesChannelRepository $categoryRepository
-     * @param array $categoryIds
-     * @param Criteria $baseCriteria
-     * @param SalesChannelContext $context
-     * @return EntityCollection<CategoryEntity>
-     */
-    public static function getChildCategories(SalesChannelRepository $categoryRepository, array $categoryIds, Criteria $baseCriteria, SalesChannelContext $context): EntityCollection
-    {
-        if (empty($categoryIds)) {
-            return new EntityCollection([]);
-        }
-
-        $criteria = $baseCriteria;
-        self::extendCriteriaForChildCategories($criteria, $categoryIds);
-        /* @phpstan-ignore-next-line */
-        return $categoryRepository->search($criteria, $context)->getEntities();
-    }
-
-    public static function extendCriteriaForChildCategories(Criteria $criteria, array $categoryIds): void
-    {
-        $categoryFilters = [];
-        foreach ($categoryIds as $categoryId) {
-            $categoryFilters[] = new EqualsFilter('parentId', $categoryId);
-        }
-        $criteria->addFilter(new OrFilter($categoryFilters));
+        return [
+            'tree' => $tree,
+            'customFields' => $customFields->getArrayCopy()
+        ];
     }
 }

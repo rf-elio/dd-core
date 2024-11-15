@@ -51,11 +51,10 @@ class CategoryInheritanceService
 {
     public function __construct(
         private readonly EntityRepository $categoryRepository
-    )
-    {
+    ) {
     }
 
-    public function updateExcludeInheritance(Context $context): void
+    public function update(Context $context): void
     {
         $criteria = new Criteria();
         $categories = $this->categoryRepository->search($criteria, $context);
@@ -66,25 +65,25 @@ class CategoryInheritanceService
 
         if (array_key_exists('customFields', $result) && !empty($result['customFields'])) {
             $dataToUpdate = [];
-            foreach ($result['customFields'] as $categoryId => $customFields) {
+            foreach ($result['customFields'] as $categoryId => $newCustomFields) {
                 /** @var CategoryEntity $category */
                 $category = $categories->get($categoryId);
-                $actualCustomFields = $category->getCustomFields() ?? [];
+                $oldCustomFields = $category->getCustomFields() ?? [];
 
-                if (!$this->hasNotChanged($customFields, $actualCustomFields, $parentalExclude)) {
-                    $actualCustomFields[$parentalExclude] = $customFields[$parentalExclude];
-                    if (!$this->hasNotChanged($customFields, $actualCustomFields, $exportTypeInherited)) {
-                        $actualCustomFields[$exportTypeParent] = $customFields[$exportTypeInherited];
+                if ($this->hasChanged($newCustomFields, $oldCustomFields, $parentalExclude)) {
+                    $oldCustomFields[$parentalExclude] = $newCustomFields[$parentalExclude];
+                    if ($this->hasChanged($newCustomFields, $oldCustomFields, $exportTypeInherited)) {
+                        $oldCustomFields[$exportTypeParent] = $newCustomFields[$exportTypeInherited];
                     }
-                } elseif (!$this->hasNotChanged($customFields, $actualCustomFields, $exportTypeInherited)) {
-                    $actualCustomFields[$exportTypeParent] = $customFields[$exportTypeInherited];
+                } elseif ($this->hasChanged($newCustomFields, $oldCustomFields, $exportTypeParent)) {
+                    $oldCustomFields[$exportTypeParent] = $newCustomFields[$exportTypeParent];
                 } else {
                     continue;
                 }
 
                 $dataToUpdate[] = [
                     'id' => $categoryId,
-                    'customFields' => $actualCustomFields
+                    'customFields' => $oldCustomFields
                 ];
             }
             if (!empty($dataToUpdate)) {
@@ -93,26 +92,34 @@ class CategoryInheritanceService
         }
     }
 
-    private function hasNotChanged(array $customFields, array $actualCustomFields, string $customField): bool
+    private function hasChanged(array $newCustomFields, array $oldCustomFields, string $customField): bool
     {
         $parentalExclude = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_PARENTAL_EXCLUDE;
         $exportTypeParent = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_PARENT;
-        $exportTypeInherited = ElioDataDiscovery::CUSTOM_FIELD_CONTENT_EXPORT_TYPE_INHERITED;
 
         if ($customField === $parentalExclude) {
-            return array_key_exists($parentalExclude, $actualCustomFields)
-                && array_key_exists($parentalExclude, $customFields)
-                && $actualCustomFields[$parentalExclude] === $customFields[$parentalExclude];
+            return !(
+                array_key_exists($parentalExclude, $oldCustomFields)
+                && array_key_exists($parentalExclude, $newCustomFields)
+                && $oldCustomFields[$parentalExclude] === $newCustomFields[$parentalExclude]
+            );
         }
 
-        if ($customField === $exportTypeInherited) {
-            return (array_key_exists($exportTypeInherited, $customFields)
-                    && array_key_exists($exportTypeParent, $actualCustomFields)
-                    && $actualCustomFields[$exportTypeParent] === $customFields[$exportTypeInherited])
-                || !array_key_exists($exportTypeInherited, $customFields)
-                || array_key_exists($exportTypeInherited, $actualCustomFields);
+        if ($customField === $exportTypeParent) {
+            return (
+                (
+                    array_key_exists($exportTypeParent, $newCustomFields)
+                    && array_key_exists($exportTypeParent, $oldCustomFields)
+                    && $oldCustomFields[$exportTypeParent] !== $newCustomFields[$exportTypeParent]
+                )
+                ||
+                (
+                    array_key_exists($exportTypeParent, $newCustomFields)
+                    && !array_key_exists($exportTypeParent, $oldCustomFields)
+                )
+            );
         }
 
-        return true;
+        return false;
     }
 }

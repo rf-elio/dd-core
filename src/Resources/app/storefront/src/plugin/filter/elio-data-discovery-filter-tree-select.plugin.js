@@ -16,15 +16,7 @@ export default class ElioDataDiscoveryFilterTreeSelectPlugin extends FilterPrope
         return values;
     }
 
-    _onChangeFilter(checkbox) {
-        if (checkbox.checked === false) {
-            checkbox.closest('.category-navigation').querySelectorAll(this.options.checkboxSelector).forEach((checkbox) => {
-                if (checkbox.checked === false) {
-                    return;
-                }
-                checkbox.checked = false;
-            });
-        }
+    _onChangeFilter() {
         // reset page to 1 when updating the filter
         this.listing.changeListing(true, { p: 1 });
     }

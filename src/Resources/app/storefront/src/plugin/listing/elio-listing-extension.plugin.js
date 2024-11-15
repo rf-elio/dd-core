@@ -2,7 +2,7 @@ import DomAccess from 'src/helper/dom-access.helper';
 import FilterBasePlugin from 'src/plugin/listing/filter-base.plugin'
 import deepmerge from 'deepmerge'
 
-export default class ListingPluginExtension extends window.PluginBaseClass {
+export default class ElioListingExtensionPlugin extends window.PluginBaseClass {
 
     static options = deepmerge(FilterBasePlugin.options, {
         listingPropertiesSelector: '.e-elio-data-discovery-listing-properties',

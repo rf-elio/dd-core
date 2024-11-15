@@ -53,7 +53,7 @@
                         {% block layout_search_suggest_result_total_count %}
                             <div class="col-auto search-suggest-total-count">
                                 {{ "header.searchResults"|trans({
-                                    '%count%': response.countVisible,
+                                    '%count%': response.getFound,
                                 })|sw_sanitize }}
                             </div>
                         {% endblock %}

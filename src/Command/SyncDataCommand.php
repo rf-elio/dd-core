@@ -79,12 +79,11 @@ class SyncDataCommand extends Command
         $context = Context::createDefaultContext();
         $exportId = $input->getArgument('syncProfileId');
         $force = $input->getOption('force');
-        $fullSync = $input->getOption('full-sync');
 
         try {
             if($exportId) {
                 $syncProfileConfiguration = $this->syncService->getSyncProfileConfiguration($exportId, $context);
-                if (!$force && !$fullSync && !$this->syncService->isSyncProfileDue($syncProfileConfiguration)) {
+                if (!$force && !$this->syncService->isSyncProfileDue($syncProfileConfiguration)) {
                     $output->writeln('<info>Sync profile is not due</info>');
                     return Command::SUCCESS;
                 }

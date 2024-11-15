@@ -41,7 +41,7 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
         $allProductNumbers = array_unique(array_merge(...array_values($productNumbersPerType)));
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
-        /** @var ProductCollection $products */
+        /** @var ProductCollection $allProducts */
         $allProducts = $this->listingLoader->load($criteria, $context)->getEntities();
 
         $productNumbersToTypeMap = [];

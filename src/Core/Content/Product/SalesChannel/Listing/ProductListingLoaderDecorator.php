@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Extensions\ExtensionDispatcher;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -33,7 +34,8 @@ class ProductListingLoaderDecorator extends ProductListingLoader
         private readonly SystemConfigService $systemConfigService,
         Connection $connection,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
+        private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
+        readonly ExtensionDispatcher $extensions
     )
     {
         parent::__construct(
@@ -41,7 +43,8 @@ class ProductListingLoaderDecorator extends ProductListingLoader
             $systemConfigService,
             $connection,
             $eventDispatcher,
-            $productCloseoutFilterFactory
+            $productCloseoutFilterFactory,
+            $extensions
         );
     }
 

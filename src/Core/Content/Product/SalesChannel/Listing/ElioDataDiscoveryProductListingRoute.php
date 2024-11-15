@@ -52,6 +52,7 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRouteRespon
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Throwable;
@@ -120,7 +121,7 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
         }
 
         $config = $this->configService->getByContext($context);
-        if(!$config->isActive() || !$config->isListingUseElioDataDiscovery() || !$this->canLoadCategoryByElioDataDiscovery($category, $config)) {
+        if(!$config->isActive() || !$config->isListingUseElioDataDiscovery() || !$this->canLoadCategoryByElioDataDiscovery($category, $config, $request)) {
             return $this->decorated->load($categoryId, $request, $context, $criteria);
         }
 
@@ -167,15 +168,36 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
      * - Category with product stream
      *
      * @param CategoryEntity $category
+     * @param Configuration $config
+     * @param Request $request
      * @return bool
      */
-    protected function canLoadCategoryByElioDataDiscovery(CategoryEntity $category, Configuration $config) : bool
+    protected function canLoadCategoryByElioDataDiscovery(CategoryEntity $category, Configuration $config, Request $request) : bool
     {
         if (!$config->isAllowStreamIdSearch() && !empty($category->getProductStreamId())) {
             return false;
         }
 
-        return true;
+        $listingExclusionExpression = $config->getListingExclusionExpression();
+        if (empty($listingExclusionExpression)) {
+            return true;
+        }
+
+        $expressionLanguage = new ExpressionLanguage();
+        try {
+            return !$expressionLanguage->evaluate($listingExclusionExpression, [
+                'request' => $request,
+                'category' => $category,
+                'config' => $config,
+            ]);
+        } catch(Throwable $e) {
+            $this->logger->error($e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'listingExclusionExpression' => $listingExclusionExpression
+            ]);
+            return true;
+        }
     }
 
     /**
