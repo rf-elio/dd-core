@@ -1,4 +1,10 @@
 # CHANGELOG.md
+## 6.6.1 - 2024-11-20
+### Fix (3 changes)
+- `ProductCollector`: ratingCount is now set directly from the product's `translated` custom field
+- `AvailableStockAware`: fixed injection of `ProductCloseoutFilterFactory` to use the abstract class instead
+- `ProductRedirectSearchApi`: fixed PHPDoc and use statement
+
 ## 6.6.0 - 2024-11-14
 ### Fix (10 changes)
 - ProductListingLoaderDecorator: Compatibility with Shopware restored after sw 6.4.0 update.

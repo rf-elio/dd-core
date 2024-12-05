@@ -14,7 +14,6 @@ use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
-use Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -125,7 +124,7 @@ class ProductRedirectSearchApi implements SearchApiInterface
      * @param string $searchTerm
      * @param SalesChannelContext $context
      * @param SystemConfigService $systemConfigService
-     * @param ProductCloseoutFilterFactory $productCloseoutFilterFactory
+     * @param AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
      * @return string|null
      */
     private function getProductIdByProductNumber(
