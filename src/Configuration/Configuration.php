@@ -76,6 +76,7 @@ class Configuration extends Struct
         private readonly bool $restrictionsParentCategories,
         private readonly bool $restrictionsOverridingTopToDown,
         private readonly int $restrictionsCacheTime,
+        private readonly int $startLevelFilter,
         private readonly array $suggestTypeLabels,
         private readonly array $suggestAcceptedTypes,
         private readonly array $suggestAcceptedTypesMobile,
@@ -283,6 +284,14 @@ class Configuration extends Struct
     public function getRestrictionsCacheTime(): int
     {
         return $this->restrictionsCacheTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStartLevelFilter(): int
+    {
+        return $this->startLevelFilter;
     }
 
     /**

@@ -163,6 +163,16 @@
             <label lang="de-DE">Nutzung vom Stream IDs in der API-Suche erlauben</label>
             <defaultValue>true</defaultValue>
         </input-field>
+
+        <input-field type="int">
+            <name>startLevelFilter</name>
+            <label>Category tree filter level</label>
+            <label lang="de-DE">Filter-Level des Kategoriebaums</label>
+            <defaultValue>1</defaultValue>
+            <min>1</min>
+            <helpText>Sets the level from which the category path is filtered. 1 starts from the first category, e.g. Home. Each higher number moves one child category down in the tree.</helpText>
+            <helpText lang="de-DE">Setzt das Level, von welchem der Kategorie-Pfad gefiltert wird. 1 beginnt bei der ersten Kategorie, z.B. Home. Jede höhere Zahl rückt im Kategoriebaum eine Kind-Kategorie weiter.</helpText>
+        </input-field>
     </card>
 
     <card>

@@ -150,6 +150,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsParentCategories', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsOverridingTopToDown', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'restrictionsCacheTime', $languagePrefix) ?? 60,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'startLevelFilter', $languagePrefix) ?? 2,
             ConfigParserUtil::prepareValueListWithKeyValuePair($config, 'suggestTypeLabels', $languagePrefix),
             ConfigParserUtil::prepareValueList($config, 'suggestAcceptedTypes', $languagePrefix),
             ConfigParserUtil::prepareValueList($config, 'suggestAcceptedTypesMobile', $languagePrefix),
