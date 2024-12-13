@@ -23,6 +23,10 @@
         {% set elioDataDiscoveryPageSize = trackingResponse.pageSize %}
     {% endif %}
 
+    {% if searchResult.extensions.InterrupterResponse is defined %}
+        {% set interrupterResponse = searchResult.extensions.InterrupterResponse %}
+    {% endif %}
+
     {{ parent() }}
 {% endblock %}
 
@@ -52,6 +56,42 @@
             label: 'below search result', container: searchResult
         } %}
     {% endif %}
+{% endblock %}
+
+{# interrupters #}
+{% block element_product_listing_col %}
+    {% for product in searchResult %}
+        {% set productLoop = loop %}
+        {% for interrupter in interrupterResponse.interrupterItems %}
+            {% if interrupter.position === productLoop.index0 %}
+                <div class="cms-listing-col {{ listingColumns }} d-none d-lg-block d-xl-block" role="listitem">
+                    <a href="{{ interrupter.url }}">
+                        Hier ist ein Desktop Störer:
+                        <img src="{{ interrupter.imageDesktop }}" alt="Störer Desktop" style="width: 100%; margin-left: auto; margin-right: auto; display: block;"/>
+                        {{ interrupter.html|sw_sanitize }}
+                        <ul>
+                            <li>Format: {{ interrupter.format }}</li>
+                        </ul>
+                    </a>
+                </div>
+                <div class="cms-listing-col {{ listingColumns }} d-xl-none d-lg-none" role="listitem">
+                    <a href="{{ interrupter.url }}">
+                        Hier ist ein Mobile Störer:
+                        <img src="{{ interrupter.imageMobile }}" alt="Störer Mobile" style="width: 100%; margin-left: auto; margin-right: auto; display: block;"/>
+                        {{ interrupter.html|sw_sanitize }}
+                        <ul>
+                            <li>Format: {{ interrupter.format }}</li>
+                        </ul>
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="cms-listing-col {{ listingColumns }}" role="listitem">
+            {% block element_product_listing_box %}
+                {{ parent() }}
+            {% endblock %}
+        </div>
+    {% endfor %}
 {% endblock %}
 
 {# advisor campaigns #}

@@ -86,5 +86,9 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
             <argument type="service" id="Shopware\Core\Framework\Extensions\ExtensionDispatcher"/>
         </service>
+
+        <service id="Elio\ElioDataDiscovery\Core\Content\Interrupter\SalesChannel\SeoResolver">
+            <argument type="service" id="sales_channel.product.repository"/>
+        </service>
     </services>
 </container>

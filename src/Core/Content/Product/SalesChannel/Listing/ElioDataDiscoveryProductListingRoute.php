@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Listing;
 
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\InterrupterResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
@@ -147,6 +148,12 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
             $campaignRedirectionResponse = $resultCollection->get(CampaignRedirectionResponse::class);
             if ($campaignRedirectionResponse !== null) {
                 $shopwareProductListingResult->addExtension(CampaignRedirectionResponse::class, $campaignRedirectionResponse);
+            }
+
+            /** @var InterrupterResponse|null $interrupterResponse */
+            $interrupterResponse = $resultCollection->get(InterrupterResponse::class);
+            if ($interrupterResponse !== null) {
+                $shopwareProductListingResult->addExtension(InterrupterResponse::KEY, $interrupterResponse);
             }
 
             return new ProductListingRouteResponse($shopwareProductListingResult);
