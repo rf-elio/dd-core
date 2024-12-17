@@ -86,18 +86,13 @@
                         {% if interrupter.html %}
                             {{ interrupter.html|sw_sanitize|raw }}
                         {% elseif interrupter.imageDesktop or interrupter.imageMobile %}
-                            {% if interrupter.imageDesktop %}
+                            <picture>
+                                <source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">
+                                <source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">
                                 <img src="{{ interrupter.imageDesktop }}"
-                                     alt="Störer Desktop"
-                                     style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;"
-                                     class="d-none d-lg-block d-xl-block"/>
-                            {% endif %}
-                            {% if interrupter.imageMobile %}
-                                <img src="{{ interrupter.imageMobile }}"
-                                     alt="Störer Mobile"
-                                     style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;"
-                                     class="d-xl-none d-lg-none"/>
-                            {% endif %}
+                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% else %}{{ "elioDataDiscovery.interrupter.altFallback"|sw_sanitize|trans }}{% endif %}"
+                                     style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;">
+                            </picture>
                         {% endif %}
                     </a>
                 </div>
