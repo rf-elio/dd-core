@@ -1,5 +1,12 @@
 # CHANGELOG.md
-## 6.6.2 - 2024-12-12
+## 6.6.2 - 2024-12-18
+### Features (4 changes)
+- Added Interrupters:
+  - `InterrupterItem`: holds the interrupter data
+  - `InterrupterResponse`: holds the `InterrupterItems`
+  - `SeoResolver`: replaces the itemId of product interrupters with the actual product ID
+  - Updates dependency injection, `listing.html.twig` template and snippets
+
 ### Fix (3 changes)
 - `SuggestRequest`: initialized `type` with null to fix broken suggest if `suggestToggleProductType` config is `false`
 - Added `startLevelFilter` config setting to determine the level from which category paths are filtered
