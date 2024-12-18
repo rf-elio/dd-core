@@ -7,24 +7,28 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class InterrupterItem extends Struct
 {
+    public const INTERRUPTER_ITEM_TYPE = 'teaser';
+
     /**
-     * @param string $type
+     * @param string $name
      * @param int $position
      * @param string $format
      * @param string $url
      * @param string $imageDesktop
      * @param string $imageMobile
+     * @param string $alt
      * @param string $html
      * @param string $itemId
      * @param string $itemType
      */
     public function __construct(
-        private readonly string $type,
+        private readonly string $name,
         private readonly int $position,
         private readonly string $format,
         private readonly string $url,
         private readonly string $imageDesktop,
         private readonly string $imageMobile,
+        private readonly string $alt,
         private readonly string $html,
         private string $itemId,
         private readonly string $itemType
@@ -33,9 +37,9 @@ class InterrupterItem extends Struct
     /**
      * @return string
      */
-    public function getType(): string
+    public function getName(): string
     {
-        return $this->type;
+        return $this->name;
     }
 
     /**
@@ -76,6 +80,11 @@ class InterrupterItem extends Struct
     public function getImageMobile(): string
     {
         return $this->imageMobile;
+    }
+
+    public function getAlt(): string
+    {
+        return $this->alt;
     }
 
     /**

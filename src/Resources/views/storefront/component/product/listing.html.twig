@@ -81,8 +81,22 @@
             {% endif %}
 
             {% if interrupter.position === productLoop.index0 %}
+                {% set route = null %}
+                {% set parameters = {} %}
                 <div class="cms-listing-col {{ interrupterColumns }}" role="listitem">
-                    <a href="{{ interrupter.url }}">
+                    {% if interrupter.ItemId %}
+                        {% if interrupter.itemType === 'product' %}
+                            {% set route = 'frontend.detail.page' %}
+                            {% set parameters = { productId: interrupter.itemId } %}
+                        {% elseif interrupter.itemType === 'category' %}
+                            {% set route = 'frontend.navigation.page' %}
+                            {% set parameters = { navigationId: interrupter.itemId } %}
+                        {% elseif interrupter.itemType === 'landingpage' %}
+                            {% set route = 'frontend.landing.page' %}
+                            {% set parameters = { landingPageId: interrupter.itemId } %}
+                        {% endif %}
+                    {% endif %}
+                    <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}">
                         {% if interrupter.html %}
                             {{ interrupter.html|sw_sanitize|raw }}
                         {% elseif interrupter.imageDesktop or interrupter.imageMobile %}

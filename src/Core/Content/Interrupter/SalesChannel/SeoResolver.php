@@ -32,7 +32,9 @@ class SeoResolver
         }
 
         foreach ($interrupters as $interrupter) {
-            $interrupter->setItemId($productNumberIdMap[$interrupter->getItemId()]);
+            if (isset($productNumberIdMap[$interrupter->getItemId()])) {
+                $interrupter->setItemId($productNumberIdMap[$interrupter->getItemId()]);
+            }
         }
 
         return $interrupters;
