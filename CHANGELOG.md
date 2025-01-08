@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.2 - 2024-12-05
+### Fix (1 change)
+- `SuggestRequest`: initialized `type` with null to fix broken suggest if `suggestToggleProductType` config is `false`
+
 ## 6.6.1 - 2024-11-20
 ### Fix (3 changes)
 - `ProductCollector`: ratingCount is now set directly from the product's `translated` custom field

@@ -45,7 +45,7 @@ use Elio\ElioDataDiscovery\Api\Request\ChannelRequest;
 class SuggestRequest extends ChannelRequest
 {
     protected string $query = '*';
-    protected ?string $type;
+    protected ?string $type = null;
 
     /**
      * @return string
