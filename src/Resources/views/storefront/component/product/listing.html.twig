@@ -60,70 +60,72 @@
 
 {# interrupters #}
 {% block element_product_listing_col %}
-    {% set position = 0 %}
-    {% for product in searchResult %}
+    {% set productIndex = 0 %}
+    {% set products = [] %}
+    {% for product in searchResult.elements %}
+        {% set products = products|merge([product]) %}
+    {% endfor %}
+    {% set listingElements = searchResult|length + interrupterResponse.interrupterItems|length %}
+
+    {% for position in 0..listingElements %}
+        {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(position) %}
         {% set interrupterColumns = null %}
 
-        {% set interrupterChain = true %}
-        {% for interrupterItem in interrupterResponse.interrupterItems %}
-            {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(position) %}
-            {% if interrupter and interrupterChain %}
-                {# Set Classes for interrupter #}
-                {% if interrupter.format == '1x1' %}
-                    {% if section and section.type == 'sidebar' %}
-                        {% set interrupterColumns = 'col-sm-6 col-lg-6 col-xl-4' %}
-                    {% else %}
-                        {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
-                    {% endif %}
-                {% elseif interrupter.format == '1x2' %}
-                    {% if section and section.type == 'sidebar' %}
-                        {% set interrupterColumns = 'col-xl-8' %}
-                    {% else %}
-                        {% set interrupterColumns = 'col-lg-8 col-xl-6' %}
+        {% if interrupter %}
+            {# Set Classes for interrupter #}
+            {% if interrupter.format == '1x1' %}
+                {% if section and section.type == 'sidebar' %}
+                    {% set interrupterColumns = 'col-sm-6 col-lg-6 col-xl-4' %}
+                {% else %}
+                    {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
+                {% endif %}
+            {% elseif interrupter.format == '1x2' %}
+                {% if section and section.type == 'sidebar' %}
+                    {% set interrupterColumns = 'col-xl-8' %}
+                {% else %}
+                    {% set interrupterColumns = 'col-lg-8 col-xl-6' %}
+                {% endif %}
+            {% endif %}
+
+            {% set route = null %}
+            {% set parameters = {} %}
+            <div class="cms-listing-col {{ interrupterColumns }}" role="listitem">
+                {% if interrupter.ItemId %}
+                    {% if interrupter.itemType === 'product' %}
+                        {% set route = 'frontend.detail.page' %}
+                        {% set parameters = { productId: interrupter.itemId } %}
+                    {% elseif interrupter.itemType === 'category' %}
+                        {% set route = 'frontend.navigation.page' %}
+                        {% set parameters = { navigationId: interrupter.itemId } %}
+                    {% elseif interrupter.itemType === 'landingpage' %}
+                        {% set route = 'frontend.landing.page' %}
+                        {% set parameters = { landingPageId: interrupter.itemId } %}
                     {% endif %}
                 {% endif %}
-
-                {% set route = null %}
-                {% set parameters = {} %}
-                <div class="cms-listing-col {{ interrupterColumns }}" role="listitem">
-                    {% if interrupter.ItemId %}
-                        {% if interrupter.itemType === 'product' %}
-                            {% set route = 'frontend.detail.page' %}
-                            {% set parameters = { productId: interrupter.itemId } %}
-                        {% elseif interrupter.itemType === 'category' %}
-                            {% set route = 'frontend.navigation.page' %}
-                            {% set parameters = { navigationId: interrupter.itemId } %}
-                        {% elseif interrupter.itemType === 'landingpage' %}
-                            {% set route = 'frontend.landing.page' %}
-                            {% set parameters = { landingPageId: interrupter.itemId } %}
-                        {% endif %}
+                <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}">
+                    {% if interrupter.html %}
+                        {{ interrupter.html|sw_sanitize|raw }}
                     {% endif %}
-                    <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}">
-                        {% if interrupter.html %}
-                            {{ interrupter.html|sw_sanitize|raw }}
-                        {% endif %}
-                        {% if interrupter.imageDesktop or interrupter.imageMobile %}
-                            <picture>
-                                {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
-                                {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
-                                <img src="{{ interrupter.imageDesktop }}"
-                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
-                                     style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;">
-                            </picture>
-                        {% endif %}
-                    </a>
-                </div>
-                {% set position = position + 1 %}
-            {% else %}
-                {% set interrupterChain = false %}
-            {% endif %}
-        {% endfor %}
-        <div class="cms-listing-col {{ listingColumns }}" role="listitem">
-            {% block element_product_listing_box %}
-                {{ parent() }}
-            {% endblock %}
-        </div>
-        {% set position = position + 1 %}
+                    {% if interrupter.imageDesktop or interrupter.imageMobile %}
+                        <picture>
+                            {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
+                            {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
+                            <img src="{{ interrupter.imageDesktop }}"
+                                 alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
+                                 style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;">
+                        </picture>
+                    {% endif %}
+                </a>
+            </div>
+        {% else %}
+            {% set product = products[productIndex] %}
+            <div class="cms-listing-col {{ listingColumns }}" role="listitem">
+                {% block element_product_listing_box %}
+                    {{ parent() }}
+                {% endblock %}
+            </div>
+            {% set productIndex = productIndex + 1 %}
+        {% endif %}
     {% endfor %}
 {% endblock %}
 
