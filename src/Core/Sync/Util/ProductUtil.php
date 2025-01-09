@@ -339,4 +339,28 @@ class ProductUtil
 
         return $attributes;
     }
+
+    /**
+     * Appends the product attributes
+     *
+     * @param array<PropertyGroupOptionEntity> $properties
+     * @return array
+     */
+    public static function getProductProperty(array $properties): array
+    {
+        $attributes = [];
+        foreach ($properties as $property) {
+            $group = $property->getGroup();
+            if ($group !== null) {
+                $name = $group->getTranslation('name') ?? $group->getName();
+                $value = $property->getTranslation('name') ?? $property->getName();
+                if (!isset($attributes[$name])) {
+                    $attributes[$name] = [];
+                }
+                $attributes[$name][] = ValueUtil::cleanValue($value);
+            }
+        }
+
+        return $attributes;
+    }
 }

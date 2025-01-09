@@ -1,7 +1,9 @@
 # CHANGELOG.md
-## 6.6.2 - 2024-12-05
-### Fix (1 change)
+## 6.6.2 - 2024-12-12
+### Fix (3 changes)
 - `SuggestRequest`: initialized `type` with null to fix broken suggest if `suggestToggleProductType` config is `false`
+- Added `startLevelFilter` config setting to determine the level from which category paths are filtered
+- `ProductUtil`: Added `getProductProperty` function to support multi value properties
 
 ## 6.6.1 - 2024-11-20
 ### Fix (3 changes)
