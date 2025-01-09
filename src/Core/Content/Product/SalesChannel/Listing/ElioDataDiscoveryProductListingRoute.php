@@ -128,7 +128,7 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
         try {
             /** @var NavigationRequestProduct $navigationRequest */
             $navigationRequest = $this->searchRequestBuilder->build($request, $criteria, $context, new NavigationRequestProduct(''));
-            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $context);
+            $this->addCurrentCategoryToNavigationRequest($navigationRequest, $category, $config, $context);
             $this->addCustomFiltersToNavigationRequest($navigationRequest, $category);
 
             $resultCollection = $this->searchApi->navigation($navigationRequest, $context);
@@ -205,14 +205,16 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
      *
      * @param NavigationRequestProduct $navigationRequest
      * @param CategoryEntity $category
+     * @param Configuration $config
      * @param SalesChannelContext $context
      */
-    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, SalesChannelContext $context): void
+    protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, Configuration $config, SalesChannelContext $context): void
     {
         if ($category->getProductStreamId()) {
             $navigationRequest->setStreamId($category->getProductStreamId());
         } else {
             $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel()) ?? [];
+            $path = array_slice($path, $config->getNavigationStartLevelFilter() - 1);
             $navigationRequest->setCategoryPath($path);
             $navigationRequest->setCategoryId($category->getId());
         }

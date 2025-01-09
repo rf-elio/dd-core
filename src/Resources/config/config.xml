@@ -165,7 +165,7 @@
         </input-field>
 
         <input-field type="int">
-            <name>startLevelFilter</name>
+            <name>navigationStartLevelFilter</name>
             <label>Category tree filter level</label>
             <label lang="de-DE">Filter-Level des Kategoriebaums</label>
             <defaultValue>1</defaultValue>
