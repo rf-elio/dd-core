@@ -34,7 +34,6 @@ namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Search;
 
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ContentListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\Response\InterrupterResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Search\SearchApiInterface;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
@@ -117,12 +116,6 @@ class ElioDataDiscoveryRoute extends AbstractProductSearchRoute
                 $productListingResponse, $criteria, $context, $resultCollection, $searchRequest, $request
             );
             $shopwareProductListingResult->addCurrentFilter('search', $request->get('search'));
-
-            /** @var InterrupterResponse|null $interrupterResponse */
-            $interrupterResponse = $resultCollection->get(InterrupterResponse::class);
-            if ($interrupterResponse !== null) {
-                $shopwareProductListingResult->addExtension(InterrupterResponse::KEY, $interrupterResponse);
-            }
 
             try {
                 if ($config->isSearchUseContentChannel() && !$resultCollection->has(CampaignRedirectionResponse::class)) {

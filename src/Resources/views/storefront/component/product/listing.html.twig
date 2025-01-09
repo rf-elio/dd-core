@@ -60,27 +60,29 @@
 
 {# interrupters #}
 {% block element_product_listing_col %}
+    {% set position = 0 %}
     {% for product in searchResult %}
-        {% set productLoop = loop %}
         {% set interrupterColumns = null %}
 
-        {% for interrupter in interrupterResponse.interrupterItems %}
-            {# Set Classes for interrupter #}
-            {% if interrupter.format == '1x1' %}
-                {% if section and section.type == 'sidebar' %}
-                    {% set interrupterColumns = 'col-sm-6 col-lg-6 col-xl-4' %}
-                {% else %}
-                    {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
+        {% set interrupterChain = true %}
+        {% for interrupterItem in interrupterResponse.interrupterItems %}
+            {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(position) %}
+            {% if interrupter and interrupterChain %}
+                {# Set Classes for interrupter #}
+                {% if interrupter.format == '1x1' %}
+                    {% if section and section.type == 'sidebar' %}
+                        {% set interrupterColumns = 'col-sm-6 col-lg-6 col-xl-4' %}
+                    {% else %}
+                        {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
+                    {% endif %}
+                {% elseif interrupter.format == '1x2' %}
+                    {% if section and section.type == 'sidebar' %}
+                        {% set interrupterColumns = 'col-xl-8' %}
+                    {% else %}
+                        {% set interrupterColumns = 'col-lg-8 col-xl-6' %}
+                    {% endif %}
                 {% endif %}
-            {% elseif interrupter.format == '1x2' %}
-                {% if section and section.type == 'sidebar' %}
-                    {% set interrupterColumns = 'col-xl-8' %}
-                {% else %}
-                    {% set interrupterColumns = 'col-lg-8 col-xl-6' %}
-                {% endif %}
-            {% endif %}
 
-            {% if interrupter.position === productLoop.index0 %}
                 {% set route = null %}
                 {% set parameters = {} %}
                 <div class="cms-listing-col {{ interrupterColumns }}" role="listitem">
@@ -99,17 +101,21 @@
                     <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}">
                         {% if interrupter.html %}
                             {{ interrupter.html|sw_sanitize|raw }}
-                        {% elseif interrupter.imageDesktop or interrupter.imageMobile %}
+                        {% endif %}
+                        {% if interrupter.imageDesktop or interrupter.imageMobile %}
                             <picture>
-                                <source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">
-                                <source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">
+                                {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
+                                {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
                                 <img src="{{ interrupter.imageDesktop }}"
-                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% else %}{{ "elioDataDiscovery.interrupter.altFallback"|sw_sanitize|trans }}{% endif %}"
+                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
                                      style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;">
                             </picture>
                         {% endif %}
                     </a>
                 </div>
+                {% set position = position + 1 %}
+            {% else %}
+                {% set interrupterChain = false %}
             {% endif %}
         {% endfor %}
         <div class="cms-listing-col {{ listingColumns }}" role="listitem">
@@ -117,6 +123,7 @@
                 {{ parent() }}
             {% endblock %}
         </div>
+        {% set position = position + 1 %}
     {% endfor %}
 {% endblock %}
 

@@ -37,6 +37,7 @@ use Elio\ElioDataDiscovery\Api\Search\Request\SearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Response\AdvisorCampaignResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignFeedbackResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
+use Elio\ElioDataDiscovery\Api\Search\Response\InterrupterResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\TrackingResponse;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductListingResultTransformerEvent;
@@ -175,6 +176,13 @@ class ProductListingResultTransformer implements ProductListingResultTransformer
         $advisorCampaignResponse = $resultCollection->get(AdvisorCampaignResponseCollection::KEY);
         if ($advisorCampaignResponse) {
             $shopwareProductListingResult->addExtension(AdvisorCampaignResponseCollection::KEY, $advisorCampaignResponse);
+        }
+
+        // interrupters
+        /** @var InterrupterResponse|null $interrupterResponse */
+        $interrupterResponse = $resultCollection->get(InterrupterResponse::class);
+        if ($interrupterResponse) {
+            $shopwareProductListingResult->addExtension(InterrupterResponse::KEY, $interrupterResponse);
         }
     }
 

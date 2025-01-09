@@ -21,9 +21,6 @@
         "advisor-campaign": {
             "reset-btn": "Zurücksetzten",
             "no-products-found": "Für Ihre Auswahl wurden keine Produkte gefunden"
-        },
-        "interrupter": {
-            "altFallback": "Transmission for alt text follows shortly"
         }
     }
 }

@@ -24,4 +24,14 @@ class InterrupterResponse extends Response
     {
         $this->interrupterItems[] = $interrupterItem;
     }
+
+    public function getInterrupterItemWithPosition(int $position): ?InterrupterItem
+    {
+        foreach ($this->interrupterItems as $interrupterItem) {
+            if ($interrupterItem->getPosition() === $position) {
+                return $interrupterItem;
+            }
+        }
+        return null;
+    }
 }
