@@ -102,20 +102,22 @@
                         {% set parameters = { landingPageId: interrupter.itemId } %}
                     {% endif %}
                 {% endif %}
-                <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}">
-                    {% if interrupter.html %}
-                        {{ interrupter.html|sw_sanitize|raw }}
-                    {% endif %}
-                    {% if interrupter.imageDesktop or interrupter.imageMobile %}
-                        <picture>
-                            {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
-                            {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
-                            <img src="{{ interrupter.imageDesktop }}"
-                                 alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
-                                 style="width: 100%; height: 100%; margin-left: auto; margin-right: auto;">
-                        </picture>
-                    {% endif %}
-                </a>
+                <div class="card product-box box-minimal">
+                    <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}" style="height: 100%;">
+                        {% if interrupter.html %}
+                            {{ interrupter.html|sw_sanitize|raw }}
+                        {% endif %}
+                        {% if interrupter.imageDesktop or interrupter.imageMobile %}
+                            <picture>
+                                {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
+                                {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
+                                <img src="{{ interrupter.imageDesktop }}"
+                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
+                                     style="width: 100%; margin-left: auto; margin-right: auto;">
+                            </picture>
+                        {% endif %}
+                    </a>
+                </div>
             </div>
         {% else %}
             {% set product = products[productIndex] %}
