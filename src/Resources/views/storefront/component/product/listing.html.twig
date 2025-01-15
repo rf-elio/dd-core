@@ -23,6 +23,10 @@
         {% set elioDataDiscoveryPageSize = trackingResponse.pageSize %}
     {% endif %}
 
+    {% if searchResult.extensions.InterrupterResponse is defined %}
+        {% set interrupterResponse = searchResult.extensions.InterrupterResponse %}
+    {% endif %}
+
     {{ parent() }}
 {% endblock %}
 
@@ -52,6 +56,82 @@
             label: 'below search result', container: searchResult
         } %}
     {% endif %}
+{% endblock %}
+
+{# interrupters #}
+{% block element_product_listing_col %}
+    {% set productIndex = 0 %}
+    {% set positionIncrement = 0 %}
+    {% set products = [] %}
+    {% for product in searchResult.elements %}
+        {% set products = products|merge([product]) %}
+    {% endfor %}
+    {% set listingElementCount = searchResult|length + interrupterResponse.interrupterItems|length %}
+
+    {% for element in 0..listingElementCount %}
+        {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(positionIncrement) %}
+        {% set interrupterColumns = null %}
+        {% set positionIncrement = positionIncrement + 1 %}
+
+        {% if interrupter %}
+            {# Set Classes for interrupter #}
+            {% if interrupter.format == '1x1' %}
+                {% if section and section.type == 'sidebar' %}
+                    {% set interrupterColumns = 'col-sm-6 col-lg-6 col-xl-4' %}
+                {% else %}
+                    {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
+                {% endif %}
+            {% elseif interrupter.format == '1x2' %}
+                {% set positionIncrement = positionIncrement + 1 %}
+                {% if section and section.type == 'sidebar' %}
+                    {% set interrupterColumns = 'col-xl-8' %}
+                {% else %}
+                    {% set interrupterColumns = 'col-lg-8 col-xl-6' %}
+                {% endif %}
+            {% endif %}
+
+            {% set route = null %}
+            {% set parameters = {} %}
+            <div class="cms-listing-col {{ interrupterColumns }}" role="listitem">
+                {% if interrupter.ItemId %}
+                    {% if interrupter.itemType === 'product' %}
+                        {% set route = 'frontend.detail.page' %}
+                        {% set parameters = { productId: interrupter.itemId } %}
+                    {% elseif interrupter.itemType === 'category' %}
+                        {% set route = 'frontend.navigation.page' %}
+                        {% set parameters = { navigationId: interrupter.itemId } %}
+                    {% elseif interrupter.itemType === 'landingpage' %}
+                        {% set route = 'frontend.landing.page' %}
+                        {% set parameters = { landingPageId: interrupter.itemId } %}
+                    {% endif %}
+                {% endif %}
+                <div class="card product-box box-minimal">
+                    <a href="{% if route and parameters %}{{ seoUrl(route, parameters) }}{% else %}{{ interrupter.url }}{% endif %}" style="height: 100%;">
+                        {% if interrupter.html %}
+                            {{ interrupter.html|sw_sanitize|raw }}
+                        {% endif %}
+                        {% if interrupter.imageDesktop or interrupter.imageMobile %}
+                            <picture>
+                                {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
+                                {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
+                                <img src="{% if interrupter.imageDesktop %}{{ interrupter.imageDesktop }}{% else %}{{ interrupter.imageMobile }}{% endif %}"
+                                     alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
+                                     style="width: 100%; margin-left: auto; margin-right: auto;">
+                            </picture>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            {% set product = products[productIndex] %}
+            <div class="cms-listing-col {{ listingColumns }}" role="listitem">
+                {% block element_product_listing_box %}
+                    {{ parent() }}
+                {% endblock %}
+            </div>
+            {% set productIndex = productIndex + 1 %}
+        {% endif %}
+    {% endfor %}
 {% endblock %}
 
 {# advisor campaigns #}
