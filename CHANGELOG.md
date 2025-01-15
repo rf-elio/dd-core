@@ -1,5 +1,5 @@
 # CHANGELOG.md
-## 6.6.2 - 2024-12-18
+## 6.6.2 - 2025-01-15
 ### Features (4 changes)
 - Added Interrupters:
   - `InterrupterItem`: holds the interrupter data
@@ -9,7 +9,7 @@
 
 ### Fix (3 changes)
 - `SuggestRequest`: initialized `type` with null to fix broken suggest if `suggestToggleProductType` config is `false`
-- Added `startLevelFilter` config setting to determine the level from which category paths are filtered
+- Added `navigationStartLevelFilter` config setting to determine the level from which category paths are filtered in listing route
 - `ProductUtil`: Added `getProductProperty` function to support multi value properties
 
 ## 6.6.1 - 2024-11-20
