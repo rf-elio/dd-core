@@ -61,15 +61,17 @@
 {# interrupters #}
 {% block element_product_listing_col %}
     {% set productIndex = 0 %}
+    {% set positionIncrement = 0 %}
     {% set products = [] %}
     {% for product in searchResult.elements %}
         {% set products = products|merge([product]) %}
     {% endfor %}
-    {% set listingElements = searchResult|length + interrupterResponse.interrupterItems|length %}
+    {% set listingElementCount = searchResult|length + interrupterResponse.interrupterItems|length %}
 
-    {% for position in 0..listingElements %}
-        {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(position) %}
+    {% for element in 0..listingElementCount %}
+        {% set interrupter = interrupterResponse.getInterrupterItemWithPosition(positionIncrement) %}
         {% set interrupterColumns = null %}
+        {% set positionIncrement = positionIncrement + 1 %}
 
         {% if interrupter %}
             {# Set Classes for interrupter #}
@@ -80,6 +82,7 @@
                     {% set interrupterColumns = 'col-sm-6 col-lg-4 col-xl-3' %}
                 {% endif %}
             {% elseif interrupter.format == '1x2' %}
+                {% set positionIncrement = positionIncrement + 1 %}
                 {% if section and section.type == 'sidebar' %}
                     {% set interrupterColumns = 'col-xl-8' %}
                 {% else %}
@@ -111,7 +114,7 @@
                             <picture>
                                 {% if interrupter.imageDesktop %}<source media="(min-width:992px)" srcset="{{ interrupter.imageDesktop }}">{% endif %}
                                 {% if interrupter.imageMobile %}<source media="(min-width:0px)" srcset="{{ interrupter.imageMobile }}">{% endif %}
-                                <img src="{{ interrupter.imageDesktop }}"
+                                <img src="{% if interrupter.imageDesktop %}{{ interrupter.imageDesktop }}{% else %}{{ interrupter.imageMobile }}{% endif %}"
                                      alt="{% if interrupter.alt %}{{ interrupter.alt }}{% endif %}"
                                      style="width: 100%; margin-left: auto; margin-right: auto;">
                             </picture>
