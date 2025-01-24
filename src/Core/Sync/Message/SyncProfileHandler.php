@@ -60,7 +60,7 @@ class SyncProfileHandler
      */
     public function __invoke(SyncProfileMessage $message): void
     {
-        $syncProfile = $this->syncService->getSyncProfileEntity(
+        $syncProfile = $this->syncService->getSyncProfileConfiguration(
             $message->getSyncProfileId(), Context::createDefaultContext()
         );
         $this->syncService->sync($syncProfile, $message->getOptions());

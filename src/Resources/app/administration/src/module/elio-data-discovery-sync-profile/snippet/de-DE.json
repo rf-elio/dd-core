@@ -23,7 +23,9 @@
       "helpTextInterval": "CRON Beispiel: 0 * * * *",
       "downloadUsername": "Download Benutzername",
       "downloadPassword": "Download Passwort",
-      "labelSalesChannel": "Sales Channel",
+      "labelSalesChannel": "Verkaufskanal",
+      "labelSalesChannelDomains": "Verkaufskanal-Domänen",
+      "helpTextDomains": "Sind Domänen eingestellt, wenn Sie den Verkaufskanal wechseln, müssen diese manuell entfernt werden.",
       "labelLanguage": "Sprache",
       "labelLanguages": "Sprachen",
       "baseCategoryLabel": "Hauptkategorie",
@@ -67,7 +69,11 @@
       "messageGeneratingError": "Sync konnte nicht ausgeführt werden: \"{error}\"",
       "messageGeneratingSuccess": "Sync erfolgreich",
       "modalConfirmTitle": "Vollständigen Sync bestätigen",
-      "modalConfirmText": "Achtung! Ein Ausführen des vollständigen Sync wird in der Administration nicht empfohlen. Nutzen Sie stattdessen den Sync Command in der Konsole (aktivieren Sie \"Full Sync\"). Möchten Sie trotzdem einen vollständigen Sync ausführen?"
+      "modalConfirmText": "Achtung! Ein Ausführen des vollständigen Sync wird in der Administration nicht empfohlen. Nutzen Sie stattdessen den Sync Command in der Konsole (aktivieren Sie \"Full Sync\"). Möchten Sie trotzdem einen vollständigen Sync ausführen?",
+      "error": {
+        "noSalesChannelDomainsSelected": "Bitte wählen Sie mindestens eine Verkaufskanal-Domäne aus.",
+        "salesChannelDomainMismatch": "Die ausgewählten Verkaufskanal-Domänen gehören nicht zum ausgewählten Verkaufskanal."
+      }
     },
     "list": {
       "buttonCreate": "Sync erstellen",

@@ -46,7 +46,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationFiel
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\System\Language\LanguageDefinition;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 /**
@@ -107,7 +107,7 @@ class SyncProfileDefinition extends EntityDefinition
             (new StringField('download_username', 'downloadUsername'))->addFlags(new ApiAware()),
             (new StringField('download_password', 'downloadPassword'))->addFlags(new ApiAware()),
             new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class, 'id', false),
-            (new ManyToManyAssociationField('languages', LanguageDefinition::class, SyncProfileLanguageMapping::class, 'sync_profile_id', 'language_id')),
+            (new ManyToManyAssociationField('salesChannelDomains', SalesChannelDomainDefinition::class, SyncProfileDomainMapping::class, 'sync_profile_id', 'sales_channel_domain_id')),
         ]);
     }
 }

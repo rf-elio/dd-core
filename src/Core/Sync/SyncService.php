@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync;
 
 use DateTimeImmutable;
-use Elio\ElioDataDiscovery\Core\Sync\Exception\NoLanguagesInSyncConfiguredException;
+use Elio\ElioDataDiscovery\Core\Sync\Exception\NoSalesChannelDomainsInSyncConfiguredException;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\SalesChannelNotFoundException;
 use Elio\ElioDataDiscovery\Core\Sync\Exception\SyncProfileNotFoundException;
 use Elio\ElioDataDiscovery\Core\Sync\Input\InputService;
@@ -49,8 +49,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\Language\LanguageCollection;
-use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -97,7 +97,7 @@ class SyncService
         $this->logger->info('Sync: Starting', [
             'id' => $syncProfile->getId(),
             'name' => $syncProfile->getName(),
-            'languages' => $syncProfile->getLanguages()?->getIds(),
+            'salesChannelDomains' => $syncProfile->getSalesChannelDomains()?->getIds(),
             'profileDefinition' => [
                 'name' => $syncContext->getProfileDefinition()->getName(),
                 'input' => $syncContext->getProfileDefinition()->getInput(),
@@ -158,32 +158,32 @@ class SyncService
     public function createSyncContext(SyncProfileEntity $syncProfile, array $options = []): SyncContext
     {
         $salesChannel = $syncProfile->getSalesChannel();
-        if (!$salesChannel || !$salesChannel->getDomains()) {
+        if (!$salesChannel) {
             $this->logger->info(
-                'Cannot generate product sync: association "salesChannel.domains" is missing',
+                'Cannot generate product sync: no sales channel is configured',
                 ['id' => $syncProfile->getId()]
             );
             throw new RuntimeException(sprintf(
-                'Cannot generate product sync "%s": association "salesChannel.domains" is missing',
+                'Cannot generate product sync "%s": no sales channel is configured',
                 $syncProfile->getName()
             ));
         }
 
-        if (($syncProfile->getLanguages()?->count() ?? 0) <= 0) {
+        if (($syncProfile->getSalesChannelDomains()?->count() ?? 0) <= 0) {
             $this->logger->info(
-                'Cannot generate product sync: no languages configured or association "languages" is missing',
+                'Cannot generate product sync: no sales channel domains configured',
                 ['id' => $syncProfile->getId()]
             );
-            throw new NoLanguagesInSyncConfiguredException(sprintf(
-                'No languages in sync "%s" configured or association "languages" is missing',
+            throw new NoSalesChannelDomainsInSyncConfiguredException(sprintf(
+                'No sales channel domains in sync "%s" configured',
                 $syncProfile->getName()
             ));
         }
 
         $salesChannelContexts = new SalesChannelContextCollection();
-        foreach ($syncProfile->getLanguages() ?? new LanguageCollection() as $language) {
-            $salesChannelContexts->add($this->createSalesChannelContext($salesChannel, $language));
-            $salesChannelContexts->addLanguage($language);
+        foreach ($syncProfile->getSalesChannelDomains() ?? new SalesChannelDomainCollection() as $domain) {
+            $salesChannelContexts->add($this->createSalesChannelContext($salesChannel, $domain));
+            $salesChannelContexts->addLanguage($domain->getLanguage());
         }
 
         $profileDefinition = $this->getProfileDefinition($syncProfile);
@@ -198,7 +198,7 @@ class SyncService
     {
         $criteria = new Criteria();
         $criteria->addAssociation('salesChannel');
-        $criteria->addAssociation('languages');
+        $criteria->addAssociation('salesChannelDomains.language');
         $syncProfiles = $this->syncProfileRepository->search($criteria, $context);
 
         $salesChannelContexts = [];
@@ -214,34 +214,20 @@ class SyncService
 
             $salesChannelContexts[$salesChannel->getId()] = $this->createSalesChannelContext(
                 $salesChannel,
-                $syncProfile->getLanguages()?->first()
+                $syncProfile->getSalesChannelDomains()?->first()
             );
         }
 
         return $salesChannelContexts;
     }
 
-    private function createSalesChannelContext(SalesChannelEntity $salesChannel, LanguageEntity $language): SalesChannelContext
+    private function createSalesChannelContext(SalesChannelEntity $salesChannel, SalesChannelDomainEntity $domain): SalesChannelContext
     {
         return $this->salesChannelContextFactory->create(
             '',
             $salesChannel->getId(),
-            [SalesChannelContextService::LANGUAGE_ID => $language->getId()]
+            [SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId()]
         );
-    }
-
-    public function getSyncProfileEntity(string $id, Context $context): SyncProfileEntity
-    {
-        $criteria = new Criteria([$id]);
-        $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages.locale');
-        $syncProfileEntity = $this->syncProfileRepository->search($criteria, $context)->first();
-
-        if (!$syncProfileEntity) {
-            throw new SyncProfileNotFoundException(sprintf('Sync profile for id %s not found', $id));
-        }
-
-        return $syncProfileEntity;
     }
 
     /**
@@ -253,8 +239,8 @@ class SyncService
     public function getSyncProfileConfigurations(Context $context): EntitySearchResult
     {
         $criteria = new Criteria();
-        $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages.locale');
+        $criteria->addAssociation('salesChannelDomains.language.locale');
+        $criteria->addAssociation('salesChannel');
         $criteria->addFilter(new EqualsFilter('active', true));
         return $this->syncProfileRepository->search($criteria, $context);
     }
@@ -269,11 +255,11 @@ class SyncService
     public function getSyncProfileConfiguration(string $id, Context $context): SyncProfileEntity
     {
         $criteria = new Criteria([$id]);
-        $criteria->addAssociation('salesChannel.domains');
-        $criteria->addAssociation('languages.locale');
+        $criteria->addAssociation('salesChannelDomains.language.locale');
+        $criteria->addAssociation('salesChannel');
         $criteria->addFilter(new EqualsFilter('active', true));
         if (!$syncProfile = $this->syncProfileRepository->search($criteria, $context)->first()) {
-            throw new InvalidArgumentException(sprintf('Sync profile for id %s not found', $id));
+            throw new SyncProfileNotFoundException(sprintf('Sync profile for id %s not found', $id));
         }
 
         return $syncProfile;

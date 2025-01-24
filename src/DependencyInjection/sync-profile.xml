@@ -12,11 +12,11 @@
             <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping">
-            <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile_languages"/>
+        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileDomainMapping">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile_domain"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Aggregate\LanguageExtension">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Aggregate\SalesChannelDomainExtension">
             <tag name="shopware.entity.extension"/>
         </service>
 

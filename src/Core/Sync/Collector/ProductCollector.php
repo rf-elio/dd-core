@@ -304,6 +304,20 @@ class ProductCollector implements DataCollectorInterface
                     $dataType->getVariant()->setPosition(-1);
                 }
 
+                // resolve categories by stream id
+                if ($config->isResolveCategoriesFromProductStream()) {
+                    $categoriesByStreamId = $this->getCategoriesWithProductStreams($categories);
+                    $streamIds = $entity->getStreamIds();
+                    $productCategoryIds = $entity->getCategoryIds() ?? [];
+                    foreach ($streamIds as $streamId) {
+                        if (isset($categoriesByStreamId[$languageId][$streamId])) {
+                            $productCategoryCollection->add($categoriesByStreamId[$languageId][$streamId]);
+                            $productCategoryIds[] = $categoriesByStreamId[$languageId][$streamId]->getId();
+                        }
+                    }
+                    $entity->setCategoryIds($productCategoryIds);
+                }
+
                 $event = new FilterProductCollectorItemPrepareEvent($entity, $dataType);
                 $this->dispatcher->dispatch($event);
                 if ($event->isExclude()) {
@@ -355,5 +369,29 @@ class ProductCollector implements DataCollectorInterface
             $flatCategoryCollection->add($categoryEntity);
             $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
         }
+    }
+
+    /**
+     * @param CategoryCollection[] $categoryCollections
+     * @return CategoryEntity[][]
+     */
+    protected function getCategoriesWithProductStreams(array $categoryCollections): array
+    {
+        $categoriesByStreamId = [];
+        foreach ($categoryCollections as $languageId => $categories) {
+            foreach ($categories as $category) {
+                $streamId = $category->getProductStreamId();
+
+                if ($streamId) {
+                    if (!isset($categoriesByStreamId[$languageId])) {
+                        $categoriesByStreamId[$languageId] = [];
+                    }
+
+                    $categoriesByStreamId[$languageId][$streamId] = $category;
+                }
+            }
+        }
+
+        return $categoriesByStreamId;
     }
 }
