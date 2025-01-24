@@ -4,7 +4,7 @@
 - Compatibility with Shopware 6.6.8 and 6.6.9
 - Resolving Categories from Product Streams:
   - Added `resolveCategoriesFromProductStream` config setting to allow resolving categories from product streams for both sync and listing, when products are assigned to categories via streams
-  - Updated `ProductCollector` and `ElioDataDiscoveryProductListingRoute` to implement the
+  - Updated `ProductCollector` and `ElioDataDiscoveryProductListingRoute` to implement the config setting
 
 ### Fix (7 changes)
 - Replaced Language selection in Sync Profile with Sales Channel Domain selection:
