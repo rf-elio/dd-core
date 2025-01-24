@@ -1,4 +1,21 @@
 # CHANGELOG.md
+## 6.6.3 - 2025-01-24
+### Features (3 changes)
+- Compatibility with Shopware 6.6.8 and 6.6.9
+- Resolving Categories from Product Streams:
+  - Added `resolveCategoriesFromProductStream` config setting to allow resolving categories from product streams for both sync and listing, when products are assigned to categories via streams
+  - Updated `ProductCollector` and `ElioDataDiscoveryProductListingRoute` to implement the
+
+### Fix (7 changes)
+- Replaced Language selection in Sync Profile with Sales Channel Domain selection:
+  - Added Migration for new `elio_data_discovery_sync_profile_domain` table
+  - Updated `SyncProfileEntity` and `SyncProfileDefinition` to replace language references with SalesChannelDomain
+  - Replaced `LanguageExtension`, `NoLanguagesInSyncConfiguredException` and `SyncProfileLanguageMapping` with respective `SalesChannelDomain` files and updated references
+  - `SyncService`: Updated to use SalesChannelDomain instead of Languages
+  - Updated Sync Profile detail/list administration components and detail page template
+  - `SeoRouteOutput`: Builds base url from SalesChannelDomain now
+- Removed `getSyncProfileEntity` function and replaced references with `getSyncProfileConfiguration`
+
 ## 6.6.2 - 2025-01-15
 ### Features (4 changes)
 - Added Interrupters:
