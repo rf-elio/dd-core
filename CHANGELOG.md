@@ -6,7 +6,7 @@
   - Added `resolveCategoriesFromProductStream` config setting to allow resolving categories from product streams for both sync and listing, when products are assigned to categories via streams
   - Updated `ProductCollector` and `ElioDataDiscoveryProductListingRoute` to implement the config setting
 
-### Fix (7 changes)
+### Fix (8 changes)
 - Replaced Language selection in Sync Profile with Sales Channel Domain selection:
   - Added Migration for new `elio_data_discovery_sync_profile_domain` table
   - Updated `SyncProfileEntity` and `SyncProfileDefinition` to replace language references with SalesChannelDomain
@@ -15,6 +15,7 @@
   - Updated Sync Profile detail/list administration components and detail page template
   - `SeoRouteOutput`: Builds base url from SalesChannelDomain now
 - Removed `getSyncProfileEntity` function and replaced references with `getSyncProfileConfiguration`
+- Added `IndexUpdateSubscriber`, which disables other subscribers that listen to the `sales_channel.product.loaded` and `product.loaded` events during execution of the `index:update` command
 
 ## 6.6.2 - 2025-01-15
 ### Features (4 changes)
