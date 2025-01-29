@@ -226,6 +226,7 @@ class ProductCollector implements DataCollectorInterface
      * @param array $data
      * @param EntityCollection<SalesChannelProductEntity> $parentProducts
      * @param CategoryCollection[] $categories
+     * @param array $categoriesByStreamId
      * @param Configuration $config
      * @return Collection
      */

@@ -41,14 +41,16 @@ SQL;
 
         $query = <<<SQL
         INSERT INTO `elio_data_discovery_sync_profile_domain` (`sync_profile_id`, `sales_channel_domain_id`)
-        SELECT `elio_data_discovery_sync_profile_languages`.`sync_profile_id`,
-               MIN(`sales_channel_domain`.`id`) AS `sales_channel_domain_id`
+        SELECT spl.`sync_profile_id`,
+               MIN(scd.`id`) AS `sales_channel_domain_id`
         FROM
-            `elio_data_discovery_sync_profile_languages`
+            `elio_data_discovery_sync_profile_languages` spl
         INNER JOIN
-            `sales_channel_domain` ON `elio_data_discovery_sync_profile_languages`.`language_id` = `sales_channel_domain`.`language_id`
+            `elio_data_discovery_sync_profile` sp ON sp.id = spl.sync_profile_id
+        INNER JOIN
+            `sales_channel_domain` scd ON spl.`language_id` = scd.`language_id` AND scd.sales_channel_id = sp.sales_channel_id
         GROUP BY
-            `elio_data_discovery_sync_profile_languages`.`sync_profile_id`, `elio_data_discovery_sync_profile_languages`.`language_id`;
+            spl.`sync_profile_id`, spl.`language_id`;
 SQL;
 
         $connection->executeQuery($query);
