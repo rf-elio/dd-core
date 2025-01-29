@@ -81,7 +81,6 @@
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber">
-            <argument type="service" id="Shopware\Core\Content\Product\ProductDefinition"/>
             <tag name="kernel.event_subscriber" priority="10000"/>
         </service>
 
