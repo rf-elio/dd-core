@@ -44,7 +44,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-list', {
         exportCriteria() {
             var criteria = new Criteria();
             criteria.addAssociation('salesChannel');
-            criteria.addAssociation('languages');
+            criteria.addAssociation('salesChannelDomains');
             criteria.setPage(this.page);
             criteria.setLimit(this.limit);
             criteria.setTotalCountMode(2);

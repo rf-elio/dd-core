@@ -68,7 +68,7 @@ class AsyncOutputHandler
             $message->getContext()
         );
 
-        $sycProfileEntity = $this->syncService->getSyncProfileEntity(
+        $sycProfileEntity = $this->syncService->getSyncProfileConfiguration(
             $message->getSyncProfileEntityId(),
             $message->getContext()
         );

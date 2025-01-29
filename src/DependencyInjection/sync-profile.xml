@@ -12,11 +12,11 @@
             <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping">
-            <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile_languages"/>
+        <service id="Elio\ElioDataDiscovery\Core\Sync\SyncProfileDomainMapping">
+            <tag name="shopware.entity.definition" entity="elio_data_discovery_sync_profile_domain"/>
         </service>
 
-        <service id="Elio\ElioDataDiscovery\Core\Sync\Aggregate\LanguageExtension">
+        <service id="Elio\ElioDataDiscovery\Core\Sync\Aggregate\SalesChannelDomainExtension">
             <tag name="shopware.entity.extension"/>
         </service>
 
@@ -78,6 +78,10 @@
             <argument type="tagged" tag="elio-data-discovery.sync.indexer"/>
             <argument type="service" id="elio.data-discovery.core.logging.default"/>
             <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\SyncService"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber"/>
+        </service>
+        <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber">
+            <tag name="kernel.event_subscriber" priority="10000"/>
         </service>
 
         <!-- outputs -->

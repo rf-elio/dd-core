@@ -38,11 +38,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
-use Shopware\Core\System\Language\LanguageDefinition;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainDefinition;
 
-class SyncProfileLanguageMapping extends MappingEntityDefinition
+class SyncProfileDomainMapping extends MappingEntityDefinition
 {
-    public const ENTITY_NAME = 'elio_data_discovery_sync_profile_languages';
+    public const ENTITY_NAME = 'elio_data_discovery_sync_profile_domain';
 
     /**
      * @return string
@@ -57,7 +57,7 @@ class SyncProfileLanguageMapping extends MappingEntityDefinition
         return new FieldCollection([
             (new FkField('sync_profile_id','syncProfileId',SyncProfileDefinition::class))
                 ->addFlags(new PrimaryKey(), new Required()),
-            (new FkField('language_id', 'languageId', LanguageDefinition::class))
+            (new FkField('sales_channel_domain_id', 'salesChannelDomainId', SalesChannelDomainDefinition::class))
                 ->addFlags(new PrimaryKey(), new Required()),
 
             (new ManyToOneAssociationField(
@@ -67,9 +67,9 @@ class SyncProfileLanguageMapping extends MappingEntityDefinition
                 'id'
             )),
             (new ManyToOneAssociationField(
-                'language',
-                'language_id',
-                LanguageDefinition::class,
+                'salesChannelDomain',
+                'sales_channel_domain_id',
+                SalesChannelDomainDefinition::class,
                 'id'
             ))
         ]);

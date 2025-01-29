@@ -111,7 +111,7 @@
                                             </div>
                                         {% endblock %}
 
-                                        {% block elio_data_discovery_sync_profile_detail_basic_info_saleschannel_language %}
+                                        {% block elio_data_discovery_sync_profile_detail_basic_info_saleschannel_domain %}
                                             <sw-select-field
                                                     v-model:value="elio_data_discovery_sync_profile.salesChannelId"
                                                     required
@@ -122,21 +122,24 @@
                                             </sw-select-field>
                                             <sw-entity-multi-select
                                                     v-if="features.multiLanguageSupport"
-                                                    v-model:entity-collection="elio_data_discovery_sync_profile.languages"
+                                                    v-model:entity-collection="elio_data_discovery_sync_profile.salesChannelDomains"
                                                     required
-                                                    :criteria="languageCriteria"
-                                                    entity-name="language"
-                                                    :label="$tc('elio-data-discovery-sync-profile.detail.labelLanguages')"
+                                                    :criteria="salesChannelDomainCriteria"
+                                                    entity-name="sales_channel_domain"
+                                                    label-property="url"
+                                                    :label="$tc('elio-data-discovery-sync-profile.detail.labelSalesChannelDomains')"
+                                                    :helpText="$tc('elio-data-discovery-sync-profile.detail.helpTextDomains')"
+                                                    :key="componentKey"
                                             >
                                             </sw-entity-multi-select>
                                             <sw-entity-single-select
                                                     v-else
-                                                    v-model:value="languageId"
+                                                    v-model:value="salesChannelDomainId"
                                                     required
-                                                    :criteria="languageCriteria"
-                                                    entity="language"
-                                                    :label="$tc('elio-data-discovery-sync-profile.detail.labelLanguage')"
-                                                    @change="onChangeLanguage"
+                                                    :criteria="salesChannelDomainCriteria"
+                                                    entity="sales_channel_domain"
+                                                    :label="$tc('elio-data-discovery-sync-profile.detail.labelSalesChannelDomains')"
+                                                    @change="onChangeSalesChannelDomain"
                                             >
                                             </sw-entity-single-select>
                                             <sw-entity-multi-select

@@ -121,6 +121,7 @@ class ProductCollector implements DataCollectorInterface
     public function collect(SalesChannelContextCollection $contexts, ?Criteria $criteria = null): Generator
     {
         $categories = $this->loadCategories($contexts);
+        $categoriesByStreamId = $this->getCategoriesWithProductStreams($categories);
         $criteria = $criteria ? clone $criteria : new Criteria();
         $context = $contexts->getFirst();
         $this->prepareCriteria($criteria, $context);
@@ -130,7 +131,7 @@ class ProductCollector implements DataCollectorInterface
             $criteria->setIds($chunk);
             $data = $this->prepareTranslationData($contexts, $criteria, $this->productRepository);
             $parentProducts = $this->loadParentProducts($data, $context);
-            yield $this->mapCollectedData($data, $parentProducts, $categories, $config);
+            yield $this->mapCollectedData($data, $parentProducts, $categories, $categoriesByStreamId, $config);
         }
     }
 
@@ -225,6 +226,7 @@ class ProductCollector implements DataCollectorInterface
      * @param array $data
      * @param EntityCollection<SalesChannelProductEntity> $parentProducts
      * @param CategoryCollection[] $categories
+     * @param array $categoriesByStreamId
      * @param Configuration $config
      * @return Collection
      */
@@ -232,6 +234,7 @@ class ProductCollector implements DataCollectorInterface
         array $data,
         EntityCollection $parentProducts,
         array $categories,
+        array $categoriesByStreamId,
         Configuration $config
     ): Collection {
         /** @var EntityCollection<ProductDataType> $mappedEntities */
@@ -304,6 +307,19 @@ class ProductCollector implements DataCollectorInterface
                     $dataType->getVariant()->setPosition(-1);
                 }
 
+                // resolve categories by stream id
+                if ($config->isResolveCategoriesFromProductStream()) {
+                    $streamIds = $entity->getStreamIds() ?? [];
+                    $productCategoryIds = $entity->getCategoryIds() ?? [];
+                    foreach ($streamIds as $streamId) {
+                        if (isset($categoriesByStreamId[$languageId][$streamId])) {
+                            $productCategoryCollection->add($categoriesByStreamId[$languageId][$streamId]);
+                            $productCategoryIds[] = $categoriesByStreamId[$languageId][$streamId]->getId();
+                        }
+                    }
+                    $entity->setCategoryIds($productCategoryIds);
+                }
+
                 $event = new FilterProductCollectorItemPrepareEvent($entity, $dataType);
                 $this->dispatcher->dispatch($event);
                 if ($event->isExclude()) {
@@ -355,5 +371,29 @@ class ProductCollector implements DataCollectorInterface
             $flatCategoryCollection->add($categoryEntity);
             $this->loadChildCategories($categoryEntity, $flatCategoryCollection, $context);
         }
+    }
+
+    /**
+     * @param CategoryCollection[] $categoryCollections
+     * @return CategoryEntity[][]
+     */
+    protected function getCategoriesWithProductStreams(array $categoryCollections): array
+    {
+        $categoriesByStreamId = [];
+        foreach ($categoryCollections as $languageId => $categories) {
+            foreach ($categories as $category) {
+                $streamId = $category->getProductStreamId();
+
+                if ($streamId) {
+                    if (!isset($categoriesByStreamId[$languageId])) {
+                        $categoriesByStreamId[$languageId] = [];
+                    }
+
+                    $categoriesByStreamId[$languageId][$streamId] = $category;
+                }
+            }
+        }
+
+        return $categoriesByStreamId;
     }
 }

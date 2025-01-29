@@ -35,12 +35,11 @@ export default class SyncProfileService {
      * Creates the url that can be used to download the export
      * @param exportId {string}
      * @param salesChannel
-     * @param language
      * @param downloadUsername
      * @param downloadPassword
      */
-    getDownloadUrl(exportId, salesChannel, language, downloadUsername, downloadPassword) {
-        let downloadUrl = `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}/${salesChannel}_${language}`;
+    getDownloadUrl(exportId, salesChannel, downloadUsername, downloadPassword) {
+        let downloadUrl = `${Shopware.Context.api.apiPath}/_action/${this.getApiBasePath()}/download/${exportId}/${salesChannel}`;
 
         if (downloadUsername && downloadPassword) {
             const basicAuth = encodeURIComponent(downloadUsername) + ':' + encodeURIComponent(downloadPassword) + '@';

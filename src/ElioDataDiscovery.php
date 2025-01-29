@@ -42,7 +42,7 @@ use Elio\ElioDataDiscovery\Core\Sorting\ProductSortingTreeDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileExecutionDefinition;
-use Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDomainMapping;
 use Elio\ElioDataDiscovery\Setup\CustomFieldSetup;
 use Exception;
 use Shopware\Core\Content\Category\CategoryDefinition;
@@ -160,7 +160,7 @@ class ElioDataDiscovery extends Plugin
                     EntityStatusDefinition::ENTITY_NAME,
                     ProductSortingTreeDefinition::ENTITY_NAME,
                     ProductSortingDefinition::ENTITY_NAME,
-                    SyncProfileLanguageMapping::ENTITY_NAME,
+                    SyncProfileDomainMapping::ENTITY_NAME,
                     SyncProfileExecutionDefinition::ENTITY_NAME,
                     SyncProfileDefinition::ENTITY_NAME
                 ];

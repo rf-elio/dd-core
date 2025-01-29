@@ -92,6 +92,7 @@ class Configuration extends Struct
         private readonly string $disabledRecommendationTypes,
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
+        private readonly bool $resolveCategoriesFromProductStream,
     ) {}
 
     /**
@@ -427,5 +428,10 @@ class Configuration extends Struct
     public function getListingExclusionExpression(): string
     {
         return $this->listingExclusionExpression;
+    }
+
+    public function isResolveCategoriesFromProductStream(): bool
+    {
+        return $this->resolveCategoriesFromProductStream;
     }
 }

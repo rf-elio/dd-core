@@ -24,6 +24,8 @@
       "downloadUsername": "Download Username",
       "downloadPassword": "Download Password",
       "labelSalesChannel": "Sales Channel",
+      "labelSalesChannelDomains": "Sales Channel Domains",
+      "helpTextDomains": "If domains are selected when the sales channel is changed, they have to be removed manually.",
       "labelLanguage": "Language",
       "labelLanguages": "Languages",
       "baseCategoryLabel": "Base category",
@@ -67,7 +69,11 @@
       "messageGeneratingError": "Sync isn't generated cause of errors: \"{error}\"",
       "messageGeneratingSuccess": "Sync generated successfully",
       "modalConfirmTitle": "Confirm full sync",
-      "modalConfirmText": "Caution! It is not recommended to execute a full sync in the administration. Use the sync command in the console instead (toggle \"Full Sync\"). Do you want to proceed with executing a full sync?"
+      "modalConfirmText": "Caution! It is not recommended to execute a full sync in the administration. Use the sync command in the console instead (toggle \"Full Sync\"). Do you want to proceed with executing a full sync?",
+      "error": {
+        "noSalesChannelDomainsSelected": "Please select at least one sales channel domain",
+        "salesChannelDomainMismatch": "The selected sales channel domains do not belong to the selected sales channel"
+      }
     },
     "list": {
       "buttonCreate": "Create Sync",
