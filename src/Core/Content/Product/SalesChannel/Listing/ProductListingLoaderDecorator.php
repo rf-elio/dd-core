@@ -51,7 +51,7 @@ class ProductListingLoaderDecorator extends ProductListingLoader
     public function load(Criteria $origin, SalesChannelContext $context): EntitySearchResult
     {
         if (!$origin->hasExtension(DisableVariantGroupingInListingLoaderStruct::class)) {
-            $this->decorated->load($origin, $context);
+            return $this->decorated->load($origin, $context);
         }
 
         $origin->addState(Criteria::STATE_ELASTICSEARCH_AWARE);

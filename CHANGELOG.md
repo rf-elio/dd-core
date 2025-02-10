@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.4 - 2025-02-10
+### Fix (1 change)
+- Added missing return in `ProductListingLoaderDecorator` which prevented falling back to the original service
+
 ## 6.6.3 - 2025-01-24
 ### Features (3 changes)
 - Compatibility with Shopware 6.6.8 and 6.6.9
