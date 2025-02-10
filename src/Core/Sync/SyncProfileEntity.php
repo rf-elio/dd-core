@@ -36,7 +36,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync;
 use DateTimeInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\System\Language\LanguageCollection;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 /**
@@ -63,7 +63,7 @@ class SyncProfileEntity extends Entity
     protected ?DateTimeInterface $nextGenerationDueAt = null;
     protected string $salesChannelId;
     protected ?SalesChannelEntity $salesChannel = null;
-    protected ?LanguageCollection $languages = null;
+    protected ?SalesChannelDomainCollection $salesChannelDomains = null;
     protected mixed $baseCategoryIds;
     protected mixed $downloadUsername;
     protected mixed $downloadPassword;
@@ -239,19 +239,19 @@ class SyncProfileEntity extends Entity
     }
 
     /**
-     * @return LanguageCollection|null
+     * @return SalesChannelDomainCollection|null
      */
-    public function getLanguages(): ?LanguageCollection
+    public function getSalesChannelDomains(): ?SalesChannelDomainCollection
     {
-        return $this->languages;
+        return $this->salesChannelDomains;
     }
 
     /**
-     * @param LanguageCollection $languages
+     * @param SalesChannelDomainCollection $salesChannelDomains
      */
-    public function setLanguages(LanguageCollection $languages): void
+    public function setSalesChannelDomains(SalesChannelDomainCollection $salesChannelDomains): void
     {
-        $this->languages = $languages;
+        $this->salesChannelDomains = $salesChannelDomains;
     }
 
     /**

@@ -54,7 +54,7 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             },
             dataTypes: [],
             isMultiLanguageSupport: false,
-            languageIdsList: [],
+            salesChannelDomainIdsList: [],
             categoryIdsList: [],
             salesChannelIdsList: [],
             elio_data_discovery_sync_profile_mappings: [],
@@ -72,12 +72,15 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             updateTimer: null,
             updateInterval: 3000,
             baseCategories: null,
-            newLanguageId: null,
-            currentLanguageId: null,
-            languageId: null,
-            languageCriteria: new Criteria,
+            currentSalesChannelId: null,
+            currentSalesChannelDomains: [],
+            newSalesChannelDomainId: null,
+            currentSalesChannelDomainId: null,
+            salesChannelDomainId: null,
+            salesChannelDomainCriteria: new Criteria,
             isExtensionsActive: true,
-            isGenerateModalVisible: false
+            isGenerateModalVisible: false,
+            componentKey: Date.now(),
         };
     },
 
@@ -104,8 +107,8 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
         },
-        languageRepository() {
-            return this.repositoryFactory.create('language');
+        salesChannelDomainRepository() {
+            return this.repositoryFactory.create('sales_channel_domain');
         },
         categoryRepository() {
             return this.repositoryFactory.create('category');
@@ -121,10 +124,26 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             return this.elioDataDiscoverySyncProfile.getDownloadUrl(
                 this.exportId,
                 this.elio_data_discovery_sync_profile.salesChannel.name,
-                // this.elio_data_discovery_sync_profile.language.locale.code,
                 this.elio_data_discovery_sync_profile.downloadUsername,
                 this.elio_data_discovery_sync_profile.downloadPassword
             )
+        }
+    },
+
+    watch: {
+        'elio_data_discovery_sync_profile.salesChannelId': {
+            handler(selectedSalesChannel) {
+                this.currentSalesChannelId = selectedSalesChannel;
+                this.prepareSalesChannelDomainCriteria(this.currentSalesChannelId, this.selectedSalesChannelDomains);
+            },
+            deep: true,
+        },
+        'elio_data_discovery_sync_profile.salesChannelDomains': {
+            handler(selectedDomains) {
+                this.selectedSalesChannelDomains = selectedDomains;
+                this.prepareSalesChannelDomainCriteria(this.currentSalesChannelId, this.selectedSalesChannelDomains);
+            },
+            deep: true,
         }
     },
 
@@ -164,29 +183,30 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
 
             const criteria = new Criteria();
             criteria.addAssociation('salesChannel');
-            criteria.addAssociation('languages');
+            criteria.addAssociation('salesChannelDomains');
             let exportId = (this.elio_data_discovery_sync_profile && this.exportId === null) ? this.elio_data_discovery_sync_profile.id : this.exportId;
-            this.syncProfileRepository.get(exportId, Shopware.Context.api, criteria).then((currenExport) => {
-                if (currenExport == null) {
+            this.syncProfileRepository.get(exportId, Shopware.Context.api, criteria).then((currentExport) => {
+                if (currentExport == null) {
                     that.$router.push({name: 'elio.data.discovery.sync.profile.list'});
                 }
 
-                that.elio_data_discovery_sync_profile = currenExport;
+                that.elio_data_discovery_sync_profile = currentExport;
                 that.elio_data_discovery_sync_profile_mappings = that._prepareSavedMapping();
                 that.elio_data_discovery_sync_profile_mappings_newId = that.elio_data_discovery_sync_profile_mappings.length;
                 that.isLoading = false;
 
                 const criteria = new Criteria();
-                criteria.setIds(currenExport.baseCategoryIds);
-                that.prepareLanguageCriteria(currenExport.salesChannelId);
+                criteria.setIds(currentExport.baseCategoryIds);
+                this.currentSalesChannelId = currentExport.salesChannelId;
+                that.prepareSalesChannelDomainCriteria(this.currentSalesChannelId, this.selectedSalesChannelDomains);
 
-                if (that.elio_data_discovery_sync_profile.languages.first()) {
-                    that.languageId = that.elio_data_discovery_sync_profile.languages.first().id
+                if (that.elio_data_discovery_sync_profile.salesChannelDomains.first()) {
+                    that.salesChannelDomainId = that.elio_data_discovery_sync_profile.salesChannelDomains.first().id
                 }
 
-                if (currenExport.baseCategoryIds && currenExport.baseCategoryIds.length > 0) {
+                if (currentExport.baseCategoryIds && currentExport.baseCategoryIds.length > 0) {
                     const criteria = new Criteria();
-                    criteria.setIds(currenExport.baseCategoryIds);
+                    criteria.setIds(currentExport.baseCategoryIds);
 
                     return this.categoryRepository.search(criteria, Shopware.Context.api).then((categories) => {
                         this.baseCategories = categories;
@@ -256,17 +276,17 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             this.features = profile.features;
         },
 
-        async onChangeLanguage(languageId) {
-            const language = await this.languageRepository.get(languageId, Shopware.Context.api);
-            const languageCollectionn = new EntityCollection(this.elio_data_discovery_sync_profile.languages.source, 'language', Shopware.Context.api);
-            languageCollectionn.add(language);
-            this.elio_data_discovery_sync_profile.languages = languageCollectionn;
+        async onChangeSalesChannelDomain(salesChannelDomainId) {
+            const domain = await this.salesChannelDomainRepository.get(salesChannelDomainId, Shopware.Context.api);
+            const domainCollection = new EntityCollection(this.elio_data_discovery_sync_profile.salesChannelDomains.source, 'sales_channel_domain', Shopware.Context.api);
+            domainCollection.add(domain);
+            this.elio_data_discovery_sync_profile.salesChannelDomains = domainCollection;
         },
 
         onSalesChannelChange(salesChannelId) {
-            this.elio_data_discovery_sync_profile.languages = new EntityCollection(this.elio_data_discovery_sync_profile.languages.source, 'language', Shopware.Context.api);
-            this.languageId = null;
-            this.prepareLanguageCriteria(salesChannelId);
+            this.elio_data_discovery_sync_profile.salesChannelDomains = new EntityCollection(this.elio_data_discovery_sync_profile.salesChannelDomains.source, 'sales_channel_domain', Shopware.Context.api);
+            this.salesChannelDomainId = null;
+            this.prepareSalesChannelDomainCriteria(salesChannelId, this.selectedSalesChannelDomains);
         },
 
         /**
@@ -299,14 +319,26 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             const that = this;
             this._prepareMappingForSaving();
 
-            if (this.elio_data_discovery_sync_profile.languages.length === 0) {
+            if (this.elio_data_discovery_sync_profile.salesChannelDomains.length === 0) {
                 this.createNotificationError({
                     message: this.$tc('elio-data-discovery-sync-profile.detail.messageSaveError', 0, {
-                        error: 'Please select at least one language'
+                        error: this.$tc('elio-data-discovery-sync-profile.detail.error.noSalesChannelDomainsSelected')
                     })
                 });
                 this.isLoading = false;
                 return;
+            }
+
+            for (const domain of this.elio_data_discovery_sync_profile.salesChannelDomains) {
+                if (domain.salesChannelId !== this.currentSalesChannelId) {
+                    this.createNotificationError({
+                        message: this.$tc('elio-data-discovery-sync-profile.detail.messageSaveError', 0, {
+                            error: this.$tc('elio-data-discovery-sync-profile.detail.error.salesChannelDomainMismatch')
+                        })
+                    });
+                    this.isLoading = false;
+                    return;
+                }
             }
 
             if (!this.entityValidationService.validate(this.elio_data_discovery_sync_profile)) {
@@ -430,7 +462,6 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             window.open(this.elioDataDiscoverySyncProfile.getDownloadUrl(
                 this.exportId,
                 this.elio_data_discovery_sync_profile.salesChannel.name,
-                this.elio_data_discovery_sync_profile.language.locale.code,
                 this.elio_data_discovery_sync_profile.downloadUsername,
                 this.elio_data_discovery_sync_profile.downloadPassword
             ), '_blank');
@@ -488,14 +519,23 @@ Shopware.Component.register('elio-data-discovery-sync-profile-detail', {
             return dateToFormat;
         },
 
-        prepareLanguageCriteria(salesChannelId = null) {
+        prepareSalesChannelDomainCriteria(salesChannelId = null, selectedDomains = []) {
             const criteria = new Criteria(1, 25);
 
             if (salesChannelId) {
-                criteria.addFilter(Criteria.equals('salesChannels.id', salesChannelId));
+                criteria.addFilter(Criteria.equals('salesChannelId', salesChannelId));
             }
 
-            this.languageCriteria = criteria;
+            if (selectedDomains.length > 0) {
+                const selectedLanguages = selectedDomains.map(domain => domain.languageId);
+                criteria.addFilter(Criteria.not('and', [
+                    Criteria.equalsAny('languageId', selectedLanguages),
+                ]));
+            }
+
+            this.salesChannelDomainCriteria = criteria;
+
+            this.componentKey = Date.now();
         }
     }
 });

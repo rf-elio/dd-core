@@ -35,7 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet;
 use DateTimeImmutable;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\IndexerInterface;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\AsyncIndexUpdateMessage;
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\IndexUpdateMessage;
+use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
 use Psr\Log\LoggerInterface;
@@ -66,7 +66,8 @@ class ChangeSetService
         private readonly MessageBusInterface $messageBus,
         private readonly iterable $indexers,
         private readonly LoggerInterface $logger,
-        private readonly SyncService $syncService
+        private readonly SyncService $syncService,
+        private readonly IndexUpdateSubscriber $indexUpdateSubscriber,
     ) {}
 
     /**
@@ -131,6 +132,7 @@ class ChangeSetService
      */
     public function startIndexing(Context $context, bool $isAsync = false): void
     {
+        $this->indexUpdateSubscriber->setActive(true);
         $this->logger->info('Changeset: Indexing started');
         $salesChannelContexts = $this->syncService->getSalesChannelContexts($context);
 
@@ -167,6 +169,8 @@ class ChangeSetService
                 }
             }
         }
+
+        $this->indexUpdateSubscriber->setActive(false);
     }
 
     public function index(

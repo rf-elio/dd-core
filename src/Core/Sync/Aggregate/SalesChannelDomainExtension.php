@@ -33,14 +33,14 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Aggregate;
 
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDefinition;
-use Elio\ElioDataDiscovery\Core\Sync\SyncProfileLanguageMapping;
+use Elio\ElioDataDiscovery\Core\Sync\SyncProfileDomainMapping;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Inherited;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\System\Language\LanguageDefinition;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainDefinition;
 
-class LanguageExtension extends EntityExtension
+class SalesChannelDomainExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void
     {
@@ -48,8 +48,8 @@ class LanguageExtension extends EntityExtension
             (new ManyToManyAssociationField(
                 'syncProfiles',
                 SyncProfileDefinition::class,
-                SyncProfileLanguageMapping::class,
-                'language_id',
+                SyncProfileDomainMapping::class,
+                'sales_channel_domain_id',
                 'sync_profile_id'
             ))->addFlags(new Inherited())
         );
@@ -57,6 +57,6 @@ class LanguageExtension extends EntityExtension
 
     public function getDefinitionClass(): string
     {
-        return LanguageDefinition::class;
+        return SalesChannelDomainDefinition::class;
     }
 }

@@ -210,7 +210,7 @@ class ElioDataDiscoveryProductListingRoute extends AbstractProductListingRoute
      */
     protected function addCurrentCategoryToNavigationRequest(NavigationRequestProduct $navigationRequest, CategoryEntity $category, Configuration $config, SalesChannelContext $context): void
     {
-        if ($category->getProductStreamId()) {
+        if ($category->getProductStreamId() && !$config->isResolveCategoriesFromProductStream()) {
             $navigationRequest->setStreamId($category->getProductStreamId());
         } else {
             $path = $this->categoryBreadcrumbBuilder->build($category, $context->getSalesChannel()) ?? [];

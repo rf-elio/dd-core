@@ -36,11 +36,11 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Exception;
 use Elio\ElioDataDiscovery\Core\Exception\ElioDataDiscoveryException;
 
 /**
- * Class NoLanguagesInSyncConfiguredException
+ * Class NoSalesChannelDomainsInSyncConfiguredException
  * @package Core\Sync\Exception
  * @category  Shopware
  * @author    elio GmbH <support@elio-systems.com>
  * @author    Ralf Frommherz <rf@elio-systems.com>
  * @copyright Copyright (c) 2024, elio GmbH (https://www.elio-systems.com)
  */
-class NoLanguagesInSyncConfiguredException extends ElioDataDiscoveryException {}
+class NoSalesChannelDomainsInSyncConfiguredException extends ElioDataDiscoveryException {}

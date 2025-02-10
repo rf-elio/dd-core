@@ -50,11 +50,11 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, InitAwareI
     public function init(SyncContext $syncContext): void
     {
         $this->baseUrl = [];
+        $salesChannelDomains = $syncContext->getSyncProfile()->getSalesChannelDomains();
         $this->salesChannelContexts = $syncContext->getSalesChannelContexts();
         $contexts = $this->salesChannelContexts ?? new SalesChannelContextCollection();
         foreach ($contexts as $languageId => $context) {
-            $salesChannel = $context->getSalesChannel();
-            foreach ($salesChannel->getDomains() as $domain) {
+            foreach ($salesChannelDomains as $domain) {
                 if ($domain->getLanguageId() === $context->getLanguageId()) {
                     $this->baseUrl[$languageId] = rtrim($domain->getUrl(), '/');
                     break;
