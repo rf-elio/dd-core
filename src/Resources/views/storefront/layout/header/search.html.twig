@@ -2,7 +2,8 @@
 
 {% block layout_header_search %}
     {% set searchOptions = {
-        suggestAutocompleteType: config_by_lang("ElioDataDiscovery.config.suggestAutocompleteType")
+        suggestAutocompleteType: config_by_lang("ElioDataDiscovery.config.suggestAutocompleteType"),
+        searchWidgetMinChars: page.header.activeLanguage.productSearchConfig.minSearchLength ?: 3
     } %}
 
     {% set showSearchHistory = config_by_lang("ElioDataDiscovery.config.suggestShowSearchHistory") %}
