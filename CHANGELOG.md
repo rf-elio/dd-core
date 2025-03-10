@@ -1,4 +1,10 @@
 # CHANGELOG.md
+## 6.6.5 - 2025-03-05
+### Fix (2 changes)
+- `AbstractRecommendationProductTransformer`:
+  - Replaced `ProductListingLoader` with `SalesChannelRepository` to load products in order to correctly handle variants
+  - Added additional check if the product number exists in the mapped productNumber-type array while grouping products to types
+
 ## 6.6.4 - 2025-02-13
 ### Fix (3 changes)
 - Added missing return in `ProductListingLoaderDecorator` which prevented falling back to the original service
