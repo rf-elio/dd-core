@@ -35,7 +35,9 @@ namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\Events\ProductListingCriteriaManipulationEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
@@ -57,9 +59,11 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
      * AbstractProductTransformer constructor.
      *
      * @param ProductListingLoader $listingLoader
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        private readonly ProductListingLoader $listingLoader
+        private readonly ProductListingLoader $listingLoader,
+        private readonly EventDispatcherInterface $eventDispatcher,
     )
     {
     }
@@ -79,8 +83,11 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
         $criteria->addAssociation('manufacturer');
         $criteria->addExtension(DisableVariantGroupingInListingLoaderStruct::class, new DisableVariantGroupingInListingLoaderStruct());
 
+        $event = new ProductListingCriteriaManipulationEvent($mainNumbers, $criteria, $context);
+        $this->eventDispatcher->dispatch($event);
+
         /** @var ProductCollection $products */
-        $products = $this->listingLoader->load($criteria, $context)->getEntities();
+        $products = $this->listingLoader->load($event->getCriteria(), $context)->getEntities();
 
         // sorts the product collection based on the original ff result order
         $products->sort(static function (ProductEntity $a, ProductEntity $b) use ($productNumberSort) {

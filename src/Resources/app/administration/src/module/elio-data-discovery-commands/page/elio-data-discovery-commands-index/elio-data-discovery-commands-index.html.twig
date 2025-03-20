@@ -4,33 +4,35 @@
             <sw-loader v-if="isLoading" size="50px"></sw-loader>
             <sw-card positionIdentifier="1">
                 <div v-for="(command, index) in commands" class="command">
-                    <div class="command-header">
-                        {{ header(index) }}
-                    </div>
-                    <div class="command-container">
-                        <div class="command-button-container">
-                            <sw-button size="small"
-                                       :is-loading="commands[index].processing"
-                                       :disabled="isLoading"
-                                       @click="handle(command.handler, index)"
-                            >{{ button(index) }}</sw-button>
+                    <component is="elio-data-discovery-feature-status" :feature="commands[index].featureFlag" :showAlert=false>
+                        <div class="command-header">
+                            {{ header(index) }}
                         </div>
-                        <div v-if="getCommandArgumentInput(index)" class="command-input-container">
-                            <sw-text-field
-                                      :placeholder="getCommandArgumentInput(index).placeholder"
-                                      v-model:value="getCommandArgumentInput(index).value"
-                            ></sw-text-field>
+                        <div class="command-container">
+                            <div class="command-button-container">
+                                <sw-button size="small"
+                                           :is-loading="commands[index].processing"
+                                           :disabled="isLoading"
+                                           @click="handle(command.handler, index)"
+                                >{{ button(index) }}</sw-button>
+                            </div>
+                            <div v-if="getCommandArgumentInput(index)" class="command-input-container">
+                                <sw-text-field
+                                          :placeholder="getCommandArgumentInput(index).placeholder"
+                                          v-model:value="getCommandArgumentInput(index).value"
+                                ></sw-text-field>
+                            </div>
+                            <div class="command-field-container">
+                                <sw-text-field
+                                        :value="getCommandText(index)"
+                                        readonly>
+                                </sw-text-field>
+                            </div>
                         </div>
-                        <div class="command-field-container">
-                            <sw-text-field
-                                    :value="getCommandText(index)"
-                                    readonly>
-                            </sw-text-field>
+                        <div class="command-description">
+                            {{ description(index) }}
                         </div>
-                    </div>
-                    <div class="command-description">
-                        {{ description(index) }}
-                    </div>
+                    </component>
                 </div>
             </sw-card>
         </sw-card-view>
