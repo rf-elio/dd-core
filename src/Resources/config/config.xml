@@ -462,6 +462,11 @@
         <title>Cleanup</title>
         <title lang="de-DE">Cleanup</title>
 
+        <component name="elio-data-discovery-feature-status">
+            <name>Sync</name>
+            <feature>syncProfile</feature>
+        </component>
+
         <input-field type="int">
             <name>entityStatusMaxCleanupAgeInDays</name>
             <label>Max entity sync index age in days</label>
