@@ -8,23 +8,22 @@ use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 abstract class AbstractRecommendationProductTransformer implements ResponseTransformerInterface
 {
-    private ProductListingLoader $listingLoader;
-
     /**
      * ProductTransformer constructor.
      *
-     * @param ProductListingLoader $listingLoader
+     * @param SalesChannelRepository $productRepository
      */
-    public function __construct(ProductListingLoader $listingLoader)
+    public function __construct(
+        private readonly SalesChannelRepository $productRepository
+    )
     {
-        $this->listingLoader = $listingLoader;
     }
 
     /**
@@ -42,7 +41,7 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
         /** @var ProductCollection $allProducts */
-        $allProducts = $this->listingLoader->load($criteria, $context)->getEntities();
+        $allProducts = $this->productRepository->search($criteria, $context)->getEntities();
 
         $productNumbersToTypeMap = [];
         foreach ($productNumbersPerType as $type => $productNumbers) {
@@ -53,12 +52,14 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
 
         $productsGroupedByType = [];
         foreach ($allProducts as $product) {
-            $types = $productNumbersToTypeMap[$product->getProductNumber()];
-            foreach ($types as $type) {
-                if (!isset($productsGroupedByType[$type])) {
-                    $productsGroupedByType[$type] = new ProductCollection();
+            if (isset($productNumbersToTypeMap[$product->getProductNumber()])) {
+                $types = $productNumbersToTypeMap[$product->getProductNumber()];
+                foreach ($types as $type) {
+                    if (!isset($productsGroupedByType[$type])) {
+                        $productsGroupedByType[$type] = new ProductCollection();
+                    }
+                    $productsGroupedByType[$type]->add($product);
                 }
-                $productsGroupedByType[$type]->add($product);
             }
         }
 
