@@ -106,7 +106,7 @@ export default class ElioSuggestAutocompletePlugin extends window.PluginBaseClas
         if (code === 9) {
             event.preventDefault();
 
-            let autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete').getInnerHTML().trim();
+            let autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete').innerHTML.trim();
 
             if (autoCompleteEl) {
                 // remove span tag
@@ -127,7 +127,7 @@ export default class ElioSuggestAutocompletePlugin extends window.PluginBaseClas
 
         try {
             let firstHighlight = DomAccess.querySelector(suggestName, '.highlight');
-            let suggestNameInner = suggestName.getInnerHTML().trim();
+            let suggestNameInner = suggestName.innerHTML.trim();
             let suggestStartsWithMatch = suggestNameInner.startsWith(firstHighlight.outerHTML.trim());
             if (firstHighlight && suggestStartsWithMatch) {
                 autocompleteText = suggestNameInner.replaceAll('highlight', 'invisible');

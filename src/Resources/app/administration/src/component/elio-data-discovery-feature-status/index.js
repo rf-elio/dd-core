@@ -8,6 +8,11 @@ Component.register('elio-data-discovery-feature-status', {
         feature: {
             type: String,
             required: true
+        },
+        showAlert: {
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
 
@@ -33,6 +38,10 @@ Component.register('elio-data-discovery-feature-status', {
 
     methods: {
         onCreated() {
+            if (!this.feature) {
+                this.isEnabled = true;
+                return;
+            }
             const me = this;
             this.isLoading = true;
             const httpClient = Shopware.Service('syncService').httpClient;

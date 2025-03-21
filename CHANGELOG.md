@@ -1,4 +1,14 @@
 # CHANGELOG.md
+## 6.6.6 - 2025-03-20
+### Feature (2 changes)
+- Added `syncProfile` feature flag for when the sync is handled by a connector plugin
+- Sync Extension and sync related commands are now disabled in the administration if `syncProfile` feature flag is disabled
+
+### Fix (3 changes)
+- Fixed the suggest auto-complete feature by accessing innerHTML attribute instead of calling non-existent getInnerHTML() function
+- Add `ProductListingCriteriaManipulationEvent` to the `AbstractProductTranformer` in case the criteria have to modified before products are loaded
+- Replace settings logo in extensions with old logo
+
 ## 6.6.5 - 2025-03-05
 ### Fix (2 changes)
 - `AbstractRecommendationProductTransformer`:

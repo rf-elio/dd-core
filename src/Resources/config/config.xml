@@ -78,8 +78,8 @@
             <name>suggestAutocompleteType</name>
             <label>Autocomplete type</label>
             <label lang="de-DE">Autovervollständigungs-Typ</label>
-            <placeholder>searchTerm</placeholder>
-            <defaultValue>searchTerm</defaultValue>
+            <placeholder>query-completion</placeholder>
+            <defaultValue>query-completion</defaultValue>
             <helpText>Results from this type are shown as placeholder texts in the search input field (default: searchTerm)</helpText>
             <helpText lang="de-DE">Ergebnisse von diesem Typ werden als Platzhalter-Text im Input-Field der Suche gezeigt (Standard: searchTerm).</helpText>
         </input-field>
@@ -461,6 +461,11 @@
     <card>
         <title>Cleanup</title>
         <title lang="de-DE">Cleanup</title>
+
+        <component name="elio-data-discovery-feature-status">
+            <name>Sync</name>
+            <feature>syncProfile</feature>
+        </component>
 
         <input-field type="int">
             <name>entityStatusMaxCleanupAgeInDays</name>
