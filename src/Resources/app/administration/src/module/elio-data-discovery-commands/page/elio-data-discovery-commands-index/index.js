@@ -19,25 +19,25 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
         return {
             isLoading: false,
             commands: {
-                "indexCleanup": {
-                    'handler': 'simpleCommandGet',
-                    'endpoint': 'index-cleanup'
-                },
                 "indexUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'index-update'
+                    'endpoint': 'index-update',
+                    'featureFlag': 'syncProfile'
                 },
                 "productSortUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'recalculate-sort'
+                    'endpoint': 'recalculate-sort',
+                    'featureFlag': ''
                 },
                 "rankingUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'ranking-update'
+                    'endpoint': 'ranking-update',
+                    'featureFlag': ''
                 },
                 "categoryInheritanceUpdate": {
                     'handler': 'simpleCommandGet',
-                    'endpoint': 'category-inheritance-update'
+                    'endpoint': 'category-inheritance-update',
+                    'featureFlag': ''
                 },
                 "syncData": {
                     'handler': 'generateSyncData',
@@ -48,7 +48,8 @@ Shopware.Component.register('elio-data-discovery-commands-index', {
                         'placeholder': '<syncProfileId>'
                     },
                     'updateInterval': 3000,
-                    'status': null
+                    'status': null,
+                    'featureFlag': 'syncProfile'
                 }
             }
         }
