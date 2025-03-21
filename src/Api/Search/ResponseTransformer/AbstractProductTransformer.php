@@ -34,8 +34,8 @@ namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
-use Elio\ElioDataDiscovery\Core\Content\Product\Events\ProductListingCriteriaManipulationEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -83,7 +83,7 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
         $criteria->addAssociation('manufacturer');
         $criteria->addExtension(DisableVariantGroupingInListingLoaderStruct::class, new DisableVariantGroupingInListingLoaderStruct());
 
-        $event = new ProductListingCriteriaManipulationEvent($mainNumbers, $criteria, $context);
+        $event = new ProductListingCriteriaEvent($mainNumbers, $criteria, $context);
         $this->eventDispatcher->dispatch($event);
 
         /** @var ProductCollection $products */

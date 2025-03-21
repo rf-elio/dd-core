@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\ElioDataDiscovery\Core\Content\Product\Events;
+namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class ProductListingCriteriaManipulationEvent extends Event implements ShopwareSalesChannelEvent
+class ProductListingCriteriaEvent extends Event implements ShopwareSalesChannelEvent
 {
     public function __construct(
         private readonly array               $mainNumbers,
