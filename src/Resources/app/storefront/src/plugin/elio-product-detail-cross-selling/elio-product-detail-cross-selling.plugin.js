@@ -35,6 +35,7 @@ export default class ElioProductDetailCrossSellingPlugin extends window.PluginBa
                 if (crossSellingSlider) {
                     crossSellingSlider.innerHTML = response;
                     window.PluginManager.initializePlugin('ProductSlider', '[data-product-slider]');
+                    this.$emitter.publish('elioDataDiscoveryCrossSelling/slidersLoaded', { crossSellingSlider });
                 }
             } catch (e) {
                 console.error(e)
