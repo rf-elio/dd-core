@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.8 - 2025-03-31
+### Fix (1 change)
+- Update plugin logo
+
 ## 6.6.7 - 2025-03-21
 ### Feature (1 change)
 - Compatibility with Shopware 6.6.10
