@@ -1,4 +1,9 @@
 # CHANGELOG.md
+## 6.6.7 - 2025-03-21
+### Feature (1 change)
+- Compatibility with Shopware 6.6.10
+- `elio-product-detail-cross-selling.plugin.js`: `_loadSliders` method now emits a `elioDataDiscoveryCrossSelling/slidersLoaded` event
+
 ## 6.6.6 - 2025-03-20
 ### Feature (2 changes)
 - Added `syncProfile` feature flag for when the sync is handled by a connector plugin
