@@ -36,6 +36,7 @@ namespace Elio\ElioDataDiscovery\Api\Search;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioDataDiscovery\Api\Search\Request\PriceRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Api\Transform\Transformer;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
@@ -88,6 +89,18 @@ class SearchApi implements SearchApiInterface
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context) : ResponseCollection
     {
         $this->searchDebug('searchContent', $this, [$searchRequest, $context]);
+        return new ResponseCollection();
+    }
+
+    /**
+     * @param PriceRequest $priceRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws Throwable
+     */
+    public function searchPrices(PriceRequest $priceRequest, SalesChannelContext $context): ResponseCollection
+    {
+        $this->searchDebug('searchPrices', $this, [$priceRequest, $context]);
         return new ResponseCollection();
     }
 

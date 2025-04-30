@@ -7,6 +7,7 @@ use Elio\ElioDataDiscovery\Api\Exception\ApiException;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
+use Elio\ElioDataDiscovery\Api\Search\Request\PriceRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -40,6 +41,15 @@ interface SearchApiInterface
      * @throws Throwable
      */
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection;
+
+    /**
+     * @param PriceRequest $priceRequest
+     * @param SalesChannelContext $context
+     * @return ResponseCollection
+     * @throws ApiException
+     * @throws Throwable
+     */
+    public function searchPrices(PriceRequest $priceRequest, SalesChannelContext $context): ResponseCollection;
 
     /**
      * Executes the ff navigation request

@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/component/product/card/price-unit.html.twig' %}
+
+{% block component_product_box_price %}
+    {% if product.extensions.customPrice is defined %}
+        {% set customPrice = product.extensions.customPrice %}
+        <div class="product-price-wrapper">
+            <span class="product-price">
+                {{ customPrice.price|currency }}{{ 'general.star'|trans|sw_sanitize }}
+            </span>
+        </div>
+        {% if customPrice.wpPrice is not null %}
+        {% set wattPeakPrice = customPrice.wpPrice %}
+            <div class="product-detail-watt-peak-price">
+                <div class="product-cheapest-price"></div>
+                <span class="e-wp-price">{{ wattPeakPrice|currency }}{{ 'general.star'|trans }}</span>
+                <span class="e-wp-price-text">{{ 'elioCustomPrice.wattPeakPrice'|trans|sw_sanitize }}</span>
+            </div>
+        {% endif %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
