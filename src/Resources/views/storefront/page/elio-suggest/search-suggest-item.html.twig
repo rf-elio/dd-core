@@ -57,13 +57,6 @@
                             {% block layout_search_suggest_result_price_product %}
                                 <div class="col-auto search-suggest-product-price">
                                     {% set product = item.entity %}
-                                    {% if product.extensions.customPrice is defined %}
-                                        {% set price = product.extensions.customPrice.price %}
-                                        <span class="search-suggest-product-price">
-                                            {{ price|currency }}{{ "general.star"|trans|sw_sanitize }}
-                                        </span>
-                                    {% else %}
-
                                     {% set price = product.calculatedPrice %}
                                     {% if product.calculatedPrices.count > 0 %}
                                         {% set price = product.calculatedPrices.last %}
@@ -89,8 +82,6 @@
 
                                     {% if price.regulationPrice.price is not null %}
                                         <small class="search-suggest-product-list-price">{{ "general.listPricePreviously"|trans({'%price%': price.regulationPrice.price|currency }) }}{{ "general.star"|trans|sw_sanitize }}</small>
-                                    {% endif %}
-
                                     {% endif %}
                                 </div>
                             {% endblock %}

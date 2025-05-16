@@ -11,8 +11,7 @@ class CustomPriceItem extends Struct
         private readonly string $customerId,
         private readonly string $productId,
         private readonly float $price,
-        private readonly ?int $fromQty,
-        private readonly ?float $wpPrice
+        private readonly array $priceExtras,
     ) {}
 
     /**
@@ -40,15 +39,10 @@ class CustomPriceItem extends Struct
     }
 
     /**
-     * @return int|null
+     * @return array
      */
-    public function getFromQty(): ?int
+    public function getPriceExtras(): array
     {
-        return $this->fromQty;
-    }
-
-    public function getWpPrice(): ?float
-    {
-        return $this->wpPrice;
+        return $this->priceExtras;
     }
 }
