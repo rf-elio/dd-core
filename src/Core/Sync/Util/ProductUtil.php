@@ -325,27 +325,6 @@ class ProductUtil
      * @param array<PropertyGroupOptionEntity> $properties
      * @return array
      */
-    public static function getProductAttribute(array $properties): array
-    {
-        $attributes = [];
-        foreach ($properties as $property) {
-            $group = $property->getGroup();
-            if ($group !== null) {
-                $name = $group->getTranslation('name') ?? $group->getName();
-                $value = $property->getTranslation('name') ?? $property->getName();
-                $attributes[$name] = ValueUtil::cleanValue($value);
-            }
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * Appends the product attributes
-     *
-     * @param array<PropertyGroupOptionEntity> $properties
-     * @return array
-     */
     public static function getProductProperty(array $properties): array
     {
         $attributes = [];
@@ -353,11 +332,24 @@ class ProductUtil
             $group = $property->getGroup();
             if ($group !== null) {
                 $name = $group->getTranslation('name') ?? $group->getName();
-                $value = $property->getTranslation('name') ?? $property->getName();
-                if (!isset($attributes[$name])) {
-                    $attributes[$name] = [];
+
+                //Encode property name
+                $specialCharacters = ['(', ')', '[', ']', '<', '>', '`', '.', ',', ':', '=', '!', '&', '|', '$'];
+                $encodedName = '';
+
+                foreach (mb_str_split($name) as $char) {
+                    if (in_array($char, $specialCharacters, true)) {
+                        $encodedName .= sprintf("\\u%04x", mb_ord($char));
+                    } else {
+                        $encodedName .= $char;
+                    }
                 }
-                $attributes[$name][] = ValueUtil::cleanValue($value);
+
+                $value = $property->getTranslation('name') ?? $property->getName();
+                if (!isset($attributes[$encodedName])) {
+                    $attributes[$encodedName] = [];
+                }
+                $attributes[$encodedName][] = ValueUtil::cleanValue($value);
             }
         }
 

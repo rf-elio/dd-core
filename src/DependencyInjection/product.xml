@@ -50,6 +50,7 @@
             <argument type="service" id="translator"/>
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Recommendations\RecommendationAdapter"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Features\FeatureService"/>
             <argument type="service" id="elio.data-discovery.core.logging.default" />
         </service>
 
