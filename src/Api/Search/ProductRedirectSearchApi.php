@@ -6,7 +6,6 @@ use Elio\ElioDataDiscovery\Api\Exception\ApiException;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
-use Elio\ElioDataDiscovery\Api\Search\Request\PriceRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
@@ -24,7 +23,6 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
-use Symfony\Component\Routing\RouterInterface;
 use Throwable;
 
 class ProductRedirectSearchApi implements SearchApiInterface
@@ -107,18 +105,6 @@ class ProductRedirectSearchApi implements SearchApiInterface
     public function searchContent(ContentSearchRequest $searchRequest, SalesChannelContext $context): ResponseCollection
     {
         return $this->searchApi->searchContent($searchRequest, $context);
-    }
-
-    /**
-     * @param PriceRequest $priceRequest
-     * @param SalesChannelContext $context
-     * @return ResponseCollection
-     * @throws ApiException
-     * @throws Throwable
-     */
-    public function searchPrices(PriceRequest $priceRequest, SalesChannelContext $context): ResponseCollection
-    {
-        return $this->searchApi->searchPrices($priceRequest, $context);
     }
 
     /**

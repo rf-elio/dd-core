@@ -1,20 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\ElioDataDiscovery\Core\Content\CustomPrice\SalesChannel\Event;
+namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class CustomPricesLoadedSuggestEvent extends CustomPricesLoadedEvent
+class ProductExtensionsLoadedSuggestEvent extends ProductExtensionsLoadedEvent
 {
     public function __construct(
-        string $customerId,
-        SalesChannelContext $context,
-        private array $products
+        private array $products,
+        SalesChannelContext $context
     )
     {
-        parent::__construct($customerId, $context);
+        parent::__construct($context);
     }
 
     /**
@@ -27,7 +26,6 @@ class CustomPricesLoadedSuggestEvent extends CustomPricesLoadedEvent
 
     /**
      * @param SalesChannelProductEntity[] $products
-     * @return void
      */
     public function setProducts(array $products): void
     {

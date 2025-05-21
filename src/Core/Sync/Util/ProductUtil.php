@@ -334,16 +334,7 @@ class ProductUtil
                 $name = $group->getTranslation('name') ?? $group->getName();
 
                 //Encode property name
-                $specialCharacters = ['(', ')', '[', ']', '<', '>', '`', '.', ',', ':', '=', '!', '&', '|', '$'];
-                $encodedName = '';
-
-                foreach (mb_str_split($name) as $char) {
-                    if (in_array($char, $specialCharacters, true)) {
-                        $encodedName .= sprintf("\\u%04x", mb_ord($char));
-                    } else {
-                        $encodedName .= $char;
-                    }
-                }
+                $encodedName = self::encodePropertyName($name);
 
                 $value = $property->getTranslation('name') ?? $property->getName();
                 if (!isset($attributes[$encodedName])) {
@@ -354,5 +345,21 @@ class ProductUtil
         }
 
         return $attributes;
+    }
+
+    public static function encodePropertyName(string $name) : string
+    {
+        $specialCharacters = ['(', ')', '[', ']', '<', '>', '`', '.', ',', ':', '=', '!', '&', '|', '$'];
+        $encodedName = '';
+
+        foreach (mb_str_split($name) as $char) {
+            if (in_array($char, $specialCharacters, true)) {
+                $encodedName .= sprintf("\\u%04x", mb_ord($char));
+            } else {
+                $encodedName .= $char;
+            }
+        }
+
+        return $encodedName;
     }
 }

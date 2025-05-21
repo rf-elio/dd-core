@@ -36,7 +36,7 @@ use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
 use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
-use Elio\ElioDataDiscovery\Core\Content\CustomPrice\SalesChannel\Event\CustomPricesLoadedSearchEvent;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductExtensionsLoadedSearchEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -118,7 +118,7 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
      */
     public function calculateCustomPrices(ProductCollection $products, string $customerId, SalesChannelContext $context): ProductCollection
     {
-        $event = new CustomPricesLoadedSearchEvent($customerId, $context, $products);
+        $event = new ProductExtensionsLoadedSearchEvent($products, $context);
         $this->eventDispatcher->dispatch($event);
 
         return $event->getProducts();
