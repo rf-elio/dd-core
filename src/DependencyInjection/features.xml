@@ -13,5 +13,9 @@
         <service id="Elio\ElioDataDiscovery\Core\Features\FeatureService">
             <argument type="service" id="event_dispatcher"/>
         </service>
+        <service id="Elio\ElioDataDiscovery\Storefront\TwigExtension\FeatureActive">
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Features\FeatureService"/>
+            <tag name="twig.extension"/>
+        </service>
     </services>
 </container>

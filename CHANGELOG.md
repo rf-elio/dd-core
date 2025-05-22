@@ -1,4 +1,18 @@
 # CHANGELOG.md
+## 6.6.9 - 2025-05-22
+### Feature (4 changes)
+- `AbstractProductTransformer`: Added new method that dispatches a `ProductExtensionsLoadedEvent`
+- Added `FeatureActive` twig function to check if a plugin feature is active
+- Added `CustomPriceItem` struct
+- Added `encodePropertyName` in `ProductUtil` method to handle properties with special characters that could cause issues
+
+### Fix (5 changes)
+- Added constants for plugin features in base plugin
+- Added checks for the `product.recommendation` feature so that certain code is only executed if it's active to prevent errors
+- Remove obsolete `getProductAttribute` method in `ProductUtil`
+- `cms-block-cross-selling`: Added check for recommendation feature, removed template include with empty array and renamed `crossSellings` variable to `crossSellingTypes`
+- Cleaned up obsolete use statements
+
 ## 6.6.8 - 2025-03-31
 ### Fix (1 change)
 - Update plugin logo

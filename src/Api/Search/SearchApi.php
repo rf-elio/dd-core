@@ -37,7 +37,6 @@ use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Request\ContentSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
-use Elio\ElioDataDiscovery\Api\Transform\Transformer;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

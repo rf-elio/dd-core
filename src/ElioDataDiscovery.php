@@ -70,8 +70,11 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class ElioDataDiscovery extends Plugin
 {
     // Plugin Features which can be enabled and developed (or decorated) in extensions plugins
+    public const FEATURE_ADDITIONAL_REQUEST_PARAMETERS = 'additionalRequestParameters';
     public const FEATURE_ADVISOR = 'advisor';
-    public const FEATURE_PRODUCT_RECOMMENDATIONS = 'product-recommendations';
+    public const FEATURE_CUSTOM_PRICES = 'customPrices';
+    public const FEATURE_PRODUCT_RECOMMENDATIONS = 'product.recommendation';
+    public const FEATURE_SYNC_PROFILE = 'syncProfile';
     public const FEATURE_TRACKING = 'tracking';
 
     public const CUSTOM_FIELD_TECHNICAL_NAME_PRODUCT = 'ElioDataDiscoveryProduct';

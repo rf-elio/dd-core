@@ -7,8 +7,10 @@ use Elio\ElioDataDiscovery\Api\Recommendations\Request\RecommendationRequest;
 use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
+use Elio\ElioDataDiscovery\Core\Features\FeatureServiceInterface;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Elio\ElioDataDiscovery\Core\Util\Excluder;
+use Elio\ElioDataDiscovery\ElioDataDiscovery;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductCrossSelling\ProductCrossSellingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -40,6 +42,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
      * @param TranslatorInterface $translator
      * @param EntityRepository $productRepository
      * @param RecommendationAdapter $recommendationApi
+     * @param FeatureServiceInterface $featureService
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -48,6 +51,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         private readonly TranslatorInterface $translator,
         private readonly EntityRepository $productRepository,
         private readonly RecommendationAdapter $recommendationApi,
+        private readonly FeatureServiceInterface $featureService,
         LoggerInterface $logger
     ) {
         $this->logger = $logger;
@@ -81,7 +85,7 @@ class ElioDataDiscoveryProductCrossSellingRoute extends AbstractProductCrossSell
         $config = $this->configService->getByContext($context);
         $productCrossSellingResponse = $this->getDecorated()->load($productId, $request, $context, $criteria);
 
-        if (!$config->isActive() || !$request->isXmlHttpRequest()) {
+        if (!$config->isActive() || !$request->isXmlHttpRequest() || !$this->featureService->getContext()->isEnabled(ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS)) {
             return $productCrossSellingResponse;
         }
 

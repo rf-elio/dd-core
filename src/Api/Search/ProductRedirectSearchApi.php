@@ -23,7 +23,6 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
-use Symfony\Component\Routing\RouterInterface;
 use Throwable;
 
 class ProductRedirectSearchApi implements SearchApiInterface
