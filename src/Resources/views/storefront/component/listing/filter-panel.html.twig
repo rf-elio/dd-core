@@ -14,7 +14,7 @@
                         {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-default-select.html.twig' with {
                             elements: property.options,
                             sidebar: sidebar,
-                            name: parameterName,
+                            name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
                             displayName: property.translated.name,
                             displayType: property.displayType,
                             pluginSelector: 'elio-data-discovery-filter-property-select',
@@ -42,7 +42,7 @@
                 {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select.html.twig' with {
                     elements: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree.tree,
                     sidebar: sidebar,
-                    name: parameterName,
+                    name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
                     displayName: parameterName,
                     displayType: 'text',
                     pluginSelector: 'elio-data-discovery-filter-tree-select',
