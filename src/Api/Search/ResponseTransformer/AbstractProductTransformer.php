@@ -112,11 +112,10 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
 
     /**
      * @param ProductCollection $products
-     * @param string $customerId
      * @param SalesChannelContext $context
      * @return ProductCollection
      */
-    public function calculateCustomPrices(ProductCollection $products, string $customerId, SalesChannelContext $context): ProductCollection
+    public function dispatchProductExtensionsLoadedEvent(ProductCollection $products, SalesChannelContext $context): ProductCollection
     {
         $event = new ProductExtensionsLoadedSearchEvent($products, $context);
         $this->eventDispatcher->dispatch($event);
