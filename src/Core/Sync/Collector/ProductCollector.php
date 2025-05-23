@@ -254,19 +254,21 @@ class ProductCollector implements DataCollectorInterface
                 }
 
                 $dataType = ProductDataType::createFrom($entity);
-                $visibility = $entity->getVisibilities()?->first()?->getVisibility();
-                switch ($visibility) {
-                    case ProductVisibilityDefinition::VISIBILITY_SEARCH:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_SEARCH);
-                        break;
 
-                    case ProductVisibilityDefinition::VISIBILITY_ALL:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_ALL);
-                        break;
+                foreach ($entity->getVisibilities() as $visibility) {
+                    switch ($visibility->getVisibility()) {
+                        case ProductVisibilityDefinition::VISIBILITY_SEARCH:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(), Visibilities::VISIBILITY_SEARCH);
+                            break;
 
-                    default:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_NONE);
-                        break;
+                        case ProductVisibilityDefinition::VISIBILITY_ALL:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(),Visibilities::VISIBILITY_ALL);
+                            break;
+
+                        default:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(),Visibilities::VISIBILITY_NONE);
+                            break;
+                    }
                 }
                 $dataType->setRatingCount($entity->getTranslation('customFields')[ElioDataDiscovery::CUSTOM_FIELD_PRODUCT_RATING_COUNT] ?? 0);
                 $dataType->setVariant(new Variant());
