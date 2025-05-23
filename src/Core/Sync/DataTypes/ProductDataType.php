@@ -53,8 +53,8 @@ class ProductDataType extends SalesChannelProductEntity implements DataTypeInter
 
     private ?Variant $variant = null;
     private ?string $thumbnailUrl = null;
-    private ?Visibilities $visibility = null;
     private ?int $ratingCount = null;
+    private ?array $visibilityLabels = null;
 
     public function setVariant(Variant $variant): void
     {
@@ -79,14 +79,19 @@ class ProductDataType extends SalesChannelProductEntity implements DataTypeInter
         $this->thumbnailUrl = $thumbnailUrl;
     }
 
-    public function getVisibility(): ?Visibilities
+    public function getVisibilityLabels(): ?array
     {
-        return $this->visibility;
+        return $this->visibilityLabels;
     }
 
-    public function setVisibility(?Visibilities $visibility): void
+    public function setVisibilityLabels(?array $visibilityLabels): void
     {
-        $this->visibility = $visibility;
+        $this->visibilityLabels = $visibilityLabels;
+    }
+
+    public function addVisibilityLabel(string $salesChannelId, ?Visibilities $visibilities): void
+    {
+        $this->visibilityLabels[$salesChannelId] = $visibilities?->value;
     }
 
     public function getRatingCount(): ?int

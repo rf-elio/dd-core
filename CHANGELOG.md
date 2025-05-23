@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.10 - 2025-05-23
+### Feature (1 change)
+- `ProductDataType` now holds an array of visibilities per sales channel
+
 ## 6.6.9 - 2025-05-22
 ### Feature (4 changes)
 - `AbstractProductTransformer`: Added new method that dispatches a `ProductExtensionsLoadedEvent`
