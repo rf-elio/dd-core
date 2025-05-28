@@ -24,9 +24,11 @@
         </input-field>
         <input-field type="bool">
             <name>searchUseContentChannel</name>
-            <label>Show contents from content channel to search result page</label>
-            <label lang="de-DE">Inhalte aus dem Inhalts-Channel auf der Suchergebnisseite anzeigen</label>
-            <defaultValue>true</defaultValue>
+            <label>Show contents on search result page</label>
+            <label lang="de-DE">Inhalte auf der Suchergebnisseite anzeigen</label>
+            <helpText>Shows content like categories or landing pages in the search result page, if they have been synced previously.</helpText>
+            <helpText lang="de-DE">Zeigt Inhalte wie Kategorien oder Landingpages auf der Suchergebnisseite, wenn sie zuvor gesynced wurden.</helpText>
+            <defaultValue>false</defaultValue>
         </input-field>
         <input-field type="int">
             <name>searchCacheExpiresAfter</name>
@@ -159,8 +161,8 @@
 
         <input-field type="bool">
             <name>allowStreamIdSearch</name>
-            <label>Allow the use of product stream IDs in the API search</label>
-            <label lang="de-DE">Nutzung vom Stream IDs in der API-Suche erlauben</label>
+            <label>Allow the use of product streams for search and listing</label>
+            <label lang="de-DE">Nutzung von Produkt-Streams in Suche und Listing erlauben</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -169,8 +171,8 @@
             <label>Resolve categories from product stream (sync and listing)</label>
             <label lang="de-DE">Kategorien anhand der Produkt-Streams auflösen (Sync und Listing)</label>
             <defaultValue>false</defaultValue>
-            <helpText>If enabled, product categories are resolved from product streams. This applies to the sync and listing, so in order to use this feature, you need to sync products after activating it!</helpText>
-            <helpText lang="de-DE">Wenn aktiviert, werden Produkt-Kategorien anhand der Produkt-Streams aufgelöst. Dies trifft sowohl auf den Sync als auch das Listing zu. Um das Feature zu verwenden, müssen daher Produkte gesynced werden, nachdem diese Einstellung aktiviert wurde!</helpText>
+            <helpText>If enabled, product categories are resolved from product streams. Requires syncing products after activating. This can be used when products are not directly assigned to categories.</helpText>
+            <helpText lang="de-DE">Wenn aktiviert, werden Produkt-Kategorien anhand der Produkt-Streams aufgelöst. Nach Aktivierung der Einstellung müssen Produkte gesynced werden. Dies kann genutzt werden, falls Produkte nicht direkt Kategorien zugeordnet werden.</helpText>
         </input-field>
 
         <input-field type="int">
@@ -499,6 +501,13 @@
             <label lang="de-DE">Ausdruck zum Ausschluss des Data Discovery Listing (Drittanbieter-Plugins)</label>
             <helpText>The expression in this field is checked by the plugin. If the evaluation is true, the Data Discovery listing will not be used on the respective page. This can be used for compatibility with third-party-plugins. Consult a developer before setting this!</helpText>
             <helpText lang="de-DE">Der Ausdruck in diesem Feld wird vom Plugin überprüft. Wenn die Auswertung wahr ist, wird das Data Discovery Listing auf der entsprechenden Seite nicht genutzt. Dies kann für die Kompatibilität von Drittanbieter-Plugins benutzt werden. Beraten Sie sich vor Setzen des Feldes mit einem Entwickler!</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>useLegacyLocale</name>
+            <label>Use legacy locale (2 characters, i.e. "de")</label>
+            <label lang="de-DE">Alte locale benutzen (2 Buchstaben, z.B. "de")</label>
+            <defaultValue>false</defaultValue>
         </input-field>
     </card>
 

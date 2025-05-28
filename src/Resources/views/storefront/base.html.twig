@@ -6,6 +6,9 @@
         window.elioDataDiscovery = {
             tracking: {
                 detailPath: "{{ path('widgets.elio-data-discovery.tracking.product-detail') }}"
+            },
+            global: {
+                active: "{{ config('ElioDataDiscovery.config.active') }}"
             }
         }
     </script>

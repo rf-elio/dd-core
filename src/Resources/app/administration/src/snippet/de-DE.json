@@ -17,7 +17,7 @@
                     "search": "Suche",
                     "navigation": "Navigation",
                     "customfilters": "Eigene Filter",
-                    "category": "Filter Konfiguration"
+                    "category": "Kategorie"
                 },
                 "filters": {
                     "messageSaveError": "Speichern ist fehlgeschlagen",
@@ -71,8 +71,7 @@
             "sorting": {
                 "title": "Sorting Konfiguration",
                 "tabs": {
-                    "customfilters": "Optionen sortieren",
-                    "category": "Sortier Konfiguration"
+                    "customfilters": "Eigene Sortieroptionen"
                 },
                 "filters": {
                     "detail": {
@@ -99,8 +98,7 @@
                 "tree": "Diese Tabelle kann nicht editiert werden. Hier werden die berechneten Sortierpositionen aller Produkte in den Unterkategorien ausgegeben."
             },
             "tabs": {
-                "category": "Position-Sortierung",
-                "global": "Produkte"
+                "products": "Produkte"
             }
         }
     },

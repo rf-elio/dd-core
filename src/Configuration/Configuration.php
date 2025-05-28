@@ -93,6 +93,7 @@ class Configuration extends Struct
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
         private readonly bool $resolveCategoriesFromProductStream,
+        private readonly bool $useLegacyLocale
     ) {}
 
     /**
@@ -433,5 +434,10 @@ class Configuration extends Struct
     public function isResolveCategoriesFromProductStream(): bool
     {
         return $this->resolveCategoriesFromProductStream;
+    }
+
+    public function isUseLegacyLocale(): bool
+    {
+        return $this->useLegacyLocale;
     }
 }

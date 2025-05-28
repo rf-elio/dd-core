@@ -8,10 +8,15 @@ export default class ElioListingExtensionPlugin extends window.PluginBaseClass {
         listingPropertiesSelector: '.e-elio-data-discovery-listing-properties',
         filterPanelSelector: '.filter-panel-items-container',
         filterPanelActiveSelector: '.filter-panel-active-container',
-        filterPanelItemDropdownSelector: '.filter-panel-item-dropdown'
+        filterPanelItemDropdownSelector: '.filter-panel-item-dropdown',
+        active: window.elioDataDiscovery.global.active === "1"
     });
 
     init () {
+        if (!this.options.active) {
+            return;
+        }
+
         const parentFilterPanelElement = DomAccess.querySelector(document, this.options.parentFilterPanelSelector)
         this.listing = window.PluginManager.getPluginInstanceFromElement(
             parentFilterPanelElement,

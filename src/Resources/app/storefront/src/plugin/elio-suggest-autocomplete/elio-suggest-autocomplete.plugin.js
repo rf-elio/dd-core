@@ -104,17 +104,19 @@ export default class ElioSuggestAutocompletePlugin extends window.PluginBaseClas
 
         // tab key code
         if (code === 9) {
-            event.preventDefault();
-
             let autoCompleteEl = DomAccess.querySelector(this.el, '.e-autocomplete').innerHTML.trim();
 
             if (autoCompleteEl) {
-                // remove span tag
-                let newSearch = autoCompleteEl.replace(/<[^>]*>/g, '');
-                this._inputField.value = newSearch;
-            }
+                let autoCompleteText = autoCompleteEl.replace(/<[^>]*>/g, '').trim();
+                let currentInputValue = this._inputField.value.trim();
 
-            this._inputField.dispatchEvent(new Event('input'));
+                if (autoCompleteText && autoCompleteText !== currentInputValue) {
+                    event.preventDefault();
+                    this._inputField.value = autoCompleteText;
+
+                    this._inputField.dispatchEvent(new Event('input'));
+                }
+            }
         }
     }
 

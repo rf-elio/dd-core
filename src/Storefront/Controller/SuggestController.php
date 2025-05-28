@@ -38,6 +38,7 @@ use Elio\ElioDataDiscovery\Api\Search\Response\SuggestionResponse;
 use Elio\ElioDataDiscovery\Api\Search\SuggestApi;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
+use Elio\ElioDataDiscovery\Core\Suggest\SuggestRequestBuilder;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ProductDataType;
 use Elio\ElioDataDiscovery\Core\Util\StripClassPathUtil;
 use Psr\Log\LoggerInterface;
@@ -68,6 +69,7 @@ class SuggestController extends SearchController
     /**
      * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SuggestApi $suggestApi
+     * @param SuggestRequestBuilder $suggestRequestBuilder
      * @param SearchPageLoader $searchPageLoader
      * @param SuggestPageLoader $suggestPageLoader
      * @param AbstractProductSearchRoute $productSearchRoute
@@ -76,6 +78,7 @@ class SuggestController extends SearchController
     public function __construct(
         private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SuggestApi $suggestApi,
+        private readonly SuggestRequestBuilder $suggestRequestBuilder,
         SearchPageLoader $searchPageLoader,
         SuggestPageLoader $suggestPageLoader,
         AbstractProductSearchRoute $productSearchRoute,
@@ -107,8 +110,7 @@ class SuggestController extends SearchController
         $searchTerm = $request->get('search') ?? '*';
 
         try {
-            $suggestRequest = new SuggestRequest('');
-            $suggestRequest->setQuery($searchTerm);
+            $suggestRequest = $this->suggestRequestBuilder->build($searchTerm, new SuggestRequest(''), $config, $context);
             if ($config->isSuggestToggleProductType()) {
                 $suggestRequest->setType(StripClassPathUtil::stripClassPath(ProductDataType::class));
             }

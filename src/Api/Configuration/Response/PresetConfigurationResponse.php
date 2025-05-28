@@ -4,12 +4,15 @@ namespace Elio\ElioDataDiscovery\Api\Configuration\Response;
 
 class PresetConfigurationResponse extends ConfigurationResponse
 {
+    public const TYPE = 'preset';
+
     protected array $presets;
 
-    public function __construct(array $presets)
+    public function __construct(array $presets, string $collection)
     {
-        $this->type = 'preset';
+        $this->type = self::TYPE;
         $this->presets = $presets;
+        $this->collection = $collection;
     }
 
     /**

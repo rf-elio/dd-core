@@ -92,7 +92,7 @@ class CachedFilterService implements FilterInterface
         $config = $this->configService->getByContext($context);
         $cacheTime = $config->getRestrictionsCacheTime();
 
-        $item = $this->cache->getItem('elio_data_discovery.cached_filter_service.filters.' . $type);
+        $item = $this->cache->getItem($this->generateCacheKey($context, $type));
         try {
             if ($item->isHit() && $item->get()) {
                 return CacheCompressor::uncompress($item);
@@ -113,19 +113,14 @@ class CachedFilterService implements FilterInterface
 
     /**
      * @param SalesChannelContext $salesChannelContext
-     * @param int $level
      * @param string $type
-     * @param string|null $categoryId
      * @return string
      */
     public function generateCacheKey(
         SalesChannelContext $salesChannelContext,
-        int $level,
         string $type,
-        ?string $categoryId = null
     ): string {
-        return 'elio_data_discovery.cached_filter_service.' . $salesChannelContext->getSalesChannelId(
-            ) . '_' . $type . '_' . $level . ($categoryId ? '_' . $categoryId : '');
+        return hash('xxh128', 'elio_data_discovery.cached_filter_service.filters.' . $type . $salesChannelContext->getSalesChannelId() . $salesChannelContext->getLanguageId());
     }
 
     /**
