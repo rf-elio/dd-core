@@ -1,17 +1,18 @@
 # CHANGELOG.md
-## 6.6.11 - 2025-05-28
+## 6.6.11 - 2025-05-30
 ### Feature (5 changes)
 - Filtering in the suggest is now allowed:
   - `SuggestRequest` can now hold filters
   - Added `SuggestRequestBuilder` and `SuggestRequestBuildEvent`
 - Added `SuggestProductCollectCriteriaEvent` that holds criteria for collecting products in suggest
+- Added `ProductListingCriteriaEvent` to `AbstractRecommendationProductTransformer` and injected `ProductListingLoader`
 - `useLegacyLocale` configuration option to switch between old (`de`) and new (`de-DE`) locale
-- Added `PropertyUtil` to handle encoding and decoding of property names
+- Added `StringUtil` to handle encoding and decoding of property names
 
 ### Fix (8 changes)
 - Fixed cache key generation in `CachedFilterService`
 - Special characters are now removed from facet names and values in template element attributes
-- Moved `encodePropertyName` method to `PropertyUtil`
+- Moved `encodePropertyName` method to `StringUtil`
 - `ConfigurationResponse` now has a `collection` attribute
 - `ConfigurationController` now excludes product comparison sales channels and iterates over sales channels to send requests
 - Renamed Filter & Sorting configuration card labels when in category view and fixed width of sales channel select

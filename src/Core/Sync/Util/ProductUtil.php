@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use Elio\ElioDataDiscovery\Core\Defaults;
-use Elio\ElioDataDiscovery\Core\Util\PropertyUtil;
+use Elio\ElioDataDiscovery\Core\Util\StringUtil;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyCollection;
@@ -335,7 +335,7 @@ class ProductUtil
                 $name = $group->getTranslation('name') ?? $group->getName();
 
                 //Encode property name
-                $encodedName = PropertyUtil::encodeStringToUnicodeEscaped($name);
+                $encodedName = StringUtil::encodeStringToUnicodeEscaped($name);
 
                 $value = $property->getTranslation('name') ?? $property->getName();
                 if (!isset($attributes[$encodedName])) {

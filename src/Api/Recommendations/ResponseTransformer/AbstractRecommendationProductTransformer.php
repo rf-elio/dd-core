@@ -5,12 +5,14 @@ namespace Elio\ElioDataDiscovery\Api\Recommendations\ResponseTransformer;
 use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
+use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingLoader;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 abstract class AbstractRecommendationProductTransformer implements ResponseTransformerInterface
@@ -18,10 +20,12 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
     /**
      * ProductTransformer constructor.
      *
-     * @param SalesChannelRepository $productRepository
+     * @param ProductListingLoader $listingLoader
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
-        private readonly SalesChannelRepository $productRepository
+        private readonly ProductListingLoader $listingLoader,
+        private readonly EventDispatcherInterface $eventDispatcher
     )
     {
     }
@@ -40,8 +44,12 @@ abstract class AbstractRecommendationProductTransformer implements ResponseTrans
         $allProductNumbers = array_unique(array_merge(...array_values($productNumbersPerType)));
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', $allProductNumbers));
+
+        $event = new ProductListingCriteriaEvent($allProductNumbers, $criteria, $context);
+        $this->eventDispatcher->dispatch($event);
+
         /** @var ProductCollection $allProducts */
-        $allProducts = $this->productRepository->search($criteria, $context)->getEntities();
+        $allProducts = $this->listingLoader->load($event->getCriteria(), $context)->getEntities();
 
         $productNumbersToTypeMap = [];
         foreach ($productNumbersPerType as $type => $productNumbers) {

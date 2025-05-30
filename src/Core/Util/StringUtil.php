@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Elio\ElioDataDiscovery\Core\Util;
 
-class PropertyUtil
+class StringUtil
 {
     /**
      * @param string $name
