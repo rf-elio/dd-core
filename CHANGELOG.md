@@ -1,6 +1,6 @@
 # CHANGELOG.md
 ## 6.6.11 - 2025-05-30
-### Feature (5 changes)
+### Feature (6 changes)
 - Filtering in the suggest is now allowed:
   - `SuggestRequest` can now hold filters
   - Added `SuggestRequestBuilder` and `SuggestRequestBuildEvent`
@@ -16,7 +16,7 @@
 - `ConfigurationResponse` now has a `collection` attribute
 - `ConfigurationController` now excludes product comparison sales channels and iterates over sales channels to send requests
 - Renamed Filter & Sorting configuration card labels when in category view and fixed width of sales channel select
-- Added `active` global twig variable, which is checked in cross selling and listing extension JS plugins when initializing
+- Added `active`, `useSearch` and `useListing` global twig variables, which are checked in cross selling and listing extension JS plugins when initializing
 - Fixed auto-complete suggest feature blocking navigation via tab key
 
 ## 6.6.10 - 2025-05-23
