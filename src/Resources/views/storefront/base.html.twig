@@ -8,7 +8,9 @@
                 detailPath: "{{ path('widgets.elio-data-discovery.tracking.product-detail') }}"
             },
             global: {
-                active: "{{ config('ElioDataDiscovery.config.active') }}"
+                active: "{{ config('ElioDataDiscovery.config.active') }}",
+                useSearch: "{{ config('ElioDataDiscovery.config.searchUseElioDataDiscovery') }}",
+                useListing: "{{ config('ElioDataDiscovery.config.listingUseElioDataDiscovery') }}"
             }
         }
     </script>
