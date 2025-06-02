@@ -500,6 +500,15 @@
             <helpText>The expression in this field is checked by the plugin. If the evaluation is true, the Data Discovery listing will not be used on the respective page. This can be used for compatibility with third-party-plugins. Consult a developer before setting this!</helpText>
             <helpText lang="de-DE">Der Ausdruck in diesem Feld wird vom Plugin überprüft. Wenn die Auswertung wahr ist, wird das Data Discovery Listing auf der entsprechenden Seite nicht genutzt. Dies kann für die Kompatibilität von Drittanbieter-Plugins benutzt werden. Beraten Sie sich vor Setzen des Feldes mit einem Entwickler!</helpText>
         </input-field>
+
+        <input-field type="int">
+            <name>changeSetIndexerBatchSize</name>
+            <label>Indexer: Batch Size</label>
+            <label lang="de-DE">Indexer: Stapelgröße</label>
+            <defaultValue>500</defaultValue>
+            <helpText>Batch size for indexing EntityStatus entities</helpText>
+            <helpText lang="de-DE">Stapelgröße für die Indizierung von EntityStatus-Entitäten</helpText>
+        </input-field>
     </card>
 
     <card>

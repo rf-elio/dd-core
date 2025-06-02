@@ -32,6 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\ContentDataType;
@@ -40,6 +41,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
@@ -62,9 +64,11 @@ class CategoryIndexer extends BaseIndexer
 
     public function __construct(
         SalesChannelRepository $categoryRepository,
+        EntityRepository $entityStatusRepository,
+        ElioDataDiscoveryConfigServiceInterface $dataDiscoveryConfigService,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $categoryRepository);
+        parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $categoryRepository, $entityStatusRepository, $dataDiscoveryConfigService);
     }
 
     /**

@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Exception\InvalidTypeException;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\Event\CriteriaPreparedEvent;
@@ -43,6 +44,7 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductCloseoutFilterFactory;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -69,11 +71,13 @@ class ProductIndexer extends BaseIndexer
 
     public function __construct(
         SalesChannelRepository $productRepository,
+        EntityRepository $entityStatusRepository,
+        ElioDataDiscoveryConfigServiceInterface $dataDiscoveryConfigService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SystemConfigService $systemConfigService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory
     ){
-        parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $productRepository);
+        parent::__construct(self::DATA_TYPE, self::ENTITY_TYPE, $productRepository, $entityStatusRepository, $dataDiscoveryConfigService);
     }
 
     /**

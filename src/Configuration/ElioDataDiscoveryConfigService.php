@@ -135,6 +135,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioDataDiscovery', $languagePrefix)),
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_ADVISOR,ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false),
             $correctedAdditionalRequestParameters,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'changeSetIndexerBatchSize', $languagePrefix) ?? 500,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,

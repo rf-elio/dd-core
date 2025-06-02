@@ -57,6 +57,8 @@
         <!--    Api Sync    -->
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\ProductIndexer">
             <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="elio_data_discovery_entity_status.repository"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\ProductCloseoutFilterFactory"/>
@@ -64,11 +66,15 @@
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\CategoryIndexer">
             <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="elio_data_discovery_entity_status.repository"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
             <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.indexer"/>
         </service>
         <service id="Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer\LandingPageIndexer">
             <argument type="service" id="sales_channel.landing_page.repository"/>
+            <argument type="service" id="elio_data_discovery_entity_status.repository"/>
+            <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService"/>
             <argument type="service" id="event_dispatcher"/>
             <tag name="elio-data-discovery.sync.indexer"/>
         </service>

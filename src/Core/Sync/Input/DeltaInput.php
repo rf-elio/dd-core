@@ -79,80 +79,73 @@ class DeltaInput extends BaseInput
     {
         $syncProfile = $syncContext->getSyncProfile();
         $contexts = $syncContext->getSalesChannelContexts();
-        $changeSet = $this->changeSetService->getChangeSet(
+        $changeSetGenerator = $this->changeSetService->getChangeSet(
             $syncProfile,
             $syncContext->getSalesChannelContexts()->getFirst()->getContext(),
             $syncContext->getOptions()['full-sync'] ?? false
         );
 
-        $this->logger->info('DeltaInput: ChangeSet count', [
-            'syncProfileId' => $syncContext->getSyncProfile()->getId(),
-            'created' => $changeSet->countCreated(),
-            'updated' => $changeSet->countUpdated(),
-            'deleted' => $changeSet->countDeleted(),
-        ]);
+        $changeSetTotalCountCreated = 0;
+        $changeSetTotalCountUpdated = 0;
+        $changeSetTotalCountDeleted = 0;
 
-        if ($changeSet->isEmpty()) {
-            $this->logger->info(sprintf(
-                'DeltaInput: No entries sync entries found for profile %s',
-                $syncContext->getProfileDefinition()->getName())
-            );
-            return;
-        }
+        foreach ($changeSetGenerator as $changeSet) {
+            $changeSetTotalCountCreated += $changeSet->countCreated();
+            $changeSetTotalCountUpdated += $changeSet->countUpdated();
+            $changeSetTotalCountDeleted += $changeSet->countDeleted();
 
-        foreach ($changeSet->getDeleted() as $changeSetEntityCollection) {
-            $deltaDataCollection = new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, []);
-            /** @var EntityStatusEntity $changeSetEntity */
-            foreach ($changeSetEntityCollection as $changeSetEntity) {
-                if ($changeSetEntity->getDataType() === ProductDataType::class) {
-                    $entity = new ProductDataType();
-                    $entity->setId($changeSetEntity->getEntityId() ?? '');
-                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
-                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
-                    $deltaDataCollection->add($entity);
-                } elseif ($changeSetEntity->getDataType() === ContentDataType::class) {
-                    $entity = new ContentDataType();
-                    $entity->setId($changeSetEntity->getEntityId() ?? '');
-                    $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
-                    $entity->setDeletedAt($changeSetEntity->getDeletedAt());
-                    $deltaDataCollection->add($entity);
-                } else {
-                    throw new UnknownContentTypeException(sprintf(
-                        'DataType "%s" given, but not supported', $changeSetEntity->getDataType()
-                    ));
+            foreach ($changeSet->getDeleted() as $changeSetEntityCollection) {
+                $deltaDataCollection = new DeltaDataCollection(DeltaDataCollection::TYPE_DELETED, []);
+                /** @var EntityStatusEntity $changeSetEntity */
+                foreach ($changeSetEntityCollection as $changeSetEntity) {
+                    if ($changeSetEntity->getDataType() === ProductDataType::class) {
+                        $entity = new ProductDataType();
+                        $entity->setId($changeSetEntity->getEntityId() ?? '');
+                        $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
+                        $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                        $deltaDataCollection->add($entity);
+                    } elseif ($changeSetEntity->getDataType() === ContentDataType::class) {
+                        $entity = new ContentDataType();
+                        $entity->setId($changeSetEntity->getEntityId() ?? '');
+                        $entity->setIdentifier($changeSetEntity->getIdentifier() ?? '');
+                        $entity->setDeletedAt($changeSetEntity->getDeletedAt());
+                        $deltaDataCollection->add($entity);
+                    } else {
+                        throw new UnknownContentTypeException(sprintf(
+                            'DataType "%s" given, but not supported', $changeSetEntity->getDataType()
+                        ));
+                    }
+                }
+                yield $deltaDataCollection;
+            }
+
+            foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
+                $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
+                foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
+                    foreach ($collector->collect($contexts, $criteria) as $collection) {
+                        $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
+                        yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $collection);
+                    }
                 }
             }
-            yield $deltaDataCollection;
-        }
-        $this->logger->info('DeltaInput: ChangeSet delete processed', [
-            'syncProfileId' => $syncContext->getSyncProfile()->getId()
-        ]);
 
-        foreach ($changeSet->getCreated() as $entityType => $changeSetEntityCollection) {
-            $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
-            foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
-                foreach ($collector->collect($contexts, $criteria) as $collection) {
-                    $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
-                    yield new DeltaDataCollection(DeltaDataCollection::TYPE_CREATED, $collection);
+            foreach ($changeSet->getUpdated() as $entityType => $changeSetEntityCollection) {
+                $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
+                foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
+                    foreach ($collector->collect($contexts, $criteria) as $collection) {
+                        $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
+                        yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $collection);
+                    }
                 }
             }
-        }
-        $this->logger->info('DeltaInput: ChangeSet created processed', [
-            'syncProfileId' => $syncContext->getSyncProfile()->getId()
-        ]);
 
-        foreach ($changeSet->getUpdated() as $entityType => $changeSetEntityCollection) {
-            $criteria = new Criteria($changeSetEntityCollection->getEntityIds());
-            foreach ($this->getCollectors($syncProfile->getDataType(), $entityType) as $collector) {
-                foreach ($collector->collect($contexts, $criteria) as $collection) {
-                    $this->mapEntityStatusBaseFields($changeSetEntityCollection, $collection);
-                    yield new DeltaDataCollection(DeltaDataCollection::TYPE_UPDATED, $collection);
-                }
-            }
+            $this->logger->info('DeltaInput: ChangeSet count', [
+                'syncProfileId' => $syncContext->getSyncProfile()->getId(),
+                'created' => $changeSetTotalCountCreated,
+                'updated' => $changeSetTotalCountUpdated,
+                'deleted' => $changeSetTotalCountDeleted,
+            ]);
         }
-        $this->logger->info('DeltaInput: ChangeSet update processed', [
-            'syncProfileId' => $syncContext->getSyncProfile()->getId()
-        ]);
     }
 
     protected function mapEntityStatusBaseFields(

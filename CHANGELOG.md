@@ -1,4 +1,9 @@
 # CHANGELOG.md
+## 6.6.11 - 2025-06-02
+### Fix
+- Optimized `IndexUpdateCommand` performance by implementing batch reading of EntityStatus entities from the DB
+- Fixed `SyncDataCommand` RAM leak by implementing batch reading of EntityStatus entities from the DB
+
 ## 6.6.10 - 2025-05-23
 ### Feature (1 change)
 - `ProductDataType` now holds an array of visibilities per sales channel
