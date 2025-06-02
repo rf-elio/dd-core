@@ -37,7 +37,7 @@ use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
 use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
@@ -74,14 +74,14 @@ class FilterService implements FilterInterface
      * @param EntityRepository $filterRestrictionsRepository
      * @param EntityRepository $filterRepository
      * @param EntityRepository $categoryRepository
-     * @param ElioDataDiscoveryConfigService $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly EntityRepository $filterRestrictionsRepository,
         private readonly EntityRepository $filterRepository,
         private readonly EntityRepository $categoryRepository,
-        private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly LoggerInterface $logger
     ) {}
 

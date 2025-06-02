@@ -5,7 +5,7 @@ namespace Elio\ElioDataDiscovery\Api\Recommendations\ResponseTransformer;
 use Elio\ElioDataDiscovery\Api\Recommendations\Response\RecommendationResponse;
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
+use Elio\ElioDataDiscovery\Api\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;

@@ -35,7 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
@@ -88,7 +88,7 @@ class ProductCollector implements DataCollectorInterface
         private readonly SalesChannelRepository $productRepository,
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
         private readonly SystemConfigService $systemConfigService,
         private readonly Connection $connection,

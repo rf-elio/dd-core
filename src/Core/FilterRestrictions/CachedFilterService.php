@@ -33,11 +33,12 @@
 namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 
 use Elio\ElioDataDiscovery\Api\Request\ApiRequest;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Util\Hasher;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -56,12 +57,12 @@ class CachedFilterService implements FilterInterface
     /**
      * @param FilterInterface $decorated
      * @param TagAwareAdapterInterface $cache
-     * @param ElioDataDiscoveryConfigService $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
     public function __construct(
         private readonly FilterInterface $decorated,
         private readonly TagAwareAdapterInterface $cache,
-        private readonly ElioDataDiscoveryConfigService $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     /**
@@ -92,7 +93,7 @@ class CachedFilterService implements FilterInterface
         $config = $this->configService->getByContext($context);
         $cacheTime = $config->getRestrictionsCacheTime();
 
-        $item = $this->cache->getItem($this->generateCacheKey($context, $type));
+        $item = $this->cache->getItem($this->generateKey($context, $type));
         try {
             if ($item->isHit() && $item->get()) {
                 return CacheCompressor::uncompress($item);
@@ -116,11 +117,11 @@ class CachedFilterService implements FilterInterface
      * @param string $type
      * @return string
      */
-    public function generateCacheKey(
+    public function generateKey(
         SalesChannelContext $salesChannelContext,
         string $type,
     ): string {
-        return hash('xxh128', 'elio_data_discovery.cached_filter_service.filters.' . $type . $salesChannelContext->getSalesChannelId() . $salesChannelContext->getLanguageId());
+        return 'elio_data_discovery.cached_filter_service.filters.' . $type  . '-' . Hasher::hash([$salesChannelContext->getSalesChannelId() . $salesChannelContext->getLanguageId()]);
     }
 
     /**

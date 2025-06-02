@@ -38,9 +38,6 @@ class ConfigurationController extends AbstractController
         $responseCollection = [];
         /** @var SalesChannelEntity $salesChannel */
         foreach ($salesChannels as $salesChannel) {
-            if (!$salesChannel) {
-                throw new EntityNotFoundException(SalesChannelEntity::class, 'first');
-            }
             $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId());
 
             $configurationRequest = new ConfigurationRequest('');

@@ -10,8 +10,8 @@ export default class ElioListingExtensionPlugin extends window.PluginBaseClass {
         filterPanelActiveSelector: '.filter-panel-active-container',
         filterPanelItemDropdownSelector: '.filter-panel-item-dropdown',
         active: window.elioDataDiscovery.global.active === "1" && (
-            (window.elioDataDiscovery.global.useSearch === "1" && document.body.classList.contains('is-act-search')) ||
-            (window.elioDataDiscovery.global.useListing === "1" && document.body.classList.contains('is-ctl-navigation'))
+            (window.elioDataDiscovery.global.searchUseElioDataDiscovery === "1" && document.body.classList.contains('is-act-search')) ||
+            (window.elioDataDiscovery.global.listingUseElioDataDiscovery === "1" && document.body.classList.contains('is-ctl-navigation'))
         )
     });
 
