@@ -161,12 +161,17 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'entityStatusMaxCleanupAgeInDays', $languagePrefix) ?? 14,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'allowStreamIdSearch', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailSliderLimit', $languagePrefix) ?? 24,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) ?? [],
+            $this->checkFeatureEnabled(
+                ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix))
+            ) ? ConfigParserUtil::getConfigWithLanguagePrefix($config, 'recommendationExcludedProducts', $languagePrefix) : [],
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestContainerStyle', $languagePrefix) ?? 'search-suggest-container-column',
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix) ?? '',
+            $this->checkFeatureEnabled(
+                ElioDataDiscovery::FEATURE_PRODUCT_RECOMMENDATIONS, !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix))
+            ) ? ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix) : 'together,related,also',
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleProductType', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingExclusionExpression', $languagePrefix) ?? '',
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'resolveCategoriesFromProductStream', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useLegacyLocale', $languagePrefix) ?? false,
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);

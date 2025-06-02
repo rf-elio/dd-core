@@ -9,7 +9,7 @@ use Elio\ElioDataDiscovery\Api\Search\Request\NavigationRequestProduct;
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
 use Elio\ElioDataDiscovery\Api\Search\Response\CampaignRedirectionResponse;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Logging\ElioDataDiscoveryLogTrait;
 use Psr\Log\LoggerInterface;
@@ -23,7 +23,6 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Seo\SeoUrlRoute\ProductPageSeoUrlRoute;
-use Symfony\Component\Routing\RouterInterface;
 use Throwable;
 
 class ProductRedirectSearchApi implements SearchApiInterface
@@ -32,7 +31,7 @@ class ProductRedirectSearchApi implements SearchApiInterface
     use AvailableStockAware;
 
     /**
-     * @param ElioDataDiscoveryConfigService $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      * @param SearchApiInterface $searchApi
      * @param SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler
      * @param LoggerInterface $logger
@@ -42,7 +41,7 @@ class ProductRedirectSearchApi implements SearchApiInterface
      * @param EntityRepository $salesChannelDomainRepository
      */
     public function __construct(
-        private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly SearchApiInterface $searchApi,
         private readonly SeoUrlPlaceholderHandlerInterface $seoUrlPlaceholderHandler,
         LoggerInterface $logger,

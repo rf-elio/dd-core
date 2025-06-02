@@ -4,10 +4,13 @@ namespace Elio\ElioDataDiscovery\Core\Configuration\Api;
 
 use Elio\ElioDataDiscovery\Api\Configuration\ConfigurationAdapter;
 use Elio\ElioDataDiscovery\Api\Configuration\Request\ConfigurationRequest;
+use Elio\ElioDataDiscovery\Api\Configuration\Response\ConfigurationResponse;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,20 +31,31 @@ class ConfigurationController extends AbstractController
     #[Route(path: '/api/_action/elio-data-discovery/configuration/{type}', name: 'api.custom.elio_data_discovery.configuration.get', methods: ['GET'])]
     public function getConfiguration(string $type, Request $request, Context $context): Response
     {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('typeId', [Defaults::SALES_CHANNEL_TYPE_STOREFRONT, Defaults::SALES_CHANNEL_TYPE_API]));
+        $salesChannels = $this->salesChannelRepository->search($criteria, $context);
+
+        $responseCollection = [];
         /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search(new Criteria(), $context)->first();
-        if (!$salesChannel) {
-            throw new EntityNotFoundException(SalesChannelEntity::class, 'first');
+        foreach ($salesChannels as $salesChannel) {
+            $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId());
+
+            $configurationRequest = new ConfigurationRequest('');
+            $configurationRequest->setType($type);
+            $configurationRequest->setSearchTerm($request->query->has('searchTerm') ? $request->query->getString('searchTerm') : null);
+            $configurationRequest->setOffset($request->query->has('offset') ? $request->query->getInt('offset') : null);
+            $configurationRequest->setLimit($request->query->has('limit') ? $request->query->getInt('limit') : null);
+
+            $response = $this->configurationAdapter->getConfig($configurationRequest, $salesChannelContext);
+            $responseCollection[] = $response->getConfigurationResponseByType($type);
         }
-        $salesChannelContext = $this->salesChannelContextFactory->create('', $salesChannel->getId());
 
-        $configurationRequest = new ConfigurationRequest('');
-        $configurationRequest->setType($type);
-        $configurationRequest->setSearchTerm($request->query->has('searchTerm') ? $request->query->getString('searchTerm') : null);
-        $configurationRequest->setOffset($request->query->has('offset') ? $request->query->getInt('offset') : null);
-        $configurationRequest->setLimit($request->query->has('limit') ? $request->query->getInt('limit') : null);
+        $configurations = [];
+        /** @var ConfigurationResponse $configurationResponse */
+        foreach ($responseCollection as $configurationResponse) {
+            $configurations[$configurationResponse->getCollection()] = $configurationResponse;
+        }
 
-        $response = $this->configurationAdapter->getConfig($configurationRequest, $salesChannelContext);
-        return new JsonResponse($response->getConfigurationResponseByType($type));
+        return new JsonResponse($configurations);
     }
 }

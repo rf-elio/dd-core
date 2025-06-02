@@ -35,6 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\FilterRestrictions;
 use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncCreateException;
 use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncDeleteException;
 use Elio\ElioDataDiscovery\Core\FilterRestrictions\Exception\FilterSyncUpdateFailedException;
+use Elio\ElioDataDiscovery\Core\Util\StringUtil;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupTranslation\PropertyGroupTranslationCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -223,7 +224,7 @@ class FilterSyncService
         foreach ($filterNames as $filterName) {
             $filterNameParts = explode($isSortingType ? ':' : '.', (string)$filterName);
 
-            $label = $isSortingType ? implode(' ', $filterNameParts) : ucfirst(end($filterNameParts));
+            $label = $isSortingType ? implode(' ', $filterNameParts) : StringUtil::decodeStringFromUnescapedUnicode(ucfirst(end($filterNameParts)));
 
             $createdFilters[] = [
                 'id' => Uuid::randomHex(),

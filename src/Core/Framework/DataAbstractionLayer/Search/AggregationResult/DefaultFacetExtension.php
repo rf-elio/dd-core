@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Framework\DataAbstractionLayer\Search\AggregationResult;
 
 
+use Elio\ElioDataDiscovery\Core\Util\StringUtil;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
@@ -62,6 +63,7 @@ class DefaultFacetExtension extends Struct
      * @param string $name
      * @param string $value
      * @param int $totalHits
+     * @param bool $selected
      */
     public function __construct(
         protected string $name,
@@ -70,7 +72,7 @@ class DefaultFacetExtension extends Struct
         protected bool $selected = false
     )
     {
-        $this->key = $this->name . self::COMBINATION_CHAR . $this->value;
+        $this->key = self::sanitizeFacet($this->name) . self::COMBINATION_CHAR . self::sanitizeFacet($this->value);
     }
 
     /**
@@ -123,5 +125,16 @@ class DefaultFacetExtension extends Struct
     public function isSelected(): bool
     {
         return $this->selected;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private static function sanitizeFacet(string $name): string
+    {
+        $parts = explode('.', $name);
+        $parts[count($parts) - 1] = StringUtil::encodeStringToUnicodeEscaped(end($parts));
+        return str_replace('\\', '', implode('.', $parts));
     }
 }

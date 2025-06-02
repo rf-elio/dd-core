@@ -17,7 +17,7 @@
                     "search": "Search",
                     "navigation": "Navigation",
                     "customfilters": "Custom Filters",
-                    "category": "Filter Configuration"
+                    "category": "Category"
                 },
                 "filters": {
                     "messageSaveError": "Error while saving",
@@ -71,8 +71,7 @@
             "sorting": {
                 "title": "Sorting Configuration",
                 "tabs": {
-                    "customfilters": "Sort options",
-                    "category": "Sorting Configuration"
+                    "customfilters": "Custom Sort Options"
                 },
                 "filters": {
                     "detail": {
@@ -99,8 +98,7 @@
                 "tree": "This table can not be edited. It displays computed sorting positions of all products in its child categories."
             },
             "tabs": {
-                "category": "Position Sorting",
-                "global": "Products"
+                "products": "Products"
             }
         }
     },

@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use Elio\ElioDataDiscovery\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Util\StringUtil;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyCollection;
@@ -325,27 +326,6 @@ class ProductUtil
      * @param array<PropertyGroupOptionEntity> $properties
      * @return array
      */
-    public static function getProductAttribute(array $properties): array
-    {
-        $attributes = [];
-        foreach ($properties as $property) {
-            $group = $property->getGroup();
-            if ($group !== null) {
-                $name = $group->getTranslation('name') ?? $group->getName();
-                $value = $property->getTranslation('name') ?? $property->getName();
-                $attributes[$name] = ValueUtil::cleanValue($value);
-            }
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * Appends the product attributes
-     *
-     * @param array<PropertyGroupOptionEntity> $properties
-     * @return array
-     */
     public static function getProductProperty(array $properties): array
     {
         $attributes = [];
@@ -353,11 +333,15 @@ class ProductUtil
             $group = $property->getGroup();
             if ($group !== null) {
                 $name = $group->getTranslation('name') ?? $group->getName();
+
+                //Encode property name
+                $encodedName = StringUtil::encodeStringToUnicodeEscaped($name);
+
                 $value = $property->getTranslation('name') ?? $property->getName();
-                if (!isset($attributes[$name])) {
-                    $attributes[$name] = [];
+                if (!isset($attributes[$encodedName])) {
+                    $attributes[$encodedName] = [];
                 }
-                $attributes[$name][] = ValueUtil::cleanValue($value);
+                $attributes[$encodedName][] = ValueUtil::cleanValue($value);
             }
         }
 

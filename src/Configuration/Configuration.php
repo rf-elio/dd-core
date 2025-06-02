@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Configuration;
 
 
+use JetBrains\PhpStorm\Deprecated;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
@@ -93,6 +94,7 @@ class Configuration extends Struct
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
         private readonly bool $resolveCategoriesFromProductStream,
+        #[Deprecated(reason: 'Use full locale code instead', since: '6.6.11')] private readonly bool $useLegacyLocale
     ) {}
 
     /**
@@ -433,5 +435,10 @@ class Configuration extends Struct
     public function isResolveCategoriesFromProductStream(): bool
     {
         return $this->resolveCategoriesFromProductStream;
+    }
+
+    public function isUseLegacyLocale(): bool
+    {
+        return $this->useLegacyLocale;
     }
 }

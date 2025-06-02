@@ -1,4 +1,50 @@
 # CHANGELOG.md
+## 6.6.11 - 2025-06-02
+### Feature (8 changes)
+- Filtering in the suggest is now allowed:
+  - `SuggestRequest` can now hold filters
+  - Added `SuggestRequestBuilder` and `SuggestRequestBuildEvent`
+- Added `AbstractSuggestProductTransformer` to add products to suggest items
+- Added `ProductCriteriaBaseEvent` that holds criteria for collecting products and product numbers
+- Added `SuggestProductCollectCriteriaEvent` in `AbstractSuggestProductTransformer`
+- Added `ProductListingCriteriaEvent` to `AbstractRecommendationProductTransformer` and injected `ProductListingLoader`
+- `useLegacyLocale` configuration option to switch between old (`de`) and new (`de-DE`) locale
+- Added `StringUtil` to handle encoding and decoding of property names
+
+### Fix (10 changes)
+- Fixed cache key generation in `CachedFilterService`
+- Special characters are now removed from facet names and values in template element attributes
+- Moved `encodePropertyName` method to `StringUtil`
+- `ConfigurationResponse` now has a `collection` attribute
+- `ConfigurationController` now excludes product comparison sales channels and iterates over sales channels to send requests
+- Renamed Filter & Sorting configuration card labels when in category view and fixed width of sales channel select
+- Added `active`, `useSearch` and `useListing` global twig variables, which are checked in cross selling and listing extension JS plugins when initializing
+- Fixed auto-complete suggest feature blocking navigation via tab key
+- `ProductListingCriteriaEvent` now extends from `ProductCriteriaBaseEvent` and renamed `getMainNumbers` method to `getProductNumbers`
+- Fixed configuration service injection to always use the interface
+
+## 6.6.10 - 2025-05-23
+### Feature (1 change)
+- `ProductDataType` now holds an array of visibilities per sales channel
+
+## 6.6.9 - 2025-05-22
+### Feature (4 changes)
+- `AbstractProductTransformer`: Added new method that dispatches a `ProductExtensionsLoadedEvent`
+- Added `FeatureActive` twig function to check if a plugin feature is active
+- Added `CustomPriceItem` struct
+- Added `encodePropertyName` in `ProductUtil` method to handle properties with special characters that could cause issues
+
+### Fix (5 changes)
+- Added constants for plugin features in base plugin
+- Added checks for the `product.recommendation` feature so that certain code is only executed if it's active to prevent errors
+- Remove obsolete `getProductAttribute` method in `ProductUtil`
+- `cms-block-cross-selling`: Added check for recommendation feature, removed template include with empty array and renamed `crossSellings` variable to `crossSellingTypes`
+- Cleaned up obsolete use statements
+
+## 6.6.8 - 2025-03-31
+### Fix (1 change)
+- Update plugin logo
+
 ## 6.6.7 - 2025-03-21
 ### Feature (1 change)
 - Compatibility with Shopware 6.6.10

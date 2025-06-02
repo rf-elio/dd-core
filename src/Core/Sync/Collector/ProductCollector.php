@@ -35,7 +35,7 @@ namespace Elio\ElioDataDiscovery\Core\Sync\Collector;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Elio\ElioDataDiscovery\Configuration\Configuration;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\AvailableStockAware;
 use Elio\ElioDataDiscovery\Core\Sync\DataTypes\Aggregation\Variant;
 use Elio\ElioDataDiscovery\Core\Sync\Collector\Event\FilterProductCollectorItemPrepareEvent;
@@ -88,7 +88,7 @@ class ProductCollector implements DataCollectorInterface
         private readonly SalesChannelRepository $productRepository,
         private readonly SalesChannelRepository $categoryRepository,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly ElioDataDiscoveryConfigService $configService,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
         private readonly AbstractProductCloseoutFilterFactory $productCloseoutFilterFactory,
         private readonly SystemConfigService $systemConfigService,
         private readonly Connection $connection,
@@ -254,19 +254,21 @@ class ProductCollector implements DataCollectorInterface
                 }
 
                 $dataType = ProductDataType::createFrom($entity);
-                $visibility = $entity->getVisibilities()?->first()?->getVisibility();
-                switch ($visibility) {
-                    case ProductVisibilityDefinition::VISIBILITY_SEARCH:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_SEARCH);
-                        break;
 
-                    case ProductVisibilityDefinition::VISIBILITY_ALL:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_ALL);
-                        break;
+                foreach ($entity->getVisibilities() as $visibility) {
+                    switch ($visibility->getVisibility()) {
+                        case ProductVisibilityDefinition::VISIBILITY_SEARCH:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(), Visibilities::VISIBILITY_SEARCH);
+                            break;
 
-                    default:
-                        $dataType->setVisibility(Visibilities::VISIBILITY_NONE);
-                        break;
+                        case ProductVisibilityDefinition::VISIBILITY_ALL:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(),Visibilities::VISIBILITY_ALL);
+                            break;
+
+                        default:
+                            $dataType->addVisibilityLabel($visibility->getSalesChannelId(),Visibilities::VISIBILITY_NONE);
+                            break;
+                    }
                 }
                 $dataType->setRatingCount($entity->getTranslation('customFields')[ElioDataDiscovery::CUSTOM_FIELD_PRODUCT_RATING_COUNT] ?? 0);
                 $dataType->setVariant(new Variant());

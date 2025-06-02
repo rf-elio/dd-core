@@ -1,21 +1,22 @@
 {% sw_extends '@Storefront/storefront/block/cms-block-cross-selling.html.twig' %}
 {% block block_cross_selling_inner %}
-    {% set recommendationTypes = ["together", "also", "related"] %}
-    {% set disabledRecommendationTypes = config('ElioDataDiscovery.config.disabledRecommendationTypes')|split(',') %}
-    {% set crossSellings = [] %}
-    {% for type in recommendationTypes %}
-        {% if type not in disabledRecommendationTypes %}
-            {% set crossSellings = crossSellings|merge([type]) %}
-        {% endif %}
-    {% endfor %}
-    {% if crossSellings is not empty %}
-        <div data-e-elio-data-discovery-product-detail-cross-selling-url="{{ path('widgets.e-elio-data-discovery.product-cross-selling.detail', {productId: page.product.id}) }}">
-            <div class="product-detail-tabs product-detail-cross-selling">
-                {% sw_include '@Storefront/storefront/page/product-detail/cross-selling/tabs.html.twig' with {
-                    crossSellings: []
-                } %}
+    {% if is_feature_active('product.recommendation') %}
+        {% set recommendationTypes = ["together", "also", "related"] %}
+        {% set disabledRecommendationTypes = config('ElioDataDiscovery.config.disabledRecommendationTypes')|split(',') %}
+        {% set crossSellingTypes = [] %}
+        {% for type in recommendationTypes %}
+            {% if type not in disabledRecommendationTypes %}
+                {% set crossSellingTypes = crossSellingTypes|merge([type]) %}
+            {% endif %}
+        {% endfor %}
+        {% if crossSellingTypes %}
+            <div data-e-elio-data-discovery-product-detail-cross-selling-url="{{ path('widgets.e-elio-data-discovery.product-cross-selling.detail', {productId: page.product.id}) }}">
+                <div class="product-detail-tabs product-detail-cross-selling">
+                </div>
             </div>
-        </div>
+        {% else %}
+            {{ parent() }}
+        {% endif %}
     {% else %}
         {{ parent() }}
     {% endif %}

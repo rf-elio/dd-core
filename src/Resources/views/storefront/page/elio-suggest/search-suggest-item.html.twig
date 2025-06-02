@@ -11,6 +11,10 @@
                title="{{ item.name }}"
                class="search-suggest-product-link">
 
+                {% block layout_search_suggest_result_badge %}
+                    {# badge #}
+                {% endblock %}
+
                 <div class="row align-items-center no-gutters">
                     {# image #}
                     {% if group.hasImage %}

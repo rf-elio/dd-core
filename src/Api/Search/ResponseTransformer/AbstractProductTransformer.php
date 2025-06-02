@@ -34,8 +34,9 @@ namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
+use Elio\ElioDataDiscovery\Api\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductExtensionsLoadedSearchEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -107,5 +108,18 @@ abstract class AbstractProductTransformer implements ResponseTransformerInterfac
         $difference = $shouldCount - $isCount;
         $listing->setTotalHits($listing->getTotalHits() - $difference);
         return $listing;
+    }
+
+    /**
+     * @param ProductCollection $products
+     * @param SalesChannelContext $context
+     * @return ProductCollection
+     */
+    public function dispatchProductExtensionsLoadedEvent(ProductCollection $products, SalesChannelContext $context): ProductCollection
+    {
+        $event = new ProductExtensionsLoadedSearchEvent($products, $context);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getProducts();
     }
 }
