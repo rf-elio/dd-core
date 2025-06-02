@@ -48,7 +48,15 @@ Component.register('sw-cms-el-config-edd-cms-slider', {
                     headers: basicHeaders
                 })
                 .then((response) => {
-                    this.presetList = response.data.presets;
+                    const data = response.data;
+
+                    this.presetList = Object.entries(data).flatMap(([collectionName, collectionData]) => {
+                        // Check if presets exist and process them
+                        return (collectionData.presets || []).map(preset => ({
+                            ...preset,
+                            name: `${preset.name} (${collectionName})` // Append collection name to preset name
+                        }));
+                    });
                 })
                 .catch(() => {
                     this.presetList = [];

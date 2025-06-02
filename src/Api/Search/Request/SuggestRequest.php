@@ -46,6 +46,7 @@ class SuggestRequest extends ChannelRequest
 {
     protected string $query = '*';
     protected ?string $type = null;
+    protected array $filters = [];
 
     /**
      * @return string
@@ -79,5 +80,24 @@ class SuggestRequest extends ChannelRequest
         $this->type = $type;
     }
 
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
 
+    public function setFilters(array $filters): void
+    {
+        $this->filters = $filters;
+    }
+
+    public function addFilter(string $name, array|string $value, bool $substring = false) : void
+    {
+        if (!isset($this->filters[$name])) {
+            $this->filters[$name] = [
+                'values' => [],
+                'substring' => $substring
+            ];
+        }
+        $this->filters[$name]['values'][] = $value;
+    }
 }

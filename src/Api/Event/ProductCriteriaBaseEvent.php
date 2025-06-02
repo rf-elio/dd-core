@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event;
+namespace Elio\ElioDataDiscovery\Api\Event;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -9,17 +9,17 @@ use Shopware\Core\Framework\Event\ShopwareSalesChannelEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class ProductListingCriteriaEvent extends Event implements ShopwareSalesChannelEvent
+abstract class ProductCriteriaBaseEvent extends Event implements ShopwareSalesChannelEvent
 {
     public function __construct(
-        private readonly array               $mainNumbers,
+        private readonly array               $productNumbers,
         private Criteria                     $criteria,
         private readonly SalesChannelContext $salesChannelContext
     ) {}
 
-    public function getMainNumbers(): array
+    public function getProductNumbers(): array
     {
-        return $this->mainNumbers;
+        return $this->productNumbers;
     }
 
     public function getCriteria(): Criteria

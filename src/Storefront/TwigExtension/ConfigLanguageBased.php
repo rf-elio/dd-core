@@ -33,7 +33,7 @@
 namespace Elio\ElioDataDiscovery\Storefront\TwigExtension;
 
 use Elio\ElioDataDiscovery\Configuration\Configuration;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -58,7 +58,7 @@ class ConfigLanguageBased extends AbstractExtension
     public function __construct(
         private readonly TemplateConfigAccessor $config,
         private readonly EntityRepository $languageRepository,
-        private readonly ElioDataDiscoveryConfigService $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     public function getName(): string

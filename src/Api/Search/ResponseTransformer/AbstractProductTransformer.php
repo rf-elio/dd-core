@@ -34,7 +34,7 @@ namespace Elio\ElioDataDiscovery\Api\Search\ResponseTransformer;
 
 use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Response\ProductListingResponse;
-use Elio\ElioDataDiscovery\Api\Search\ResponseTransformer\Event\ProductListingCriteriaEvent;
+use Elio\ElioDataDiscovery\Api\Event\ProductListingCriteriaEvent;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event\ProductExtensionsLoadedSearchEvent;
 use Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\DisableVariantGroupingInListingLoaderStruct;

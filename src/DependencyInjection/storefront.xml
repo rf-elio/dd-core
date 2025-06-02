@@ -18,6 +18,7 @@
         >
             <argument type="service" id="Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService" />
             <argument type="service" id="Elio\ElioDataDiscovery\Api\Search\SuggestApi" />
+            <argument type="service" id="Elio\ElioDataDiscovery\Core\Suggest\SuggestRequestBuilder"/>
             <argument type="service" id="Shopware\Storefront\Page\Search\SearchPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Suggest\SuggestPageLoader"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Search\ProductSearchRoute"/>

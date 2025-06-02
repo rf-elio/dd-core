@@ -34,7 +34,7 @@ namespace Elio\ElioDataDiscovery\Api\Tracking;
 
 
 use Elio\ElioDataDiscovery\Api\Tracking\Request\TrackingRequest;
-use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigService;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Logging\RequestLoggingService;
 use Psr\Log\LoggerInterface;
 use Elio\ElioDataDiscovery\Swagger\ClientApiException;
@@ -54,12 +54,12 @@ class TrackingApi
      * SearchApi constructor.
      * @param LoggerInterface $logger
      * @param RequestLoggingService $requestLoggingService
-     * @param ElioDataDiscoveryConfigService $configService
+     * @param ElioDataDiscoveryConfigServiceInterface $configService
      */
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly RequestLoggingService $requestLoggingService,
-        private readonly ElioDataDiscoveryConfigService $configService
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     )
     {
     }

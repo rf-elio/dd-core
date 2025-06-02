@@ -1,13 +1,12 @@
 {% block elio_data_discovery_restrictions_category_page %}
     <div class="sw-category-detail-base">
-        <div class="elio-data-discovery-restrictions-sales-channel-picker elio-data-discovery-restrictions-sales-channel-picker--category">
-            <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
-                                     @change-sales-channel-id="onSalesChannelChanged">
-            </sw-sales-channel-switch>
-        </div>
-
-        <sw-card :title="$tc('elio-data-discovery.restrictions.filter.tabs.global')"
+        <sw-card :title="$tc('elio-data-discovery.restrictions.filter.tabs.category')"
                  :isLoading="isLoading">
+            <div class="elio-data-discovery-restrictions-sales-channel-picker elio-data-discovery-restrictions-sales-channel-picker--category">
+                <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                         @change-sales-channel-id="onSalesChannelChanged">
+                </sw-sales-channel-switch>
+            </div>
             <elio-data-discovery-restriction-ruler :isCategory="true"
                                                    :categoryId="category.id"
                                                    :layer="type"

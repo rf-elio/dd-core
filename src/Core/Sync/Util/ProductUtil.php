@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\Util;
 
 use Elio\ElioDataDiscovery\Core\Defaults;
+use Elio\ElioDataDiscovery\Core\Util\StringUtil;
 use Shopware\Core\Content\Media\Aggregate\MediaThumbnail\MediaThumbnailCollection;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyCollection;
@@ -334,7 +335,7 @@ class ProductUtil
                 $name = $group->getTranslation('name') ?? $group->getName();
 
                 //Encode property name
-                $encodedName = self::encodePropertyName($name);
+                $encodedName = StringUtil::encodeStringToUnicodeEscaped($name);
 
                 $value = $property->getTranslation('name') ?? $property->getName();
                 if (!isset($attributes[$encodedName])) {
@@ -345,21 +346,5 @@ class ProductUtil
         }
 
         return $attributes;
-    }
-
-    public static function encodePropertyName(string $name) : string
-    {
-        $specialCharacters = ['(', ')', '[', ']', '<', '>', '`', '.', ',', ':', '=', '!', '&', '|', '$'];
-        $encodedName = '';
-
-        foreach (mb_str_split($name) as $char) {
-            if (in_array($char, $specialCharacters, true)) {
-                $encodedName .= sprintf("\\u%04x", mb_ord($char));
-            } else {
-                $encodedName .= $char;
-            }
-        }
-
-        return $encodedName;
     }
 }

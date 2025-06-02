@@ -9,10 +9,15 @@ export default class ElioProductDetailCrossSellingPlugin extends window.PluginBa
     static options = {
         urlAttribute: 'data-e-elio-data-discovery-product-detail-cross-selling-url',
         url: null,
-        productDetailCrossSellingSelector: '.product-detail-cross-selling'
+        productDetailCrossSellingSelector: '.product-detail-cross-selling',
+        active: window.elioDataDiscovery.global.active === "1"
     }
 
     init () {
+        if (!this.options.active) {
+            return;
+        }
+
         this.options.url = this.el.getAttribute(this.options.urlAttribute)
         this._client = new HttpClient();
 
