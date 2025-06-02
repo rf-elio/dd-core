@@ -19,4 +19,6 @@ abstract class ProductExtensionsLoadedEvent extends Event
     {
         return $this->context;
     }
+
+    abstract public function getProducts(): iterable;
 }
