@@ -1,4 +1,7 @@
 # CHANGELOG.md
+## 6.6.12 - 2025-06-03
+- Cache key generation in `CachedFilterService` passes `SalesChannelId` and `LangugeId` as separate array elements
+
 ## 6.6.11 - 2025-06-02
 ### Feature (8 changes)
 - Filtering in the suggest is now allowed:

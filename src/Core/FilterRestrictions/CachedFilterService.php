@@ -121,7 +121,7 @@ class CachedFilterService implements FilterInterface
         SalesChannelContext $salesChannelContext,
         string $type,
     ): string {
-        return 'elio_data_discovery.cached_filter_service.filters.' . $type  . '-' . Hasher::hash([$salesChannelContext->getSalesChannelId() . $salesChannelContext->getLanguageId()]);
+        return 'elio_data_discovery.cached_filter_service.filters.' . $type  . '-' . Hasher::hash([$salesChannelContext->getSalesChannelId(), $salesChannelContext->getLanguageId()]);
     }
 
     /**
