@@ -49,18 +49,16 @@ class AsyncIndexUpdateMessage implements AsyncMessageInterface
 {
     public function __construct(
         protected readonly string $indexerIdentifier,
-        protected readonly string $salesChannelContextSerialized,
-        protected readonly string $entityStatusCollectionSerialized
+        protected readonly string $salesChannelContextSerialized
     )
     {
     }
 
-    public static function create(string $indexerIdentifier, SalesChannelContext $context, EntityStatusCollection $entityStatusCollection): self
+    public static function create(string $indexerIdentifier, SalesChannelContext $context): self
     {
         return new self(
             $indexerIdentifier,
             base64_encode(serialize($context)),
-            base64_encode(serialize($entityStatusCollection))
         );
     }
 
@@ -68,12 +66,6 @@ class AsyncIndexUpdateMessage implements AsyncMessageInterface
     public function getSalesChannelContext(): SalesChannelContext
     {
         return unserialize(base64_decode($this->salesChannelContextSerialized));
-    }
-
-    #[Ignore]
-    public function getEntityStatusCollection(): EntityStatusCollection
-    {
-        return unserialize(base64_decode($this->entityStatusCollectionSerialized));
     }
 
     public function getIndexerIdentifier(): string
@@ -84,10 +76,5 @@ class AsyncIndexUpdateMessage implements AsyncMessageInterface
     public function getSalesChannelContextSerialized(): string
     {
         return $this->salesChannelContextSerialized;
-    }
-
-    public function getEntityStatusCollectionSerialized(): string
-    {
-        return $this->entityStatusCollectionSerialized;
     }
 }

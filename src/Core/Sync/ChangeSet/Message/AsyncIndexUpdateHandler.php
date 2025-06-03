@@ -50,7 +50,6 @@ class AsyncIndexUpdateHandler
     {
         $this->changeSetService->index(
             $message->getIndexerIdentifier(),
-            $message->getEntityStatusCollection(),
             $message->getSalesChannelContext()
         );
     }

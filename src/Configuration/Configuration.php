@@ -62,6 +62,7 @@ class Configuration extends Struct
         private readonly bool $listingUseElioDataDiscovery,
         private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
+        private readonly int $changeSetIndexerBatchSize,
         private readonly int $suggestThumbnailSize,
         private readonly bool $botProtectionActive,
         private readonly bool $botProtectionUseBadBotList,
@@ -159,6 +160,14 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChangeSetIndexerBatchSize(): int
+    {
+        return $this->changeSetIndexerBatchSize;
     }
 
     /**

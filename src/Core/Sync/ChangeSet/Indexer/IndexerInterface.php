@@ -32,7 +32,7 @@
 
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
-use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
+use Generator;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 interface IndexerInterface
@@ -47,9 +47,8 @@ interface IndexerInterface
     /**
      * Indexing data
      *
-     * @param EntityStatusCollection $currentEntityStatusCollection
      * @param SalesChannelContext $context
-     * @return EntityStatusCollection
+     * @return Generator
      */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, SalesChannelContext $context): EntityStatusCollection;
+    public function index(SalesChannelContext $context): Generator;
 }

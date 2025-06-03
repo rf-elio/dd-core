@@ -510,6 +510,15 @@
             <label lang="de-DE">Alte locale benutzen (2 Buchstaben, z.B. "de")</label>
             <defaultValue>false</defaultValue>
         </input-field>
+
+        <input-field type="int">
+            <name>changeSetIndexerBatchSize</name>
+            <label>Indexer: Batch Size</label>
+            <label lang="de-DE">Indexer: Stapelgröße</label>
+            <defaultValue>500</defaultValue>
+            <helpText>Batch size for indexing EntityStatus entities</helpText>
+            <helpText lang="de-DE">Stapelgröße für die Indizierung von EntityStatus-Entitäten</helpText>
+        </input-field>
     </card>
 
     <card>
