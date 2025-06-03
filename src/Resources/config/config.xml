@@ -504,6 +504,7 @@
         </input-field>
 
         <input-field type="bool">
+            <!-- todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI -->
             <name>useLegacyLocale</name>
             <label>Use legacy locale (2 characters, i.e. "de")</label>
             <label lang="de-DE">Alte locale benutzen (2 Buchstaben, z.B. "de")</label>
