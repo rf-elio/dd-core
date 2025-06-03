@@ -135,6 +135,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             !empty(ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingUseElioDataDiscovery', $languagePrefix)),
             $this->checkFeatureEnabled(ElioDataDiscovery::FEATURE_ADVISOR,ConfigParserUtil::getConfigWithLanguagePrefix($config, 'productDetailPageCampaignsActive', $languagePrefix) ?? false),
             $correctedAdditionalRequestParameters,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'changeSetIndexerBatchSize', $languagePrefix) ?? 500,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestThumbnailSize', $languagePrefix) ?? 200,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionActive', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'botProtectionUseBadBotList', $languagePrefix) ?? false,
@@ -171,7 +172,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleProductType', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingExclusionExpression', $languagePrefix) ?? '',
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'resolveCategoriesFromProductStream', $languagePrefix) ?? false,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useLegacyLocale', $languagePrefix) ?? false,
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useLegacyLocale', $languagePrefix) ?? false, // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);

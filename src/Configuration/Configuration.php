@@ -62,6 +62,7 @@ class Configuration extends Struct
         private readonly bool $listingUseElioDataDiscovery,
         private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
+        private readonly int $changeSetIndexerBatchSize,
         private readonly int $suggestThumbnailSize,
         private readonly bool $botProtectionActive,
         private readonly bool $botProtectionUseBadBotList,
@@ -94,7 +95,7 @@ class Configuration extends Struct
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
         private readonly bool $resolveCategoriesFromProductStream,
-        #[Deprecated(reason: 'Use full locale code instead', since: '6.6.11')] private readonly bool $useLegacyLocale
+        #[Deprecated(reason: 'Use full locale code instead', since: '6.6.11')] private readonly bool $useLegacyLocale // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
     ) {}
 
     /**
@@ -159,6 +160,14 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChangeSetIndexerBatchSize(): int
+    {
+        return $this->changeSetIndexerBatchSize;
     }
 
     /**
@@ -437,6 +446,7 @@ class Configuration extends Struct
         return $this->resolveCategoriesFromProductStream;
     }
 
+    // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
     public function isUseLegacyLocale(): bool
     {
         return $this->useLegacyLocale;

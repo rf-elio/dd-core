@@ -38,6 +38,7 @@ use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Message\AsyncIndexUpdateMessage;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Subscriber\IndexUpdateSubscriber;
 use Elio\ElioDataDiscovery\Core\Sync\SyncProfileEntity;
 use Elio\ElioDataDiscovery\Core\Sync\SyncService;
+use Generator;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -76,13 +77,16 @@ class ChangeSetService
      * @param SyncProfileEntity $syncProfile
      * @param Context $context
      * @param bool $fullSync
-     * @return ChangeSet
+     * @return Generator
      */
-    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context, bool $fullSync): ChangeSet
+    public function getChangeSet(SyncProfileEntity $syncProfile, Context $context, bool $fullSync): Generator
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('dataType', $syncProfile->getDataType()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $syncProfile->getSalesChannel()?->getId()));
+        $criteria->setLimit(5000);
+        $criteria->setOffset(0);
+
         if (!$fullSync && $syncProfile->getLastGenerationStartedAt()) {
             $criteria->addFilter(new OrFilter([
                 new RangeFilter('createdAt', [
@@ -117,9 +121,12 @@ class ChangeSetService
                     $changeSet->addUpdated($entityStatus);
                 }
             }
-        }
 
-        return $changeSet;
+            yield $changeSet;
+
+            unset($changeSet);
+            $changeSet = new ChangeSet();
+        }
     }
 
     /**
@@ -141,11 +148,6 @@ class ChangeSetService
                 'Changeset: Indexing sales channel %s',
                 $salesChannelContext->getSalesChannelId())
             );
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelContext->getSalesChannelId()));
-            $entitiesStatus = $this->entityStatusRepository->search($criteria, $context);
-            /** @var EntityStatusCollection $currentEntityStatusCollection */
-            $currentEntityStatusCollection = $entitiesStatus->getEntities();
 
             /** @var IndexerInterface $indexer */
             foreach ($this->indexers as $indexer) {
@@ -156,14 +158,12 @@ class ChangeSetService
                 if (!$isAsync) {
                     $this->index(
                         $indexer->getIdentifier(),
-                        $currentEntityStatusCollection,
                         $salesChannelContext
                     );
                 } else {
                     $message = AsyncIndexUpdateMessage::create(
                         $indexer->getIdentifier(),
-                        $salesChannelContext,
-                        $currentEntityStatusCollection
+                        $salesChannelContext
                     );
                     $this->messageBus->dispatch($message);
                 }
@@ -175,7 +175,6 @@ class ChangeSetService
 
     public function index(
         string $indexerIdentifier,
-        EntityStatusCollection $entityStatusCollection,
         SalesChannelContext $context
     ): void
     {
@@ -188,11 +187,18 @@ class ChangeSetService
             $this->logger->info('Changeset: Indexer start', [
                 'indexer' => $indexerIdentifier
             ]);
-            $entityStatuses = $indexer->index($entityStatusCollection, $context);
-            $this->persistEntityStatusCollection($entityStatuses, $context->getContext());
+            $totalChanges = 0;
+            foreach ($indexer->index($context) as $entityStatuses) {
+                $this->persistEntityStatusCollection($entityStatuses, $context->getContext());
+                $totalChanges += $entityStatuses->count();
+                $this->logger->info('Changeset: Indexer batch processed', [
+                    'indexer' => $indexerIdentifier,
+                    'changes' => $entityStatuses->count()
+                ]);
+            }
             $this->logger->info('Changeset: Indexer done', [
                 'indexer' => $indexerIdentifier,
-                'changes' => $entityStatuses->count()
+                'totalChanges' => $totalChanges
             ]);
         }
     }

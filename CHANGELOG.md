@@ -1,4 +1,9 @@
 # CHANGELOG.md
+## 6.6.13 - 2025-06-04
+### Fix (2 changes)
+- Optimized `IndexUpdateCommand` performance by implementing batch reading of EntityStatus entities from the DB
+- Fixed `SyncDataCommand` RAM leak by implementing batch reading of EntityStatus entities from the DB
+
 ## 6.6.12 - 2025-06-03
 - Cache key generation in `CachedFilterService` passes `SalesChannelId` and `LangugeId` as separate array elements
 
