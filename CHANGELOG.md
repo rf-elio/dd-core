@@ -1,8 +1,11 @@
 # CHANGELOG.md
-## 6.6.13 - 2025-06-04
-### Fix (2 changes)
+## 6.6.13 - 2025-06-11
+### Fix (5 changes)
 - Optimized `IndexUpdateCommand` performance by implementing batch reading of EntityStatus entities from the DB
 - Fixed `SyncDataCommand` RAM leak by implementing batch reading of EntityStatus entities from the DB
+- Made injected services of `AbstractSuggestProductTransformer` protected
+- Added `CustomPriceItemCollection`
+- Renamed `$filter` attribute in `SearchRequest` to `$filters` and added `getFilter` method
 
 ## 6.6.12 - 2025-06-03
 - Cache key generation in `CachedFilterService` passes `SalesChannelId` and `LangugeId` as separate array elements

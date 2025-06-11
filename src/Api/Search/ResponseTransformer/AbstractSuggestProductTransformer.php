@@ -8,6 +8,7 @@ use Elio\ElioDataDiscovery\Api\Response\ResponseCollection;
 use Elio\ElioDataDiscovery\Api\Search\Components\SuggestTypes;
 use Elio\ElioDataDiscovery\Api\Search\Response\SuggestionResponse;
 use Elio\ElioDataDiscovery\Api\Transform\ResponseTransformerInterface;
+use Elio\ElioDataDiscovery\Configuration\Configuration;
 use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Suggest\SuggestGroup;
 use Elio\ElioDataDiscovery\Core\Suggest\SuggestItem;
@@ -22,9 +23,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 abstract class AbstractSuggestProductTransformer implements ResponseTransformerInterface
 {
     public function __construct(
-        private readonly SalesChannelRepository $productRepository,
-        private readonly ElioDataDiscoveryConfigServiceInterface $configService,
-        private readonly EventDispatcherInterface $eventDispatcher
+        protected readonly SalesChannelRepository $productRepository,
+        protected readonly ElioDataDiscoveryConfigServiceInterface $configService,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function transform(ModelInterface $model, ResponseCollection $responseCollection, SalesChannelContext $context, ApiRequest $request): void
@@ -42,11 +43,11 @@ abstract class AbstractSuggestProductTransformer implements ResponseTransformerI
         }
 
         $productGroup = $suggestionResponse->getGroup($productGroupKey);
-        $products = $this->collect($productGroup, $context);
-        $this->enrich($productGroup, $products);
+        $products = $this->collect($productGroup, $config, $context);
+        $this->enrich($productGroup, $products, $config, $context);
     }
 
-    protected function collect(SuggestGroup $group, SalesChannelContext $context): array
+    protected function collect(SuggestGroup $group, Configuration $config, SalesChannelContext $context): array
     {
         $productNumbers = [];
         foreach ($group->getItems() as $item) {
@@ -74,7 +75,7 @@ abstract class AbstractSuggestProductTransformer implements ResponseTransformerI
         return $products;
     }
 
-    protected function enrich(SuggestGroup $group, array $products): void
+    protected function enrich(SuggestGroup $group, array $products, Configuration $config, SalesChannelContext $context): void
     {
         foreach ($group->getItems() as $item) {
             $productNumber = $this->getProductNumber($item);
