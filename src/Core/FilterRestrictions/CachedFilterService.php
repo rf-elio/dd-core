@@ -38,7 +38,6 @@ use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\Util\Hasher;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
@@ -121,7 +120,7 @@ class CachedFilterService implements FilterInterface
         SalesChannelContext $salesChannelContext,
         string $type,
     ): string {
-        return 'elio_data_discovery.cached_filter_service.filters.' . $type  . '-' . Hasher::hash([$salesChannelContext->getSalesChannelId(), $salesChannelContext->getLanguageId()]);
+        return 'elio_data_discovery.cached_filter_service.filters.' . $type  . '-' . md5(json_encode([$salesChannelContext->getSalesChannelId(), $salesChannelContext->getLanguageId()]));
     }
 
     /**
