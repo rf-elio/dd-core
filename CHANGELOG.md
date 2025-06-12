@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.14 - 2025-06-12
+### Fix (1 change)
+- Filter Cache Key is generated via md5 instead of Shopware Hasher to ensure compatibility with earlier SW 6.6 versions
+
 ## 6.6.13 - 2025-06-11
 ### Fix (5 changes)
 - Optimized `IndexUpdateCommand` performance by implementing batch reading of EntityStatus entities from the DB
@@ -8,6 +12,7 @@
 - Renamed `$filter` attribute in `SearchRequest` to `$filters` and added `getFilter` method
 
 ## 6.6.12 - 2025-06-03
+### Fix (1 change)
 - Cache key generation in `CachedFilterService` passes `SalesChannelId` and `LangugeId` as separate array elements
 
 ## 6.6.11 - 2025-06-02
