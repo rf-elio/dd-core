@@ -1,4 +1,8 @@
 # CHANGELOG.md
+## 6.6.15 - 2025-06-17
+### Fix (1 change)
+- Added new block in filter panel template to allow overrides
+
 ## 6.6.14 - 2025-06-12
 ### Fix (1 change)
 - Filter Cache Key is generated via md5 instead of Shopware Hasher to ensure compatibility with earlier SW 6.6 versions
