@@ -1,4 +1,9 @@
 # CHANGELOG.md
+
+## 6.6.17 - 2025-06-17
+### Fix
+- `SeoRouteOutput` changed absolute Urls to relative Urls
+
 ## 6.6.15 - 2025-06-17
 ### Fix (1 change)
 - Added new block in filter panel template to allow overrides

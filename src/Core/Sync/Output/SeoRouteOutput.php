@@ -139,7 +139,12 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, InitAwareI
                 $path = $seoUrl['path'];
 
                 foreach ($seoRouteGroups[$id] as $seoRoute) {
-                    $seoRoute->setUrl($this->baseUrl[$context->getLanguageId()] . '/' . $path);
+                    $absoluteUrl = $this->baseUrl[$context->getLanguageId()] . '/' . $path;
+                    $relativeUrl = parse_url($absoluteUrl, PHP_URL_PATH);
+
+                    if ($relativeUrl) {
+                        $seoRoute->setUrl($relativeUrl);
+                    }
                 }
             }
         }
@@ -160,7 +165,7 @@ class SeoRouteOutput implements OutputInterface, WriteAwareInterface, InitAwareI
                 foreach ($seoRouteGroup as $seoRoute) {
                     if(!$seoRoute->isResolved()) {
                         $seoRoute->setUrl($this->router->generate(
-                            $seoRoute->getRouteName(), $seoRoute->getParameters(), UrlGeneratorInterface::ABSOLUTE_URL
+                            $seoRoute->getRouteName(), $seoRoute->getParameters(), UrlGeneratorInterface::ABSOLUTE_PATH
                         ));
                     }
                 }
