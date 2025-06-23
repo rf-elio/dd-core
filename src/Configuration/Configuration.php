@@ -94,8 +94,7 @@ class Configuration extends Struct
         private readonly string $disabledRecommendationTypes,
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
-        private readonly bool $resolveCategoriesFromProductStream,
-        #[Deprecated(reason: 'Use full locale code instead', since: '6.6.11')] private readonly bool $useLegacyLocale // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
+        private readonly bool $resolveCategoriesFromProductStream
     ) {}
 
     /**
@@ -444,11 +443,5 @@ class Configuration extends Struct
     public function isResolveCategoriesFromProductStream(): bool
     {
         return $this->resolveCategoriesFromProductStream;
-    }
-
-    // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
-    public function isUseLegacyLocale(): bool
-    {
-        return $this->useLegacyLocale;
     }
 }

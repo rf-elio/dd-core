@@ -137,4 +137,20 @@ class ValueUtil
 
         return number_format($price, $decimals, '.', '');
     }
+
+    /**
+     * Converts a value to a number depending on the type that is passed.
+     *
+     * @param string $value
+     * @param string $type
+     * @return string|int|float
+     */
+    public static function convertValueToType(string $value, string $type): string|int|float
+    {
+        if (str_contains($type, 'string')) {
+            return $value;
+        }
+
+        return str_contains($value, '.') ? (float)$value : (int)$value;
+    }
 }

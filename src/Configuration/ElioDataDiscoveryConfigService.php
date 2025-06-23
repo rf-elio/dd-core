@@ -171,8 +171,7 @@ class ElioDataDiscoveryConfigService implements ElioDataDiscoveryConfigServiceIn
             ) ? ConfigParserUtil::getConfigWithLanguagePrefix($config, 'disabledRecommendationTypes', $languagePrefix) : 'together,related,also',
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'suggestToggleProductType', $languagePrefix) ?? false,
             ConfigParserUtil::getConfigWithLanguagePrefix($config, 'listingExclusionExpression', $languagePrefix) ?? '',
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'resolveCategoriesFromProductStream', $languagePrefix) ?? false,
-            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'useLegacyLocale', $languagePrefix) ?? false, // @todo: the legacy locale settings is not used directly by the core plugin. It is only used by battery included. Move this setting to BI
+            ConfigParserUtil::getConfigWithLanguagePrefix($config, 'resolveCategoriesFromProductStream', $languagePrefix) ?? false
         );
 
         $event = new ConfigurationLoadedEvent($configuration, $salesChannelId, $languageId);

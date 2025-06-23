@@ -33,6 +33,7 @@
 namespace Elio\ElioDataDiscovery\Core\Content\Product\SalesChannel\Event;
 
 use Elio\ElioDataDiscovery\Api\Search\Request\ProductSearchRequest;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -47,7 +48,8 @@ class ProductSearchRequestBuildedEvent extends Event
 {
     public function __construct(
         private readonly ProductSearchRequest $productSearchRequest,
-        private readonly array $payload
+        private readonly array $payload,
+        private readonly SalesChannelContext $salesChannelContext,
     ) {}
 
     public function getSearchRequest(): ProductSearchRequest
@@ -58,5 +60,10 @@ class ProductSearchRequestBuildedEvent extends Event
     public function getPayload(): array
     {
         return $this->payload;
+    }
+
+    public function getSalesChannelContext(): SalesChannelContext
+    {
+        return $this->salesChannelContext;
     }
 }

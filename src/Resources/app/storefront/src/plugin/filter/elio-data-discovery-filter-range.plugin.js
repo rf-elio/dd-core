@@ -6,7 +6,30 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
     static options = deepmerge(FilterRangePlugin.options, {
         rangeUnit: '',
         elioDataDiscoveryFilterName: 'elio-data-discovery-range',
+        snippets: {
+            filterRangeOutOfRangeLowerBoundErrorMessage: '',
+            filterRangeOutOfRangeUpperBoundErrorMessage: '',
+        },
     });
+
+    _onChangeInput() {
+        clearTimeout(this._timeout);
+
+        this._timeout = setTimeout(() => {
+            if (this._isInputInvalid()) {
+                this._setError(this._getErrorMessageTemplate('filterRangeErrorMessage') );
+            } else if (this._isInputLowerBoundInvalid()) {
+                this._setError(this._getErrorMessageTemplate('filterRangeLowerBoundErrorMessage'));
+            } else if (this._isOutOfRangeLower()) {
+                this._setError(this._getErrorMessageTemplate('filterRangeOutOfRangeLowerBoundErrorMessage'));
+            } else if (this._isOutOfRangeUpper()) {
+                this._setError(this._getErrorMessageTemplate('filterRangeOutOfRangeUpperBoundErrorMessage'));
+            } else {
+                this._removeError();
+                this.listing.changeListing();
+            }
+        }, this.options.inputTimeout);
+    }
 
     /**
      * @return {Object}
@@ -30,16 +53,12 @@ export default class ElioDataDiscoveryFilterRangePlugin extends FilterRangePlugi
         return values;
     }
 
-    /**
-     * @return {boolean}
-     * @private
-     */
-    _isInputInvalid() {
-        let inputMinValue = parseFloat(this._inputMin.value);
-        let inputMaxValue = parseFloat(this._inputMax.value);
-        return inputMinValue > inputMaxValue
-            || inputMinValue < this.options.inputMinValue
-            || inputMaxValue > this.options.inputMaxValue;
+    _isOutOfRangeLower() {
+        return parseFloat(this._inputMax.value) < parseFloat(this._inputMax.min);
+    }
+
+    _isOutOfRangeUpper() {
+        return parseFloat(this._inputMin.value) > parseFloat(this._inputMin.max);
     }
 
     getLabels() {

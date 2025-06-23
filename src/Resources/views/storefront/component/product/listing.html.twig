@@ -9,7 +9,10 @@
 
     {% set params = params|merge({slots: slots|join('|')}) %}
 {% endif %}
-{% set disableEmptyFilter = false %}
+
+{% if searchResult.aggregations.get('elio-data-discovery-default') %}
+    {% set disableEmptyFilter = false %}
+{% endif %}
 
 {% block product_listing %}
     {% set elioDataDiscoveryQuery = page.searchTerm %}

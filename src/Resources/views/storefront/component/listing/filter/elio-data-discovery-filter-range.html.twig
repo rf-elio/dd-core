@@ -1,9 +1,33 @@
 {% sw_extends '@Storefront/storefront/component/listing/filter/filter-range.html.twig' %}
 {# this file is mostry a copy of shopware's range filder, modifications diverging from original are marked with start
 and end, everything else is a 1 to 1 copy #}
+{% if filterRangeOutOfRangeLowerBoundErrorMessage is not defined %}
+    {% set filterRangeOutOfRangeLowerBoundErrorMessage = 'listing.filterRangeOutOfRangeLowerBoundErrorMessage'|trans({'%minInputValue%': minInputValue})|sw_sanitize %}
+{% endif %}
+
+{% if filterRangeOutOfRangeUpperBoundErrorMessage is not defined %}
+    {% set filterRangeOutOfRangeUpperBoundErrorMessage = 'listing.filterRangeOutOfRangeUpperBoundErrorMessage'|trans({'%maxInputValue%': maxInputValue})|sw_sanitize %}
+{% endif %}
+
 {% block component_filter_range %}
     {# e: mod start #}
     {% set filterItemId = 'filter-elioDataDiscoveryRange' ~ name|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':''}) %}
+
+    {% set filterRangeOptions = {
+        name,
+        minKey,
+        maxKey,
+        lowerBound,
+        unit,
+        snippets: {
+            filterRangeActiveMinLabel,
+            filterRangeActiveMaxLabel,
+            filterRangeErrorMessage,
+            filterRangeLowerBoundErrorMessage,
+            filterRangeOutOfRangeLowerBoundErrorMessage,
+            filterRangeOutOfRangeUpperBoundErrorMessage
+        }
+    } %}
     {# e: mod end #}
 
     <div class="filter-range filter-panel-item{% if sidebar %} d-grid{% else %} dropdown{% endif %}"

@@ -1,8 +1,20 @@
 # CHANGELOG.md
 
-## 6.6.17 - 2025-06-17
-### Fix
+## 6.6.17 - 2025-06-23
+## Feature (2 change)
+- `getProductProperty` method in `ProductUtil` now accepts a custom field as string. This field can be used to determine
+  the data type of the property.
+- Added `convertValueToType` method in `ValueUtil` to convert a string property to int or float
+
+### Fix (8 changes)
 - `SeoRouteOutput` changed absolute Urls to relative Urls
+- Added `SalesChannelContext` to `ProductSearchRequestBuildedEvent`
+- Set fixed height for suggest box and added vertical scrollbar
+- Fixed broken range filters when setting values that are out of range and added new error message snippets
+- Removed `useLegacyLocale` config setting
+- Replaced admin icons with a non-transparent version
+- `searchTerm` is now properly escaped to prevent XSS injections
+- Fixed issue when Shopware standard filter disabling setting was overridden when the search or listing were disabled
 
 ## 6.6.15 - 2025-06-17
 ### Fix (1 change)

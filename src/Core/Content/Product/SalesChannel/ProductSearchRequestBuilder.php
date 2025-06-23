@@ -99,7 +99,7 @@ class ProductSearchRequestBuilder
         $this->addAdditionalRequestParameters($payload, $searchRequest);
         $this->addMetaData($request, $searchRequest);
 
-        $event = new ProductSearchRequestBuildedEvent($searchRequest, $payload);
+        $event = new ProductSearchRequestBuildedEvent($searchRequest, $payload, $salesChannelContext);
         $this->eventDispatcher->dispatch($event);
         return $event->getSearchRequest();
     }
