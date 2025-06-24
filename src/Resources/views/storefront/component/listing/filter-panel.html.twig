@@ -32,9 +32,9 @@
                             maxKey: 'max-' ~ elioDataDiscoveryAggregation.technicalName,
                             unit: elioDataDiscoveryAggregation.unit,
                             displayName: elioDataDiscoveryAggregation.name,
-                            lowerBound: elioDataDiscoveryAggregation.min,
-                            minInputValue: elioDataDiscoveryAggregation.min,
-                            maxInputValue: elioDataDiscoveryAggregation.max,
+                            lowerBound: elioDataDiscoveryAggregation.min|round(2, 'floor'),
+                            minInputValue: elioDataDiscoveryAggregation.min|round(2, 'floor'),
+                            maxInputValue: elioDataDiscoveryAggregation.max|round(2, 'floor'),
                             pluginSelector: 'elio-data-discovery-filter-range',
                         } %}
                     {% endif %}
