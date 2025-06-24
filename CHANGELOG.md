@@ -6,7 +6,7 @@
   the data type of the property.
 - Added `convertValueToType` method in `ValueUtil` to convert a string property to int or float
 
-### Fix (8 changes)
+### Fix (9 changes)
 - `SeoRouteOutput` changed absolute Urls to relative Urls
 - Added `SalesChannelContext` to `ProductSearchRequestBuildedEvent`
 - Set fixed height for suggest box and added vertical scrollbar
@@ -15,6 +15,7 @@
 - Replaced admin icons with a non-transparent version
 - `searchTerm` is now properly escaped to prevent XSS injections
 - Fixed issue when Shopware standard filter disabling setting was overridden when the search or listing were disabled
+- Fixed issue with Sync command not considering the full sync option when no profile is specified
 
 ## 6.6.15 - 2025-06-17
 ### Fix (1 change)

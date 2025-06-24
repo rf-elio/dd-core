@@ -343,7 +343,7 @@ class ProductUtil
                     $attributes[$encodedName] = [];
                 }
 
-                $type = $group->getCustomFieldsValue($customField) ?? 'string[]';
+                $type = $group->getTranslated()['customFields'][$customField] ?? 'string[]';
                 $value = ValueUtil::convertValueToType(ValueUtil::cleanValue($value), $type);
 
                 if (str_contains($type, '[]')) {
