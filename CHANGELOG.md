@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 6.6.18 - 2025-06-25
+## Fix (2 changes)
+- Range filters are not disabled anymore when no facets are returned for them, to prevent filters from collapsing
+- Adjusted admin icon size
+
 ## 6.6.17 - 2025-06-23
 ## Feature (2 change)
 - `getProductProperty` method in `ProductUtil` now accepts a custom field as string. This field can be used to determine
