@@ -62,6 +62,7 @@ class Configuration extends Struct
         private readonly bool $listingUseElioDataDiscovery,
         private readonly bool $productDetailPageCampaignsActive,
         private readonly array $additionalRequestParameters,
+        private readonly int $changeSetIndexerBatchSize,
         private readonly int $suggestThumbnailSize,
         private readonly bool $botProtectionActive,
         private readonly bool $botProtectionUseBadBotList,
@@ -93,8 +94,7 @@ class Configuration extends Struct
         private readonly string $disabledRecommendationTypes,
         private readonly bool $suggestToggleProductType,
         private readonly string $listingExclusionExpression,
-        private readonly bool $resolveCategoriesFromProductStream,
-        #[Deprecated(reason: 'Use full locale code instead', since: '6.6.11')] private readonly bool $useLegacyLocale
+        private readonly bool $resolveCategoriesFromProductStream
     ) {}
 
     /**
@@ -159,6 +159,14 @@ class Configuration extends Struct
     public function getAdditionalRequestParameters(): array
     {
         return $this->additionalRequestParameters;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChangeSetIndexerBatchSize(): int
+    {
+        return $this->changeSetIndexerBatchSize;
     }
 
     /**
@@ -435,10 +443,5 @@ class Configuration extends Struct
     public function isResolveCategoriesFromProductStream(): bool
     {
         return $this->resolveCategoriesFromProductStream;
-    }
-
-    public function isUseLegacyLocale(): bool
-    {
-        return $this->useLegacyLocale;
     }
 }

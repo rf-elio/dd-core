@@ -503,11 +503,13 @@
             <helpText lang="de-DE">Der Ausdruck in diesem Feld wird vom Plugin überprüft. Wenn die Auswertung wahr ist, wird das Data Discovery Listing auf der entsprechenden Seite nicht genutzt. Dies kann für die Kompatibilität von Drittanbieter-Plugins benutzt werden. Beraten Sie sich vor Setzen des Feldes mit einem Entwickler!</helpText>
         </input-field>
 
-        <input-field type="bool">
-            <name>useLegacyLocale</name>
-            <label>Use legacy locale (2 characters, i.e. "de")</label>
-            <label lang="de-DE">Alte locale benutzen (2 Buchstaben, z.B. "de")</label>
-            <defaultValue>false</defaultValue>
+        <input-field type="int">
+            <name>changeSetIndexerBatchSize</name>
+            <label>Indexer: Batch Size</label>
+            <label lang="de-DE">Indexer: Stapelgröße</label>
+            <defaultValue>500</defaultValue>
+            <helpText>Batch size for indexing EntityStatus entities</helpText>
+            <helpText lang="de-DE">Stapelgröße für die Indizierung von EntityStatus-Entitäten</helpText>
         </input-field>
     </card>
 

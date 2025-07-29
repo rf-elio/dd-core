@@ -324,9 +324,10 @@ class ProductUtil
      * Appends the product attributes
      *
      * @param array<PropertyGroupOptionEntity> $properties
+     * @param string $customField
      * @return array
      */
-    public static function getProductProperty(array $properties): array
+    public static function getProductProperty(array $properties, string $customField): array
     {
         $attributes = [];
         foreach ($properties as $property) {
@@ -341,7 +342,15 @@ class ProductUtil
                 if (!isset($attributes[$encodedName])) {
                     $attributes[$encodedName] = [];
                 }
-                $attributes[$encodedName][] = ValueUtil::cleanValue($value);
+
+                $type = $group->getTranslated()['customFields'][$customField] ?? 'string[]';
+                $value = ValueUtil::convertValueToType(ValueUtil::cleanValue($value), $type);
+
+                if (str_contains($type, '[]')) {
+                    $attributes[$encodedName][] = $value;
+                } else {
+                    $attributes[$encodedName] = $value;
+                }
             }
         }
 

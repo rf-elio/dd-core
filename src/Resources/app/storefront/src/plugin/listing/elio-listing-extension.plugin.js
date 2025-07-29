@@ -31,7 +31,7 @@ export default class ElioListingExtensionPlugin extends window.PluginBaseClass {
     }
 
     _registerEvents () {
-        const me = this
+        const me = this;
 
         this.listing.$emitter.subscribe('Listing/afterRenderResponse', (event) => {
             const response = this._domParser.parseFromString(event.detail.response, 'text/html');
@@ -119,7 +119,8 @@ export default class ElioListingExtensionPlugin extends window.PluginBaseClass {
 
         currentFilterDropdowns.forEach(currentFilterDropdown => {
             const newFilterDropdown = newFilterPanel.querySelector(`#${currentFilterDropdown.id}`);
-            if (!newFilterDropdown) {
+            const active = currentFilterDropdown.classList.contains('filter-range-dropdown');
+            if (!newFilterDropdown && !active) {
                 this._disableFilter(currentFilterDropdown);
                 currentFilterDropdown.innerHTML = '';
             }

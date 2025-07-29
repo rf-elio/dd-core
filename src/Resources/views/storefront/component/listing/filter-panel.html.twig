@@ -1,62 +1,63 @@
 {% sw_extends '@Storefront/storefront/component/listing/filter-panel.html.twig' %}
 
+{% set elioDataDiscoveryAggregations = listing.aggregations.get('elio-data-discovery-default') %}
 {% block component_filter_panel_item_manufacturer %}
     {{ parent() }}
-
-    {% set elioDataDiscoveryAggregations = listing.aggregations.get('elio-data-discovery-default') %}
-    {% for elioDataDiscoveryAggregation in elioDataDiscoveryAggregations.aggregations %}
-        {% if elioDataDiscoveryAggregation.extensions.elioDataDiscovery is defined %}
-            {% set parameterName = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.parameterName %}
-            {% set style = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.style %}
-            {% if style == 'DEFAULT' %}
-                {% if not elioDataDiscoveryAggregation.entities is empty %}
-                    {% for property in elioDataDiscoveryAggregation.entities %}
-                        {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-default-select.html.twig' with {
-                            elements: property.options,
+    {% block component_filter_panel_item_manufacturer_data_discovery_core %}
+        {% for elioDataDiscoveryAggregation in elioDataDiscoveryAggregations.aggregations %}
+            {% if elioDataDiscoveryAggregation.extensions.elioDataDiscovery is defined %}
+                {% set parameterName = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.parameterName %}
+                {% set style = elioDataDiscoveryAggregation.extensions.elioDataDiscovery.style %}
+                {% if style == 'DEFAULT' %}
+                    {% if not elioDataDiscoveryAggregation.entities is empty %}
+                        {% for property in elioDataDiscoveryAggregation.entities %}
+                            {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-default-select.html.twig' with {
+                                elements: property.options,
+                                sidebar: sidebar,
+                                name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
+                                displayName: property.translated.name,
+                                displayType: property.displayType,
+                                pluginSelector: 'elio-data-discovery-filter-property-select',
+                                propertyName: property.translated.name,
+                                count: property.extensions.elio_data_discovery_facet_extension.selectedCount
+                            } %}
+                        {% endfor %}
+                    {% endif %}
+                {% elseif style == 'RANGE' %}
+                    {% if elioDataDiscoveryAggregation.min > 0 and elioDataDiscoveryAggregation.max > 0 %}
+                        {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-range.html.twig' with {
                             sidebar: sidebar,
-                            name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
-                            displayName: property.translated.name,
-                            displayType: property.displayType,
-                            pluginSelector: 'elio-data-discovery-filter-property-select',
-                            propertyName: property.translated.name,
-                            count: property.extensions.elio_data_discovery_facet_extension.selectedCount
+                            name: elioDataDiscoveryAggregation.technicalName,
+                            minKey: 'min-' ~ elioDataDiscoveryAggregation.technicalName,
+                            maxKey: 'max-' ~ elioDataDiscoveryAggregation.technicalName,
+                            unit: elioDataDiscoveryAggregation.unit,
+                            displayName: elioDataDiscoveryAggregation.name,
+                            lowerBound: elioDataDiscoveryAggregation.min|round(2, 'floor'),
+                            minInputValue: elioDataDiscoveryAggregation.min|round(2, 'floor'),
+                            maxInputValue: elioDataDiscoveryAggregation.max|round(2, 'floor'),
+                            pluginSelector: 'elio-data-discovery-filter-range',
                         } %}
-                    {% endfor %}
-                {% endif %}
-            {% elseif style == 'RANGE' %}
-                {% if elioDataDiscoveryAggregation.min > 0 and elioDataDiscoveryAggregation.max > 0 %}
-                    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-range.html.twig' with {
+                    {% endif %}
+                {% elseif style == 'TREE' %}
+                    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select.html.twig' with {
+                        elements: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree.tree,
+                        sidebar: sidebar,
+                        name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
+                        displayName: parameterName,
+                        displayType: 'text',
+                        pluginSelector: 'elio-data-discovery-filter-tree-select',
+                        propertyName: parameterName,
+                        elioDataDiscoveryTree: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree
+                    } %}
+                {% elseif style == 'RATING' %}
+                    {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-rating.html.twig' with {
                         sidebar: sidebar,
                         name: elioDataDiscoveryAggregation.technicalName,
-                        minKey: 'min-' ~ elioDataDiscoveryAggregation.technicalName,
-                        maxKey: 'max-' ~ elioDataDiscoveryAggregation.technicalName,
-                        unit: elioDataDiscoveryAggregation.unit,
-                        displayName: elioDataDiscoveryAggregation.name,
-                        lowerBound: elioDataDiscoveryAggregation.min,
-                        minInputValue: elioDataDiscoveryAggregation.min,
-                        maxInputValue: elioDataDiscoveryAggregation.max,
-                        pluginSelector: 'elio-data-discovery-filter-range',
+                        displayName: parameterName,
+                        pluginSelector: 'elio-data-discovery-filter-rating',
                     } %}
                 {% endif %}
-            {% elseif style == 'TREE' %}
-                {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-tree-select.html.twig' with {
-                    elements: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree.tree,
-                    sidebar: sidebar,
-                    name: parameterName|replace({' ':'', ',':'', '.':'', '/':'', '\\':'', '#':'', '(':'', ')':'', '[':'', ']':''}),
-                    displayName: parameterName,
-                    displayType: 'text',
-                    pluginSelector: 'elio-data-discovery-filter-tree-select',
-                    propertyName: parameterName,
-                    elioDataDiscoveryTree: elioDataDiscoveryAggregation.entities.extensions.elioDataDiscoveryTree
-                } %}
-            {% elseif style == 'RATING' %}
-                {% sw_include '@ElioDataDiscovery/storefront/component/listing/filter/elio-data-discovery-filter-rating.html.twig' with {
-                    sidebar: sidebar,
-                    name: elioDataDiscoveryAggregation.technicalName,
-                    displayName: parameterName,
-                    pluginSelector: 'elio-data-discovery-filter-rating',
-                } %}
             {% endif %}
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    {% endblock %}
 {% endblock %}

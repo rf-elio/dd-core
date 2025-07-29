@@ -1,5 +1,45 @@
 # CHANGELOG.md
+
+## 6.6.18 - 2025-06-25
+## Fix (2 changes)
+- Range filters are not disabled anymore when no facets are returned for them, to prevent filters from collapsing
+- Adjusted admin icon size
+
+## 6.6.17 - 2025-06-23
+## Feature (2 change)
+- `getProductProperty` method in `ProductUtil` now accepts a custom field as string. This field can be used to determine
+  the data type of the property.
+- Added `convertValueToType` method in `ValueUtil` to convert a string property to int or float
+
+### Fix (9 changes)
+- `SeoRouteOutput` changed absolute Urls to relative Urls
+- Added `SalesChannelContext` to `ProductSearchRequestBuildedEvent`
+- Set fixed height for suggest box and added vertical scrollbar
+- Fixed broken range filters when setting values that are out of range and added new error message snippets
+- Removed `useLegacyLocale` config setting
+- Replaced admin icons with a non-transparent version
+- `searchTerm` is now properly escaped to prevent XSS injections
+- Fixed issue when Shopware standard filter disabling setting was overridden when the search or listing were disabled
+- Fixed issue with Sync command not considering the full sync option when no profile is specified
+
+## 6.6.15 - 2025-06-17
+### Fix (1 change)
+- Added new block in filter panel template to allow overrides
+
+## 6.6.14 - 2025-06-12
+### Fix (1 change)
+- Filter Cache Key is generated via md5 instead of Shopware Hasher to ensure compatibility with earlier SW 6.6 versions
+
+## 6.6.13 - 2025-06-11
+### Fix (5 changes)
+- Optimized `IndexUpdateCommand` performance by implementing batch reading of EntityStatus entities from the DB
+- Fixed `SyncDataCommand` RAM leak by implementing batch reading of EntityStatus entities from the DB
+- Made injected services of `AbstractSuggestProductTransformer` protected
+- Added `CustomPriceItemCollection`
+- Renamed `$filter` attribute in `SearchRequest` to `$filters` and added `getFilter` method
+
 ## 6.6.12 - 2025-06-03
+### Fix (1 change)
 - Cache key generation in `CachedFilterService` passes `SalesChannelId` and `LangugeId` as separate array elements
 
 ## 6.6.11 - 2025-06-02

@@ -23,7 +23,7 @@ abstract class SearchRequest extends ChannelRequest
     protected string $query = '*';
     protected int $page = 1;
     protected ?array $sort = null;
-    protected array $filter = [];
+    protected array $filters = [];
     protected ?array $additionalRequestParameters = null;
     protected ?int $hitsPerPage = null;
 
@@ -98,21 +98,30 @@ abstract class SearchRequest extends ChannelRequest
     /**
      * @return array
      */
-    public function getFilter(): array
+    public function getFilters(): array
     {
-        return $this->filter;
+        return $this->filters;
     }
 
     /**
-     * @param array $filter
+     * @param string $name
+     * @return string|null
      */
-    public function setFilter(array $filter): void
+    public function getFilter(string $name): ?string
     {
-        $this->filter = $filter;
+        return $this->filters[$name] ?? null;
     }
 
     /**
-     * Adds an filter to the elio search search request
+     * @param array $filters
+     */
+    public function setFilters(array $filters): void
+    {
+        $this->filters = $filters;
+    }
+
+    /**
+     * Adds a filter to the Data Discovery search request
      *
      * @param string $name
      * @param array|string $value
@@ -120,13 +129,13 @@ abstract class SearchRequest extends ChannelRequest
      */
     public function addFilter(string $name, array|string $value, bool $substring = false) : void
     {
-        if (!isset($this->filter[$name])) {
-            $this->filter[$name] = [
+        if (!isset($this->filters[$name])) {
+            $this->filters[$name] = [
                 'values' => [],
                 'substring' => $substring
             ];
         }
-        $this->filter[$name]['values'][] = $value;
+        $this->filters[$name]['values'][] = $value;
     }
 
     /**

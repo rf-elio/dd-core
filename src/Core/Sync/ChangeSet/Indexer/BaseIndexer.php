@@ -33,11 +33,16 @@
 namespace Elio\ElioDataDiscovery\Core\Sync\ChangeSet\Indexer;
 
 use DateTimeImmutable;
+use Elio\ElioDataDiscovery\Configuration\ElioDataDiscoveryConfigServiceInterface;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusCollection;
 use Elio\ElioDataDiscovery\Core\Sync\ChangeSet\EntityStatusEntity;
+use Generator;
 use JsonException;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\SalesChannelRepositoryIterator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
@@ -56,7 +61,9 @@ abstract class BaseIndexer implements IndexerInterface
     public function __construct(
         private readonly string $dataType,
         private readonly string $entityType,
-        private readonly SalesChannelRepository $repository
+        private readonly SalesChannelRepository $repository,
+        private readonly EntityRepository $entityStatusRepository,
+        private readonly ElioDataDiscoveryConfigServiceInterface $configService
     ) {}
 
     /**
@@ -88,49 +95,47 @@ abstract class BaseIndexer implements IndexerInterface
     /**
      * Indexing entity states
      *
-     * @param EntityStatusCollection $currentEntityStatusCollection
      * @param SalesChannelContext $context
-     * @return EntityStatusCollection
+     * @return Generator
      * @throws JsonException
      */
-    public function index(EntityStatusCollection $currentEntityStatusCollection, SalesChannelContext $context): EntityStatusCollection
+    public function index(SalesChannelContext $context): Generator
     {
-        $criteria = $this->getCriteria($context);
-        $criteria->setOffset(0);
-        $criteria->setLimit(50);
+        $batchSize = $this->configService->getByContext($context)->getChangeSetIndexerBatchSize();
+        $criteria = $this->getCriteria($context)->setOffset(0)->setLimit($batchSize);
         $iterator = new SalesChannelRepositoryIterator($this->repository, $context, $criteria);
-        $filteredEntityStatusCollection = $currentEntityStatusCollection->filterByProperty('entityType', $this->entityType);
-        $newEntityStatusCollection = new EntityStatusCollection();
+        $batchEntityStatusCollection = new EntityStatusCollection();
+        $processedStatusEntityIds = [];
+        $batchSize = $this->configService->getByContext($context)->getChangeSetIndexerBatchSize();
 
-        while ($entities = $iterator->fetch()) {
+        while (($entities = $iterator->fetch()) !== null) {
+            $entityStatuses = $this->fetchEntityStatuses($context, $entities);
             foreach ($entities as $entity) {
-                $entityStatus = $filteredEntityStatusCollection->getEntityStatus(
-                    $entity->getApiAlias(), $this->getEntityIdentifier($entity)
-                ) ?? new EntityStatusEntity();
-
-                $changed = $this->prepareEntityStatusEntity(
-                    $entityStatus,
-                    $entity,
-                    $context,
-                );
-
-                if ($changed) {
-                    $newEntityStatusCollection->add($entityStatus);
+                $entityStatus = $this->findOrCreateEntityStatus($entity, $entityStatuses);
+                if ($this->prepareEntityStatusEntity($entityStatus, $entity, $context)) {
+                    yield from $this->addToBatchAndYieldIfFull($batchEntityStatusCollection, $entityStatus, $batchSize);
                 }
-                $filteredEntityStatusCollection->remove($entityStatus->getId());
+
+                $processedStatusEntityIds[] = $entityStatus->getId();
             }
         }
 
-        // all note removed entities are deleted
-        /** @var EntityStatusEntity $item */
-        foreach ($filteredEntityStatusCollection as $item) {
-            if (!$item->getDeletedAt()) {
-                $this->setDeleted($item);
-                $newEntityStatusCollection->add($item);
+        $entityStatusIdsToDelete = $this->fetchEntityStatusIdsToDelete($processedStatusEntityIds, $context);
+        if (!empty($entityStatusIdsToDelete)) {
+            foreach (array_chunk($entityStatusIdsToDelete, $batchSize) as $chunk) {
+                $criteria = new Criteria($chunk);
+                $entityStatusesToDelete = $this->entityStatusRepository->search($criteria, $context->getContext());
+
+                foreach ($entityStatusesToDelete as $entityStatus) {
+                    $this->setDeleted($entityStatus);
+                    yield from $this->addToBatchAndYieldIfFull($batchEntityStatusCollection, $entityStatus, $batchSize);
+                }
             }
         }
 
-        return $newEntityStatusCollection;
+        if ($batchEntityStatusCollection->count() > 0) {
+            yield $batchEntityStatusCollection;
+        }
     }
 
     /**
@@ -193,5 +198,80 @@ abstract class BaseIndexer implements IndexerInterface
     ): void {
         $entityStatus->setState(EntityStatusEntity::STATE_DELETED);
         $entityStatus->setDeletedAt(new DateTimeImmutable());
+    }
+
+    /**
+     * @param EntityStatusCollection $batchCollection
+     * @param EntityStatusEntity $status
+     * @param int $batchSize
+     * @return Generator|null
+     */
+    private function addToBatchAndYieldIfFull(
+        EntityStatusCollection $batchCollection,
+        EntityStatusEntity $status,
+        int $batchSize
+    ): ?Generator {
+        $batchCollection->add($status);
+        if ($batchCollection->count() >= $batchSize) {
+            yield $batchCollection;
+
+            $batchCollection->clear();
+            gc_collect_cycles();
+        }
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     * @param mixed $entities
+     * @return EntityStatusCollection
+     */
+    private function fetchEntityStatuses(SalesChannelContext $context, mixed $entities): EntityStatusCollection
+    {
+        $identifiers = [];
+        foreach ($entities as $entity) {
+            $identifiers[] = $this->getEntityIdentifier($entity);
+        }
+
+        $criteria = (new Criteria())
+            ->addFilter(
+                new EqualsFilter('salesChannelId', $context->getSalesChannelId())
+            )->addFilter(
+                new EqualsFilter('entityType', $this->entityType)
+            )->addFilter(
+                new EqualsAnyFilter('identifier', $identifiers)
+            );
+
+        return $this->entityStatusRepository->search($criteria, $context->getContext())->getEntities();
+    }
+
+    /**
+     * @param array $processedStatusEntities
+     * @param SalesChannelContext $context
+     * @return array|string[]
+     */
+    private function fetchEntityStatusIdsToDelete(array $processedStatusEntities, SalesChannelContext $context): array
+    {
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannelId()))
+            ->addFilter(new EqualsFilter('entityType', $this->entityType))
+            ->addFilter(new EqualsFilter('deletedAt', null));
+        $allEntityStatusIds = $this->entityStatusRepository->searchIds($criteria, $context->getContext())->getIds();
+
+        $entityStatusIdsToDelete = array_diff($allEntityStatusIds, $processedStatusEntities);
+        unset($allEntityStatusIds);
+
+        return $entityStatusIdsToDelete;
+    }
+
+    /**
+     * @param Struct $entity
+     * @param EntityStatusCollection $entityStatuses
+     * @return EntityStatusEntity
+     */
+    private function findOrCreateEntityStatus(Struct $entity, EntityStatusCollection $entityStatuses): EntityStatusEntity
+    {
+        $identifier = $this->getEntityIdentifier($entity);
+        return $entityStatuses->filterByProperty('identifier', $identifier)->first()
+            ?? new EntityStatusEntity();
     }
 }

@@ -105,7 +105,7 @@ class SyncDataCommand extends Command
 
             /** @var SyncProfileEntity $syncProfileConfiguration */
             foreach ($syncProfileConfigurations as $syncProfileConfiguration) {
-                $this->syncService->sync($syncProfileConfiguration);
+                $this->syncService->sync($syncProfileConfiguration, $input->getOptions());
             }
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [

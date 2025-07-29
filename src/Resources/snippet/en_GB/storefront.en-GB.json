@@ -1,4 +1,8 @@
 {
+    "listing": {
+        "filterRangeOutOfRangeLowerBoundErrorMessage": "The maximum value may not be above %minInputValue%.",
+        "filterRangeOutOfRangeUpperBoundErrorMessage": "The minimum value may not be below %maxInputValue%."
+    },
     "search" : {
         "headline" : "{0} <span class=\"e-elio-data-discovery-listing-properties-total\">0</span> products found for \"%searchTerm%\" | {1} One product found for \"%searchTerm%\" | ]1,Inf[ <span class=\"e-elio-data-discovery-listing-properties-total\">%count%</span> products found for \"%searchTerm%\""
     },
@@ -19,8 +23,8 @@
             }
         },
         "advisor-campaign": {
-            "reset-btn": "Zurücksetzten",
-            "no-products-found": "Für Ihre Auswahl wurden keine Produkte gefunden"
+            "reset-btn": "Reset",
+            "no-products-found": "No products found for your selection"
         }
     }
 }
